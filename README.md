@@ -1,6 +1,6 @@
-# openapisearch
+# apitools
 
-`openapisearch` is two related things:
+`github.com/tabilet/apitools` is two related things:
 
 1. A CLI and Go library for finding, validating, caching, importing, and
    indexing OpenAPI documents.
@@ -8,12 +8,11 @@
    OpenAPI-backed artifacts while providing their own runtime, review, approval,
    and execution behavior.
 
-The current module name is historical. The package now contains broader UWS and
-authoring utilities, so a future rename such as `uwstools` may make sense. Until
-that rename is coordinated across downstream modules, the import path remains:
+The repository was originally named `openapisearch`, and the Go package name and
+CLI still use that name. The module path is now:
 
 ```go
-github.com/genelet/openapisearch
+github.com/tabilet/apitools
 ```
 
 ## CLI
@@ -21,7 +20,7 @@ github.com/genelet/openapisearch
 Install:
 
 ```bash
-go install github.com/genelet/openapisearch/cmd/openapisearch@latest
+go install github.com/tabilet/apitools/cmd/openapisearch@latest
 ```
 
 Run from a checkout:
@@ -47,6 +46,8 @@ does not execute APIs or workflows.
 ## Search Library
 
 ```go
+import openapisearch "github.com/tabilet/apitools"
+
 ctx := context.Background()
 client := &openapisearch.Client{}
 
@@ -61,6 +62,8 @@ _, _ = report, err
 Local project directories can be searched without network access:
 
 ```go
+import openapisearch "github.com/tabilet/apitools"
+
 results, err := openapisearch.LocalFiles(ctx, openapisearch.LocalOptions{
 	Dir:     "./openapi",
 	BaseDir: ".",
@@ -69,7 +72,7 @@ results, err := openapisearch.LocalFiles(ctx, openapisearch.LocalOptions{
 _, _ = results, err
 ```
 
-Caching is optional through `github.com/genelet/openapisearch/sqlitecache` or
+Caching is optional through `github.com/tabilet/apitools/sqlitecache` or
 the CLI `--cache` flag. Cache modes include `read-write`, `refresh`, `offline`,
 and `bypass`.
 

@@ -1,4 +1,4 @@
-module github.com/genelet/openapisearch
+module github.com/tabilet/apitools
 
 go 1.25.5
 

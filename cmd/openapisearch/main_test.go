@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/genelet/openapisearch"
-	"github.com/genelet/openapisearch/sqlitecache"
+	"github.com/tabilet/apitools"
+	"github.com/tabilet/apitools/sqlitecache"
 )
 
 func TestSearchHelpDocumentsFlags(t *testing.T) {

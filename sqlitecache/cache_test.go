@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/genelet/openapisearch"
+	"github.com/tabilet/apitools"
 )
 
 func TestSearchReportRoundTrip(t *testing.T) {

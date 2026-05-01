@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/genelet/openapisearch"
+	"github.com/tabilet/apitools"
 	_ "modernc.org/sqlite"
 )
 

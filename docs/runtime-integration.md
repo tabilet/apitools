@@ -1,13 +1,14 @@
 # Runtime Integration Guide
 
-`openapisearch` provides shared OpenAPI search, intent authoring, iCoT loop, and
-review helpers. A downstream runtime imports those helpers and supplies the
-product-specific behavior that cannot live upstream.
+`github.com/tabilet/apitools` provides shared OpenAPI search, intent authoring,
+iCoT loop, and review helpers. The Go package name is still `openapisearch`.
+A downstream runtime imports those helpers and supplies the product-specific
+behavior that cannot live upstream.
 
 The dependency direction should stay simple:
 
 ```text
-openapisearch
+github.com/tabilet/apitools
   shared structs, interfaces, scans, selection, prompt loops, review helpers
 
 runtime package
@@ -191,15 +192,13 @@ Good downstream tests cover:
 - approval/trusted-runner paths
 - no secret values in prompts, artifacts, transcripts, or review summaries
 
-## Rename Note
+## Module Path Note
 
-The name `openapisearch` still describes the original CLI and search library,
-but the module now also contains shared UWS authoring and iCoT infrastructure.
-If the module is renamed to something broader, such as `uwstools`, do it as a
-coordinated migration:
+The module path is `github.com/tabilet/apitools`. The package declarations
+remain `package openapisearch`, and the CLI remains `cmd/openapisearch`, because
+those names still describe the OpenAPI search surface. Runtime authors should
+import the module with the package name they use in code:
 
-- choose the new module path
-- update downstream imports in one branch
-- keep a compatibility window or tag for the old import path if external users
-  exist
-- avoid changing package behavior in the same commit as the rename
+```go
+import openapisearch "github.com/tabilet/apitools"
+```
