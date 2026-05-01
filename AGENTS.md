@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`openapisearch` is an open-source Go library and CLI for discovering,
+`apitools` is an open-source Go module and CLI-backed library for discovering,
 validating, caching, and importing OpenAPI or Swagger documents from public
 catalogs. It also provides the public OpenAPI-backed authoring substrate for
 AI-assisted workflows that turn natural-language briefs and prompt-safe
@@ -43,10 +43,10 @@ Rule of thumb:
 - If it executes an API or workflow, it does not belong here.
 - If it depends on a private repo or product workflow, it does not belong here.
 
-Ramen and OpenUdon depend on or embed `openapisearch` concepts directly. Ramen
+Ramen and OpenUdon depend on or embed `apitools` concepts directly. Ramen
 does not inherit from OpenUdon, and OpenUdon does not inherit from Ramen.
 Downstreams may inherit common behavior at runtime by embedding concrete
-`openapisearch` review/deferred-leaf helpers or composing shared functions, but
+`apitools` review/deferred-leaf helpers or composing shared functions, but
 that inheritance must stay domain-neutral: the shared object can carry
 artifacts, symbolic binding names, diagnostics, readiness issues, review
 scaffolding, and safe filesystem behavior, while the downstream leaf keeps its
@@ -55,7 +55,7 @@ own rendering, validation, approval, bundling, and execution policy.
 ## Architecture
 
 OpenAPI owns methods, paths, schemas, servers, and security declarations.
-`openapisearch` owns discovery, validation, import, inventories, prompt-safe
+`apitools` owns discovery, validation, import, inventories, prompt-safe
 metadata, and domain-neutral authoring loops over that OpenAPI context.
 
 Authoring follows this shared flow:
@@ -70,7 +70,7 @@ artifacts.
 
 ### Binding happens at execution time
 
-`openapisearch` may name symbolic bindings and describe the contract a caller
+`apitools` may name symbolic bindings and describe the contract a caller
 must satisfy, but it does not resolve credentials, choose concrete accounts, or
 execute operations. Specialized engines bind runtime implementations and leaf
 adapters only when they validate and execute their own artifacts.
@@ -79,8 +79,8 @@ This is an inheritance/composition rule as much as a safety rule. Shared
 authoring objects should be embeddable so Ramen, OpenUdon, and other callers can
 reuse common artifact, review, readiness, binding-audit, and safe-write logic at
 runtime without inheriting each other's product semantics. Runtime inheritance
-must flow from `openapisearch` into caller-owned leaves; it must not create a
-dependency from `openapisearch` back into Ramen, OpenUdon, udon, w8m, private
+must flow from `apitools` into caller-owned leaves; it must not create a
+dependency from `apitools` back into Ramen, OpenUdon, udon, w8m, private
 credential resolvers, or trusted runners.
 
 ## Commands
@@ -90,7 +90,7 @@ go test ./...
 go vet ./...
 git diff --check
 go run ./cmd/openapisearch search --query slack
-go run ./cmd/openapisearch search --query slack --cache /tmp/openapisearch.sqlite
+go run ./cmd/openapisearch search --query slack --cache /tmp/apitools.sqlite
 go run ./cmd/openapisearch import --url https://example.com/openapi.yaml --dir /tmp/openapi
 ```
 

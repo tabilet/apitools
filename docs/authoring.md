@@ -1,6 +1,6 @@
 # AI-Assisted Authoring Core
 
-`openapisearch` provides domain-neutral authoring primitives for tools that
+`apitools` provides domain-neutral authoring primitives for tools that
 draft OpenAPI-backed workflow artifacts. It searches and imports OpenAPI
 documents, turns them into prompt-safe operation context, and supports draft
 `project.md` and `intent.hcl` generation without committing to a concrete
@@ -44,7 +44,7 @@ accounts, or perform production side effects.
 
 ## Ownership
 
-`openapisearch` owns shared OpenAPI search, import, validation, local discovery,
+`apitools` owns shared OpenAPI search, import, validation, local discovery,
 cache access, operation inventory, ranking, prompt-safe summaries, and generic
 authoring interfaces. It may define common fields, methods, interfaces,
 transcripts, diagnostics, symbolic binding declarations, and draft artifact
@@ -58,7 +58,7 @@ OpenUdon owns concrete IaC intent models, Terraform generation,
 graph/profile/planning/state/drift/handoff bundles, and w8m-facing public IaC
 artifacts.
 
-Ramen and OpenUdon both depend on or embed `openapisearch` concepts directly.
+Ramen and OpenUdon both depend on or embed `apitools` concepts directly.
 They do not inherit from each other.
 
 ## Binding Model
@@ -68,7 +68,7 @@ environments, runtimes, and side-effect permissions are caller responsibilities.
 Binding happens at execution time, after the caller has validated and reviewed
 the draft artifacts.
 
-`openapisearch` can declare that an artifact requires a binding such as
+`apitools` can declare that an artifact requires a binding such as
 `github_default`, `aws_workload_dev`, or `slack_workspace_ops`, but it must not
 resolve those names to tokens, accounts, endpoints, or executable clients.
 
@@ -113,7 +113,7 @@ func ExecuteReviewed(ctx context.Context, binder RuntimeBinder, leaf ExecutableL
 }
 ```
 
-In this model, `openapisearch` participates in `DraftAndRender` by supplying
+In this model, `apitools` participates in `DraftAndRender` by supplying
 prompt-safe context and domain-neutral draft structures. The caller owns
 validation, review, concrete leaf rendering, runtime binding, and execution.
 

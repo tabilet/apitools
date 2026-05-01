@@ -12,7 +12,7 @@ github.com/tabilet/apitools
   shared structs, interfaces, scans, selection, prompt loops, review helpers
 
 runtime package
-  imports openapisearch
+  imports apitools
   implements chat, parse, render, validate, review, bind, approve, execute
 ```
 
@@ -21,7 +21,7 @@ downstream runtime such as Ramen or OpenUdon.
 
 ## What Upstream Owns
 
-Use `openapisearch` for behavior that is neutral across runtimes:
+Use `apitools` for behavior that is neutral across runtimes:
 
 - OpenAPI search, import, validation, local discovery, caching, and operation
   inventory.
@@ -69,16 +69,16 @@ type ChatAdapter struct {
 	Client RuntimeLLM
 }
 
-func (adapter ChatAdapter) Complete(ctx context.Context, transcript []openapisearch.TranscriptTurn) (openapisearch.TranscriptTurn, error) {
+func (adapter ChatAdapter) Complete(ctx context.Context, transcript []apitools.TranscriptTurn) (apitools.TranscriptTurn, error) {
 	reply, err := adapter.Client.Chat(ctx, runtimeMessages(transcript))
 	if err != nil {
-		return openapisearch.TranscriptTurn{}, err
+		return apitools.TranscriptTurn{}, err
 	}
-	return openapisearch.TranscriptTurn{Role: "assistant", Content: reply}, nil
+	return apitools.TranscriptTurn{Role: "assistant", Content: reply}, nil
 }
 
-func (adapter ChatAdapter) CompleteStructured(ctx context.Context, transcript []openapisearch.TranscriptTurn, schema any, out any) error {
-	rawSchema, err := openapisearch.RawSchema(schema)
+func (adapter ChatAdapter) CompleteStructured(ctx context.Context, transcript []apitools.TranscriptTurn, schema any, out any) error {
+	rawSchema, err := apitools.RawSchema(schema)
 	if err != nil {
 		return err
 	}
@@ -94,13 +94,13 @@ Use the adapter with upstream fallback logic:
 
 ```go
 var draft RuntimeIntent
-result, err := openapisearch.CompleteJSONWithFallback(
+result, err := apitools.CompleteJSONWithFallback(
 	ctx,
 	ChatAdapter{Client: llm},
 	transcript,
 	intentSchema,
 	&draft,
-	openapisearch.JSONCompletionOptions{FallbackOnStructuredError: true},
+	apitools.JSONCompletionOptions{FallbackOnStructuredError: true},
 )
 _, _ = result, err
 ```
@@ -111,7 +111,7 @@ For typed draft flows, keep parsing and rendering runtime-owned while using the
 shared flow shell:
 
 ```go
-flow := openapisearch.Flow[RuntimeIntent]{
+flow := apitools.Flow[RuntimeIntent]{
 	Parser:       runtimeParser{},
 	Renderer:     runtimeRenderer{},
 	Validator:    runtimeValidator{},
@@ -127,8 +127,8 @@ For neutral OpenAPI-backed drafting, use the authoring core and then hand the
 leaf to runtime-specific rendering:
 
 ```go
-core := openapisearch.NewAuthoringCore()
-leaf, rendered, diagnostics, err := openapisearch.DraftAndRender(ctx, core, runtimeRenderer{}, input)
+core := apitools.NewAuthoringCore()
+leaf, rendered, diagnostics, err := apitools.DraftAndRender(ctx, core, runtimeRenderer{}, input)
 _, _, _, _ = leaf, rendered, diagnostics, err
 ```
 
@@ -145,7 +145,7 @@ autosave, and transcript persistence.
 The runtime supplies hooks for its session type:
 
 ```go
-artifacts, err := openapisearch.RunProgressiveICOT(ctx, in, out, openapisearch.ProgressiveLoopHooks[Session, APIDoc, Artifacts]{
+artifacts, err := apitools.RunProgressiveICOT(ctx, in, out, apitools.ProgressiveLoopHooks[Session, APIDoc, Artifacts]{
 	Session:                seed,
 	Documents:              docs,
 	Extractor:              runtimeExtractor{},
@@ -164,7 +164,7 @@ _, _ = artifacts, err
 ```
 
 Do not put runtime prompts, approval states, execution policy, or session schema
-into `openapisearch`. Keep those in the runtime and pass behavior through hooks.
+into `apitools`. Keep those in the runtime and pass behavior through hooks.
 
 ## Testing Strategy
 
@@ -200,5 +200,5 @@ those names still describe the OpenAPI search surface. Runtime authors should
 import the module with the package name they use in code:
 
 ```go
-import openapisearch "github.com/tabilet/apitools"
+import apitools "github.com/tabilet/apitools"
 ```

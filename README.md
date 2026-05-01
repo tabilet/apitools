@@ -36,7 +36,7 @@ Common commands:
 ```bash
 go run ./cmd/openapisearch search --query slack
 go run ./cmd/openapisearch search --query slack --json
-go run ./cmd/openapisearch search --query slack --cache ~/.cache/openapisearch/cache.sqlite
+go run ./cmd/openapisearch search --query slack --cache ~/.cache/apitools/cache.sqlite
 go run ./cmd/openapisearch import --url https://example.com/openapi.yaml --dir ./openapi --name example
 ```
 
@@ -48,14 +48,14 @@ does not execute APIs or workflows.
 ## Search Library
 
 ```go
-import openapisearch "github.com/tabilet/apitools"
+import apitools "github.com/tabilet/apitools"
 
 ctx := context.Background()
-client := &openapisearch.Client{}
+client := &apitools.Client{}
 
-report, err := client.Search(ctx, openapisearch.SearchOptions{
+report, err := client.Search(ctx, apitools.SearchOptions{
 	Query:  "slack",
-	Source: openapisearch.SourceAuto,
+	Source: apitools.SourceAuto,
 	Limit:  10,
 })
 _, _ = report, err
@@ -64,9 +64,9 @@ _, _ = report, err
 Local project directories can be searched without network access:
 
 ```go
-import openapisearch "github.com/tabilet/apitools"
+import apitools "github.com/tabilet/apitools"
 
-results, err := openapisearch.LocalFiles(ctx, openapisearch.LocalOptions{
+results, err := apitools.LocalFiles(ctx, apitools.LocalOptions{
 	Dir:     "./openapi",
 	BaseDir: ".",
 	Query:   "slack messages",
@@ -99,21 +99,21 @@ parsers, renderers, validators, refiners, interactive extractors, approval
 gates, binders, and executors.
 
 ```go
-core := openapisearch.NewAuthoringCore()
+core := apitools.NewAuthoringCore()
 
-opctx, artifacts, err := openapisearch.DraftFromOpenAPI(
+opctx, artifacts, err := apitools.DraftFromOpenAPI(
 	ctx,
 	core,
-	openapisearch.Brief{
+	apitools.Brief{
 		Text:        "Create one support ticket from runtime inputs.",
 		ProjectName: "Support Ticket Draft",
 	},
-	[]openapisearch.OpenAPIDoc{{Path: "openapi/support.yaml"}},
+	[]apitools.OpenAPIDoc{{Path: "openapi/support.yaml"}},
 	[]string{"createTicket"},
 )
 _, _, _ = opctx, artifacts, err
 
-leaf := openapisearch.NewLeafAdapter(artifacts, openapisearch.LeafOptions{
+leaf := apitools.NewLeafAdapter(artifacts, apitools.LeafOptions{
 	Name:   "Support Ticket Draft",
 	Source: "example",
 })
@@ -127,11 +127,14 @@ model and binding terminology, see [docs/authoring.md](docs/authoring.md).
 
 ## Safety Boundary
 
-`apitools` is upstream shared infrastructure. It must not resolve concrete
-credentials, select production accounts, bypass caller review, or execute
-side-effectful workflows. Runtime packages such as Ramen and OpenUdon inherit the
-shared structs and helpers, then supply product-specific validation, review,
-approval, persistence, binding, and execution.
+`apitools` is upstream shared infrastructure. It may discover, index, draft,
+validate, scan, summarize, and produce review evidence. It must not resolve
+concrete credentials, select production accounts, bypass caller review, or
+execute side-effectful workflows.
+
+Runtime packages such as Ramen and OpenUdon import and compose the shared
+structs and helpers, then supply product-specific validation, review, approval,
+persistence, binding, and execution.
 
 ## Development
 
