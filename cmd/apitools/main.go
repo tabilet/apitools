@@ -42,7 +42,7 @@ func run(args []string, out, errOut io.Writer) int {
 }
 
 func usage(out io.Writer) {
-	fmt.Fprintln(out, "Usage: openapisearch <command>")
+	fmt.Fprintln(out, "Usage: apitools <command>")
 	fmt.Fprintln(out)
 	fmt.Fprintln(out, "Commands:")
 	fmt.Fprintln(out, "  search  search APIs.guru with public-apis fallback")
@@ -53,22 +53,22 @@ func runSearch(args []string, out, errOut io.Writer) int {
 	return runSearchWithClient(args, out, errOut, clientForCache)
 }
 
-func runSearchWithClient(args []string, out, errOut io.Writer, newClient func(string) (*openapisearch.Client, func(), error)) int {
-	fs := flag.NewFlagSet("openapisearch search", flag.ContinueOnError)
+func runSearchWithClient(args []string, out, errOut io.Writer, newClient func(string) (*apitools.Client, func(), error)) int {
+	fs := flag.NewFlagSet("apitools search", flag.ContinueOnError)
 	fs.SetOutput(errOut)
 	query := fs.String("query", "", "Search query")
 	limit := fs.Int("limit", 10, "Maximum result count")
-	source := fs.String("source", string(openapisearch.SourceAuto), "Search source: auto, apis-guru, or public-apis")
+	source := fs.String("source", string(apitools.SourceAuto), "Search source: auto, apis-guru, or public-apis")
 	publicProbe := fs.Int("public-probe", 0, "Maximum public-apis well-known URL probes; defaults to limit*5, capped at 50")
-	probeTimeout := fs.Duration("probe-timeout", openapisearch.DefaultProbeTimeout, "Timeout for each public-apis OpenAPI probe")
-	probeBudget := fs.Duration("probe-budget", openapisearch.DefaultPublicProbeBudget, "Overall time budget for public-apis probing")
+	probeTimeout := fs.Duration("probe-timeout", apitools.DefaultProbeTimeout, "Timeout for each public-apis OpenAPI probe")
+	probeBudget := fs.Duration("probe-budget", apitools.DefaultPublicProbeBudget, "Overall time budget for public-apis probing")
 	cachePath := fs.String("cache", "", "SQLite cache path; disabled when empty")
-	cacheMode := fs.String("cache-mode", string(openapisearch.CacheModeReadWrite), "Cache mode: read-write, refresh, offline, or bypass")
-	cacheTTL := fs.Duration("cache-ttl", openapisearch.DefaultCacheMaxAge, "Maximum age for cached search results")
+	cacheMode := fs.String("cache-mode", string(apitools.CacheModeReadWrite), "Cache mode: read-write, refresh, offline, or bypass")
+	cacheTTL := fs.Duration("cache-ttl", apitools.DefaultCacheMaxAge, "Maximum age for cached search results")
 	offline := fs.Bool("offline", false, "Use only cached search results; shorthand for --cache-mode offline")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	fs.Usage = func() {
-		fmt.Fprintln(fs.Output(), "Usage: openapisearch search --query <text> [--limit 10] [--source auto|apis-guru|public-apis] [--public-probe 25] [--probe-timeout 5s] [--probe-budget 30s] [--cache cache.sqlite] [--cache-mode read-write|refresh|offline|bypass] [--json]")
+		fmt.Fprintln(fs.Output(), "Usage: apitools search --query <text> [--limit 10] [--source auto|apis-guru|public-apis] [--public-probe 25] [--probe-timeout 5s] [--probe-budget 30s] [--cache cache.sqlite] [--cache-mode read-write|refresh|offline|bypass] [--json]")
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
@@ -91,16 +91,16 @@ func runSearchWithClient(args []string, out, errOut io.Writer, newClient func(st
 		return 1
 	}
 	defer closeCache()
-	client.ProbeTimeout = durationOrDefault(*probeTimeout, openapisearch.DefaultProbeTimeout)
-	client.PublicProbeBudget = durationOrDefault(*probeBudget, openapisearch.DefaultPublicProbeBudget)
-	mode := openapisearch.CacheMode(*cacheMode)
+	client.ProbeTimeout = durationOrDefault(*probeTimeout, apitools.DefaultProbeTimeout)
+	client.PublicProbeBudget = durationOrDefault(*probeBudget, apitools.DefaultPublicProbeBudget)
+	mode := apitools.CacheMode(*cacheMode)
 	if *offline {
-		mode = openapisearch.CacheModeOffline
+		mode = apitools.CacheModeOffline
 	}
-	report, err := client.Search(ctx, openapisearch.SearchOptions{
+	report, err := client.Search(ctx, apitools.SearchOptions{
 		Query:       *query,
 		Limit:       *limit,
-		Source:      openapisearch.Source(*source),
+		Source:      apitools.Source(*source),
 		PublicProbe: *publicProbe,
 		CacheMode:   mode,
 		CacheMaxAge: *cacheTTL,
@@ -142,18 +142,18 @@ func durationOrDefault(value, fallback time.Duration) time.Duration {
 }
 
 func runImport(args []string, out, errOut io.Writer) int {
-	fs := flag.NewFlagSet("openapisearch import", flag.ContinueOnError)
+	fs := flag.NewFlagSet("apitools import", flag.ContinueOnError)
 	fs.SetOutput(errOut)
 	rawURL := fs.String("url", "", "OpenAPI document URL")
 	dir := fs.String("dir", "", "Directory to write the imported OpenAPI document")
 	name := fs.String("name", "", "Suggested filename stem")
 	cachePath := fs.String("cache", "", "SQLite cache path; disabled when empty")
-	cacheMode := fs.String("cache-mode", string(openapisearch.CacheModeReadWrite), "Cache mode: read-write, refresh, offline, or bypass")
-	cacheTTL := fs.Duration("cache-ttl", openapisearch.DefaultCacheMaxAge, "Maximum age for cached OpenAPI documents")
+	cacheMode := fs.String("cache-mode", string(apitools.CacheModeReadWrite), "Cache mode: read-write, refresh, offline, or bypass")
+	cacheTTL := fs.Duration("cache-ttl", apitools.DefaultCacheMaxAge, "Maximum age for cached OpenAPI documents")
 	offline := fs.Bool("offline", false, "Use only cached OpenAPI documents; shorthand for --cache-mode offline")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	fs.Usage = func() {
-		fmt.Fprintln(fs.Output(), "Usage: openapisearch import --url <openapi-url> --dir <target-dir> [--name <stem>] [--cache cache.sqlite] [--cache-mode read-write|refresh|offline|bypass] [--json]")
+		fmt.Fprintln(fs.Output(), "Usage: apitools import --url <openapi-url> --dir <target-dir> [--name <stem>] [--cache cache.sqlite] [--cache-mode read-write|refresh|offline|bypass] [--json]")
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
@@ -176,11 +176,11 @@ func runImport(args []string, out, errOut io.Writer) int {
 		return 1
 	}
 	defer closeCache()
-	mode := openapisearch.CacheMode(*cacheMode)
+	mode := apitools.CacheMode(*cacheMode)
 	if *offline {
-		mode = openapisearch.CacheModeOffline
+		mode = apitools.CacheModeOffline
 	}
-	imported, err := client.Import(ctx, openapisearch.ImportOptions{
+	imported, err := client.Import(ctx, apitools.ImportOptions{
 		URL:         *rawURL,
 		Dir:         *dir,
 		Name:        *name,
@@ -212,15 +212,15 @@ func writeJSON(out io.Writer, value any) error {
 	return encoder.Encode(value)
 }
 
-func clientForCache(path string) (*openapisearch.Client, func(), error) {
+func clientForCache(path string) (*apitools.Client, func(), error) {
 	if strings.TrimSpace(path) == "" {
-		return &openapisearch.Client{}, func() {}, nil
+		return &apitools.Client{}, func() {}, nil
 	}
 	cache, err := sqlitecache.Open(path)
 	if err != nil {
 		return nil, nil, err
 	}
-	return &openapisearch.Client{Cache: cache}, func() { _ = cache.Close() }, nil
+	return &apitools.Client{Cache: cache}, func() { _ = cache.Close() }, nil
 }
 
 func singleLine(value string) string {

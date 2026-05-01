@@ -14,13 +14,13 @@ func TestSearchReportRoundTrip(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer cache.Close()
-	key := openapisearch.SearchCacheKey{Query: "mail", Source: openapisearch.SourceAuto, Limit: 3}
-	report := openapisearch.SearchReport{
+	key := apitools.SearchCacheKey{Query: "mail", Source: apitools.SourceAuto, Limit: 3}
+	report := apitools.SearchReport{
 		Query:  "mail",
-		Source: openapisearch.SourceAuto,
-		Results: []openapisearch.Result{{
+		Source: apitools.SourceAuto,
+		Results: []apitools.Result{{
 			ID:          "apis-guru:mail:v1",
-			Source:      string(openapisearch.SourceAPIsGuru),
+			Source:      string(apitools.SourceAPIsGuru),
 			Provider:    "mail",
 			Title:       "Mail API",
 			Description: "Send mail",
@@ -51,8 +51,8 @@ func TestSearchReportHonorsTTL(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer cache.Close()
-	key := openapisearch.SearchCacheKey{Query: "mail", Source: openapisearch.SourceAuto, Limit: 3}
-	report := openapisearch.SearchReport{Query: "mail", Source: openapisearch.SourceAuto}
+	key := apitools.SearchCacheKey{Query: "mail", Source: apitools.SourceAuto, Limit: 3}
+	report := apitools.SearchReport{Query: "mail", Source: apitools.SourceAuto}
 	if err := cache.StoreSearch(context.Background(), key, report); err != nil {
 		t.Fatal(err)
 	}
@@ -71,11 +71,11 @@ func TestSpecRoundTripByOriginalAndFinalURL(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer cache.Close()
-	spec := openapisearch.CachedSpec{
+	spec := apitools.CachedSpec{
 		OriginalURL: "https://example.com/spec",
 		FinalURL:    "https://cdn.example.com/openapi.yaml",
 		Content:     []byte("openapi: 3.0.0\ninfo:\n  title: Mail\n  version: 1.0.0\npaths: {}\n"),
-		Metadata:    openapisearch.SpecMetadata{Title: "Mail", OpenAPI: "3.0.0"},
+		Metadata:    apitools.SpecMetadata{Title: "Mail", OpenAPI: "3.0.0"},
 	}
 	if err := cache.StoreSpec(context.Background(), spec); err != nil {
 		t.Fatal(err)
@@ -101,12 +101,12 @@ func TestStoreSpecRecomputesSHA256(t *testing.T) {
 	}
 	defer cache.Close()
 	rawURL := "https://example.com/openapi.yaml"
-	if err := cache.StoreSpec(context.Background(), openapisearch.CachedSpec{
+	if err := cache.StoreSpec(context.Background(), apitools.CachedSpec{
 		OriginalURL: rawURL,
 		FinalURL:    rawURL,
 		Content:     []byte("openapi: 3.0.0\ninfo:\n  title: Mail\n  version: 1.0.0\npaths: {}\n"),
 		SHA256:      "not-the-real-digest",
-		Metadata:    openapisearch.SpecMetadata{Title: "Mail", OpenAPI: "3.0.0"},
+		Metadata:    apitools.SpecMetadata{Title: "Mail", OpenAPI: "3.0.0"},
 	}); err != nil {
 		t.Fatal(err)
 	}
@@ -129,11 +129,11 @@ func TestSpecLoadRejectsCorruptStoredSHA256(t *testing.T) {
 	}
 	defer cache.Close()
 	rawURL := "https://example.com/openapi.yaml"
-	if err := cache.StoreSpec(context.Background(), openapisearch.CachedSpec{
+	if err := cache.StoreSpec(context.Background(), apitools.CachedSpec{
 		OriginalURL: rawURL,
 		FinalURL:    rawURL,
 		Content:     []byte("openapi: 3.0.0\ninfo:\n  title: Mail\n  version: 1.0.0\npaths: {}\n"),
-		Metadata:    openapisearch.SpecMetadata{Title: "Mail", OpenAPI: "3.0.0"},
+		Metadata:    apitools.SpecMetadata{Title: "Mail", OpenAPI: "3.0.0"},
 	}); err != nil {
 		t.Fatal(err)
 	}

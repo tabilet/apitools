@@ -1,4 +1,4 @@
-package openapisearch
+package apitools
 
 import (
 	"bufio"
@@ -192,7 +192,7 @@ func SavePromptTranscript(path, version string, turns []PromptTurn, events []Pro
 		return nil
 	}
 	if strings.TrimSpace(version) == "" {
-		version = "openapisearch.prompt-transcript.v1"
+		version = "apitools.prompt-transcript.v1"
 	}
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err

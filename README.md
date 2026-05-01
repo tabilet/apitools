@@ -10,8 +10,7 @@
 
 [![GoDoc](https://godoc.org/github.com/tabilet/apitools?status.svg)](https://godoc.org/github.com/tabilet/apitools)
 
-The repository was originally named `openapisearch`, and the Go package name and
-CLI still use that name. The module path is now:
+The module path is now:
 
 ```go
 github.com/tabilet/apitools
@@ -22,22 +21,22 @@ github.com/tabilet/apitools
 Install:
 
 ```bash
-go install github.com/tabilet/apitools/cmd/openapisearch@latest
+go install github.com/tabilet/apitools/cmd/apitools@latest
 ```
 
 Run from a checkout:
 
 ```bash
-go run ./cmd/openapisearch --help
+go run ./cmd/apitools --help
 ```
 
 Common commands:
 
 ```bash
-go run ./cmd/openapisearch search --query slack
-go run ./cmd/openapisearch search --query slack --json
-go run ./cmd/openapisearch search --query slack --cache ~/.cache/apitools/cache.sqlite
-go run ./cmd/openapisearch import --url https://example.com/openapi.yaml --dir ./openapi --name example
+go run ./cmd/apitools search --query slack
+go run ./cmd/apitools search --query slack --json
+go run ./cmd/apitools search --query slack --cache ~/.cache/apitools/cache.sqlite
+go run ./cmd/apitools import --url https://example.com/openapi.yaml --dir ./openapi --name example
 ```
 
 Search uses APIs.guru first and can fall back to public-apis by probing common

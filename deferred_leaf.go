@@ -1,4 +1,4 @@
-package openapisearch
+package apitools
 
 import (
 	"bytes"
@@ -93,7 +93,7 @@ func defaultDeferredExecutionPolicy() DeferredExecutionPolicy {
 		Notes: []string{
 			"Artifacts are review-only until a caller-specific renderer validates them.",
 			"Credential values must be supplied by a trusted runtime binding layer.",
-			"openapisearch does not execute APIs or workflows.",
+			"apitools does not execute APIs or workflows.",
 		},
 	}
 }
@@ -493,7 +493,7 @@ func requiredReviewActions(leaf LeafAdapter, pkg ReviewPackage) []string {
 		"Keep credential values out of prompts, artifacts, logs, and committed files.",
 	}
 	if len(pkg.BindingNames) > 0 {
-		actions = append(actions, "Map symbolic binding names to trusted runtime bindings outside openapisearch.")
+		actions = append(actions, "Map symbolic binding names to trusted runtime bindings outside apitools.")
 	}
 	if len(pkg.ReadinessIssues) > 0 || len(pkg.Diagnostics) > 0 || leaf.HasBlockingIssues() {
 		actions = append(actions, "Resolve blocking diagnostics and readiness issues before execution-capable handoff.")

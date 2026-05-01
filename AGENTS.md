@@ -89,9 +89,9 @@ credential resolvers, or trusted runners.
 go test ./...
 go vet ./...
 git diff --check
-go run ./cmd/openapisearch search --query slack
-go run ./cmd/openapisearch search --query slack --cache /tmp/apitools.sqlite
-go run ./cmd/openapisearch import --url https://example.com/openapi.yaml --dir /tmp/openapi
+go run ./cmd/apitools search --query slack
+go run ./cmd/apitools search --query slack --cache /tmp/apitools.sqlite
+go run ./cmd/apitools import --url https://example.com/openapi.yaml --dir /tmp/openapi
 ```
 
 When changing public APIs, also run dependent checks in local sibling consumers
@@ -105,7 +105,7 @@ when available:
 ## Go Conventions
 
 - Primary language is Go.
-- Keep `cmd/openapisearch` thin; reusable behavior belongs in the root package
+- Keep `cmd/apitools` thin; reusable behavior belongs in the root package
   or a focused subpackage such as `sqlitecache`.
 - Keep the root package dependency-light. Optional storage integrations should
   live in subpackages.

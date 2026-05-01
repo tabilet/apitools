@@ -1,7 +1,7 @@
 # Runtime Integration Guide
 
 `github.com/tabilet/apitools` provides shared OpenAPI search, intent authoring,
-iCoT loop, and review helpers. The Go package name is still `openapisearch`.
+iCoT loop, and review helpers. The Go package name is still `apitools`.
 A downstream runtime imports those helpers and supplies the product-specific
 behavior that cannot live upstream.
 
@@ -195,9 +195,8 @@ Good downstream tests cover:
 ## Module Path Note
 
 The module path is `github.com/tabilet/apitools`. The package declarations
-remain `package openapisearch`, and the CLI remains `cmd/openapisearch`, because
-those names still describe the OpenAPI search surface. Runtime authors should
-import the module with the package name they use in code:
+remain `package apitools`, and the CLI lives under `cmd/apitools`. Runtime
+authors should import the module with the package name they use in code:
 
 ```go
 import apitools "github.com/tabilet/apitools"

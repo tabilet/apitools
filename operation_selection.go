@@ -1,4 +1,4 @@
-package openapisearch
+package apitools
 
 import (
 	"sort"

@@ -1,4 +1,4 @@
-package openapisearch
+package apitools
 
 import (
 	"context"
@@ -140,7 +140,7 @@ func DraftAndRender(ctx context.Context, core AuthoringCore, renderer LeafRender
 	}
 	leaf := NewLeafAdapter(artifacts, LeafOptions{
 		Name:   firstNonEmpty(input.Brief.ProjectName, input.Context.Brief.ProjectName),
-		Source: "openapisearch.draft",
+		Source: "apitools.draft",
 	})
 	rendered, diagnostics, err := renderer.RenderLeaf(ctx, leaf)
 	return leaf, rendered, diagnostics, err

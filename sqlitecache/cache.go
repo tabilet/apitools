@@ -51,30 +51,30 @@ func (c *Cache) Close() error {
 	return c.db.Close()
 }
 
-func (c *Cache) LoadSearch(ctx context.Context, key openapisearch.SearchCacheKey, maxAge time.Duration) (openapisearch.SearchReport, bool, error) {
+func (c *Cache) LoadSearch(ctx context.Context, key apitools.SearchCacheKey, maxAge time.Duration) (apitools.SearchReport, bool, error) {
 	if c == nil || c.db == nil {
-		return openapisearch.SearchReport{}, false, fmt.Errorf("cache is closed")
+		return apitools.SearchReport{}, false, fmt.Errorf("cache is closed")
 	}
 	var reportJSON []byte
 	var updatedAt int64
 	err := c.db.QueryRowContext(ctx, `SELECT report_json, updated_at FROM search_queries WHERE key_hash = ?`, searchKeyHash(key)).Scan(&reportJSON, &updatedAt)
 	if err == sql.ErrNoRows {
-		return openapisearch.SearchReport{}, false, nil
+		return apitools.SearchReport{}, false, nil
 	}
 	if err != nil {
-		return openapisearch.SearchReport{}, false, err
+		return apitools.SearchReport{}, false, err
 	}
 	if expired(updatedAt, maxAge) {
-		return openapisearch.SearchReport{}, false, nil
+		return apitools.SearchReport{}, false, nil
 	}
-	var report openapisearch.SearchReport
+	var report apitools.SearchReport
 	if err := json.Unmarshal(reportJSON, &report); err != nil {
-		return openapisearch.SearchReport{}, false, err
+		return apitools.SearchReport{}, false, err
 	}
 	return report, true, nil
 }
 
-func (c *Cache) StoreSearch(ctx context.Context, key openapisearch.SearchCacheKey, report openapisearch.SearchReport) error {
+func (c *Cache) StoreSearch(ctx context.Context, key apitools.SearchCacheKey, report apitools.SearchReport) error {
 	if c == nil || c.db == nil {
 		return fmt.Errorf("cache is closed")
 	}
@@ -152,11 +152,11 @@ ON CONFLICT(key_hash) DO UPDATE SET
 	return nil
 }
 
-func (c *Cache) LoadSpec(ctx context.Context, rawURL string, maxAge time.Duration) (openapisearch.CachedSpec, bool, error) {
+func (c *Cache) LoadSpec(ctx context.Context, rawURL string, maxAge time.Duration) (apitools.CachedSpec, bool, error) {
 	if c == nil || c.db == nil {
-		return openapisearch.CachedSpec{}, false, fmt.Errorf("cache is closed")
+		return apitools.CachedSpec{}, false, fmt.Errorf("cache is closed")
 	}
-	var spec openapisearch.CachedSpec
+	var spec apitools.CachedSpec
 	var metadataJSON []byte
 	var updatedAt int64
 	err := c.db.QueryRowContext(ctx, `
@@ -164,28 +164,28 @@ SELECT original_url, final_url, sha256, bytes, metadata_json, content, updated_a
 FROM spec_documents
 WHERE url = ?`, strings.TrimSpace(rawURL)).Scan(&spec.OriginalURL, &spec.FinalURL, &spec.SHA256, &spec.Bytes, &metadataJSON, &spec.Content, &updatedAt)
 	if err == sql.ErrNoRows {
-		return openapisearch.CachedSpec{}, false, nil
+		return apitools.CachedSpec{}, false, nil
 	}
 	if err != nil {
-		return openapisearch.CachedSpec{}, false, err
+		return apitools.CachedSpec{}, false, err
 	}
 	if expired(updatedAt, maxAge) {
-		return openapisearch.CachedSpec{}, false, nil
+		return apitools.CachedSpec{}, false, nil
 	}
 	if err := json.Unmarshal(metadataJSON, &spec.Metadata); err != nil {
-		return openapisearch.CachedSpec{}, false, err
+		return apitools.CachedSpec{}, false, err
 	}
 	if spec.SHA256 != "" {
 		digest := sha256.Sum256(spec.Content)
 		if got := hex.EncodeToString(digest[:]); got != spec.SHA256 {
-			return openapisearch.CachedSpec{}, false, fmt.Errorf("%w: cached spec SHA256 mismatch for %q", openapisearch.ErrCachedSpecIntegrity, strings.TrimSpace(rawURL))
+			return apitools.CachedSpec{}, false, fmt.Errorf("%w: cached spec SHA256 mismatch for %q", apitools.ErrCachedSpecIntegrity, strings.TrimSpace(rawURL))
 		}
 	}
 	spec.StoredAt = time.Unix(updatedAt, 0).UTC()
 	return spec, true, nil
 }
 
-func (c *Cache) StoreSpec(ctx context.Context, spec openapisearch.CachedSpec) error {
+func (c *Cache) StoreSpec(ctx context.Context, spec apitools.CachedSpec) error {
 	if c == nil || c.db == nil {
 		return fmt.Errorf("cache is closed")
 	}
@@ -302,10 +302,10 @@ func (c *Cache) migrate(ctx context.Context) error {
 	return nil
 }
 
-func searchKeyHash(key openapisearch.SearchCacheKey) string {
+func searchKeyHash(key apitools.SearchCacheKey) string {
 	key.Query = strings.TrimSpace(key.Query)
 	if key.Source == "" {
-		key.Source = openapisearch.SourceAuto
+		key.Source = apitools.SourceAuto
 	}
 	if key.Limit <= 0 {
 		key.Limit = 10
@@ -317,7 +317,7 @@ func searchKeyHash(key openapisearch.SearchCacheKey) string {
 
 func expired(updatedAt int64, maxAge time.Duration) bool {
 	if maxAge <= 0 {
-		maxAge = openapisearch.DefaultCacheMaxAge
+		maxAge = apitools.DefaultCacheMaxAge
 	}
 	return time.Since(time.Unix(updatedAt, 0)) > maxAge
 }

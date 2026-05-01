@@ -22,7 +22,7 @@ func TestSearchHelpDocumentsFlags(t *testing.T) {
 		t.Fatalf("code = %d\n%s", code, out.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"Usage: openapisearch search", "-query", "-limit", "-source", "-public-probe", "-probe-timeout", "-probe-budget", "-cache", "-cache-mode", "-cache-ttl", "-offline", "-json"} {
+	for _, expected := range []string{"Usage: apitools search", "-query", "-limit", "-source", "-public-probe", "-probe-timeout", "-probe-budget", "-cache", "-cache-mode", "-cache-ttl", "-offline", "-json"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
 		}
@@ -36,7 +36,7 @@ func TestImportHelpDocumentsFlags(t *testing.T) {
 		t.Fatalf("code = %d\n%s", code, out.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"Usage: openapisearch import", "-url", "-dir", "-name", "-cache", "-cache-mode", "-cache-ttl", "-offline", "-json"} {
+	for _, expected := range []string{"Usage: apitools import", "-url", "-dir", "-name", "-cache", "-cache-mode", "-cache-ttl", "-offline", "-json"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
 		}
@@ -76,13 +76,13 @@ func TestSearchOfflineUsesCache(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	key := openapisearch.SearchCacheKey{Query: "mail", Source: openapisearch.SourceAuto, Limit: 10}
-	report := openapisearch.SearchReport{
+	key := apitools.SearchCacheKey{Query: "mail", Source: apitools.SourceAuto, Limit: 10}
+	report := apitools.SearchReport{
 		Query:  "mail",
-		Source: openapisearch.SourceAuto,
-		Results: []openapisearch.Result{{
+		Source: apitools.SourceAuto,
+		Results: []apitools.Result{{
 			ID:      "apis-guru:mail:v1",
-			Source:  string(openapisearch.SourceAPIsGuru),
+			Source:  string(apitools.SourceAPIsGuru),
 			Title:   "Mail API",
 			SpecURL: "https://example.com/openapi.yaml",
 		}},
@@ -111,13 +111,13 @@ func TestSearchPublicProbeFlagUsesCacheKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	key := openapisearch.SearchCacheKey{Query: "mail", Source: openapisearch.SourceAuto, Limit: 10, PublicProbe: 2}
-	report := openapisearch.SearchReport{
+	key := apitools.SearchCacheKey{Query: "mail", Source: apitools.SourceAuto, Limit: 10, PublicProbe: 2}
+	report := apitools.SearchReport{
 		Query:  "mail",
-		Source: openapisearch.SourceAuto,
-		Results: []openapisearch.Result{{
+		Source: apitools.SourceAuto,
+		Results: []apitools.Result{{
 			ID:      "public-apis:mail:https://example.com/openapi.yaml",
-			Source:  string(openapisearch.SourcePublicAPIs),
+			Source:  string(apitools.SourcePublicAPIs),
 			Title:   "Mail API",
 			SpecURL: "https://example.com/openapi.yaml",
 		}},
@@ -156,18 +156,18 @@ func TestSearchProbeTimeoutAndBudgetFlagsAreWired(t *testing.T) {
 	defer server.Close()
 	baseURL = server.URL
 
-	var client *openapisearch.Client
+	var client *apitools.Client
 	var out bytes.Buffer
 	var errOut bytes.Buffer
 	code := runSearchWithClient([]string{
 		"--query", "mail",
-		"--source", string(openapisearch.SourcePublicAPIs),
+		"--source", string(apitools.SourcePublicAPIs),
 		"--limit", "1",
 		"--public-probe", "3",
 		"--probe-timeout", "10ms",
 		"--probe-budget", "15ms",
-	}, &out, &errOut, func(string) (*openapisearch.Client, func(), error) {
-		client = &openapisearch.Client{
+	}, &out, &errOut, func(string) (*apitools.Client, func(), error) {
+		client = &apitools.Client{
 			PublicAPIsURL:    server.URL + "/entries",
 			AllowUnsafeHosts: true,
 			WellKnownPaths:   []string{"/slow-1", "/slow-2", "/slow-3"},
@@ -180,7 +180,7 @@ func TestSearchProbeTimeoutAndBudgetFlagsAreWired(t *testing.T) {
 	if client.ProbeTimeout != 10*time.Millisecond || client.PublicProbeBudget != 15*time.Millisecond {
 		t.Fatalf("probe durations not wired: timeout=%s budget=%s", client.ProbeTimeout, client.PublicProbeBudget)
 	}
-	if !strings.Contains(errOut.String(), openapisearch.ErrProbeBudgetExceeded.Error()) {
+	if !strings.Contains(errOut.String(), apitools.ErrProbeBudgetExceeded.Error()) {
 		t.Fatalf("expected probe budget error on stderr, got:\n%s", errOut.String())
 	}
 }
@@ -192,11 +192,11 @@ func TestImportOfflineUsesCachedSpec(t *testing.T) {
 		t.Fatal(err)
 	}
 	rawURL := "http://93.184.216.34/openapi.yaml"
-	if err := cache.StoreSpec(context.Background(), openapisearch.CachedSpec{
+	if err := cache.StoreSpec(context.Background(), apitools.CachedSpec{
 		OriginalURL: rawURL,
 		FinalURL:    rawURL,
 		Content:     []byte("openapi: 3.0.0\ninfo:\n  title: Mail\n  version: 1.0.0\npaths: {}\n"),
-		Metadata:    openapisearch.SpecMetadata{Title: "Mail", OpenAPI: "3.0.0"},
+		Metadata:    apitools.SpecMetadata{Title: "Mail", OpenAPI: "3.0.0"},
 	}); err != nil {
 		t.Fatal(err)
 	}

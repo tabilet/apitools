@@ -1,4 +1,4 @@
-package openapisearch
+package apitools
 
 import (
 	"bytes"
@@ -34,7 +34,7 @@ func DraftArtifacts(ctx context.Context, opts DraftOptions) (ArtifactSet, error)
 	bindings := draftSymbolicBindings(operations)
 	assumptions := []Assumption{{
 		Text:   "Generated artifacts are neutral drafts and require caller-specific validation and rendering before use.",
-		Source: "openapisearch",
+		Source: "apitools",
 	}}
 	if len(operations) == 0 {
 		issues = append(issues, ReadinessIssue{
