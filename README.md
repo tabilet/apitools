@@ -8,6 +8,8 @@
    OpenAPI-backed artifacts while providing their own runtime, review, approval,
    and execution behavior.
 
+[![GoDoc](https://godoc.org/github.com/tabilet/apitools?status.svg)](https://godoc.org/github.com/tabilet/apitools)
+
 The repository was originally named `openapisearch`, and the Go package name and
 CLI still use that name. The module path is now:
 
@@ -125,7 +127,7 @@ model and binding terminology, see [docs/authoring.md](docs/authoring.md).
 
 ## Safety Boundary
 
-`openapisearch` is upstream shared infrastructure. It must not resolve concrete
+`apitools` is upstream shared infrastructure. It must not resolve concrete
 credentials, select production accounts, bypass caller review, or execute
 side-effectful workflows. Runtime packages such as Ramen and OpenUdon inherit the
 shared structs and helpers, then supply product-specific validation, review,
