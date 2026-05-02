@@ -91,7 +91,8 @@ It includes:
 - chat JSON fallback helpers
 - prompt sessions, transcripts, replay helpers, and progressive iCoT loop
   control
-- review-only leaf adapters and artifact writing helpers
+- review-only leaf adapters, public review handoff manifests, and artifact
+  writing helpers
 
 Downstream packages implement runtime-specific interfaces such as chat clients,
 parsers, renderers, validators, refiners, interactive extractors, approval
@@ -117,7 +118,10 @@ leaf := apitools.NewLeafAdapter(artifacts, apitools.LeafOptions{
 	Source: "example",
 })
 review := leaf.ReviewMarkdown()
-_ = review
+handoff := leaf.ReviewHandoff(apitools.ReviewHandoffOptions{
+	ExecutionPolicy: apitools.DefaultReviewExecutionPolicy(true),
+})
+_, _ = review, handoff
 ```
 
 For runtime implementers, see

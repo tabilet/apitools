@@ -31,7 +31,8 @@ Use `apitools` for behavior that is neutral across runtimes:
 - Credential-value scanning and symbolic binding audits.
 - Chat JSON completion with structured-output fallback.
 - Prompt sessions and progressive iCoT loop control.
-- Review-only `LeafAdapter` helpers and artifact writing.
+- Review-only `LeafAdapter` helpers, the public review state machine, the
+  runtime-neutral handoff manifest schema, and artifact writing.
 
 These helpers may identify that a binding is needed, that a draft is incomplete,
 or that an artifact contains a likely credential value. They must not resolve
@@ -43,12 +44,13 @@ A runtime package should keep these responsibilities local:
 
 - Concrete artifact schemas and wire contracts.
 - Product-specific prompt text, profile schemas, and validation policy.
-- Approval gates, review states, trusted-runner handoff, and persistence.
+- Approval gates, reviewer identity, state persistence, product-specific
+  routing, trusted-runner commands, and enforcement.
 - Credential lookup, account binding, endpoint selection, and auth.
 - Execution, retries, observability, audit logging, and rollback behavior.
 - Product-specific test fixtures and examples.
 
-Ramen, OpenUdon, and future runtimes can share upstream behavior without
+Ramen, udon, OpenUdon, and future runtimes can share upstream behavior without
 depending on each other.
 
 ## Interfaces To Implement
@@ -133,8 +135,9 @@ _, _, _, _ = leaf, rendered, diagnostics, err
 ```
 
 The runtime renderer may use `leaf.MinimumReviewPackage()`, `leaf.BindingAudit()`,
-`leaf.CredentialValueDiagnostics()`, and `leaf.ReviewMarkdown()` as shared
-review evidence, then append product-specific review state.
+`leaf.CredentialValueDiagnostics()`, `leaf.ReviewMarkdown()`, and
+`leaf.ReviewHandoff(...)` as shared review evidence, then append
+product-specific routing, approval persistence, and trusted-runner enforcement.
 
 ## ICOT Pattern
 
@@ -163,8 +166,11 @@ artifacts, err := apitools.RunProgressiveICOT(ctx, in, out, apitools.Progressive
 _, _ = artifacts, err
 ```
 
-Do not put runtime prompts, approval states, execution policy, or session schema
-into `apitools`. Keep those in the runtime and pass behavior through hooks.
+Do not put runtime prompts, reviewer routing, approval persistence, trusted
+execution commands, or session schema into `apitools`. Keep those in the runtime
+and pass behavior through hooks. The public review state names, allowed
+transitions, handoff inputs, and execution-policy fields are the shared schema;
+concrete approval decisions and execution remain downstream-owned.
 
 ## Testing Strategy
 

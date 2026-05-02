@@ -22,8 +22,12 @@ product-specific policy, or private infrastructure assumptions.
   domain-neutral: common fields, methods, interfaces, transcripts, diagnostics,
   slots, assumptions, symbolic bindings, readiness issues, question plans, and
   draft artifact flow for `project.md` and `intent.hcl`.
+- Keep the public review state machine, review-only leaf adapter, and
+  runtime-neutral handoff manifest schema here. These may describe state names,
+  allowed transitions, handoff inputs, owner splits, execution-policy flags, and
+  symbolic credential-binding inventories.
 - Put Ramen-specific `project.md`, workflow `intent.hcl`, `workflow.hcl`, UWS
-  generation, Symphony review packages, trusted-runner gates, evals, example
+  generation, Symphony routing policy, trusted-runner gates, evals, example
   artifacts, and private udon integration in Ramen.
 - Put concrete OpenUdon IaC intent models, Terraform generation, graph/profile
   planning, state/drift/handoff bundles, and w8m-facing public IaC artifacts in
@@ -43,14 +47,15 @@ Rule of thumb:
 - If it executes an API or workflow, it does not belong here.
 - If it depends on a private repo or product workflow, it does not belong here.
 
-Ramen and OpenUdon depend on or embed `apitools` concepts directly. Ramen
-does not inherit from OpenUdon, and OpenUdon does not inherit from Ramen.
+Ramen, udon, and OpenUdon depend on or embed `apitools` concepts directly.
+Ramen does not inherit from OpenUdon, and OpenUdon does not inherit from Ramen.
 Downstreams may inherit common behavior at runtime by embedding concrete
-`apitools` review/deferred-leaf helpers or composing shared functions, but
-that inheritance must stay domain-neutral: the shared object can carry
-artifacts, symbolic binding names, diagnostics, readiness issues, review
-scaffolding, and safe filesystem behavior, while the downstream leaf keeps its
-own rendering, validation, approval, bundling, and execution policy.
+`apitools` review/deferred-leaf helpers or composing shared functions, but that
+inheritance must stay domain-neutral: the shared object can carry artifacts,
+symbolic binding names, diagnostics, readiness issues, the public review state
+machine, handoff schema, and safe filesystem behavior, while the downstream leaf
+keeps its own rendering, validation, approval routing, bundling, persistence,
+trusted runner, and execution policy.
 
 ## Architecture
 
@@ -76,12 +81,12 @@ execute operations. Specialized engines bind runtime implementations and leaf
 adapters only when they validate and execute their own artifacts.
 
 This is an inheritance/composition rule as much as a safety rule. Shared
-authoring objects should be embeddable so Ramen, OpenUdon, and other callers can
-reuse common artifact, review, readiness, binding-audit, and safe-write logic at
-runtime without inheriting each other's product semantics. Runtime inheritance
-must flow from `apitools` into caller-owned leaves; it must not create a
-dependency from `apitools` back into Ramen, OpenUdon, udon, w8m, private
-credential resolvers, or trusted runners.
+authoring objects should be embeddable so Ramen, udon, OpenUdon, and other
+callers can reuse common artifact, review, readiness, binding-audit, and
+safe-write logic at runtime without inheriting each other's product semantics.
+Runtime inheritance must flow from `apitools` into caller-owned leaves; it must
+not create a dependency from `apitools` back into Ramen, OpenUdon, udon, w8m,
+private credential resolvers, or trusted runners.
 
 ## Commands
 

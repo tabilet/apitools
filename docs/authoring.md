@@ -48,17 +48,19 @@ accounts, or perform production side effects.
 cache access, operation inventory, ranking, prompt-safe summaries, and generic
 authoring interfaces. It may define common fields, methods, interfaces,
 transcripts, diagnostics, symbolic binding declarations, and draft artifact
-contracts when those concepts are neutral across callers.
+contracts when those concepts are neutral across callers. It also owns the
+public review state machine and runtime-neutral handoff manifest schema used by
+downstream leaf adapters.
 
 Ramen owns Ramen-specific `project.md`, workflow `intent.hcl`, `workflow.hcl`,
-UWS generation, Symphony review packages, trusted runner wrappers, evals, and
+UWS generation, Symphony routing policy, trusted runner wrappers, evals, and
 private udon integration.
 
 OpenUdon owns concrete IaC intent models, Terraform generation,
 graph/profile/planning/state/drift/handoff bundles, and w8m-facing public IaC
 artifacts.
 
-Ramen and OpenUdon both depend on or embed `apitools` concepts directly.
+Ramen, udon, and OpenUdon depend on or embed `apitools` concepts directly.
 They do not inherit from each other.
 
 ## Binding Model
