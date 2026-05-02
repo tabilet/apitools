@@ -40,7 +40,7 @@ func TestBuildOperationInventoryOpenAPI3(t *testing.T) {
 	if len(got.RequestBody.Schema.Properties) != 2 || got.RequestBody.Schema.Properties[0].Name != "priority" {
 		t.Fatalf("schema properties = %#v", got.RequestBody.Schema.Properties)
 	}
-	if len(got.Security) != 1 || got.Security[0].Name != "apiKeyAuth" || got.Security[0].In != "header" {
+	if len(got.Security) != 1 || got.Security[0].Name != "apiKeyAuth" || got.Security[0].In != "header" || got.Security[0].ParameterName != "X-API-Key" {
 		t.Fatalf("security = %#v", got.Security)
 	}
 }
@@ -66,7 +66,7 @@ func TestBuildOperationInventorySwagger2(t *testing.T) {
 	if len(got.Parameters) != 1 || got.Parameters[0].Name != "id" || got.Parameters[0].Type != "string" {
 		t.Fatalf("parameters = %#v", got.Parameters)
 	}
-	if len(got.Security) != 1 || got.Security[0].Name != "api_key" || got.Security[0].Type != "apiKey" {
+	if len(got.Security) != 1 || got.Security[0].Name != "api_key" || got.Security[0].Type != "apiKey" || got.Security[0].ParameterName != "X-API-Key" {
 		t.Fatalf("security = %#v", got.Security)
 	}
 }

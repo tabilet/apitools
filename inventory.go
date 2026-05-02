@@ -60,6 +60,7 @@ type OperationSummary struct {
 	Summary         string              `json:"summary,omitempty"`
 	Description     string              `json:"description,omitempty"`
 	Tags            []string            `json:"tags,omitempty"`
+	Extensions      map[string]string   `json:"extensions,omitempty"`
 	Parameters      []ParameterSummary  `json:"parameters,omitempty"`
 	RequestBody     *RequestBodySummary `json:"request_body,omitempty"`
 	Security        []SecuritySummary   `json:"security,omitempty"`
@@ -123,11 +124,15 @@ type RequestFieldSummary struct {
 
 // SecuritySummary describes an operation security requirement by symbolic name.
 type SecuritySummary struct {
-	Name   string   `json:"name"`
-	Type   string   `json:"type,omitempty"`
-	Scheme string   `json:"scheme,omitempty"`
-	In     string   `json:"in,omitempty"`
-	Scopes []string `json:"scopes,omitempty"`
+	Name          string            `json:"name"`
+	Type          string            `json:"type,omitempty"`
+	Scheme        string            `json:"scheme,omitempty"`
+	In            string            `json:"in,omitempty"`
+	ParameterName string            `json:"parameter_name,omitempty"`
+	Flows         []string          `json:"flows,omitempty"`
+	Scopes        []string          `json:"scopes,omitempty"`
+	Description   string            `json:"description,omitempty"`
+	Extensions    map[string]string `json:"extensions,omitempty"`
 }
 
 // BuildOperationInventory extracts prompt-safe operation summaries from local
@@ -317,8 +322,26 @@ func operationSummary(doc InventoryDocument, documentName, path, method string, 
 		Summary:      stringValue(operation["summary"]),
 		Description:  stringValue(operation["description"]),
 		Tags:         stringSlice(operation["tags"]),
+		Extensions:   operationExtensions(operation),
 		Provenance:   provenance,
 	}
+}
+
+func operationExtensions(operation map[string]any) map[string]string {
+	allow := map[string]struct{}{
+		"x-aws-operation-name": {},
+	}
+	out := map[string]string{}
+	for key := range allow {
+		value := strings.TrimSpace(stringValue(operation[key]))
+		if value != "" {
+			out[key] = value
+		}
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	return out
 }
 
 func operationMethods(pathItem map[string]any) []string {
@@ -453,20 +476,47 @@ func securitySchemes(root map[string]any) map[string]SecuritySummary {
 	for name, value := range mapValue(components["securitySchemes"]) {
 		scheme := mapValue(value)
 		out[name] = SecuritySummary{
-			Name:   name,
-			Type:   stringValue(scheme["type"]),
-			Scheme: stringValue(scheme["scheme"]),
-			In:     stringValue(scheme["in"]),
+			Name:          name,
+			Type:          stringValue(scheme["type"]),
+			Scheme:        stringValue(scheme["scheme"]),
+			In:            stringValue(scheme["in"]),
+			ParameterName: stringValue(scheme["name"]),
+			Flows:         sortedMapKeys(mapValue(scheme["flows"])),
+			Description:   stringValue(scheme["description"]),
+			Extensions:    securitySchemeExtensions(scheme),
 		}
 	}
 	for name, value := range mapValue(root["securityDefinitions"]) {
 		scheme := mapValue(value)
 		out[name] = SecuritySummary{
-			Name:   name,
-			Type:   stringValue(scheme["type"]),
-			Scheme: stringValue(scheme["scheme"]),
-			In:     stringValue(scheme["in"]),
+			Name:          name,
+			Type:          stringValue(scheme["type"]),
+			Scheme:        stringValue(scheme["scheme"]),
+			In:            stringValue(scheme["in"]),
+			ParameterName: stringValue(scheme["name"]),
+			Flows:         sortedMapKeys(mapValue(scheme["flows"])),
+			Description:   stringValue(scheme["description"]),
+			Extensions:    securitySchemeExtensions(scheme),
 		}
+	}
+	return out
+}
+
+func securitySchemeExtensions(scheme map[string]any) map[string]string {
+	allow := map[string]struct{}{
+		"x-amazon-apigateway-authtype": {},
+		"x-aws-auth-type":              {},
+		"x-aws-signature-version":      {},
+	}
+	out := map[string]string{}
+	for key := range allow {
+		value := strings.TrimSpace(stringValue(scheme[key]))
+		if value != "" {
+			out[key] = value
+		}
+	}
+	if len(out) == 0 {
+		return nil
 	}
 	return out
 }

@@ -50,3 +50,59 @@ func TestSelectOperationByTextPluralSingularCamelCaseMatching(t *testing.T) {
 		t.Fatalf("selection = %#v", selected)
 	}
 }
+
+func TestSelectOperationByHintsAWSQueryPrefersGETForReadAction(t *testing.T) {
+	selected := SelectOperationByHints(OperationSelectionHints{
+		Provider:   "aws",
+		Purpose:    "read",
+		Path:       "/",
+		Parameters: map[string]string{"Action": "DescribeInstanceStatus"},
+	}, []OperationSummary{
+		{OperationID: "GET_DescribeInstanceStatus", Method: "GET", Path: "/#Action=DescribeInstanceStatus"},
+		{OperationID: "POST_DescribeInstanceStatus", Method: "POST", Path: "/#Action=DescribeInstanceStatus"},
+	})
+	if !selected.Found || selected.Ambiguous || selected.Operation.OperationID != "GET_DescribeInstanceStatus" {
+		t.Fatalf("selection = %#v", selected)
+	}
+}
+
+func TestSelectOperationByHintsAWSQueryHonorsExplicitMethod(t *testing.T) {
+	selected := SelectOperationByHints(OperationSelectionHints{
+		Provider:   "aws",
+		Purpose:    "read",
+		Method:     "POST",
+		Path:       "/",
+		Parameters: map[string]string{"Action": "DescribeInstanceStatus"},
+	}, []OperationSummary{
+		{OperationID: "GET_DescribeInstanceStatus", Method: "GET", Path: "/"},
+		{OperationID: "POST_DescribeInstanceStatus", Method: "POST", Path: "/"},
+	})
+	if !selected.Found || selected.Operation.OperationID != "POST_DescribeInstanceStatus" {
+		t.Fatalf("selection = %#v", selected)
+	}
+}
+
+func TestClassifyOperationPurposeAWSQueryDescribePostIsRead(t *testing.T) {
+	got := ClassifyOperationPurpose(OperationSummary{
+		OperationID: "POST_DescribeInstanceStatus",
+		Method:      "POST",
+		Path:        "/",
+		Extensions:  map[string]string{"x-aws-operation-name": "DescribeInstanceStatus"},
+	}, OperationSelectionHints{Provider: "aws"})
+	if got != "read" {
+		t.Fatalf("purpose = %q, want read", got)
+	}
+}
+
+func TestSelectOperationByHintsAWSQueryUsesVendorOperationName(t *testing.T) {
+	selected := SelectOperationByHints(OperationSelectionHints{
+		Provider:   "aws",
+		Purpose:    "read",
+		Parameters: map[string]string{"Action": "DescribeInstanceStatus"},
+	}, []OperationSummary{
+		{OperationID: "ec2DescribeStatus", Method: "GET", Path: "/", Extensions: map[string]string{"x-aws-operation-name": "DescribeInstanceStatus"}},
+	})
+	if !selected.Found || selected.Operation.OperationID != "ec2DescribeStatus" {
+		t.Fatalf("selection = %#v", selected)
+	}
+}
