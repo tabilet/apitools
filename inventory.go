@@ -380,7 +380,7 @@ func requestBodySummary(operation map[string]any, op *OperationSummary) *Request
 			schema := schemaSummary(rawSchema)
 			summary.Schema = &schema
 			summary.Fields = requestFieldSummaries(rawSchema, "", summary.Required, 0)
-			if len(summary.Fields) == 0 && len(rawSchema) > 0 && !secretLikeFieldName("body") {
+			if len(summary.Fields) == 0 && len(rawSchema) > 0 && !looksLikeCredentialName("body") {
 				summary.Fields = []RequestFieldSummary{requestFieldSummary("body", summary.Required, rawSchema)}
 			}
 			summary.RequiredFieldPaths = requiredRequestFieldPaths(summary.Fields)
@@ -401,7 +401,7 @@ func requestBodySummary(operation map[string]any, op *OperationSummary) *Request
 			addOperationIssue(op, "schema.ref_unresolved", "body parameter schema reference was not resolved", schema.Ref)
 		}
 		fields := requestFieldSummaries(rawSchema, "", boolValue(parameter["required"]), 0)
-		if len(fields) == 0 && len(rawSchema) > 0 && !secretLikeFieldName("body") {
+		if len(fields) == 0 && len(rawSchema) > 0 && !looksLikeCredentialName("body") {
 			fields = []RequestFieldSummary{requestFieldSummary("body", boolValue(parameter["required"]), rawSchema)}
 		}
 		return &RequestBodySummary{
@@ -615,12 +615,12 @@ func collectRequestFields(schema map[string]any, path string, required bool, dep
 		return
 	}
 	if len(schema) == 0 {
-		if path != "" && !secretLikeFieldName(path) {
+		if path != "" && !looksLikeCredentialName(path) {
 			*out = append(*out, RequestFieldSummary{Path: path, Required: required})
 		}
 		return
 	}
-	if path != "" && !secretLikeFieldName(path) {
+	if path != "" && !looksLikeCredentialName(path) {
 		*out = append(*out, requestFieldSummary(path, required, schema))
 		if len(*out) >= maxRequestFields || depth == maxRequestFieldDepth {
 			return
@@ -673,21 +673,4 @@ func requiredRequestFieldPaths(fields []RequestFieldSummary) []string {
 	}
 	sort.Strings(out)
 	return out
-}
-
-func secretLikeFieldName(path string) bool {
-	lower := strings.ToLower(path)
-	if strings.Contains(lower, "api_key") || strings.Contains(lower, "apikey") || strings.Contains(lower, "api-key") {
-		return true
-	}
-	parts := strings.FieldsFunc(lower, func(r rune) bool {
-		return r == '.' || r == '_' || r == '-' || r == '[' || r == ']'
-	})
-	for _, part := range parts {
-		switch part {
-		case "secret", "password", "passwd", "pwd", "token", "key", "authorization", "auth", "credential", "credentials":
-			return true
-		}
-	}
-	return false
 }

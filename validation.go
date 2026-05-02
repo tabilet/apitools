@@ -13,7 +13,11 @@ import (
 )
 
 func specMetadata(ctx context.Context, content []byte) (SpecMetadata, bool) {
-	_ = ctx
+	if ctx != nil {
+		if err := ctx.Err(); err != nil {
+			return SpecMetadata{}, false
+		}
+	}
 	trimmed := bytes.TrimSpace(content)
 	if len(trimmed) == 0 {
 		return SpecMetadata{}, false
@@ -31,7 +35,7 @@ func specMetadata(ctx context.Context, content []byte) (SpecMetadata, bool) {
 	if strings.TrimSpace(openapi) == "" && strings.TrimSpace(swagger) == "" {
 		return SpecMetadata{}, false
 	}
-	if containsExternalRef(root) {
+	if containsExternalRef(root, 0) {
 		return SpecMetadata{}, false
 	}
 	normalized, err := json.Marshal(root)
@@ -101,7 +105,16 @@ func specMetadataV31(content []byte) (SpecMetadata, bool) {
 	}, true
 }
 
-func containsExternalRef(value any) bool {
+// maxRefScanDepth bounds containsExternalRef recursion so a pathologically
+// nested document cannot exhaust the goroutine stack. OpenAPI documents in
+// practice nest far below this limit; anything deeper is treated as if it
+// contained an external ref and rejected.
+const maxRefScanDepth = 256
+
+func containsExternalRef(value any, depth int) bool {
+	if depth > maxRefScanDepth {
+		return true
+	}
 	switch typed := value.(type) {
 	case map[string]any:
 		for key, child := range typed {
@@ -111,13 +124,13 @@ func containsExternalRef(value any) bool {
 					return true
 				}
 			}
-			if containsExternalRef(child) {
+			if containsExternalRef(child, depth+1) {
 				return true
 			}
 		}
 	case []any:
 		for _, child := range typed {
-			if containsExternalRef(child) {
+			if containsExternalRef(child, depth+1) {
 				return true
 			}
 		}
@@ -211,110 +224,54 @@ func isHTTPMethod(method string) bool {
 	}
 }
 
-func operationCountV30(paths *openapi30.Paths) int {
-	count := 0
-	if paths == nil {
-		return count
+func countNonNilOps[T any](ops ...*T) int {
+	n := 0
+	for _, op := range ops {
+		if op != nil {
+			n++
+		}
 	}
-	for _, path := range paths.Paths {
-		if path == nil {
+	return n
+}
+
+func operationCountV30(paths *openapi30.Paths) int {
+	if paths == nil {
+		return 0
+	}
+	n := 0
+	for _, p := range paths.Paths {
+		if p == nil {
 			continue
 		}
-		if path.Get != nil {
-			count++
-		}
-		if path.Put != nil {
-			count++
-		}
-		if path.Post != nil {
-			count++
-		}
-		if path.Delete != nil {
-			count++
-		}
-		if path.Options != nil {
-			count++
-		}
-		if path.Head != nil {
-			count++
-		}
-		if path.Patch != nil {
-			count++
-		}
-		if path.Trace != nil {
-			count++
-		}
+		n += countNonNilOps(p.Get, p.Put, p.Post, p.Delete, p.Options, p.Head, p.Patch, p.Trace)
 	}
-	return count
+	return n
 }
 
 func operationCountV31(paths *openapi31.Paths) int {
-	count := 0
 	if paths == nil {
-		return count
+		return 0
 	}
-	for _, path := range paths.Paths {
-		if path == nil {
+	n := 0
+	for _, p := range paths.Paths {
+		if p == nil {
 			continue
 		}
-		if path.Get != nil {
-			count++
-		}
-		if path.Put != nil {
-			count++
-		}
-		if path.Post != nil {
-			count++
-		}
-		if path.Delete != nil {
-			count++
-		}
-		if path.Options != nil {
-			count++
-		}
-		if path.Head != nil {
-			count++
-		}
-		if path.Patch != nil {
-			count++
-		}
-		if path.Trace != nil {
-			count++
-		}
+		n += countNonNilOps(p.Get, p.Put, p.Post, p.Delete, p.Options, p.Head, p.Patch, p.Trace)
 	}
-	return count
+	return n
 }
 
 func operationCountV2(paths *openapi20.Paths) int {
-	count := 0
 	if paths == nil {
-		return count
+		return 0
 	}
-	for _, path := range paths.Paths {
-		if path == nil {
+	n := 0
+	for _, p := range paths.Paths {
+		if p == nil {
 			continue
 		}
-		if path.Get != nil {
-			count++
-		}
-		if path.Put != nil {
-			count++
-		}
-		if path.Post != nil {
-			count++
-		}
-		if path.Delete != nil {
-			count++
-		}
-		if path.Options != nil {
-			count++
-		}
-		if path.Head != nil {
-			count++
-		}
-		if path.Patch != nil {
-			count++
-		}
+		n += countNonNilOps(p.Get, p.Put, p.Post, p.Delete, p.Options, p.Head, p.Patch)
 	}
-	return count
+	return n
 }

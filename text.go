@@ -65,3 +65,24 @@ func nonEmptyStrings(values ...string) []string {
 	}
 	return out
 }
+
+// looksLikeCredentialName reports whether name looks like a field or path that
+// holds credential material. It tokenizes on `._-[]` so legitimate names like
+// "passwordless_login" are not flagged, while "user.password" or "auth_token"
+// are.
+func looksLikeCredentialName(name string) bool {
+	lower := strings.ToLower(name)
+	if strings.Contains(lower, "api_key") || strings.Contains(lower, "apikey") || strings.Contains(lower, "api-key") {
+		return true
+	}
+	parts := strings.FieldsFunc(lower, func(r rune) bool {
+		return r == '.' || r == '_' || r == '-' || r == '[' || r == ']'
+	})
+	for _, part := range parts {
+		switch part {
+		case "secret", "password", "passwd", "pwd", "token", "key", "authorization", "auth", "credential", "credentials":
+			return true
+		}
+	}
+	return false
+}

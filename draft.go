@@ -121,7 +121,7 @@ func draftSlots(operations []OperationSummary) []Slot {
 				Type:        firstNonEmpty(parameter.Type, "string"),
 				Description: firstNonEmpty(parameter.Description, fmt.Sprintf("Required %s parameter for %s.", parameter.In, draftOperationLabel(op))),
 				Required:    true,
-				Sensitive:   looksCredentialLike(parameter.Name),
+				Sensitive:   looksLikeCredentialName(parameter.Name),
 				Source:      op.ID,
 			}
 		}
@@ -139,7 +139,7 @@ func draftSlots(operations []OperationSummary) []Slot {
 					Type:        firstNonEmpty(field.Type, "string"),
 					Description: firstNonEmpty(field.Description, fmt.Sprintf("Required request body field for %s.", draftOperationLabel(op))),
 					Required:    true,
-					Sensitive:   looksCredentialLike(field.Path),
+					Sensitive:   looksLikeCredentialName(field.Path),
 					Source:      op.ID,
 				}
 			}
@@ -161,7 +161,7 @@ func draftSlots(operations []OperationSummary) []Slot {
 				Type:        firstNonEmpty(property.Type, "string"),
 				Description: firstNonEmpty(property.Description, fmt.Sprintf("Required request body field for %s.", draftOperationLabel(op))),
 				Required:    true,
-				Sensitive:   looksCredentialLike(property.Name),
+				Sensitive:   looksLikeCredentialName(property.Name),
 				Source:      op.ID,
 			}
 		}
@@ -379,6 +379,8 @@ func renderDraftIntent(opts DraftOptions, operations []OperationSummary, slots [
 	}
 	fmt.Fprintln(&b, "# Review-only neutral draft. Caller-specific renderers must validate before execution.")
 	fmt.Fprintln(&b, "# This file declares symbolic bindings by name only and contains no credential values.")
+	fmt.Fprintln(&b, "# Step `with` values such as \"inputs.foo\" are symbolic placeholders; caller renderers")
+	fmt.Fprintln(&b, "# convert them into HCL traversal expressions.")
 	fmt.Fprintln(&b)
 	fmt.Fprintln(&b, "workflow {")
 	fmt.Fprintf(&b, "  name        = %s\n", hclString(workflowName))
@@ -480,16 +482,6 @@ func sanitizeDraftName(value string) string {
 		return ""
 	}
 	return strings.ReplaceAll(name, "-", "_")
-}
-
-func looksCredentialLike(value string) bool {
-	value = strings.ToLower(value)
-	for _, token := range []string{"api_key", "apikey", "authorization", "auth", "token", "secret", "password", "credential"} {
-		if strings.Contains(value, token) {
-			return true
-		}
-	}
-	return false
 }
 
 func hclString(value string) string {
