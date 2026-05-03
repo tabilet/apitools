@@ -113,38 +113,41 @@ type Artifact struct {
 // ArtifactSet groups draft artifacts with the review metadata used to produce
 // them.
 type ArtifactSet struct {
-	Artifacts        []Artifact          `json:"artifacts,omitempty"`
-	Diagnostics      []Diagnostic        `json:"diagnostics,omitempty"`
-	Transcript       *Transcript         `json:"transcript,omitempty"`
-	Inventory        *OperationInventory `json:"inventory,omitempty"`
-	SymbolicBindings []SymbolicBinding   `json:"symbolic_bindings,omitempty"`
-	ReadinessIssues  []ReadinessIssue    `json:"readiness_issues,omitempty"`
-	Slots            []Slot              `json:"slots,omitempty"`
-	Assumptions      []Assumption        `json:"assumptions,omitempty"`
-	QuestionPlan     QuestionPlan        `json:"question_plan,omitempty"`
+	Artifacts            []Artifact            `json:"artifacts,omitempty"`
+	Diagnostics          []Diagnostic          `json:"diagnostics,omitempty"`
+	Transcript           *Transcript           `json:"transcript,omitempty"`
+	Inventory            *OperationInventory   `json:"inventory,omitempty"`
+	DocumentationContext *DocumentationContext `json:"documentation_context,omitempty"`
+	SymbolicBindings     []SymbolicBinding     `json:"symbolic_bindings,omitempty"`
+	ReadinessIssues      []ReadinessIssue      `json:"readiness_issues,omitempty"`
+	Slots                []Slot                `json:"slots,omitempty"`
+	Assumptions          []Assumption          `json:"assumptions,omitempty"`
+	QuestionPlan         QuestionPlan          `json:"question_plan,omitempty"`
 }
 
 func (set ArtifactSet) MarshalJSON() ([]byte, error) {
 	type artifactSetJSON struct {
-		Artifacts        []Artifact          `json:"artifacts,omitempty"`
-		Diagnostics      []Diagnostic        `json:"diagnostics,omitempty"`
-		Transcript       *Transcript         `json:"transcript,omitempty"`
-		Inventory        *OperationInventory `json:"inventory,omitempty"`
-		SymbolicBindings []SymbolicBinding   `json:"symbolic_bindings,omitempty"`
-		ReadinessIssues  []ReadinessIssue    `json:"readiness_issues,omitempty"`
-		Slots            []Slot              `json:"slots,omitempty"`
-		Assumptions      []Assumption        `json:"assumptions,omitempty"`
-		QuestionPlan     *QuestionPlan       `json:"question_plan,omitempty"`
+		Artifacts            []Artifact            `json:"artifacts,omitempty"`
+		Diagnostics          []Diagnostic          `json:"diagnostics,omitempty"`
+		Transcript           *Transcript           `json:"transcript,omitempty"`
+		Inventory            *OperationInventory   `json:"inventory,omitempty"`
+		DocumentationContext *DocumentationContext `json:"documentation_context,omitempty"`
+		SymbolicBindings     []SymbolicBinding     `json:"symbolic_bindings,omitempty"`
+		ReadinessIssues      []ReadinessIssue      `json:"readiness_issues,omitempty"`
+		Slots                []Slot                `json:"slots,omitempty"`
+		Assumptions          []Assumption          `json:"assumptions,omitempty"`
+		QuestionPlan         *QuestionPlan         `json:"question_plan,omitempty"`
 	}
 	out := artifactSetJSON{
-		Artifacts:        set.Artifacts,
-		Diagnostics:      set.Diagnostics,
-		Transcript:       set.Transcript,
-		Inventory:        set.Inventory,
-		SymbolicBindings: set.SymbolicBindings,
-		ReadinessIssues:  set.ReadinessIssues,
-		Slots:            set.Slots,
-		Assumptions:      set.Assumptions,
+		Artifacts:            set.Artifacts,
+		Diagnostics:          set.Diagnostics,
+		Transcript:           set.Transcript,
+		Inventory:            set.Inventory,
+		DocumentationContext: set.DocumentationContext,
+		SymbolicBindings:     set.SymbolicBindings,
+		ReadinessIssues:      set.ReadinessIssues,
+		Slots:                set.Slots,
+		Assumptions:          set.Assumptions,
 	}
 	if len(set.QuestionPlan.Questions) > 0 {
 		questionPlan := set.QuestionPlan

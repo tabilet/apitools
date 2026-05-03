@@ -18,19 +18,21 @@ type OpenAPIDoc = InventoryDocument
 // OperationContext is prompt-safe OpenAPI context built from a brief and one or
 // more OpenAPI documents.
 type OperationContext struct {
-	Brief      Brief              `json:"brief,omitempty"`
-	Documents  []OpenAPIDoc       `json:"documents,omitempty"`
-	Inventory  OperationInventory `json:"inventory,omitempty"`
-	Transcript Transcript         `json:"transcript,omitempty"`
+	Brief                Brief                `json:"brief,omitempty"`
+	Documents            []OpenAPIDoc         `json:"documents,omitempty"`
+	Inventory            OperationInventory   `json:"inventory,omitempty"`
+	DocumentationContext DocumentationContext `json:"documentation_context,omitempty"`
+	Transcript           Transcript           `json:"transcript,omitempty"`
 }
 
 // DraftInput configures the neutral authoring draft step.
 type DraftInput struct {
-	Brief                Brief              `json:"brief,omitempty"`
-	Context              OperationContext   `json:"context,omitempty"`
-	Inventory            OperationInventory `json:"inventory,omitempty"`
-	SelectedOperationIDs []string           `json:"selected_operation_ids,omitempty"`
-	Transcript           *Transcript        `json:"transcript,omitempty"`
+	Brief                Brief                `json:"brief,omitempty"`
+	Context              OperationContext     `json:"context,omitempty"`
+	Inventory            OperationInventory   `json:"inventory,omitempty"`
+	DocumentationContext DocumentationContext `json:"documentation_context,omitempty"`
+	SelectedOperationIDs []string             `json:"selected_operation_ids,omitempty"`
+	Transcript           *Transcript          `json:"transcript,omitempty"`
 }
 
 // AuthoringCore builds prompt-safe operation context and neutral draft
@@ -85,6 +87,10 @@ func (core NeutralAuthoringCore) Draft(ctx context.Context, input DraftInput) (A
 	if !hasOperationInventory(inventory) {
 		inventory = input.Context.Inventory
 	}
+	documentation := input.DocumentationContext
+	if len(documentation.Snippets) == 0 && len(documentation.Diagnostics) == 0 {
+		documentation = input.Context.DocumentationContext
+	}
 	transcript := input.Transcript
 	if transcript == nil && len(input.Context.Transcript.Turns) > 0 {
 		copy := input.Context.Transcript
@@ -94,6 +100,7 @@ func (core NeutralAuthoringCore) Draft(ctx context.Context, input DraftInput) (A
 		Brief:                brief.Text,
 		ProjectName:          brief.ProjectName,
 		Inventory:            inventory,
+		DocumentationContext: documentation,
 		SelectedOperationIDs: input.SelectedOperationIDs,
 		Transcript:           transcript,
 	})

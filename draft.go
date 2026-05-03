@@ -11,11 +11,12 @@ import (
 
 // DraftOptions configures neutral review-only artifact rendering.
 type DraftOptions struct {
-	Brief                string             `json:"brief,omitempty"`
-	ProjectName          string             `json:"project_name,omitempty"`
-	Inventory            OperationInventory `json:"inventory,omitempty"`
-	SelectedOperationIDs []string           `json:"selected_operation_ids,omitempty"`
-	Transcript           *Transcript        `json:"transcript,omitempty"`
+	Brief                string               `json:"brief,omitempty"`
+	ProjectName          string               `json:"project_name,omitempty"`
+	Inventory            OperationInventory   `json:"inventory,omitempty"`
+	DocumentationContext DocumentationContext `json:"documentation_context,omitempty"`
+	SelectedOperationIDs []string             `json:"selected_operation_ids,omitempty"`
+	Transcript           *Transcript          `json:"transcript,omitempty"`
 }
 
 // DraftArtifacts renders neutral, review-only project.md and intent.hcl draft
@@ -30,6 +31,8 @@ func DraftArtifacts(ctx context.Context, opts DraftOptions) (ArtifactSet, error)
 		return ArtifactSet{}, err
 	}
 	operations, issues := selectedDraftOperations(opts.Inventory.Operations, opts.SelectedOperationIDs)
+	documentation, _ := SanitizeDocumentationContext(opts.DocumentationContext, DocumentationContextOptions{})
+	opts.DocumentationContext = documentation
 	slots := draftSlots(operations)
 	bindings := draftSymbolicBindings(operations)
 	assumptions := []Assumption{{
@@ -47,13 +50,16 @@ func DraftArtifacts(ctx context.Context, opts DraftOptions) (ArtifactSet, error)
 	issues = append(issues, inventoryOperationIssues(operations)...)
 	questions := questionPlanForIssues(issues, slots, bindings)
 	set := ArtifactSet{
-		Diagnostics:      opts.Inventory.Diagnostics,
+		Diagnostics:      append(append([]Diagnostic(nil), opts.Inventory.Diagnostics...), documentation.Diagnostics...),
 		Inventory:        &opts.Inventory,
 		SymbolicBindings: bindings,
 		ReadinessIssues:  issues,
 		Slots:            slots,
 		Assumptions:      assumptions,
 		QuestionPlan:     questions,
+	}
+	if len(documentation.Snippets) > 0 || len(documentation.Diagnostics) > 0 {
+		set.DocumentationContext = &documentation
 	}
 	project := renderDraftProject(opts, operations, slots, bindings, issues)
 	intent := renderDraftIntent(opts, operations, slots, bindings)
@@ -357,6 +363,21 @@ func renderDraftProject(opts DraftOptions, operations []OperationSummary, slots 
 	fmt.Fprintln(&b, "\n## Safety and Approval Boundary\n\n- This is a review-only draft.")
 	fmt.Fprintln(&b, "- Validate and render through the caller-specific leaf adapter before execution.")
 	fmt.Fprintln(&b, "- Do not include secret values in prompts, artifacts, logs, or committed files.")
+	if len(opts.DocumentationContext.Snippets) > 0 {
+		fmt.Fprintln(&b, "\n## Advisory Documentation Context")
+		fmt.Fprintln(&b, "\nThese snippets are reviewer context only. OpenAPI remains authoritative for operations, schemas, and security.")
+		for _, snippet := range opts.DocumentationContext.Snippets {
+			title := firstNonEmpty(snippet.Title, snippet.SourceURL, snippet.Source, "advisory snippet")
+			fmt.Fprintf(&b, "\n- `%s`", title)
+			if snippet.SourceURL != "" {
+				fmt.Fprintf(&b, " (%s)", snippet.SourceURL)
+			}
+			if snippet.Content != "" {
+				fmt.Fprintf(&b, ": %s", snippet.Content)
+			}
+			fmt.Fprintln(&b)
+		}
+	}
 	fmt.Fprintln(&b, "\n## Fallback Behavior\n\n- Stop if required inputs, OpenAPI operations, schema references, or symbolic bindings are unresolved.")
 	if len(issues) > 0 {
 		fmt.Fprintln(&b, "\n## Readiness Issues")

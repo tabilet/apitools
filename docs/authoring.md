@@ -34,6 +34,10 @@ accounts, or perform production side effects.
 - Operation inventory: a normalized, prompt-safe summary of candidate OpenAPI
   operations, including methods, paths, operation identifiers, schemas,
   required fields, security declarations, and provenance.
+- Documentation context: optional advisory snippets from documentation
+  providers. These snippets can improve reviewer understanding but must not
+  override OpenAPI operations, schemas, required fields, or security
+  declarations.
 - Readiness issue: a blocker or warning that explains why a draft is not ready
   for validation, review, rendering, or execution.
 - Question plan: a prioritized list of questions that would reduce ambiguity,
@@ -133,6 +137,9 @@ The package exposes this model as a neutral authoring facade:
   without performing credential binding or execution.
 - `ArtifactOutputPath` and `WriteArtifactSet` provide filesystem-safe artifact
   writing for callers that need to persist rendered artifact sets.
+- `DocumentationContextProvider` is a generic optional hook for advisory
+  context providers. The `context7` subpackage is one implementation; callers
+  may use other providers or pass already-fetched snippets.
 
 ## Prompt Safety
 
@@ -141,3 +148,7 @@ selection and drafting: operation names, descriptions, methods, paths, schemas,
 required fields, security scheme labels, and source provenance. Examples,
 defaults, secrets, tokens, credential values, production identifiers, and
 workflow execution data must not be cached or included in prompts.
+
+Advisory documentation snippets are treated as untrusted input. Callers should
+cap snippet count and size, preserve provenance, and reject credential-looking
+content before rendering review artifacts. OpenAPI remains authoritative.
