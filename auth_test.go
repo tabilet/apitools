@@ -73,6 +73,39 @@ func TestAuthRequirementsForOperationGenericSchemes(t *testing.T) {
 	}
 }
 
+func TestAuthRequirementsForOperationDetectsGCPOAuth2Dialect(t *testing.T) {
+	got := AuthRequirementsForOperation("gmail", OperationSummary{
+		Security: []SecuritySummary{{
+			Name:             "Oauth2c",
+			Type:             "oauth2",
+			Flows:            []string{"authorizationCode"},
+			OAuthFlows:       []OAuthFlowSummary{{Name: "authorizationCode", AuthorizationURL: "https://accounts.google.com/o/oauth2/auth", TokenURL: "https://oauth2.googleapis.com/token", Scopes: []string{"https://www.googleapis.com/auth/gmail.readonly"}}},
+			AuthorizationURL: "https://accounts.google.com/o/oauth2/auth",
+			TokenURL:         "https://oauth2.googleapis.com/token",
+			Scopes:           []string{"https://www.googleapis.com/auth/gmail.readonly"},
+		}},
+	})
+	if len(got) != 1 {
+		t.Fatalf("requirements = %#v", got)
+	}
+	requirement := got[0]
+	if requirement.Kind != "oauth2" || requirement.Dialect != "gcp" {
+		t.Fatalf("requirement = %#v", requirement)
+	}
+	if requirement.AuthorizationURL != "https://accounts.google.com/o/oauth2/auth" || requirement.TokenURL != "https://oauth2.googleapis.com/token" {
+		t.Fatalf("oauth URLs = %#v", requirement)
+	}
+	if len(requirement.OAuthFlows) != 1 || requirement.OAuthFlows[0].Name != "authorizationCode" || requirement.OAuthFlows[0].TokenURL != "https://oauth2.googleapis.com/token" {
+		t.Fatalf("oauth flows = %#v", requirement.OAuthFlows)
+	}
+	if !reflect.DeepEqual(requirement.CredentialFields, []string{"oauth_client_id", "oauth_client_secret"}) {
+		t.Fatalf("credential fields = %#v", requirement.CredentialFields)
+	}
+	if !reflect.DeepEqual(requirement.ConfigFields, []string{"oauth_auth_uri", "oauth_token_uri", "oauth_redirect_uri"}) {
+		t.Fatalf("config fields = %#v", requirement.ConfigFields)
+	}
+}
+
 func TestAuthRequirementsForOperationsMergesScopesDeterministically(t *testing.T) {
 	got := AuthRequirementsForOperations("google", []OperationSummary{
 		{OperationID: "z", Security: []SecuritySummary{{Name: "googleOAuth", Type: "oauth2", Flows: []string{"clientCredentials"}, Scopes: []string{"write", "read"}}}},

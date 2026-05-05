@@ -45,6 +45,125 @@ func TestBuildOperationInventoryOpenAPI3(t *testing.T) {
 	}
 }
 
+func TestBuildOperationInventoryOAuthFlowURLs(t *testing.T) {
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{
+		Documents: []InventoryDocument{{
+			Name: "gmail",
+			Content: []byte(`{
+  "openapi": "3.0.0",
+  "info": {"title": "Gmail", "version": "v1"},
+  "paths": {
+    "/gmail/v1/users/{userId}/profile": {
+      "get": {
+        "operationId": "gmail.users.getProfile",
+        "security": [
+          {"Oauth2c": ["https://www.googleapis.com/auth/gmail.readonly"]}
+        ],
+        "responses": {"200": {"description": "ok"}}
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Oauth2c": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://accounts.google.com/o/oauth2/auth",
+            "tokenUrl": "https://oauth2.googleapis.com/token",
+            "refreshUrl": "https://oauth2.googleapis.com/token",
+            "scopes": {
+              "https://www.googleapis.com/auth/gmail.readonly": "Read Gmail"
+            }
+          }
+        }
+      }
+    }
+  }
+}`),
+		}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Operations) != 1 || len(inventory.Operations[0].Security) != 1 {
+		t.Fatalf("operations = %#v", inventory.Operations)
+	}
+	security := inventory.Operations[0].Security[0]
+	if security.AuthorizationURL != "https://accounts.google.com/o/oauth2/auth" || security.TokenURL != "https://oauth2.googleapis.com/token" || security.RefreshURL != "https://oauth2.googleapis.com/token" {
+		t.Fatalf("security = %#v", security)
+	}
+	if len(security.Flows) != 1 || security.Flows[0] != "authorizationCode" {
+		t.Fatalf("flows = %#v", security.Flows)
+	}
+	if len(security.OAuthFlows) != 1 || security.OAuthFlows[0].Name != "authorizationCode" || security.OAuthFlows[0].TokenURL != "https://oauth2.googleapis.com/token" {
+		t.Fatalf("oauth flows = %#v", security.OAuthFlows)
+	}
+}
+
+func TestBuildOperationInventoryKeepsOAuthFlowURLsSeparate(t *testing.T) {
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{
+		Documents: []InventoryDocument{{
+			Name: "oauth",
+			Content: []byte(`{
+  "openapi": "3.0.0",
+  "info": {"title": "OAuth", "version": "v1"},
+  "paths": {
+    "/me": {
+      "get": {
+        "operationId": "getMe",
+        "security": [{"Oauth2": ["profile.read"]}],
+        "responses": {"200": {"description": "ok"}}
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://auth.example.com/authorize",
+            "tokenUrl": "https://auth.example.com/auth-code-token",
+            "refreshUrl": "https://auth.example.com/auth-code-refresh",
+            "scopes": {"profile.read": "Read profile"}
+          },
+          "clientCredentials": {
+            "tokenUrl": "https://auth.example.com/client-token",
+            "scopes": {"profile.admin": "Admin profile"}
+          }
+        }
+      }
+    }
+  }
+}`),
+		}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Operations) != 1 || len(inventory.Operations[0].Security) != 1 {
+		t.Fatalf("operations = %#v", inventory.Operations)
+	}
+	security := inventory.Operations[0].Security[0]
+	if len(security.OAuthFlows) != 2 {
+		t.Fatalf("oauth flows = %#v", security.OAuthFlows)
+	}
+	byName := map[string]OAuthFlowSummary{}
+	for _, flow := range security.OAuthFlows {
+		byName[flow.Name] = flow
+	}
+	if byName["authorizationCode"].TokenURL != "https://auth.example.com/auth-code-token" || byName["authorizationCode"].RefreshURL != "https://auth.example.com/auth-code-refresh" {
+		t.Fatalf("authorizationCode flow = %#v", byName["authorizationCode"])
+	}
+	if byName["clientCredentials"].TokenURL != "https://auth.example.com/client-token" {
+		t.Fatalf("clientCredentials flow = %#v", byName["clientCredentials"])
+	}
+	if !strings.Contains(strings.Join(byName["authorizationCode"].Scopes, ","), "profile.read") {
+		t.Fatalf("authorizationCode scopes = %#v", byName["authorizationCode"].Scopes)
+	}
+}
+
 func TestBuildOperationInventorySwagger2(t *testing.T) {
 	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{
 		Documents: []InventoryDocument{{

@@ -10,18 +10,23 @@ import (
 // AuthRequirementSummary is a runtime-neutral summary of the credential and
 // configuration contract implied by OpenAPI security requirements.
 type AuthRequirementSummary struct {
-	Kind                     string   `json:"kind"`
-	Scheme                   string   `json:"scheme,omitempty"`
-	Type                     string   `json:"type,omitempty"`
-	In                       string   `json:"in,omitempty"`
-	ParameterName            string   `json:"parameter_name,omitempty"`
-	Flows                    []string `json:"flows,omitempty"`
-	Scopes                   []string `json:"scopes,omitempty"`
-	Description              string   `json:"description,omitempty"`
-	CredentialFields         []string `json:"credential_fields,omitempty"`
-	OptionalCredentialFields []string `json:"optional_credential_fields,omitempty"`
-	ConfigFields             []string `json:"config_fields,omitempty"`
-	OptionalConfigFields     []string `json:"optional_config_fields,omitempty"`
+	Kind                     string             `json:"kind"`
+	Dialect                  string             `json:"dialect,omitempty"`
+	Scheme                   string             `json:"scheme,omitempty"`
+	Type                     string             `json:"type,omitempty"`
+	In                       string             `json:"in,omitempty"`
+	ParameterName            string             `json:"parameter_name,omitempty"`
+	Flows                    []string           `json:"flows,omitempty"`
+	OAuthFlows               []OAuthFlowSummary `json:"oauth_flows,omitempty"`
+	AuthorizationURL         string             `json:"authorization_url,omitempty"`
+	TokenURL                 string             `json:"token_url,omitempty"`
+	RefreshURL               string             `json:"refresh_url,omitempty"`
+	Scopes                   []string           `json:"scopes,omitempty"`
+	Description              string             `json:"description,omitempty"`
+	CredentialFields         []string           `json:"credential_fields,omitempty"`
+	OptionalCredentialFields []string           `json:"optional_credential_fields,omitempty"`
+	ConfigFields             []string           `json:"config_fields,omitempty"`
+	OptionalConfigFields     []string           `json:"optional_config_fields,omitempty"`
 }
 
 // AuthRequirementsForOperation derives runtime-neutral auth metadata for one
@@ -66,13 +71,17 @@ func AuthRequirementsForOperations(provider string, operations []OperationSummar
 
 func authRequirementForSecurity(provider string, security SecuritySummary) AuthRequirementSummary {
 	requirement := AuthRequirementSummary{
-		Scheme:        strings.TrimSpace(security.Name),
-		Type:          strings.TrimSpace(security.Type),
-		In:            strings.TrimSpace(security.In),
-		ParameterName: strings.TrimSpace(security.ParameterName),
-		Flows:         sortedUniqueStrings(security.Flows),
-		Scopes:        sortedUniqueStrings(security.Scopes),
-		Description:   strings.TrimSpace(security.Description),
+		Scheme:           strings.TrimSpace(security.Name),
+		Type:             strings.TrimSpace(security.Type),
+		In:               strings.TrimSpace(security.In),
+		ParameterName:    strings.TrimSpace(security.ParameterName),
+		Flows:            sortedUniqueStrings(security.Flows),
+		OAuthFlows:       sortedOAuthFlows(security.OAuthFlows),
+		AuthorizationURL: strings.TrimSpace(security.AuthorizationURL),
+		TokenURL:         strings.TrimSpace(security.TokenURL),
+		RefreshURL:       strings.TrimSpace(security.RefreshURL),
+		Scopes:           sortedUniqueStrings(security.Scopes),
+		Description:      strings.TrimSpace(security.Description),
 	}
 	if isAWSSignatureSecurity(provider, security) {
 		requirement.Kind = "aws_signature"
@@ -104,6 +113,12 @@ func authRequirementForSecurity(provider string, security SecuritySummary) AuthR
 		}
 	case "oauth2":
 		requirement.Kind = "oauth2"
+		if isGCPOAuth2Security(provider, security) {
+			requirement.Dialect = "gcp"
+			requirement.CredentialFields = []string{"oauth_client_id", "oauth_client_secret"}
+			requirement.ConfigFields = []string{"oauth_auth_uri", "oauth_token_uri", "oauth_redirect_uri"}
+			requirement.OptionalConfigFields = []string{"oauth_project_id", "oauth_scopes"}
+		}
 	case "openidconnect":
 		requirement.Kind = "openid_connect"
 	default:
@@ -113,6 +128,31 @@ func authRequirementForSecurity(provider string, security SecuritySummary) AuthR
 		requirement.Description = genericAuthDescription(requirement)
 	}
 	return requirement
+}
+
+func isGCPOAuth2Security(provider string, security SecuritySummary) bool {
+	if !strings.EqualFold(strings.TrimSpace(security.Type), "oauth2") {
+		return false
+	}
+	provider = strings.ToLower(strings.TrimSpace(provider))
+	if root, _, ok := strings.Cut(provider, "."); ok {
+		provider = root
+	}
+	switch provider {
+	case "gcp", "google", "googleapis", "gmail":
+		return true
+	}
+	values := []string{security.AuthorizationURL, security.TokenURL}
+	for _, flow := range security.OAuthFlows {
+		values = append(values, flow.AuthorizationURL, flow.TokenURL, flow.RefreshURL)
+	}
+	for _, value := range values {
+		normalized := strings.ToLower(strings.TrimSpace(value))
+		if strings.Contains(normalized, "google") || strings.Contains(normalized, "googleapis.com") {
+			return true
+		}
+	}
+	return false
 }
 
 func isAWSSignatureSecurity(provider string, security SecuritySummary) bool {
@@ -152,7 +192,20 @@ func mergeAuthRequirements(in []AuthRequirementSummary) []AuthRequirementSummary
 		}
 		if existing, ok := seen[key]; ok {
 			existing.Flows = sortedUniqueStrings(append(existing.Flows, requirement.Flows...))
+			existing.OAuthFlows = mergeOAuthFlows(existing.OAuthFlows, requirement.OAuthFlows)
 			existing.Scopes = sortedUniqueStrings(append(existing.Scopes, requirement.Scopes...))
+			if existing.Dialect == "" {
+				existing.Dialect = requirement.Dialect
+			}
+			if existing.AuthorizationURL == "" {
+				existing.AuthorizationURL = requirement.AuthorizationURL
+			}
+			if existing.TokenURL == "" {
+				existing.TokenURL = requirement.TokenURL
+			}
+			if existing.RefreshURL == "" {
+				existing.RefreshURL = requirement.RefreshURL
+			}
 			existing.CredentialFields = appendUniqueAuthStrings(existing.CredentialFields, requirement.CredentialFields...)
 			existing.OptionalCredentialFields = appendUniqueAuthStrings(existing.OptionalCredentialFields, requirement.OptionalCredentialFields...)
 			existing.ConfigFields = appendUniqueAuthStrings(existing.ConfigFields, requirement.ConfigFields...)
@@ -164,6 +217,7 @@ func mergeAuthRequirements(in []AuthRequirementSummary) []AuthRequirementSummary
 			continue
 		}
 		requirement.Flows = sortedUniqueStrings(requirement.Flows)
+		requirement.OAuthFlows = sortedOAuthFlows(requirement.OAuthFlows)
 		requirement.Scopes = sortedUniqueStrings(requirement.Scopes)
 		seen[key] = requirement
 	}
@@ -209,6 +263,63 @@ func sortedUniqueStrings(values []string) []string {
 	}
 	sort.Strings(out)
 	return out
+}
+
+func mergeOAuthFlows(base []OAuthFlowSummary, values []OAuthFlowSummary) []OAuthFlowSummary {
+	if len(base) == 0 {
+		return sortedOAuthFlows(values)
+	}
+	out := append([]OAuthFlowSummary(nil), base...)
+	seen := map[string]int{}
+	for i, flow := range out {
+		seen[oauthFlowKey(flow)] = i
+	}
+	for _, flow := range values {
+		flow.Name = strings.TrimSpace(flow.Name)
+		if flow.Name == "" {
+			continue
+		}
+		flow.AuthorizationURL = strings.TrimSpace(flow.AuthorizationURL)
+		flow.TokenURL = strings.TrimSpace(flow.TokenURL)
+		flow.RefreshURL = strings.TrimSpace(flow.RefreshURL)
+		flow.Scopes = sortedUniqueStrings(flow.Scopes)
+		key := oauthFlowKey(flow)
+		if i, ok := seen[key]; ok {
+			out[i].Scopes = sortedUniqueStrings(append(out[i].Scopes, flow.Scopes...))
+			continue
+		}
+		seen[key] = len(out)
+		out = append(out, flow)
+	}
+	return sortedOAuthFlows(out)
+}
+
+func sortedOAuthFlows(values []OAuthFlowSummary) []OAuthFlowSummary {
+	out := make([]OAuthFlowSummary, 0, len(values))
+	for _, flow := range values {
+		flow.Name = strings.TrimSpace(flow.Name)
+		if flow.Name == "" {
+			continue
+		}
+		flow.AuthorizationURL = strings.TrimSpace(flow.AuthorizationURL)
+		flow.TokenURL = strings.TrimSpace(flow.TokenURL)
+		flow.RefreshURL = strings.TrimSpace(flow.RefreshURL)
+		flow.Scopes = sortedUniqueStrings(flow.Scopes)
+		out = append(out, flow)
+	}
+	sort.Slice(out, func(i, j int) bool {
+		return oauthFlowKey(out[i]) < oauthFlowKey(out[j])
+	})
+	return out
+}
+
+func oauthFlowKey(flow OAuthFlowSummary) string {
+	return strings.Join([]string{
+		strings.ToLower(strings.TrimSpace(flow.Name)),
+		strings.TrimSpace(flow.AuthorizationURL),
+		strings.TrimSpace(flow.TokenURL),
+		strings.TrimSpace(flow.RefreshURL),
+	}, "\x00")
 }
 
 func appendUniqueAuthStrings(base []string, values ...string) []string {
