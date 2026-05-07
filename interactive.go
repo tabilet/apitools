@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/OpenUdon/apitools/internal/atomicfile"
 )
 
 // PromptTurn records one local prompt and answer.
@@ -209,7 +211,7 @@ func SavePromptTranscript(path, version string, turns []PromptTurn, events []Pro
 		return err
 	}
 	data = append(data, '\n')
-	return writeFileAtomic(path, data, 0o600)
+	return atomicfile.Write(path, data, 0o600)
 }
 
 // InteractiveDraftRequest is the model-facing input for an interactive draft.
@@ -458,25 +460,3 @@ func RunProgressiveICOT[S, D, A any](ctx context.Context, in io.Reader, out io.W
 
 // ErrCanceled reports user cancellation from a generic interactive loop.
 var ErrCanceled = fmt.Errorf("interactive authoring canceled")
-
-func writeFileAtomic(path string, data []byte, perm os.FileMode) error {
-	dir := filepath.Dir(path)
-	tmp, err := os.CreateTemp(dir, "."+filepath.Base(path)+".tmp.")
-	if err != nil {
-		return err
-	}
-	tmpPath := tmp.Name()
-	defer os.Remove(tmpPath)
-	if _, err := tmp.Write(data); err != nil {
-		_ = tmp.Close()
-		return err
-	}
-	if err := tmp.Chmod(perm); err != nil {
-		_ = tmp.Close()
-		return err
-	}
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-	return os.Rename(tmpPath, path)
-}
