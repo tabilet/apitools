@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/tabilet/oas/openapi20"
-	"github.com/tabilet/oas/openapi30"
-	"github.com/tabilet/oas/openapi31"
+	"github.com/OpenUdon/oas/openapi20"
+	"github.com/OpenUdon/oas/openapi30"
+	"github.com/OpenUdon/oas/openapi31"
 	"gopkg.in/yaml.v3"
 )
 

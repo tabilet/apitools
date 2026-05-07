@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tabilet/apitools"
-	"github.com/tabilet/apitools/sqlitecache"
+	"github.com/OpenUdon/apitools"
+	"github.com/OpenUdon/apitools/sqlitecache"
 )
 
 func TestSearchHelpDocumentsFlags(t *testing.T) {

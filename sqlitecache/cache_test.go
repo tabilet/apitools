@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tabilet/apitools"
+	"github.com/OpenUdon/apitools"
 )
 
 func TestSearchReportRoundTrip(t *testing.T) {

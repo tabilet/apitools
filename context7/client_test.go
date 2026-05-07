@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tabilet/apitools"
+	"github.com/OpenUdon/apitools"
 )
 
 func TestFetchDocumentationContextMapsSnippets(t *testing.T) {

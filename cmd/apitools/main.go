@@ -13,8 +13,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/tabilet/apitools"
-	"github.com/tabilet/apitools/sqlitecache"
+	"github.com/OpenUdon/apitools"
+	"github.com/OpenUdon/apitools/sqlitecache"
 )
 
 func main() {

@@ -1,6 +1,6 @@
 # Runtime Integration Guide
 
-`github.com/tabilet/apitools` provides shared OpenAPI search, intent authoring,
+`github.com/OpenUdon/apitools` provides shared OpenAPI search, intent authoring,
 iCoT loop, and review helpers. The Go package name is still `apitools`.
 A downstream runtime imports those helpers and supplies the product-specific
 behavior that cannot live upstream.
@@ -8,7 +8,7 @@ behavior that cannot live upstream.
 The dependency direction should stay simple:
 
 ```text
-github.com/tabilet/apitools
+github.com/OpenUdon/apitools
   shared structs, interfaces, scans, selection, prompt loops, review helpers
 
 runtime package
@@ -200,10 +200,10 @@ Good downstream tests cover:
 
 ## Module Path Note
 
-The module path is `github.com/tabilet/apitools`. The package declarations
+The module path is `github.com/OpenUdon/apitools`. The package declarations
 remain `package apitools`, and the CLI lives under `cmd/apitools`. Runtime
 authors should import the module with the package name they use in code:
 
 ```go
-import apitools "github.com/tabilet/apitools"
+import apitools "github.com/OpenUdon/apitools"
 ```

@@ -1,6 +1,6 @@
 # apitools
 
-`github.com/tabilet/apitools` is two related things:
+`github.com/OpenUdon/apitools` is two related things:
 
 1. A CLI and Go library for finding, validating, caching, importing, and
    indexing OpenAPI documents.
@@ -8,12 +8,12 @@
    OpenAPI-backed artifacts while providing their own runtime, review, approval,
    and execution behavior.
 
-[![GoDoc](https://godoc.org/github.com/tabilet/apitools?status.svg)](https://godoc.org/github.com/tabilet/apitools)
+[![GoDoc](https://godoc.org/github.com/OpenUdon/apitools?status.svg)](https://godoc.org/github.com/OpenUdon/apitools)
 
 The module path is now:
 
 ```go
-github.com/tabilet/apitools
+github.com/OpenUdon/apitools
 ```
 
 ## CLI
@@ -21,7 +21,7 @@ github.com/tabilet/apitools
 Install:
 
 ```bash
-go install github.com/tabilet/apitools/cmd/apitools@latest
+go install github.com/OpenUdon/apitools/cmd/apitools@latest
 ```
 
 Run from a checkout:
@@ -47,7 +47,7 @@ does not execute APIs or workflows.
 ## Search Library
 
 ```go
-import apitools "github.com/tabilet/apitools"
+import apitools "github.com/OpenUdon/apitools"
 
 ctx := context.Background()
 client := &apitools.Client{}
@@ -63,7 +63,7 @@ _, _ = report, err
 Local project directories can be searched without network access:
 
 ```go
-import apitools "github.com/tabilet/apitools"
+import apitools "github.com/OpenUdon/apitools"
 
 results, err := apitools.LocalFiles(ctx, apitools.LocalOptions{
 	Dir:     "./openapi",
@@ -73,7 +73,7 @@ results, err := apitools.LocalFiles(ctx, apitools.LocalOptions{
 _, _ = results, err
 ```
 
-Caching is optional through `github.com/tabilet/apitools/sqlitecache` or
+Caching is optional through `github.com/OpenUdon/apitools/sqlitecache` or
 the CLI `--cache` flag. Cache modes include `read-write`, `refresh`, `offline`,
 and `bypass`.
 
