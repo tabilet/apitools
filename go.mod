@@ -3,7 +3,7 @@ module github.com/OpenUdon/apitools
 go 1.25.5
 
 require (
-	github.com/OpenUdon/oas v0.0.0-20260413131549-b78ffd347d17
+	github.com/OpenUdon/oas v0.0.0-20260507023120-7fb319711323
 	gopkg.in/yaml.v3 v3.0.1
 	modernc.org/sqlite v1.50.0
 )
