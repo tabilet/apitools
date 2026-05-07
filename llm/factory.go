@@ -11,6 +11,7 @@ import (
 const (
 	envDefaultModel       = "LLM_MODEL"
 	envLegacyRolloutModel = "ROLLOUT_MODEL"
+	envCopilotAPIKey      = "COPILOT_API_KEY"
 )
 
 // Options carries optional knobs (currently just temperature) for the
@@ -21,8 +22,10 @@ type Options struct {
 
 // NewClientFromEnv constructs a provider client using the matching API-key
 // environment variable. Provider names are case-insensitive; "anthropic" is
-// the default when blank. The returned model is the resolved string actually
-// used (after defaults and environment fallbacks).
+// the default when blank. "copilot-api" uses an OpenAI-compatible local proxy
+// and falls back to a dummy token when COPILOT_API_KEY is unset. The returned
+// model is the resolved string actually used (after defaults and environment
+// fallbacks).
 func NewClientFromEnv(provider, model string) (Client, string, string, error) {
 	return NewClientFromEnvWithOptions(provider, model, Options{})
 }
@@ -62,6 +65,15 @@ func NewClientFromEnvWithOptions(provider, model string, opts Options) (Client, 
 		}
 		if model == "" {
 			model = "gemini-1.5-pro"
+		}
+		return NewClientWithOptions(provider, model, apiKey, opts)
+	case "copilot-api":
+		apiKey := os.Getenv(envCopilotAPIKey)
+		if apiKey == "" {
+			apiKey = "copilot-api"
+		}
+		if model == "" {
+			model = DefaultCopilotAPIModel
 		}
 		return NewClientWithOptions(provider, model, apiKey, opts)
 	default:
@@ -109,6 +121,11 @@ func NewClientWithOptions(provider, model, token string, opts Options) (Client, 
 			model = "gemini-1.5-pro"
 		}
 		return NewGeminiClientWithOptions(token, model, optionList(opts)...), provider, model, nil
+	case "copilot-api":
+		if model == "" {
+			model = DefaultCopilotAPIModel
+		}
+		return NewCopilotAPIClientWithOptions(token, model, optionList(opts)...), provider, model, nil
 	default:
 		return nil, "", "", fmt.Errorf("unknown provider: %s", provider)
 	}

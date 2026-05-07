@@ -128,6 +128,19 @@ For runtime implementers, see
 [docs/runtime-integration.md](docs/runtime-integration.md). For the authoring
 model and binding terminology, see [docs/authoring.md](docs/authoring.md).
 
+## Local LLM Proxy
+
+Live authoring tests can use a local OpenAI-compatible `copilot-api` proxy:
+
+```bash
+export COPILOT_API_BASE_URL=http://localhost:4141
+go test ./...
+```
+
+Use provider `copilot-api` with model `gpt-5.4-mini` for local real-LLM smoke runs.
+`COPILOT_API_KEY` is optional for this proxy; a dummy bearer token is used when
+it is unset.
+
 ## Safety Boundary
 
 `apitools` is upstream shared infrastructure. It may discover, index, draft,

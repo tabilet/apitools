@@ -32,6 +32,7 @@ func TestAnthropicChat_SystemMessageExtraction(t *testing.T) {
 
 	var _ ChatClient = &AnthropicClient{}
 	var _ ChatClient = &OpenAIClient{}
+	var _ ChatClient = NewCopilotAPIClient("test-key", "gpt-4.1")
 
 	msg := ChatMessage{Role: "system", Content: "You are helpful"}
 	if msg.Role != "system" || msg.Content != "You are helpful" {
@@ -414,6 +415,43 @@ func TestStructuredChatProviderRequestsIncludeSchema(t *testing.T) {
 				t.Fatalf("unexpected JSON schema config: %+v", got)
 			}
 			return llmTestResponse(`{"choices":[{"message":{"content":"{\"workflow\":{\"name\":\"demo\",\"description\":\"Demo\"},\"steps\":[{\"name\":\"render\",\"type\":\"fnct\",\"do\":\"Render\"}]}"}}]}`), nil
+		}))
+		raw, err := client.StructuredChat(context.Background(), []ChatMessage{{Role: "user", Content: "hello"}}, schema, StructuredOpts{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !strings.Contains(raw, `"workflow"`) {
+			t.Fatalf("unexpected raw structured output: %s", raw)
+		}
+	})
+
+	t.Run("copilot-api responses", func(t *testing.T) {
+		client := newCopilotAPIClient("copilot-key", DefaultCopilotAPIModel, testLLMHTTPClient(func(req *http.Request) (*http.Response, error) {
+			if req.URL.Path != "/v1/responses" {
+				t.Fatalf("path = %s", req.URL.Path)
+			}
+			var payload struct {
+				Model string `json:"model"`
+				Text  struct {
+					Format struct {
+						Type   string          `json:"type"`
+						Name   string          `json:"name"`
+						Strict bool            `json:"strict"`
+						Schema json.RawMessage `json:"schema"`
+					} `json:"format"`
+				} `json:"text"`
+			}
+			if err := json.NewDecoder(req.Body).Decode(&payload); err != nil {
+				t.Fatal(err)
+			}
+			if payload.Model != DefaultCopilotAPIModel {
+				t.Fatalf("model = %q", payload.Model)
+			}
+			got := payload.Text.Format
+			if got.Type != "json_schema" || got.Name != "structured_output" || !got.Strict || string(got.Schema) != string(schema) {
+				t.Fatalf("unexpected JSON schema config: %+v", got)
+			}
+			return llmTestResponse(`{"output_text":null,"output":[{"content":[{"type":"output_text","text":"{\"workflow\":{\"name\":\"demo\",\"description\":\"Demo\"},\"steps\":[{\"name\":\"render\",\"type\":\"fnct\",\"do\":\"Render\"}]}"}]}]}`), nil
 		}))
 		raw, err := client.StructuredChat(context.Background(), []ChatMessage{{Role: "user", Content: "hello"}}, schema, StructuredOpts{})
 		if err != nil {

@@ -3,8 +3,8 @@
 // Package llm provides HTTP clients for Anthropic, OpenAI, and Gemini LLM
 // APIs. The base URL for each provider can be overridden by setting the
 // matching environment variable (ANTHROPIC_BASE_URL, OPENAI_BASE_URL,
-// GEMINI_BASE_URL) so traffic can be routed through a local proxy such as
-// copilot-api. Path suffixes (e.g. /v1/messages) stay fixed.
+// GEMINI_BASE_URL, COPILOT_API_BASE_URL) so traffic can be routed through a
+// local proxy such as copilot-api. Path suffixes (e.g. /v1/messages) stay fixed.
 package llm
 
 import (
@@ -22,22 +22,43 @@ import (
 )
 
 const (
-	defaultAnthropicBaseURL = "https://api.anthropic.com"
-	defaultOpenAIBaseURL    = "https://api.openai.com"
-	defaultGeminiBaseURL    = "https://generativelanguage.googleapis.com"
+	defaultAnthropicBaseURL  = "https://api.anthropic.com"
+	defaultOpenAIBaseURL     = "https://api.openai.com"
+	defaultGeminiBaseURL     = "https://generativelanguage.googleapis.com"
+	defaultCopilotAPIBaseURL = "http://localhost:4141"
 
-	envAnthropicBaseURL = "ANTHROPIC_BASE_URL"
-	envOpenAIBaseURL    = "OPENAI_BASE_URL"
-	envGeminiBaseURL    = "GEMINI_BASE_URL"
+	// DefaultCopilotAPIModel is the local copilot-api model used when callers
+	// request provider "copilot-api" without an explicit model.
+	DefaultCopilotAPIModel = "gpt-5.4-mini"
+
+	envAnthropicBaseURL  = "ANTHROPIC_BASE_URL"
+	envOpenAIBaseURL     = "OPENAI_BASE_URL"
+	envGeminiBaseURL     = "GEMINI_BASE_URL"
+	envCopilotAPIBaseURL = "COPILOT_API_BASE_URL"
 
 	structuredToolName        = "emit_json"
 	structuredToolDescription = "Emit JSON matching the supplied schema."
 	structuredSchemaName      = "structured_output"
 )
 
+// OpenAIEndpoint selects which OpenAI-compatible HTTP API an OpenAIClient uses.
+type OpenAIEndpoint string
+
+const (
+	// OpenAIEndpointAuto keeps the provider default endpoint selection.
+	OpenAIEndpointAuto OpenAIEndpoint = ""
+	// OpenAIEndpointChatCompletions forces POST /v1/chat/completions.
+	OpenAIEndpointChatCompletions OpenAIEndpoint = "chat_completions"
+	// OpenAIEndpointResponses forces POST /v1/responses.
+	OpenAIEndpointResponses OpenAIEndpoint = "responses"
+)
+
 func anthropicBaseURL() string { return baseURLFromEnv(envAnthropicBaseURL, defaultAnthropicBaseURL) }
 func openaiBaseURL() string    { return baseURLFromEnv(envOpenAIBaseURL, defaultOpenAIBaseURL) }
 func geminiBaseURL() string    { return baseURLFromEnv(envGeminiBaseURL, defaultGeminiBaseURL) }
+func copilotAPIBaseURL() string {
+	return baseURLFromEnv(envCopilotAPIBaseURL, defaultCopilotAPIBaseURL)
+}
 
 func baseURLFromEnv(name, fallback string) string {
 	if v := strings.TrimSpace(os.Getenv(name)); v != "" {
@@ -49,9 +70,10 @@ func baseURLFromEnv(name, fallback string) string {
 var defaultLLMTimeout = 60 * time.Second
 
 type llmClientConfig struct {
-	httpClient  *http.Client
-	timeout     time.Duration
-	temperature *float64
+	httpClient     *http.Client
+	timeout        time.Duration
+	temperature    *float64
+	openAIEndpoint OpenAIEndpoint
 }
 
 type ClientOption func(*llmClientConfig)
@@ -84,6 +106,15 @@ func WithTimeout(timeout time.Duration) ClientOption {
 func WithTemperature(value float64) ClientOption {
 	return func(config *llmClientConfig) {
 		config.temperature = &value
+	}
+}
+
+// WithOpenAIEndpoint forces the OpenAI-compatible endpoint used by OpenAIClient.
+// Leave it unset for the provider default: OpenAI uses chat completions, while
+// copilot-api selects Responses for known gpt-5 models.
+func WithOpenAIEndpoint(endpoint OpenAIEndpoint) ClientOption {
+	return func(config *llmClientConfig) {
+		config.openAIEndpoint = endpoint
 	}
 }
 
@@ -359,11 +390,14 @@ func (c *AnthropicClient) Generate(ctx context.Context, prompt string) (string, 
 
 // OpenAIClient implements Client for GPT models.
 type OpenAIClient struct {
-	apiKey      string
-	model       string
-	httpClient  *http.Client
-	timeout     time.Duration
-	temperature *float64
+	apiKey                string
+	model                 string
+	baseURL               string
+	httpClient            *http.Client
+	timeout               time.Duration
+	temperature           *float64
+	endpoint              OpenAIEndpoint
+	inferResponsesByModel bool
 }
 
 func NewOpenAIClient(apiKey, model string) *OpenAIClient {
@@ -375,21 +409,51 @@ func NewOpenAIClientWithOptions(apiKey, model string, opts ...ClientOption) *Ope
 }
 
 func newOpenAIClient(apiKey, model string, opts ...ClientOption) *OpenAIClient {
+	return newOpenAICompatibleClient(apiKey, model, openaiBaseURL(), false, opts...)
+}
+
+// NewCopilotAPIClient constructs an OpenAI-compatible client for a local
+// copilot-api proxy.
+func NewCopilotAPIClient(apiKey, model string) *OpenAIClient {
+	return newCopilotAPIClient(apiKey, model)
+}
+
+// NewCopilotAPIClientWithOptions constructs a copilot-api proxy client with
+// optional overrides for HTTP client, timeout, and temperature.
+func NewCopilotAPIClientWithOptions(apiKey, model string, opts ...ClientOption) *OpenAIClient {
+	return newCopilotAPIClient(apiKey, model, opts...)
+}
+
+func newCopilotAPIClient(apiKey, model string, opts ...ClientOption) *OpenAIClient {
+	return newOpenAICompatibleClient(apiKey, model, copilotAPIBaseURL(), true, opts...)
+}
+
+func newOpenAICompatibleClient(apiKey, model, baseURL string, inferResponsesByModel bool, opts ...ClientOption) *OpenAIClient {
 	config := defaultLLMClientConfig()
 	for _, opt := range opts {
 		opt(&config)
 	}
 	return &OpenAIClient{
-		apiKey:      apiKey,
-		model:       model,
-		httpClient:  config.httpClient,
-		timeout:     config.timeout,
-		temperature: config.temperature,
+		apiKey:                apiKey,
+		model:                 model,
+		baseURL:               strings.TrimRight(strings.TrimSpace(baseURL), "/"),
+		httpClient:            config.httpClient,
+		timeout:               config.timeout,
+		temperature:           config.temperature,
+		endpoint:              config.openAIEndpoint,
+		inferResponsesByModel: inferResponsesByModel,
 	}
 }
 
 func (c *OpenAIClient) Chat(ctx context.Context, messages []ChatMessage) (string, error) {
-	apiURL := openaiBaseURL() + "/v1/chat/completions"
+	if c.openAIEndpoint() == OpenAIEndpointResponses {
+		return c.responsesChat(ctx, messages)
+	}
+	return c.chatCompletionsChat(ctx, messages)
+}
+
+func (c *OpenAIClient) chatCompletionsChat(ctx context.Context, messages []ChatMessage) (string, error) {
+	apiURL := c.openAICompatibleBaseURL() + "/v1/chat/completions"
 
 	type apiMsg struct {
 		Role    string `json:"role"`
@@ -469,7 +533,14 @@ func (c *OpenAIClient) Chat(ctx context.Context, messages []ChatMessage) (string
 }
 
 func (c *OpenAIClient) StructuredChat(ctx context.Context, messages []ChatMessage, schema json.RawMessage, opts StructuredOpts) (string, error) {
-	apiURL := openaiBaseURL() + "/v1/chat/completions"
+	if c.openAIEndpoint() == OpenAIEndpointResponses {
+		return c.responsesStructuredChat(ctx, messages, schema, opts)
+	}
+	return c.chatCompletionsStructuredChat(ctx, messages, schema, opts)
+}
+
+func (c *OpenAIClient) chatCompletionsStructuredChat(ctx context.Context, messages []ChatMessage, schema json.RawMessage, opts StructuredOpts) (string, error) {
+	apiURL := c.openAICompatibleBaseURL() + "/v1/chat/completions"
 
 	if len(schema) == 0 {
 		return "", fmt.Errorf("structured output schema is required")
@@ -564,8 +635,172 @@ func (c *OpenAIClient) StructuredChat(ctx context.Context, messages []ChatMessag
 	return openAIResp.Choices[0].Message.Content, nil
 }
 
+func (c *OpenAIClient) responsesChat(ctx context.Context, messages []ChatMessage) (string, error) {
+	reqBody := struct {
+		Model       string                  `json:"model"`
+		Input       []responsesInputMessage `json:"input"`
+		Temperature *float64                `json:"temperature,omitempty"`
+	}{
+		Model:       c.model,
+		Input:       responsesInput(messages),
+		Temperature: c.temperature,
+	}
+	return c.doResponsesRequest(ctx, reqBody)
+}
+
+func (c *OpenAIClient) responsesStructuredChat(ctx context.Context, messages []ChatMessage, schema json.RawMessage, opts StructuredOpts) (string, error) {
+	if len(schema) == 0 {
+		return "", fmt.Errorf("structured output schema is required")
+	}
+	type jsonSchemaShape struct {
+		Type   string          `json:"type"`
+		Name   string          `json:"name"`
+		Strict bool            `json:"strict"`
+		Schema json.RawMessage `json:"schema"`
+	}
+	reqBody := struct {
+		Model           string                  `json:"model"`
+		Input           []responsesInputMessage `json:"input"`
+		Temperature     *float64                `json:"temperature,omitempty"`
+		MaxOutputTokens int                     `json:"max_output_tokens,omitempty"`
+		Text            struct {
+			Format jsonSchemaShape `json:"format"`
+		} `json:"text"`
+	}{
+		Model:           c.model,
+		Input:           responsesInput(messages),
+		Temperature:     structuredTemperature(c.temperature, opts),
+		MaxOutputTokens: opts.MaxTokens,
+	}
+	reqBody.Text.Format = jsonSchemaShape{
+		Type:   "json_schema",
+		Name:   structuredSchemaName,
+		Strict: true,
+		Schema: schema,
+	}
+	return c.doResponsesRequest(ctx, reqBody)
+}
+
+type responsesInputMessage struct {
+	Role    string                  `json:"role"`
+	Content []responsesInputContent `json:"content"`
+}
+
+type responsesInputContent struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
+}
+
+func responsesInput(messages []ChatMessage) []responsesInputMessage {
+	input := make([]responsesInputMessage, 0, len(messages))
+	for _, message := range messages {
+		content := message.Content
+		if strings.TrimSpace(content) == "" {
+			continue
+		}
+		role := strings.ToLower(strings.TrimSpace(message.Role))
+		if role == "" {
+			role = "user"
+		}
+		input = append(input, responsesInputMessage{
+			Role:    role,
+			Content: []responsesInputContent{{Type: "input_text", Text: content}},
+		})
+	}
+	return input
+}
+
+func (c *OpenAIClient) doResponsesRequest(ctx context.Context, reqBody any) (string, error) {
+	jsonBody, err := json.Marshal(reqBody)
+	if err != nil {
+		return "", fmt.Errorf("marshaling request: %w", err)
+	}
+
+	ctx, cancel := contextWithLLMDeadline(ctx, c.timeout)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, "POST", c.openAICompatibleBaseURL()+"/v1/responses", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return "", fmt.Errorf("creating request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+c.apiKey)
+
+	resp, err := c.do(req)
+	if err != nil {
+		return "", fmt.Errorf("sending request: %w", redactedLLMTransportError(err))
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("reading response: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("API returned status %d: %s", resp.StatusCode, string(body))
+	}
+	return parseResponsesOutput(body)
+}
+
+func parseResponsesOutput(body []byte) (string, error) {
+	var response struct {
+		OutputText *string `json:"output_text"`
+		Output     []struct {
+			Content []struct {
+				Type string `json:"type"`
+				Text string `json:"text"`
+			} `json:"content"`
+		} `json:"output"`
+		Error *struct {
+			Type    string `json:"type"`
+			Message string `json:"message"`
+		} `json:"error"`
+	}
+	if err := json.Unmarshal(body, &response); err != nil {
+		return "", fmt.Errorf("parsing response: %w", err)
+	}
+	if response.Error != nil {
+		return "", fmt.Errorf("API error: %s - %s", response.Error.Type, response.Error.Message)
+	}
+	if response.OutputText != nil && strings.TrimSpace(*response.OutputText) != "" {
+		return *response.OutputText, nil
+	}
+	var parts []string
+	for _, output := range response.Output {
+		for _, content := range output.Content {
+			if content.Text != "" {
+				parts = append(parts, content.Text)
+			}
+		}
+	}
+	if len(parts) == 0 {
+		return "", fmt.Errorf("empty response from API")
+	}
+	return strings.Join(parts, ""), nil
+}
+
 func (c *OpenAIClient) Generate(ctx context.Context, prompt string) (string, error) {
 	return c.Chat(ctx, []ChatMessage{{Role: "user", Content: prompt}})
+}
+
+func (c *OpenAIClient) openAICompatibleBaseURL() string {
+	if baseURL := strings.TrimRight(strings.TrimSpace(c.baseURL), "/"); baseURL != "" {
+		return baseURL
+	}
+	return openaiBaseURL()
+}
+
+func (c *OpenAIClient) openAIEndpoint() OpenAIEndpoint {
+	switch c.endpoint {
+	case OpenAIEndpointChatCompletions, OpenAIEndpointResponses:
+		return c.endpoint
+	}
+	if c.inferResponsesByModel && openAIModelUsesResponses(c.model) {
+		return OpenAIEndpointResponses
+	}
+	return OpenAIEndpointChatCompletions
+}
+
+func openAIModelUsesResponses(model string) bool {
+	return strings.HasPrefix(strings.ToLower(strings.TrimSpace(model)), "gpt-5")
 }
 
 // GeminiClient implements Client for Gemini.
