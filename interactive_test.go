@@ -71,11 +71,13 @@ func TestSavePromptTranscript(t *testing.T) {
 
 func TestRunProgressiveICOT(t *testing.T) {
 	var out bytes.Buffer
+	extractor := &capturingExtractor{draft: testSession{Step: "drafted"}}
 	hooks := ProgressiveLoopHooks[testSession, string, testArtifacts]{
 		Session:       testSession{},
 		Documents:     []string{"doc"},
 		OpeningPrompt: "Tell me.",
-		Extractor:     testExtractor{},
+		Brief:         "# Project\n\nFull source brief.",
+		Extractor:     extractor,
 		Normalize: func(session *testSession) {
 			session.Goal = strings.TrimSpace(session.Goal)
 		},
@@ -139,6 +141,9 @@ func TestRunProgressiveICOT(t *testing.T) {
 	if artifacts.Session.Goal != "goal" || artifacts.Session.Step != "drafted" || artifacts.Session.Output != "result" {
 		t.Fatalf("artifacts = %#v", artifacts)
 	}
+	if extractor.request.Brief != "# Project\n\nFull source brief." {
+		t.Fatalf("draft brief = %q", extractor.request.Brief)
+	}
 }
 
 func TestRunProgressiveICOTNoopExtractorDoesNotReplaceSeed(t *testing.T) {
@@ -185,5 +190,27 @@ func (testExtractor) Refine(_ context.Context, session testSession) (testSession
 }
 
 func (testExtractor) Disambiguate(context.Context, string, []string) ([]string, error) {
+	return nil, nil
+}
+
+type capturingExtractor struct {
+	draft   testSession
+	request InteractiveDraftRequest[testSession, string]
+}
+
+func (e *capturingExtractor) Kickoff(context.Context, string) (testSession, error) {
+	return testSession{}, nil
+}
+
+func (e *capturingExtractor) Draft(_ context.Context, request InteractiveDraftRequest[testSession, string]) (testSession, error) {
+	e.request = request
+	return e.draft, nil
+}
+
+func (e *capturingExtractor) Refine(_ context.Context, session testSession) (testSession, error) {
+	return session, nil
+}
+
+func (e *capturingExtractor) Disambiguate(context.Context, string, []string) ([]string, error) {
 	return nil, nil
 }

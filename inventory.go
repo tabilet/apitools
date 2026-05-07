@@ -15,10 +15,11 @@ import (
 
 // InventoryDocument is one local OpenAPI or Swagger document to inspect.
 type InventoryDocument struct {
-	Name    string `json:"name,omitempty"`
-	Path    string `json:"path,omitempty"`
-	URL     string `json:"url,omitempty"`
-	Content []byte `json:"-"`
+	Name         string `json:"name,omitempty"`
+	Path         string `json:"path,omitempty"`
+	RelativePath string `json:"relative_path,omitempty"`
+	URL          string `json:"url,omitempty"`
+	Content      []byte `json:"-"`
 }
 
 // InventoryOptions configures operation inventory extraction.
@@ -40,6 +41,7 @@ type OperationInventory struct {
 type DocumentSummary struct {
 	Name           string `json:"name,omitempty"`
 	Path           string `json:"path,omitempty"`
+	RelativePath   string `json:"relative_path,omitempty"`
 	URL            string `json:"url,omitempty"`
 	Title          string `json:"title,omitempty"`
 	Description    string `json:"description,omitempty"`
@@ -50,23 +52,24 @@ type DocumentSummary struct {
 
 // OperationSummary describes one prompt-safe OpenAPI operation.
 type OperationSummary struct {
-	ID              string              `json:"id"`
-	DocumentName    string              `json:"document_name,omitempty"`
-	DocumentPath    string              `json:"document_path,omitempty"`
-	DocumentURL     string              `json:"document_url,omitempty"`
-	OperationID     string              `json:"operation_id,omitempty"`
-	Method          string              `json:"method"`
-	Path            string              `json:"path"`
-	Summary         string              `json:"summary,omitempty"`
-	Description     string              `json:"description,omitempty"`
-	Tags            []string            `json:"tags,omitempty"`
-	Extensions      map[string]string   `json:"extensions,omitempty"`
-	Parameters      []ParameterSummary  `json:"parameters,omitempty"`
-	RequestBody     *RequestBodySummary `json:"request_body,omitempty"`
-	Security        []SecuritySummary   `json:"security,omitempty"`
-	Score           int                 `json:"score,omitempty"`
-	Provenance      string              `json:"provenance,omitempty"`
-	ReadinessIssues []ReadinessIssue    `json:"readiness_issues,omitempty"`
+	ID                   string              `json:"id"`
+	DocumentName         string              `json:"document_name,omitempty"`
+	DocumentPath         string              `json:"document_path,omitempty"`
+	DocumentRelativePath string              `json:"document_relative_path,omitempty"`
+	DocumentURL          string              `json:"document_url,omitempty"`
+	OperationID          string              `json:"operation_id,omitempty"`
+	Method               string              `json:"method"`
+	Path                 string              `json:"path"`
+	Summary              string              `json:"summary,omitempty"`
+	Description          string              `json:"description,omitempty"`
+	Tags                 []string            `json:"tags,omitempty"`
+	Extensions           map[string]string   `json:"extensions,omitempty"`
+	Parameters           []ParameterSummary  `json:"parameters,omitempty"`
+	RequestBody          *RequestBodySummary `json:"request_body,omitempty"`
+	Security             []SecuritySummary   `json:"security,omitempty"`
+	Score                int                 `json:"score,omitempty"`
+	Provenance           string              `json:"provenance,omitempty"`
+	ReadinessIssues      []ReadinessIssue    `json:"readiness_issues,omitempty"`
 }
 
 // ParameterSummary describes an operation parameter without examples or values.
@@ -272,13 +275,14 @@ func addDocumentInventory(inventory *OperationInventory, doc InventoryDocument, 
 	info := mapValue(root["info"])
 	name := firstNonEmpty(doc.Name, stringValue(info["title"]), filepath.Base(doc.Path), doc.URL, fmt.Sprintf("document-%d", index+1))
 	summary := DocumentSummary{
-		Name:        name,
-		Path:        doc.Path,
-		URL:         doc.URL,
-		Title:       stringValue(info["title"]),
-		Description: stringValue(info["description"]),
-		OpenAPI:     stringValue(root["openapi"]),
-		Swagger:     stringValue(root["swagger"]),
+		Name:         name,
+		Path:         doc.Path,
+		RelativePath: doc.RelativePath,
+		URL:          doc.URL,
+		Title:        stringValue(info["title"]),
+		Description:  stringValue(info["description"]),
+		OpenAPI:      stringValue(root["openapi"]),
+		Swagger:      stringValue(root["swagger"]),
 	}
 	securitySchemes := securitySchemes(root)
 	defaultSecurity := securityRequirements(root["security"], securitySchemes)
@@ -325,18 +329,19 @@ func operationSummary(doc InventoryDocument, documentName, path, method string, 
 	}
 	provenance := firstNonEmpty(doc.Path, doc.URL, documentName) + "#" + method + " " + path
 	return OperationSummary{
-		ID:           id,
-		DocumentName: documentName,
-		DocumentPath: doc.Path,
-		DocumentURL:  doc.URL,
-		OperationID:  operationID,
-		Method:       strings.ToUpper(method),
-		Path:         path,
-		Summary:      stringValue(operation["summary"]),
-		Description:  stringValue(operation["description"]),
-		Tags:         stringSlice(operation["tags"]),
-		Extensions:   operationExtensions(operation),
-		Provenance:   provenance,
+		ID:                   id,
+		DocumentName:         documentName,
+		DocumentPath:         doc.Path,
+		DocumentRelativePath: doc.RelativePath,
+		DocumentURL:          doc.URL,
+		OperationID:          operationID,
+		Method:               strings.ToUpper(method),
+		Path:                 path,
+		Summary:              stringValue(operation["summary"]),
+		Description:          stringValue(operation["description"]),
+		Tags:                 stringSlice(operation["tags"]),
+		Extensions:           operationExtensions(operation),
+		Provenance:           provenance,
 	}
 }
 

@@ -6,6 +6,8 @@ import (
 	"errors"
 	"strings"
 	"testing"
+
+	llmpkg "github.com/OpenUdon/apitools/llm"
 )
 
 func TestExtractAndDecodeJSONBlock(t *testing.T) {
@@ -130,6 +132,20 @@ func TestRawSchema(t *testing.T) {
 	}
 }
 
+func TestLLMChatAdapterUsesStructuredAndFallback(t *testing.T) {
+	client := &llmAdapterTestClient{structuredErr: errors.New("structured unavailable"), chatResponse: `{"ok":true}`}
+	var out struct {
+		OK bool `json:"ok"`
+	}
+	result, err := CompleteJSONWithFallback(context.Background(), LLMChatAdapter{Client: client, MaxTokens: 99}, []TranscriptTurn{{Role: "user", Content: "reply"}}, json.RawMessage(`{"type":"object"}`), &out, JSONCompletionOptions{FallbackOnStructuredError: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Mode != JSONCompletionModeLegacy || !out.OK || !client.structuredCalled || !client.chatCalled || client.maxTokens != 99 {
+		t.Fatalf("result=%#v out=%#v client=%#v", result, out, client)
+	}
+}
+
 type testChatClient struct {
 	chatResponse       string
 	structuredResponse string
@@ -177,6 +193,28 @@ func (client *partialStructuredChatClient) CompleteStructured(_ context.Context,
 type legacyOnlyChatClient struct {
 	chatResponse   string
 	chatTranscript []TranscriptTurn
+}
+
+type llmAdapterTestClient struct {
+	chatResponse     string
+	structuredErr    error
+	chatCalled       bool
+	structuredCalled bool
+	maxTokens        int
+}
+
+func (client *llmAdapterTestClient) Chat(_ context.Context, _ []llmpkg.ChatMessage) (string, error) {
+	client.chatCalled = true
+	return client.chatResponse, nil
+}
+
+func (client *llmAdapterTestClient) StructuredChat(_ context.Context, _ []llmpkg.ChatMessage, _ json.RawMessage, opts llmpkg.StructuredOpts) (string, error) {
+	client.structuredCalled = true
+	client.maxTokens = opts.MaxTokens
+	if client.structuredErr != nil {
+		return "", client.structuredErr
+	}
+	return `{"ok":true}`, nil
 }
 
 func (client *legacyOnlyChatClient) Complete(_ context.Context, transcript []TranscriptTurn) (TranscriptTurn, error) {

@@ -31,7 +31,8 @@ Use `apitools` for behavior that is neutral across runtimes:
 - Credential-value scanning and symbolic binding audits.
 - Chat JSON completion with structured-output fallback.
 - Prompt sessions and progressive iCoT loop control.
-- Review-only `LeafAdapter` helpers, the public review state machine, the
+- Review-only `LeafAdapter` helpers, binding contracts, normalized issue
+  rendering, handoff input/digest helpers, the public review state machine, the
   runtime-neutral handoff manifest schema, and artifact writing.
 
 These helpers may identify that a binding is needed, that a draft is incomplete,
@@ -135,9 +136,11 @@ _, _, _, _ = leaf, rendered, diagnostics, err
 ```
 
 The runtime renderer may use `leaf.MinimumReviewPackage()`, `leaf.BindingAudit()`,
-`leaf.CredentialValueDiagnostics()`, `leaf.ReviewMarkdown()`, and
-`leaf.ReviewHandoff(...)` as shared review evidence, then append
-product-specific routing, approval persistence, and trusted-runner enforcement.
+`leaf.CredentialValueDiagnostics()`, `leaf.ReviewMarkdown()`,
+`BuildBindingContract`, `ReviewHandoffInputsFromArtifacts`,
+`ComputeReviewHandoffDigest`, and `leaf.ReviewHandoff(...)` as shared review
+evidence, then append product-specific routing, approval persistence, and
+trusted-runner enforcement.
 
 ## ICOT Pattern
 
@@ -187,7 +190,8 @@ Good upstream tests cover:
   error
 - operation selection, plural/camel-case matching, and ambiguous candidates
 - credential-value scans and symbolic binding allowlists
-- artifact path safety and review package summaries
+- artifact path safety, review package summaries, handoff input/digest stability,
+  binding contract output, and normalized issue rendering
 - progressive iCoT loop cancellation, noop extractor behavior, readiness, and
   final confirmation
 

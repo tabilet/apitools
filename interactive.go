@@ -217,6 +217,7 @@ func SavePromptTranscript(path, version string, turns []PromptTurn, events []Pro
 // InteractiveDraftRequest is the model-facing input for an interactive draft.
 type InteractiveDraftRequest[S, D any] struct {
 	Opening           string           `json:"opening"`
+	Brief             string           `json:"brief,omitempty"`
 	Session           S                `json:"session"`
 	Docs              []D              `json:"docs"`
 	TranscriptTurns   []PromptTurn     `json:"transcript_turns,omitempty"`
@@ -261,6 +262,7 @@ type ProgressiveLoopHooks[S, D, A any] struct {
 	Session       S
 	Documents     []D
 	Opening       string
+	Brief         string
 	NoLLM         bool
 	MaxAttempts   int
 	OpeningPrompt string
@@ -351,6 +353,7 @@ func RunProgressiveICOT[S, D, A any](ctx context.Context, in io.Reader, out io.W
 		}
 		request := InteractiveDraftRequest[S, D]{
 			Opening:           opening,
+			Brief:             hooks.Brief,
 			Session:           session,
 			Docs:              docs,
 			TranscriptTurns:   prompts.Turns(),

@@ -31,6 +31,9 @@ accounts, or perform production side effects.
 - Symbolic binding: a stable logical name for a runtime-provided capability,
   credential, account, environment, or endpoint. Symbolic bindings are declared
   during authoring and resolved by the caller at execution time.
+- Binding contract: a review-time summary of symbolic binding names, OpenAPI
+  auth requirements, credential/config fields, and literal-credential findings.
+  It is metadata only; concrete values bind in the caller runtime.
 - Operation inventory: a normalized, prompt-safe summary of candidate OpenAPI
   operations, including methods, paths, operation identifiers, schemas,
   required fields, security declarations, and provenance.
@@ -133,6 +136,10 @@ The package exposes this model as a neutral authoring facade:
   have OpenAPI documents.
 - `LeafAdapter` is a concrete embeddable review-only object with shared
   artifact, readiness, binding-audit, and review helpers.
+- `BuildBindingContract`, `BuildReviewPackage`,
+  `ReviewHandoffInputsFromArtifacts`, `ComputeReviewHandoffDigest`, and
+  `IssueSetFromFindings` provide shared review package, handoff, binding, and
+  issue structures while callers keep policy and runtime behavior local.
 - `DraftAndRender` hands the neutral leaf to a caller-owned `LeafRenderer`
   without performing credential binding or execution.
 - `ArtifactOutputPath` and `WriteArtifactSet` provide filesystem-safe artifact
