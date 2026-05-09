@@ -248,6 +248,7 @@ ON CONFLICT(url) DO UPDATE SET
 func (c *Cache) migrate(ctx context.Context) error {
 	stmts := []string{
 		`PRAGMA journal_mode = WAL`,
+		`PRAGMA busy_timeout = 5000`,
 		`CREATE TABLE IF NOT EXISTS schema_meta (
 			version INTEGER NOT NULL
 		)`,

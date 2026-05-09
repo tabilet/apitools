@@ -67,9 +67,11 @@ func nonEmptyStrings(values ...string) []string {
 }
 
 // looksLikeCredentialName reports whether name looks like a field or path that
-// holds credential material. It tokenizes on `._-[]` so legitimate names like
-// "passwordless_login" are not flagged, while "user.password" or "auth_token"
-// are.
+// holds credential material. Inventory rendering uses this denylist to omit
+// credential-shaped request fields from prompt-safe output before summaries are
+// sent to LLM-backed authoring flows. It tokenizes on `._-[]` so legitimate
+// names like "passwordless_login" are not flagged, while "user.password" or
+// "auth_token" are.
 func looksLikeCredentialName(name string) bool {
 	lower := strings.ToLower(name)
 	if strings.Contains(lower, "api_key") || strings.Contains(lower, "apikey") || strings.Contains(lower, "api-key") {

@@ -14,6 +14,16 @@ import (
 	"time"
 )
 
+// HTTPStatusError reports a non-2xx response from a downloaded OpenAPI URL.
+type HTTPStatusError struct {
+	Code   int
+	Status string
+}
+
+func (err HTTPStatusError) Error() string {
+	return fmt.Sprintf("download URL: %s", err.Status)
+}
+
 func (c *Client) downloadSpec(ctx context.Context, rawURL string) ([]byte, *url.URL, SpecMetadata, error) {
 	c = c.effective()
 	content, finalURL, err := c.downloadBounded(ctx, rawURL)
@@ -140,7 +150,7 @@ func (c *Client) downloadBounded(ctx context.Context, rawURL string) ([]byte, *u
 		}
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, nil, fmt.Errorf("download URL: %s", resp.Status)
+		return nil, nil, HTTPStatusError{Code: resp.StatusCode, Status: resp.Status}
 	}
 	content, err := io.ReadAll(io.LimitReader(resp.Body, maxBytes+1))
 	if err != nil {
@@ -217,6 +227,9 @@ func (c *Client) safeTransport(roundTripper http.RoundTripper) (http.RoundTrippe
 }
 
 func (c *Client) safeDialContext(ctx context.Context, network, address string) (net.Conn, error) {
+	// Resolve through the process resolver, then filter every returned IP before
+	// dialing. This keeps the guard in apitools even when a container or host DNS
+	// resolver applies its own policy.
 	host, port, err := net.SplitHostPort(address)
 	if err != nil {
 		return nil, err

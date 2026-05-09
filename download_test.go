@@ -2,6 +2,7 @@ package apitools
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -79,6 +80,13 @@ func TestDownloadBoundedRejectsNon2xx(t *testing.T) {
 	_, _, err := c.downloadBounded(context.Background(), server.URL)
 	if err == nil || !strings.Contains(err.Error(), "500") {
 		t.Fatalf("expected 500 error, got %v", err)
+	}
+	var statusErr HTTPStatusError
+	if !errors.As(err, &statusErr) {
+		t.Fatalf("expected HTTPStatusError, got %T", err)
+	}
+	if statusErr.Code != http.StatusInternalServerError || statusErr.Status != "500 Internal Server Error" {
+		t.Fatalf("status error = %#v", statusErr)
 	}
 }
 

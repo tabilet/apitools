@@ -288,6 +288,55 @@ func TestBuildOperationInventoryRequestBodyFieldsAreRecursiveAndPromptSafe(t *te
 	}
 }
 
+func TestBuildOperationInventoryAllowsRequestBodyWithoutSchema(t *testing.T) {
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{
+		Query: "create",
+		Documents: []InventoryDocument{{
+			Name: "empty-body",
+			Content: []byte(`openapi: 3.0.0
+info:
+  title: Empty Body API
+  version: 1.0.0
+paths:
+  /tickets:
+    post:
+      operationId: createTicket
+      requestBody:
+        description: Body is intentionally unspecified.
+        content: {}
+      responses:
+        "200":
+          description: ok
+`),
+		}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Operations) != 1 {
+		t.Fatalf("operations = %#v", inventory.Operations)
+	}
+	body := inventory.Operations[0].RequestBody
+	if body == nil {
+		t.Fatalf("missing request body")
+	}
+	if body.Schema != nil {
+		t.Fatalf("schema = %#v, want nil", body.Schema)
+	}
+}
+
+func TestBuildOperationInventoryReportsMalformedYAML(t *testing.T) {
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{
+		Documents: []InventoryDocument{{Name: "bad", Content: []byte("openapi: [")}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Diagnostics) != 1 || inventory.Diagnostics[0].Code != "document.parse" {
+		t.Fatalf("diagnostics = %#v", inventory.Diagnostics)
+	}
+}
+
 func TestBuildOperationInventoryReportsReadFailuresForUnsafePaths(t *testing.T) {
 	base := t.TempDir()
 	symlinkTarget := filepath.Join(base, "target.yaml")

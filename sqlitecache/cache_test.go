@@ -148,3 +148,18 @@ func TestSpecLoadRejectsCorruptStoredSHA256(t *testing.T) {
 		t.Fatalf("expected cache miss on SHA256 mismatch")
 	}
 }
+
+func TestOpenConfiguresBusyTimeout(t *testing.T) {
+	cache, err := Open(":memory:")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+	var timeoutMS int
+	if err := cache.db.QueryRowContext(context.Background(), `PRAGMA busy_timeout`).Scan(&timeoutMS); err != nil {
+		t.Fatal(err)
+	}
+	if timeoutMS < 5000 {
+		t.Fatalf("busy_timeout = %d, want at least 5000", timeoutMS)
+	}
+}

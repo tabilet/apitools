@@ -85,7 +85,10 @@ func TestSpecMetadataAcceptsJSONInput(t *testing.T) {
 func TestSpecMetadataRejectsExternalRef(t *testing.T) {
 	for _, body := range []string{
 		`{"openapi":"3.0.0","info":{"title":"E","version":"1"},"paths":{"/x":{"$ref":"https://evil.example/path.yaml"}}}`,
+		`{"openapi":"3.0.0","info":{"title":"E","version":"1"},"paths":{"/x":{"$ref":"http://evil.example/path.yaml"}}}`,
 		`{"openapi":"3.0.0","info":{"title":"E","version":"1"},"paths":{"/x":{"$ref":"./local.yaml"}}}`,
+		`{"openapi":"3.0.0","info":{"title":"E","version":"1"},"paths":{"/x":{"get":{"responses":{"200":{"description":"ok"}}}},"components":{"schemas":{"A":{"allOf":[{"$ref":"../shared.yaml#/A"}]}}}}`,
+		`{"openapi":"3.0.0","info":{"title":"E","version":"1"},"paths":{"/x":{"get":{"responses":{"200":{"description":"ok"}}}},"components":{"schemas":{"A":{"oneOf":[{"$ref":"http://evil.example/A.yaml"}]}}}}`,
 	} {
 		if _, ok := specMetadata(context.Background(), []byte(body)); ok {
 			t.Fatalf("expected rejection for body %s", body)

@@ -41,7 +41,8 @@ func TestLooksLikeCredentialName(t *testing.T) {
 	flagged := []string{
 		"password", "user.password", "auth_token", "AUTH-TOKEN", "secret",
 		"api_key", "apiKey", "X-API-KEY", "credentials.access",
-		"groups[].token",
+		"groups[].token", "bearer_token", "authorization", "client_secret",
+		"secret_key", "x-api-token", "oauth.credentials",
 	}
 	for _, name := range flagged {
 		if !looksLikeCredentialName(name) {

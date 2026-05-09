@@ -47,6 +47,29 @@ paths: {}
 	}
 }
 
+func TestLocalFilesContextHonorsCancelledContext(t *testing.T) {
+	base := t.TempDir()
+	openAPIDir := filepath.Join(base, "openapi")
+	if err := os.MkdirAll(openAPIDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(openAPIDir, "support.yaml"), []byte(`openapi: 3.0.0
+info:
+  title: Support Ticket API
+  version: 1.0.0
+paths: {}
+`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	_, err := LocalFilesContext(ctx, openAPIDir, base, "support")
+	if err != context.Canceled {
+		t.Fatalf("expected canceled context, got %v", err)
+	}
+}
+
 func TestSelectPrimarySortsByScore(t *testing.T) {
 	got, err := SelectPrimary([]Candidate{
 		{RelativePath: "openapi/low.yaml", Score: 1},

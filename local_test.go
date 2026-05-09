@@ -134,6 +134,22 @@ func TestLocalFilesRejectsSymlinkedCandidates(t *testing.T) {
 	}
 }
 
+func TestLocalFilesRejectsSymlinkedCandidateInsideRoot(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "openapi")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	target := filepath.Join(dir, "target.yaml")
+	writeLocalFile(t, target, validLocalSpec("Target API", "Target"))
+	symlinkOrSkip(t, target, filepath.Join(dir, "support.yaml"))
+
+	_, err := LocalFiles(context.Background(), LocalOptions{Dir: dir, BaseDir: base})
+	if err == nil || !strings.Contains(err.Error(), "symlink") {
+		t.Fatalf("expected symlink error, got %v", err)
+	}
+}
+
 func TestLocalFilesRejectsOversizedCandidates(t *testing.T) {
 	base := t.TempDir()
 	dir := filepath.Join(base, "openapi")
