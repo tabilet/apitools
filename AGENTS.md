@@ -2,91 +2,29 @@
 
 ## Purpose
 
-`apitools` is an open-source Go module and CLI-backed library for discovering,
-validating, caching, and importing OpenAPI or Swagger documents from public
-catalogs. It also provides the public OpenAPI-backed authoring substrate for
-AI-assisted workflows that turn natural-language briefs and prompt-safe
-operation context into draft `project.md` and `intent.hcl` artifacts.
-
-The package is intentionally generic. It is shared by private consumers such as
-Ramen and public consumers such as OpenUdon, but it must not contain Ramen
-workflow semantics, OpenUdon IaC semantics, udon runtime behavior,
-product-specific policy, or private infrastructure assumptions.
+`apitools` is an OpenAPI tooling module and CLI. It discovers, downloads,
+validates, imports, caches, scans, indexes, summarizes, and ranks OpenAPI or
+Swagger documents from public catalogs and local files.
 
 ## Boundaries
 
 - Keep provider discovery, URL safety, OpenAPI/Swagger validation, local cache,
-  operation inventories, ranking, prompt-safe summaries, and CLI behavior in
-  this repository.
-- Keep generic AI-assisted authoring primitives here when they are
-  domain-neutral: common fields, methods, interfaces, transcripts, diagnostics,
-  slots, assumptions, symbolic bindings, readiness issues, question plans, and
-  draft artifact flow for `project.md` and `intent.hcl`.
-- Keep the public review state machine, review-only leaf adapter, and
-  runtime-neutral handoff manifest schema here. These may describe state names,
-  allowed transitions, handoff inputs, owner splits, execution-policy flags, and
-  symbolic credential-binding inventories.
-- Put Ramen-specific `project.md`, workflow `intent.hcl`, `workflow.hcl`, UWS
-  generation, Symphony routing policy, trusted-runner gates, evals, example
-  artifacts, and private udon integration in Ramen.
-- Put concrete OpenUdon IaC intent models, Terraform generation, graph/profile
-  planning, state/drift/handoff bundles, and w8m-facing public IaC artifacts in
-  OpenUdon.
-- Put UWS/OpenAPI execution, lowering, concrete execution, credential
-  resolution, runtime binding, and trusted runner behavior in udon or the
-  calling runtime.
-- Put public UWS semantics in `../uws`.
-- Do not add product-specific LLM synthesis, API execution, credential
-  injection, or production side effects here.
+  operation inventories, prompt-safe OpenAPI summaries, auth/security summaries,
+  operation ranking, and CLI behavior here.
+- Keep product workflow behavior and execution behavior downstream.
+- Put UWS workflow semantics in `../uws`.
+- Put private UWS/OpenAPI lowering and runtime execution in `../udon`.
+- Put Ramen project templates, examples, review evidence, trusted-runner gates,
+  and Symphony policy in `../ramen`.
+- Put OpenUdon IaC intent, graph, planning, state, and executor-facing artifacts
+  in `../openudon`.
 
 Rule of thumb:
 
-- If it helps find or safely import OpenAPI documents, it belongs here.
-- If it helps author prompt-safe, OpenAPI-backed draft artifacts without
-  product-specific semantics, it belongs here.
-- If it executes an API or workflow, it does not belong here.
-- If it depends on a private repo or product workflow, it does not belong here.
-
-Ramen, udon, and OpenUdon depend on or embed `apitools` concepts directly.
-Ramen does not inherit from OpenUdon, and OpenUdon does not inherit from Ramen.
-Downstreams may inherit common behavior at runtime by embedding concrete
-`apitools` review/deferred-leaf helpers or composing shared functions, but that
-inheritance must stay domain-neutral: the shared object can carry artifacts,
-symbolic binding names, diagnostics, readiness issues, the public review state
-machine, handoff schema, and safe filesystem behavior, while the downstream leaf
-keeps its own rendering, validation, approval routing, bundling, persistence,
-trusted runner, and execution policy.
-
-## Architecture
-
-OpenAPI owns methods, paths, schemas, servers, and security declarations.
-`apitools` owns discovery, validation, import, inventories, prompt-safe
-metadata, and domain-neutral authoring loops over that OpenAPI context.
-
-Authoring follows this shared flow:
-
-```text
-brief + OpenAPI docs -> prompt-safe operation context -> project.md / intent.hcl draft -> caller-specific leaf renderer
-```
-
-Generated `project.md` and `intent.hcl` outputs are drafts. Callers are
-responsible for validating, reviewing, and rendering them into their own leaf
-artifacts.
-
-### Binding happens at execution time
-
-`apitools` may name symbolic bindings and describe the contract a caller
-must satisfy, but it does not resolve credentials, choose concrete accounts, or
-execute operations. Specialized engines bind runtime implementations and leaf
-adapters only when they validate and execute their own artifacts.
-
-This is an inheritance/composition rule as much as a safety rule. Shared
-authoring objects should be embeddable so Ramen, udon, OpenUdon, and other
-callers can reuse common artifact, review, readiness, binding-audit, and
-safe-write logic at runtime without inheriting each other's product semantics.
-Runtime inheritance must flow from `apitools` into caller-owned leaves; it must
-not create a dependency from `apitools` back into Ramen, OpenUdon, udon, w8m,
-private credential resolvers, or trusted runners.
+- If it helps find, validate, import, cache, summarize, or rank OpenAPI
+  documents, it belongs here.
+- If it owns product workflow behavior or executes anything, it belongs
+  downstream.
 
 ## Commands
 
@@ -94,13 +32,12 @@ private credential resolvers, or trusted runners.
 go test ./...
 go vet ./...
 git diff --check
-go run ./cmd/apitools search --query slack
-go run ./cmd/apitools search --query slack --cache /tmp/apitools.sqlite
-go run ./cmd/apitools import --url https://example.com/openapi.yaml --dir /tmp/openapi
+go run ./cmd/apitools search --help
+go run ./cmd/apitools import --help
 ```
 
-When changing public APIs, also run dependent checks in local sibling consumers
-when available:
+When changing public APIs, run dependent checks in local sibling consumers when
+available:
 
 ```bash
 (cd ../ramen && go test ./...)
@@ -110,8 +47,8 @@ when available:
 ## Go Conventions
 
 - Primary language is Go.
-- Keep `cmd/apitools` thin; reusable behavior belongs in the root package
-  or a focused subpackage such as `sqlitecache`.
+- Keep `cmd/apitools` thin; reusable behavior belongs in the root package or a
+  focused subpackage such as `sqlitecache`.
 - Keep the root package dependency-light. Optional storage integrations should
   live in subpackages.
 - Preserve exported API compatibility unless the change is intentionally
@@ -123,9 +60,7 @@ when available:
 - Treat all discovered OpenAPI documents as untrusted.
 - Never execute operations from a discovered document.
 - Enforce HTTP/HTTPS only for remote fetches.
-- Reject localhost, private, link-local, multicast, and unspecified addresses
-  by default.
+- Reject localhost, private, link-local, multicast, and unspecified addresses by
+  default.
 - Keep redirect limits, response-size limits, and request timeouts in place.
-- Do not cache secrets, credentials, tokens, or workflow execution data.
-- Do not add HTML scraping or LLM-synthesized specs without explicit review and
-  provenance labeling.
+- Do not cache secrets, tokens, workflow execution data, or sensitive values.
