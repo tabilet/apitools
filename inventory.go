@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -27,6 +26,7 @@ type InventoryOptions struct {
 	Documents []InventoryDocument `json:"documents,omitempty"`
 	Query     string              `json:"query,omitempty"`
 	Limit     int                 `json:"limit,omitempty"`
+	MaxBytes  int64               `json:"max_bytes,omitempty"`
 }
 
 // OperationInventory is a prompt-safe summary of OpenAPI operations.
@@ -166,7 +166,7 @@ func BuildOperationInventory(ctx context.Context, opts InventoryOptions) (Operat
 		if err := ctx.Err(); err != nil {
 			return inventory, err
 		}
-		content, err := inventoryDocumentContent(doc)
+		content, err := inventoryDocumentContent(doc, opts.MaxBytes)
 		if err != nil {
 			inventory.Diagnostics = append(inventory.Diagnostics, Diagnostic{
 				Severity: "error",
@@ -211,14 +211,14 @@ func BuildOperationInventory(ctx context.Context, opts InventoryOptions) (Operat
 	return inventory, nil
 }
 
-func inventoryDocumentContent(doc InventoryDocument) ([]byte, error) {
+func inventoryDocumentContent(doc InventoryDocument, maxBytes int64) ([]byte, error) {
 	if len(doc.Content) > 0 {
 		return doc.Content, nil
 	}
 	if strings.TrimSpace(doc.Path) == "" {
 		return nil, fmt.Errorf("document content or path is required")
 	}
-	return os.ReadFile(doc.Path)
+	return readLocalSpecFile(doc.Path, maxBytes)
 }
 
 func parseInventoryDocument(content []byte) (map[string]any, error) {

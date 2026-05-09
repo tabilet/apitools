@@ -108,6 +108,7 @@ results, err := apitools.LocalFiles(ctx, apitools.LocalOptions{
 	Dir:     "./openapi",
 	BaseDir: ".",
 	Query:   "slack messages",
+	// MaxBytes: 4 * 1024 * 1024, // optional; defaults to apitools.DefaultMaxBytes
 })
 _, _ = results, err
 ```
@@ -119,6 +120,7 @@ document summaries:
 inventory, err := apitools.BuildOperationInventory(ctx, apitools.InventoryOptions{
 	Documents: []apitools.InventoryDocument{{Path: "openapi/support.yaml"}},
 	Query:     "create support ticket",
+	// MaxBytes: 4 * 1024 * 1024, // optional for path-backed documents
 })
 docs, err := apitools.BuildAuthoringAPIDocuments(ctx, apitools.AuthoringAPIDocumentOptions{
 	Documents: []apitools.InventoryDocument{{Path: "openapi/support.yaml"}},
@@ -168,6 +170,16 @@ Remote fetches are limited to HTTP(S). Unsafe hosts are rejected by default,
 including localhost, private, link-local, multicast, and unspecified addresses.
 Callers that intentionally need local fixtures can opt into that behavior with
 `Client.AllowUnsafeHosts`.
+
+Local file reads are also fail-closed. `LocalFiles`, `BuildOperationInventory`,
+and `LoadOperationIndex` reject symlinked scan roots, symlinked document paths,
+symlinked parent components, directories, special files, and files larger than
+the resolved byte limit before parsing. Path-backed local reads use bounded I/O;
+`LocalOptions.MaxBytes` and `InventoryOptions.MaxBytes` can lower or raise the
+limit, and `0` uses `DefaultMaxBytes` (`20 MiB`), matching remote downloads.
+In-memory `InventoryDocument.Content` is unchanged. Regular `.json`, `.yaml`,
+and `.yml` files that parse but are not OpenAPI or Swagger are still ignored by
+`LocalFiles`.
 
 ## Packages
 

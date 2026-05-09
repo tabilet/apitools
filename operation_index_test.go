@@ -1,6 +1,7 @@
 package apitools
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -62,5 +63,29 @@ paths:
 	}
 	if _, err := LoadOperationIndex(duplicate); err == nil || !strings.Contains(err.Error(), "duplicated") {
 		t.Fatalf("expected duplicate error, got %v", err)
+	}
+}
+
+func TestLoadOperationIndexSurfacesReadFailuresAsDiagnostics(t *testing.T) {
+	dir := t.TempDir()
+	target := filepath.Join(dir, "target.yaml")
+	if err := os.WriteFile(target, []byte(`openapi: 3.0.0
+info:
+  title: Index API
+  version: 1.0.0
+paths: {}
+`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(dir, "openapi.yaml")
+	symlinkOrSkip(t, target, link)
+
+	_, err := LoadOperationIndex(link)
+	var diagnosticErr DiagnosticError
+	if !errors.As(err, &diagnosticErr) {
+		t.Fatalf("expected DiagnosticError, got %T %v", err, err)
+	}
+	if len(diagnosticErr.Diagnostics) != 1 || diagnosticErr.Diagnostics[0].Code != "document.read" {
+		t.Fatalf("diagnostics = %#v", diagnosticErr.Diagnostics)
 	}
 }

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
-	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -15,9 +14,10 @@ import (
 )
 
 type LocalOptions struct {
-	Dir     string
-	BaseDir string
-	Query   string
+	Dir      string
+	BaseDir  string
+	Query    string
+	MaxBytes int64
 }
 
 type LocalResult struct {
@@ -43,6 +43,9 @@ func LocalFiles(ctx context.Context, opts LocalOptions) ([]LocalResult, error) {
 	if baseDir == "" {
 		baseDir = dir
 	}
+	if err := validateLocalScanRoot(dir); err != nil {
+		return nil, err
+	}
 	var results []LocalResult
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -51,10 +54,13 @@ func LocalFiles(ctx context.Context, opts LocalOptions) ([]LocalResult, error) {
 		if ctxErr := ctx.Err(); ctxErr != nil {
 			return ctxErr
 		}
+		if d.Type()&fs.ModeSymlink != 0 {
+			return fmt.Errorf("local OpenAPI path %q is a symlink", path)
+		}
 		if d.IsDir() || !hasOpenAPIFileExt(path) {
 			return nil
 		}
-		content, err := os.ReadFile(path)
+		content, err := readLocalSpecFile(path, opts.MaxBytes)
 		if err != nil {
 			return err
 		}

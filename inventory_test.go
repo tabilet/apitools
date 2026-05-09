@@ -2,6 +2,9 @@ package apitools
 
 import (
 	"context"
+	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -285,6 +288,77 @@ func TestBuildOperationInventoryRequestBodyFieldsAreRecursiveAndPromptSafe(t *te
 	}
 }
 
+func TestBuildOperationInventoryReportsReadFailuresForUnsafePaths(t *testing.T) {
+	base := t.TempDir()
+	symlinkTarget := filepath.Join(base, "target.yaml")
+	writeLocalFile(t, symlinkTarget, openAPI3InventoryFixture())
+	symlinkPath := filepath.Join(base, "symlink.yaml")
+	symlinkOrSkip(t, symlinkTarget, symlinkPath)
+
+	dirPath := filepath.Join(base, "directory.yaml")
+	if err := os.Mkdir(dirPath, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	oversizedPath := filepath.Join(base, "oversized.yaml")
+	writeLocalFile(t, oversizedPath, openAPI3InventoryFixture())
+
+	docs := []InventoryDocument{
+		{Name: "symlink", Path: symlinkPath},
+		{Name: "directory", Path: dirPath},
+		{Name: "oversized", Path: oversizedPath},
+	}
+	expectedMessages := []string{"symlink", "directory", "larger than 8 bytes"}
+	if runtime.GOOS != "windows" {
+		if info, err := os.Lstat(os.DevNull); err == nil && !info.Mode().IsRegular() {
+			docs = append(docs, InventoryDocument{Name: "special", Path: os.DevNull})
+			expectedMessages = append(expectedMessages, "not a regular file")
+		}
+	}
+
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{
+		Documents: docs,
+		MaxBytes:  8,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Diagnostics) != len(docs) {
+		t.Fatalf("diagnostics = %#v, want %d", inventory.Diagnostics, len(docs))
+	}
+	for _, diagnostic := range inventory.Diagnostics {
+		if diagnostic.Code != "document.read" || diagnostic.Severity != "error" {
+			t.Fatalf("diagnostic = %#v", diagnostic)
+		}
+	}
+	joined := diagnosticsText(inventory.Diagnostics)
+	for _, expected := range expectedMessages {
+		if !strings.Contains(joined, expected) {
+			t.Fatalf("expected %q in diagnostics %#v", expected, inventory.Diagnostics)
+		}
+	}
+}
+
+func TestBuildOperationInventoryRejectsSymlinkedParentComponents(t *testing.T) {
+	base := t.TempDir()
+	realDir := filepath.Join(base, "real")
+	if err := os.Mkdir(realDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	writeLocalFile(t, filepath.Join(realDir, "openapi.yaml"), openAPI3InventoryFixture())
+	linkDir := filepath.Join(base, "linked")
+	symlinkOrSkip(t, realDir, linkDir)
+
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{
+		Documents: []InventoryDocument{{Path: filepath.Join(linkDir, "openapi.yaml")}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Diagnostics) != 1 || inventory.Diagnostics[0].Code != "document.read" || !strings.Contains(inventory.Diagnostics[0].Message, "symlink") {
+		t.Fatalf("diagnostics = %#v", inventory.Diagnostics)
+	}
+}
+
 func inventoryText(inventory OperationInventory) string {
 	var b strings.Builder
 	for _, op := range inventory.Operations {
@@ -302,6 +376,15 @@ func inventoryText(inventory OperationInventory) string {
 				b.WriteString(property.Description)
 			}
 		}
+	}
+	return b.String()
+}
+
+func diagnosticsText(diagnostics []Diagnostic) string {
+	var b strings.Builder
+	for _, diagnostic := range diagnostics {
+		b.WriteString(diagnostic.Message)
+		b.WriteByte('\n')
 	}
 	return b.String()
 }

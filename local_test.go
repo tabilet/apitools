@@ -103,10 +103,62 @@ func TestLocalFilesRejectsMissingDir(t *testing.T) {
 	}
 }
 
+func TestLocalFilesRejectsSymlinkedRoot(t *testing.T) {
+	base := t.TempDir()
+	realDir := filepath.Join(base, "real-openapi")
+	if err := os.MkdirAll(realDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	linkDir := filepath.Join(base, "openapi")
+	symlinkOrSkip(t, realDir, linkDir)
+
+	_, err := LocalFiles(context.Background(), LocalOptions{Dir: linkDir, BaseDir: base})
+	if err == nil || !strings.Contains(err.Error(), "symlink") {
+		t.Fatalf("expected symlink error, got %v", err)
+	}
+}
+
+func TestLocalFilesRejectsSymlinkedCandidates(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "openapi")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	target := filepath.Join(base, "target.yaml")
+	writeLocalFile(t, target, validLocalSpec("Target API", "Target"))
+	symlinkOrSkip(t, target, filepath.Join(dir, "support.yaml"))
+
+	_, err := LocalFiles(context.Background(), LocalOptions{Dir: dir, BaseDir: base})
+	if err == nil || !strings.Contains(err.Error(), "symlink") {
+		t.Fatalf("expected symlink error, got %v", err)
+	}
+}
+
+func TestLocalFilesRejectsOversizedCandidates(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "openapi")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	writeLocalFile(t, filepath.Join(dir, "support.yaml"), validLocalSpec("Support API", "Support"))
+
+	_, err := LocalFiles(context.Background(), LocalOptions{Dir: dir, BaseDir: base, MaxBytes: 8})
+	if err == nil || !strings.Contains(err.Error(), "larger than 8 bytes") {
+		t.Fatalf("expected size error, got %v", err)
+	}
+}
+
 func writeLocalFile(t *testing.T, path, content string) {
 	t.Helper()
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func symlinkOrSkip(t *testing.T, oldname, newname string) {
+	t.Helper()
+	if err := os.Symlink(oldname, newname); err != nil {
+		t.Skipf("symlink unavailable: %v", err)
 	}
 }
 
