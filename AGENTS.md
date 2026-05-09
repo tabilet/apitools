@@ -16,8 +16,8 @@ Swagger documents from public catalogs and local files.
 - Put private UWS/OpenAPI lowering and runtime execution in `../udon`.
 - Put Ramen project templates, examples, review evidence, trusted-runner gates,
   and Symphony policy in `../ramen`.
-- Put OpenUdon IaC intent, graph, planning, state, and executor-facing artifacts
-  in `../openudon`.
+- Put OpenW8M IaC intent, graph, planning, state, and executor-facing artifacts
+  in `../openw8m`.
 
 Rule of thumb:
 
