@@ -73,6 +73,81 @@ func specMetadata(ctx context.Context, content []byte) (SpecMetadata, bool) {
 	}, true
 }
 
+func downloadedSpecMetadata(ctx context.Context, content []byte) (SpecMetadata, bool) {
+	if metadata, ok := specMetadata(ctx, content); ok {
+		return metadata, true
+	}
+	return awsOpenAPIMetadata(ctx, content)
+}
+
+func awsOpenAPIMetadata(ctx context.Context, content []byte) (SpecMetadata, bool) {
+	if ctx != nil {
+		if err := ctx.Err(); err != nil {
+			return SpecMetadata{}, false
+		}
+	}
+	trimmed := bytes.TrimSpace(content)
+	if len(trimmed) == 0 {
+		return SpecMetadata{}, false
+	}
+	var root map[string]any
+	if trimmed[0] == '{' {
+		if err := json.Unmarshal(trimmed, &root); err != nil {
+			return SpecMetadata{}, false
+		}
+	} else if err := yaml.Unmarshal(trimmed, &root); err != nil {
+		return SpecMetadata{}, false
+	}
+	openapi, _ := root["openapi"].(string)
+	if !strings.HasPrefix(strings.TrimSpace(openapi), "3.") {
+		return SpecMetadata{}, false
+	}
+	if containsExternalRef(root, 0) {
+		return SpecMetadata{}, false
+	}
+	info, ok := root["info"].(map[string]any)
+	if !ok {
+		return SpecMetadata{}, false
+	}
+	title, _ := info["title"].(string)
+	version, _ := info["version"].(string)
+	if !awsTitle(title) || strings.TrimSpace(version) == "" {
+		return SpecMetadata{}, false
+	}
+	paths, ok := root["paths"].(map[string]any)
+	if !ok {
+		return SpecMetadata{}, false
+	}
+	description, _ := info["description"].(string)
+	return SpecMetadata{
+		Title:          strings.TrimSpace(title),
+		Description:    strings.TrimSpace(description),
+		OpenAPI:        strings.TrimSpace(openapi),
+		OperationCount: looseOperationCount(paths),
+	}, true
+}
+
+func awsTitle(title string) bool {
+	normalized := strings.ToLower(strings.TrimSpace(title))
+	return strings.Contains(normalized, "aws") || strings.Contains(normalized, "amazon")
+}
+
+func looseOperationCount(paths map[string]any) int {
+	count := 0
+	for _, value := range paths {
+		pathItem, ok := value.(map[string]any)
+		if !ok {
+			continue
+		}
+		for _, method := range []string{"get", "put", "post", "delete", "options", "head", "patch", "trace"} {
+			if _, ok := pathItem[method].(map[string]any); ok {
+				count++
+			}
+		}
+	}
+	return count
+}
+
 func specMetadataV30(content []byte) (SpecMetadata, bool) {
 	var doc openapi30.OpenAPI
 	if err := json.Unmarshal(content, &doc); err != nil {

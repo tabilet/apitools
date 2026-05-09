@@ -208,6 +208,30 @@ func TestDownloadSpecAcceptsValidOpenAPI(t *testing.T) {
 	}
 }
 
+func TestDownloadSpecAcceptsAWSOpenAPIWithLooseValidation(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(`openapi: 3.0.0
+info:
+  title: AWS Lambda
+  version: "2015-03-31"
+paths:
+  /2021-10-31/functions/{FunctionName}/url:
+    post:
+      operationId: CreateFunctionUrlConfig
+`))
+	}))
+	defer server.Close()
+
+	c := &Client{AllowUnsafeHosts: true}
+	_, _, metadata, err := c.downloadSpec(context.Background(), server.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if metadata.Title != "AWS Lambda" || metadata.OpenAPI != "3.0.0" || metadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", metadata)
+	}
+}
+
 type stubTransport struct{}
 
 func (stubTransport) RoundTrip(*http.Request) (*http.Response, error) {
