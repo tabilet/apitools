@@ -208,7 +208,27 @@ func TestDownloadSpecAcceptsValidOpenAPI(t *testing.T) {
 	}
 }
 
-func TestDownloadSpecAcceptsAWSOpenAPIWithLooseValidation(t *testing.T) {
+func TestDownloadedSpecMetadataAcceptsAWSOpenAPIFromAPIsGuruFallbackSource(t *testing.T) {
+	content := []byte(`openapi: 3.0.0
+info:
+  title: AWS Lambda
+  version: "2015-03-31"
+paths:
+  /2021-10-31/functions/{FunctionName}/url:
+    post:
+      operationId: CreateFunctionUrlConfig
+`)
+
+	metadata, ok := downloadedSpecMetadata(context.Background(), content, "https://raw.githubusercontent.com/APIs-guru/openapi-directory/main/APIs/amazonaws.com/lambda/2015-03-31/openapi.yaml")
+	if !ok {
+		t.Fatal("expected AWS APIs.guru fallback document to be accepted")
+	}
+	if metadata.Title != "AWS Lambda" || metadata.OpenAPI != "3.0.0" || metadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", metadata)
+	}
+}
+
+func TestDownloadSpecRejectsLooseAWSOpenAPIFromUntrustedSource(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = w.Write([]byte(`openapi: 3.0.0
 info:
@@ -223,12 +243,9 @@ paths:
 	defer server.Close()
 
 	c := &Client{AllowUnsafeHosts: true}
-	_, _, metadata, err := c.downloadSpec(context.Background(), server.URL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if metadata.Title != "AWS Lambda" || metadata.OpenAPI != "3.0.0" || metadata.OperationCount != 1 {
-		t.Fatalf("metadata = %#v", metadata)
+	_, _, _, err := c.downloadSpec(context.Background(), server.URL)
+	if err == nil {
+		t.Fatal("expected loose AWS-looking document from untrusted source to be rejected")
 	}
 }
 

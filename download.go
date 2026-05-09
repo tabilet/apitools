@@ -30,7 +30,7 @@ func (c *Client) downloadSpec(ctx context.Context, rawURL string) ([]byte, *url.
 	if err != nil {
 		return nil, nil, SpecMetadata{}, err
 	}
-	metadata, ok := downloadedSpecMetadata(ctx, content)
+	metadata, ok := downloadedSpecMetadata(ctx, content, finalURL.String())
 	if !ok {
 		return nil, nil, SpecMetadata{}, fmt.Errorf("downloaded document does not look like OpenAPI or Swagger")
 	}
@@ -103,7 +103,7 @@ func cachedSpecContent(ctx context.Context, rawURL string, spec CachedSpec) ([]b
 			return nil, nil, SpecMetadata{}, fmt.Errorf("%w: cached OpenAPI document %q has SHA256 %s, want %s", ErrCachedSpecIntegrity, rawURL, got, spec.SHA256)
 		}
 	}
-	metadata, ok := downloadedSpecMetadata(ctx, content)
+	metadata, ok := downloadedSpecMetadata(ctx, content, finalURL.String())
 	if !ok {
 		return nil, nil, SpecMetadata{}, fmt.Errorf("%w: cached OpenAPI document %q is invalid", ErrCachedSpecIntegrity, rawURL)
 	}

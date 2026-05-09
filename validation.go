@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"net/url"
 	"strings"
 
 	"github.com/OpenUdon/oas/openapi20"
@@ -73,11 +74,31 @@ func specMetadata(ctx context.Context, content []byte) (SpecMetadata, bool) {
 	}, true
 }
 
-func downloadedSpecMetadata(ctx context.Context, content []byte) (SpecMetadata, bool) {
+func downloadedSpecMetadata(ctx context.Context, content []byte, sourceURL string) (SpecMetadata, bool) {
 	if metadata, ok := specMetadata(ctx, content); ok {
 		return metadata, true
 	}
+	if !awsOpenAPIFallbackSource(sourceURL) {
+		return SpecMetadata{}, false
+	}
 	return awsOpenAPIMetadata(ctx, content)
+}
+
+func awsOpenAPIFallbackSource(sourceURL string) bool {
+	parsed, err := url.Parse(strings.TrimSpace(sourceURL))
+	if err != nil {
+		return false
+	}
+	host := strings.ToLower(parsed.Hostname())
+	path := strings.ToLower(parsed.EscapedPath())
+	switch host {
+	case "raw.githubusercontent.com":
+		return strings.Contains(path, "/apis-guru/openapi-directory/") && strings.Contains(path, "/apis/amazonaws.com/")
+	case "github.com":
+		return strings.Contains(path, "/apis-guru/openapi-directory/") && strings.Contains(path, "/apis/amazonaws.com/")
+	default:
+		return false
+	}
 }
 
 func awsOpenAPIMetadata(ctx context.Context, content []byte) (SpecMetadata, bool) {
