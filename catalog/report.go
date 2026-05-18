@@ -228,6 +228,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Atlassian's Jira Cloud OpenAPI document includes OAuth2/basic security schemes and operation-level security metadata.",
 	},
 	{
+		ProviderID: "microsoft-graph",
+		SpecRefID:  "microsoft-graph-v1-openapi",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/master/openapi/v1.0/openapi.yaml"},
+		SourceNote: "Microsoft Graph's official OpenAPI v1.0 document lacks OpenAPI security schemes; official auth docs need advisory bearer-token overlay mapping.",
+	},
+	{
 		ProviderID: "openweathermap",
 		SpecRefID:  "openweathermap-api-docs",
 		Status:     AuthStatusOverlayRequired,

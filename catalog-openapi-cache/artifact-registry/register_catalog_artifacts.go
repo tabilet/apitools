@@ -224,6 +224,15 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/jira-cloud-platform-openapi-v3.json",
 	},
 	{
+		providerID: "microsoft-graph",
+		artifactID: "microsoft-graph-v1-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/master/openapi/v1.0/openapi.yaml",
+		path:       "openapi/microsoft-graph-v1-openapi.yaml",
+		title:      "OData Service for namespace microsoft.graph",
+		openapi:    "3.0.4",
+	},
+	{
 		providerID: "pagerduty",
 		artifactID: "pagerduty-rest-openapi-v3",
 		kind:       "openapi",

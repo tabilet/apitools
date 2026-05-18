@@ -410,6 +410,27 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "HubSpot exposes an official split OpenAPI spec index; official docs describe OAuth and private app bearer tokens, so selected specs should be checked with an advisory bearer-token overlay.",
 	},
 	{
+		ID:         "microsoft-graph-v1-auth-overlay",
+		ProviderID: "microsoft-graph",
+		SpecRefID:  "microsoft-graph-v1-openapi",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "microsoftGraphBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Microsoft identity platform access token carried as a bearer token in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "microsoftGraphBearer"}},
+		SourceRefs: []string{
+			"https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/master/openapi/v1.0/openapi.yaml",
+			"https://learn.microsoft.com/en-us/graph/auth/auth-concepts",
+			"https://github.com/microsoftgraph/msgraph-metadata",
+		},
+		SourceNote: "Microsoft Graph's official OpenAPI v1.0 document lacks OpenAPI security schemes; official docs describe Microsoft identity platform access tokens sent as Authorization bearer tokens.",
+	},
+	{
 		ID:         "openweathermap-api-key-overlay",
 		ProviderID: "openweathermap",
 		SpecRefID:  "openweathermap-api-docs",

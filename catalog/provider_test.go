@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 19; got != want {
+	if got, want := len(catalog.ListProviders()), 20; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -33,6 +33,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"google-sheets",
 		"hubspot",
 		"jira-cloud",
+		"microsoft-graph",
 		"openweathermap",
 		"pagerduty",
 		"slack",
@@ -51,6 +52,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "Jira", id: "jira-cloud"},
 		{key: "google drive api", id: "google-drive"},
 		{key: "Open Weather Map", id: "openweathermap"},
+		{key: "ms graph", id: "microsoft-graph"},
 		{key: "asana api", id: "asana"},
 		{key: "box api", id: "box"},
 		{key: "calendly api", id: "calendly"},
@@ -113,6 +115,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "google-sheets", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "hubspot", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPIIndex},
 		{id: "jira-cloud", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "microsoft-graph", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "pagerduty", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "slack", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "trello", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
