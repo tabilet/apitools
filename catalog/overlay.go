@@ -575,6 +575,28 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Zendesk's official Sunshine Conversations OpenAPI covers messaging security; broader Support API docs describe API-token basic auth and OAuth bearer tokens, so catalog consumers should treat support/ticketing auth as reviewed but endpoint coverage as incomplete without a user OpenAPI document.",
 	},
+	{
+		ID:         "zoom-api-v2-auth-review",
+		ProviderID: "zoom",
+		SpecRefID:  "zoom-api-v2-openapi",
+		Status:     AuthStatusPresentIncomplete,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:         "zoomBearer",
+				Type:         SecuritySchemeHTTP,
+				Scheme:       "bearer",
+				BearerFormat: "OAuth access token",
+				Description:  "Zoom OAuth access token carried in the Authorization header for current REST API docs.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "zoomBearer"}},
+		SourceRefs: []string{
+			"https://raw.githubusercontent.com/zoom/api/master/openapi.v2.json",
+			"https://developers.zoom.us/docs/api/meetings/",
+			"https://developers.zoom.us/docs/integrations/oauth/",
+		},
+		SourceNote: "Zoom's saved official Swagger 2.0 artifact uses older access_token query security, while current docs list OAuth scopes and bearer access-token usage; keep this as present-incomplete advisory auth review metadata.",
+	},
 }
 
 func googleOAuthScheme(name string, scopes []string) SecurityScheme {

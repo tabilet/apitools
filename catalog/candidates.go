@@ -245,6 +245,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for SMS, voice, messaging, phone numbers, and communication automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "zoom",
+		displayName: "Zoom",
+		aliases:     []string{"zoom api", "zoom meetings"},
+		category:    "communications",
+		n8nNode:     "Zoom",
+		relevance:   "Popular workflow service for meetings, webinars, recordings, users, and account automation.",
+		userNeed:    UserOpenAPINeedPossible,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "zendesk",
 		displayName: "Zendesk",
 		aliases:     []string{"zendesk api", "zendesk support"},

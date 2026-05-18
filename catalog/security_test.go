@@ -86,7 +86,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 18; got != want {
+	if got, want := len(overlays), 19; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -201,6 +201,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"trello",
 		"twilio",
 		"zendesk",
+		"zoom",
 	}
 	if !reflect.DeepEqual(gotIDs, wantIDs) {
 		t.Fatalf("report provider ids = %#v, want %#v", gotIDs, wantIDs)
@@ -234,6 +235,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"trello":          AuthStatusComplete,
 		"twilio":          AuthStatusComplete,
 		"zendesk":         AuthStatusPresentIncomplete,
+		"zoom":            AuthStatusPresentIncomplete,
 	}
 	if !reflect.DeepEqual(statusByID, wantStatuses) {
 		t.Fatalf("report statuses = %#v, want %#v", statusByID, wantStatuses)

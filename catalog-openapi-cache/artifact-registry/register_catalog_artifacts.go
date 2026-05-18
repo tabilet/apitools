@@ -290,6 +290,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.0.1",
 	},
 	{
+		providerID: "zoom",
+		artifactID: "zoom-api-v2-openapi",
+		kind:       "swagger",
+		url:        "https://raw.githubusercontent.com/zoom/api/master/openapi.v2.json",
+		path:       "openapi/zoom-api-v2-openapi.json",
+		title:      "Zoom API",
+		swagger:    "2.0",
+	},
+	{
 		providerID: "zendesk",
 		artifactID: "zendesk-sunshine-conversations-openapi",
 		kind:       "openapi",

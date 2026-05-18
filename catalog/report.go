@@ -312,6 +312,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Twilio's official OpenAPI v2010 document includes an HTTP Basic security scheme and operation-level security requirements for Account SID/Auth Token authentication.",
 	},
 	{
+		ProviderID: "zoom",
+		SpecRefID:  "zoom-api-v2-openapi",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/zoom/api/master/openapi.v2.json", "https://developers.zoom.us/docs/integrations/oauth/"},
+		SourceNote: "Zoom's official GitHub Swagger 2.0 document includes older access_token query security, while current docs describe OAuth bearer access tokens and granular scopes; security metadata should be reviewed with advisory overlay notes.",
+	},
+	{
 		ProviderID: "zendesk",
 		SpecRefID:  "zendesk-sunshine-conversations-openapi",
 		Status:     AuthStatusComplete,
