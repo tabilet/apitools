@@ -237,7 +237,7 @@ func runCatalogSpecs(args []string, out, errOut io.Writer) int {
 		fs.Usage()
 		return 2
 	}
-	artifacts, closeCache, err := catalogSpecArtifactsFromCache(*cachePath)
+	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
 		return 1
@@ -298,7 +298,17 @@ func runCatalogRefreshWithClient(args []string, out, errOut io.Writer, refresher
 		fs.Usage()
 		return 2
 	}
-	rows, err := selectRefreshableSpecRows(*providerKey, *specRefID)
+	if _, err := selectRefreshableSpecRows(*providerKey, *specRefID, nil); err != nil {
+		fmt.Fprintln(errOut, err)
+		return 2
+	}
+	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	defer closeCache()
+	rows, err := selectRefreshableSpecRows(*providerKey, *specRefID, artifacts)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
 		return 2
@@ -330,7 +340,7 @@ func runCatalogRefreshWithClient(args []string, out, errOut io.Writer, refresher
 	return 0
 }
 
-func selectRefreshableSpecRows(providerKey, specRefID string) ([]catalogpkg.RefreshableSpecReference, error) {
+func selectRefreshableSpecRows(providerKey, specRefID string, artifacts []catalogpkg.CatalogSpecArtifact) ([]catalogpkg.RefreshableSpecReference, error) {
 	providerKey = strings.TrimSpace(providerKey)
 	if providerKey == "" {
 		return nil, fmt.Errorf("missing --provider")
@@ -341,7 +351,7 @@ func selectRefreshableSpecRows(providerKey, specRefID string) ([]catalogpkg.Refr
 	}
 	specRefID = strings.TrimSpace(specRefID)
 	var rows []catalogpkg.RefreshableSpecReference
-	for _, row := range catalogpkg.BuiltInRefreshableSpecReferences(nil) {
+	for _, row := range catalogpkg.BuiltInRefreshableSpecReferences(artifacts) {
 		if row.ProviderID != provider.ID {
 			continue
 		}
@@ -983,6 +993,20 @@ func catalogSpecArtifactsFromCache(path string) ([]catalogpkg.CatalogSpecArtifac
 		})
 	}
 	return rows, closeCache, nil
+}
+
+func catalogSpecArtifactsFromExistingCache(path string) ([]catalogpkg.CatalogSpecArtifact, func(), error) {
+	path = strings.TrimSpace(path)
+	if path == "" {
+		return nil, func() {}, nil
+	}
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			return nil, func() {}, nil
+		}
+		return nil, nil, err
+	}
+	return catalogSpecArtifactsFromCache(path)
 }
 
 func singleLine(value string) string {
