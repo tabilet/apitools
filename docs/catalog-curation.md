@@ -32,6 +32,22 @@ For each service, use the same four-step review loop.
    Use `catalog-openapi-cache/artifact-registry/register_catalog_artifacts.go`
    to refresh the local path manifest for the current curated batch.
 
+   For repeatable local refreshes of known built-in spec references, use:
+
+   ```bash
+   go run ./cmd/apitools catalog specs --cache catalog-openapi-cache/cache.sqlite
+   go run ./cmd/apitools catalog refresh \
+     --provider <provider-id> \
+     --spec <spec-ref-id> \
+     --cache-dir catalog-openapi-cache \
+     --cache catalog-openapi-cache/cache.sqlite
+   ```
+
+   `catalog refresh` is opt-in and selected; it must not be wired into
+   `catalog check`. It downloads only the requested known reference, saves the
+   review artifact under ignored cache directories, registers paths in SQLite,
+   and reports manual follow-ups for catalog metadata review.
+
 2. Review auth/security completeness.
 
    Inspect official docs and the machine-readable document, when one exists.

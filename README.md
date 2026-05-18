@@ -98,6 +98,11 @@ go run ./cmd/apitools catalog inspect slack \
 go run ./cmd/apitools catalog overlay-view github --json
 go run ./cmd/apitools catalog security-report --json
 go run ./cmd/apitools catalog check --as-of 2026-05-18 --json
+go run ./cmd/apitools catalog specs --cache catalog-openapi-cache/cache.sqlite
+go run ./cmd/apitools catalog refresh \
+  --provider slack \
+  --cache-dir catalog-openapi-cache \
+  --cache catalog-openapi-cache/cache.sqlite
 ```
 
 Catalog resolution is intentionally conservative. Explicit user OpenAPI inputs
@@ -132,6 +137,16 @@ built-in providers, candidates, source notes, verification dates, security
 classifications, and overlay references without probing URLs or downloading
 provider documents. Error-level findings return a nonzero exit code; warning-only
 reports remain exit code 0 for inspection.
+
+Catalog spec refresh is opt-in and selected. `catalog specs` lists known
+machine-readable built-in spec references without network access, optionally
+joining registered local artifact paths from `cache.sqlite`. `catalog refresh`
+downloads only the selected provider/spec reference using the same safe HTTP(S)
+download limits as imports, saves the artifact under ignored
+`catalog-openapi-cache/openapi/` or `catalog-openapi-cache/google-discovery/`,
+and registers file paths in SQLite instead of storing duplicate document blobs.
+Refresh reports are review inputs only: they do not edit provider metadata,
+verified dates, tracked advisory overlays, or security classifications.
 
 ## Go Usage
 
