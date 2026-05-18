@@ -59,6 +59,8 @@ func runCatalog(args []string, out, errOut io.Writer) int {
 		return 2
 	}
 	switch args[0] {
+	case "check":
+		return runCatalogCheck(args[1:], out, errOut)
 	case "list":
 		return runCatalogList(args[1:], out, errOut)
 	case "inspect":
@@ -81,10 +83,65 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "Usage: apitools catalog <command>")
 	fmt.Fprintln(out)
 	fmt.Fprintln(out, "Commands:")
+	fmt.Fprintln(out, "  check            run offline catalog quality checks")
 	fmt.Fprintln(out, "  list             list built-in provider catalog metadata")
 	fmt.Fprintln(out, "  inspect          inspect one provider and resolution status")
 	fmt.Fprintln(out, "  overlay-view     inspect advisory security overlay effects")
 	fmt.Fprintln(out, "  security-report  report auth/security status across providers")
+}
+
+func runCatalogCheck(args []string, out, errOut io.Writer) int {
+	return runCatalogCheckWithReport(args, out, errOut, func(options catalogpkg.CatalogQualityOptions) catalogpkg.CatalogQualityReport {
+		return catalogpkg.BuiltInCatalogQualityReport(options)
+	})
+}
+
+func runCatalogCheckWithReport(args []string, out, errOut io.Writer, build func(catalogpkg.CatalogQualityOptions) catalogpkg.CatalogQualityReport) int {
+	fs := flag.NewFlagSet("apitools catalog check", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	asOf := fs.String("as-of", "", "Check freshness as of YYYY-MM-DD; defaults to today")
+	staleDays := fs.Int("stale-days", catalogpkg.DefaultStaleVerificationDays, "Warn when spec verification is older than this many days")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog check [--as-of YYYY-MM-DD] [--stale-days 365] [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if fs.NArg() > 0 {
+		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
+		fs.Usage()
+		return 2
+	}
+	options := catalogpkg.CatalogQualityOptions{StaleVerificationDays: *staleDays}
+	if strings.TrimSpace(*asOf) != "" {
+		parsed, err := time.Parse("2006-01-02", strings.TrimSpace(*asOf))
+		if err != nil {
+			fmt.Fprintf(errOut, "invalid --as-of %q: expected YYYY-MM-DD\n", *asOf)
+			return 2
+		}
+		options.AsOf = parsed
+	}
+	report := build(options)
+	if *jsonOut {
+		if err := writeJSON(out, report); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return catalogCheckExitCode(report)
+	}
+	writeCatalogQualityReport(out, report)
+	return catalogCheckExitCode(report)
 }
 
 func runCatalogList(args []string, out, errOut io.Writer) int {
@@ -435,6 +492,32 @@ func writeCatalogOverlayView(out io.Writer, view catalogpkg.SecurityInspectionVi
 			fmt.Fprintf(out, ": %s\n", conflict.Message)
 		}
 	}
+}
+
+func writeCatalogQualityReport(out io.Writer, report catalogpkg.CatalogQualityReport) {
+	fmt.Fprintf(out, "Catalog quality: %d error(s), %d warning(s)\n", report.ErrorCount(), report.WarningCount())
+	if len(report.Findings) == 0 {
+		fmt.Fprintln(out, "No catalog quality findings.")
+		return
+	}
+	fmt.Fprintf(out, "%-8s %-34s %-18s %-28s %s\n", "SEVERITY", "CODE", "PROVIDER", "FIELD", "MESSAGE")
+	for _, finding := range report.Findings {
+		subject := finding.ProviderID
+		if subject == "" {
+			subject = finding.CandidateID
+		}
+		if subject == "" {
+			subject = finding.OverlayID
+		}
+		fmt.Fprintf(out, "%-8s %-34s %-18s %-28s %s\n", finding.Severity, finding.Code, subject, finding.Field, finding.Message)
+	}
+}
+
+func catalogCheckExitCode(report catalogpkg.CatalogQualityReport) int {
+	if report.HasErrors() {
+		return 1
+	}
+	return 0
 }
 
 func operationMatchLabel(match catalogpkg.OperationMatch) string {

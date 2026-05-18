@@ -48,6 +48,7 @@ go run ./cmd/apitools catalog list
 go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog overlay-view github
 go run ./cmd/apitools catalog security-report
+go run ./cmd/apitools catalog check
 ```
 
 Search uses APIs.guru first and can fall back to public-apis by probing common
@@ -96,6 +97,7 @@ go run ./cmd/apitools catalog inspect slack \
   --security-overlay ./openapi/slack-security.json
 go run ./cmd/apitools catalog overlay-view github --json
 go run ./cmd/apitools catalog security-report --json
+go run ./cmd/apitools catalog check --as-of 2026-05-18 --json
 ```
 
 Catalog resolution is intentionally conservative. Explicit user OpenAPI inputs
@@ -122,6 +124,12 @@ provenance for schemes and security requirements and surfacing review conflicts
 such as duplicate scheme names, missing referenced schemes, overlay-only
 additions, and unresolved operation matches. It does not write overlay-applied
 OpenAPI files.
+
+Catalog quality checks are offline by default. `catalog check` validates
+built-in providers, candidates, source notes, verification dates, security
+classifications, and overlay references without probing URLs or downloading
+provider documents. Error-level findings return a nonzero exit code; warning-only
+reports remain exit code 0 for inspection.
 
 ## Go Usage
 
@@ -203,6 +211,9 @@ _, _ = securityReport, err
 
 view, err := catalog.BuiltInSecurityInspectionView("github")
 _, _ = view, err
+
+quality := catalog.BuiltInCatalogQualityReport(catalog.CatalogQualityOptions{})
+_ = quality
 ```
 
 Caching is optional through `github.com/OpenUdon/apitools/sqlitecache` or the
@@ -259,6 +270,7 @@ go vet ./...
 git diff --check
 go run ./cmd/apitools search --help
 go run ./cmd/apitools import --help
+go run ./cmd/apitools catalog check
 go run ./cmd/apitools catalog list
 go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog security-report

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/OpenUdon/apitools"
+	"github.com/OpenUdon/apitools/catalog"
 	"github.com/OpenUdon/apitools/sqlitecache"
 )
 
@@ -50,10 +51,74 @@ func TestCatalogHelpDocumentsSubcommands(t *testing.T) {
 		t.Fatalf("code = %d\n%s", code, out.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"Usage: apitools catalog", "list", "inspect", "overlay-view", "security-report"} {
+	for _, expected := range []string{"Usage: apitools catalog", "check", "list", "inspect", "overlay-view", "security-report"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
 		}
+	}
+}
+
+func TestCatalogCheckOutputAndExitCode(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "check", "--as-of", "2026-05-18"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if !strings.Contains(out.String(), "Catalog quality: 0 error(s), 0 warning(s)") {
+		t.Fatalf("catalog check output missing clean summary:\n%s", out.String())
+	}
+}
+
+func TestCatalogCheckJSONOutput(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "check", "--as-of", "2026-05-18", "--json"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if strings.TrimSpace(out.String()) != "{}" {
+		t.Fatalf("catalog check json = %s, want empty report object", out.String())
+	}
+}
+
+func TestCatalogCheckExitCodeAllowsWarnings(t *testing.T) {
+	report := catalog.CatalogQualityReport{Findings: []catalog.CatalogQualityFinding{{
+		Severity: catalog.CatalogQualityWarning,
+		Code:     "stale-verification-date",
+		Message:  "stale",
+	}}}
+	if code := catalogCheckExitCode(report); code != 0 {
+		t.Fatalf("warning-only exit code = %d, want 0", code)
+	}
+}
+
+func TestCatalogCheckExitCodeFailsErrors(t *testing.T) {
+	report := catalog.CatalogQualityReport{Findings: []catalog.CatalogQualityFinding{{
+		Severity: catalog.CatalogQualityError,
+		Code:     "missing-security-status",
+		Message:  "missing",
+	}}}
+	if code := catalogCheckExitCode(report); code != 1 {
+		t.Fatalf("error exit code = %d, want 1", code)
+	}
+}
+
+func TestCatalogCheckCommandFailsErrorReport(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := runCatalogCheckWithReport(nil, &out, &errOut, func(catalog.CatalogQualityOptions) catalog.CatalogQualityReport {
+		return catalog.CatalogQualityReport{Findings: []catalog.CatalogQualityFinding{{
+			Severity: catalog.CatalogQualityError,
+			Code:     "missing-security-status",
+			Message:  "missing",
+		}}}
+	})
+	if code != 1 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if !strings.Contains(out.String(), "Catalog quality: 1 error(s), 0 warning(s)") {
+		t.Fatalf("catalog check output missing error summary:\n%s", out.String())
 	}
 }
 
