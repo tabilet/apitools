@@ -46,6 +46,7 @@ go run ./cmd/apitools search --query slack --cache ~/.cache/apitools/cache.sqlit
 go run ./cmd/apitools import --url https://example.com/openapi.yaml --dir ./openapi --name example
 go run ./cmd/apitools catalog list
 go run ./cmd/apitools catalog inspect slack
+go run ./cmd/apitools catalog overlay-view github
 go run ./cmd/apitools catalog security-report
 ```
 
@@ -93,6 +94,7 @@ go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog inspect slack \
   --openapi ./openapi/slack.yaml \
   --security-overlay ./openapi/slack-security.json
+go run ./cmd/apitools catalog overlay-view github --json
 go run ./cmd/apitools catalog security-report --json
 ```
 
@@ -113,6 +115,13 @@ assets. For catalog curation, `cache.sqlite` records file paths for saved
 documents and overlay artifacts rather than duplicating already-saved document
 bodies; the local manifest registration program lives under
 `catalog-openapi-cache/artifact-registry/`.
+
+Overlay inspection views are metadata-only. `catalog overlay-view` reports how
+built-in security overlays would supplement catalog classifications, preserving
+provenance for schemes and security requirements and surfacing review conflicts
+such as duplicate scheme names, missing referenced schemes, overlay-only
+additions, and unresolved operation matches. It does not write overlay-applied
+OpenAPI files.
 
 ## Go Usage
 
@@ -191,6 +200,9 @@ _, _ = resolved, err
 
 securityReport, err := catalog.BuiltInSecurityReport()
 _, _ = securityReport, err
+
+view, err := catalog.BuiltInSecurityInspectionView("github")
+_, _ = view, err
 ```
 
 Caching is optional through `github.com/OpenUdon/apitools/sqlitecache` or the
@@ -231,8 +243,9 @@ and `.yml` files that parse but are not OpenAPI or Swagger are still ignored by
   inventories, authoring summaries, auth summaries, and operation ranking.
 - `github.com/OpenUdon/apitools/catalog`: metadata-only candidate inventory,
   durable provider catalog entries, official spec references, security
-  overlays, auth/security reports, and provider resolution helpers for catalog
-  curation. Catalog metadata is not provider or n8n runtime compatibility.
+  overlays, auth/security reports, overlay inspection views, and provider
+  resolution helpers for catalog curation. Catalog metadata is not provider or
+  n8n runtime compatibility.
 - `github.com/OpenUdon/apitools/sqlitecache`: optional SQLite cache
   implementation for the core `Cache` interface.
 - `github.com/OpenUdon/apitools/openapidisco`: compatibility wrapper around

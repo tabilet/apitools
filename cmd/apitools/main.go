@@ -63,6 +63,8 @@ func runCatalog(args []string, out, errOut io.Writer) int {
 		return runCatalogList(args[1:], out, errOut)
 	case "inspect":
 		return runCatalogInspect(args[1:], out, errOut)
+	case "overlay-view":
+		return runCatalogOverlayView(args[1:], out, errOut)
 	case "security-report":
 		return runCatalogSecurityReport(args[1:], out, errOut)
 	case "-h", "--help", "help":
@@ -81,6 +83,7 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "Commands:")
 	fmt.Fprintln(out, "  list             list built-in provider catalog metadata")
 	fmt.Fprintln(out, "  inspect          inspect one provider and resolution status")
+	fmt.Fprintln(out, "  overlay-view     inspect advisory security overlay effects")
 	fmt.Fprintln(out, "  security-report  report auth/security status across providers")
 }
 
@@ -258,6 +261,67 @@ func runCatalogSecurityReport(args []string, out, errOut io.Writer) int {
 	return 0
 }
 
+func runCatalogOverlayView(args []string, out, errOut io.Writer) int {
+	var provider string
+	parseArgs := args
+	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
+		provider = args[0]
+		parseArgs = args[1:]
+	}
+	fs := flag.NewFlagSet("apitools catalog overlay-view", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog overlay-view <provider> [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(parseArgs); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if provider == "" {
+		if fs.NArg() > 0 {
+			provider = fs.Arg(0)
+		}
+		if fs.NArg() > 1 {
+			fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(1))
+			fs.Usage()
+			return 2
+		}
+	} else if fs.NArg() > 0 {
+		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
+		fs.Usage()
+		return 2
+	}
+	if strings.TrimSpace(provider) == "" {
+		fmt.Fprintln(errOut, "missing provider")
+		fs.Usage()
+		return 2
+	}
+	view, err := catalogpkg.BuiltInSecurityInspectionView(provider)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	if *jsonOut {
+		if err := writeJSON(out, view); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	writeCatalogOverlayView(out, view)
+	return 0
+}
+
 type catalogListRow struct {
 	ID                  string                            `json:"id"`
 	DisplayName         string                            `json:"display_name"`
@@ -304,6 +368,87 @@ func writeCatalogInspect(out io.Writer, resolved catalogpkg.ResolvedProvider) {
 			}
 		}
 	}
+}
+
+func writeCatalogOverlayView(out io.Writer, view catalogpkg.SecurityInspectionView) {
+	fmt.Fprintf(out, "Provider: %s (%s)\n", view.DisplayName, view.ProviderID)
+	fmt.Fprintf(out, "Auth status: %s\n", view.Status)
+	if view.Classification != nil {
+		fmt.Fprintf(out, "Classification: %s", view.Classification.Provenance)
+		if view.Classification.SpecRefID != "" {
+			fmt.Fprintf(out, " spec=%s", view.Classification.SpecRefID)
+		}
+		fmt.Fprintf(out, " status=%s\n", view.Classification.Status)
+	}
+	if len(view.SecuritySchemes) > 0 {
+		fmt.Fprintln(out, "Effective security schemes:")
+		for _, scheme := range view.SecuritySchemes {
+			fmt.Fprintf(out, "- %s [%s]", scheme.Scheme.Name, scheme.Provenance)
+			if scheme.OverlayID != "" {
+				fmt.Fprintf(out, " overlay=%s", scheme.OverlayID)
+			}
+			if scheme.SpecRefID != "" {
+				fmt.Fprintf(out, " spec=%s", scheme.SpecRefID)
+			}
+			fmt.Fprintln(out)
+		}
+	}
+	if len(view.RootSecurity) > 0 {
+		fmt.Fprintln(out, "Root security:")
+		for _, requirement := range view.RootSecurity {
+			fmt.Fprintf(out, "- %s [%s]", requirement.Requirement.Scheme, requirement.Provenance)
+			if len(requirement.Requirement.Scopes) > 0 {
+				fmt.Fprintf(out, " scopes=%s", strings.Join(requirement.Requirement.Scopes, ","))
+			}
+			if requirement.OverlayID != "" {
+				fmt.Fprintf(out, " overlay=%s", requirement.OverlayID)
+			}
+			fmt.Fprintln(out)
+		}
+	}
+	if len(view.OperationSecurity) > 0 {
+		fmt.Fprintln(out, "Operation security:")
+		for _, operation := range view.OperationSecurity {
+			fmt.Fprintf(out, "- %s [%s]", operationMatchLabel(operation.Match), operation.Provenance)
+			if operation.OverlayID != "" {
+				fmt.Fprintf(out, " overlay=%s", operation.OverlayID)
+			}
+			fmt.Fprintln(out)
+			for _, requirement := range operation.Security {
+				fmt.Fprintf(out, "  - %s [%s]\n", requirement.Requirement.Scheme, requirement.Provenance)
+			}
+		}
+	}
+	if len(view.Conflicts) > 0 {
+		fmt.Fprintln(out, "Conflicts:")
+		for _, conflict := range view.Conflicts {
+			fmt.Fprintf(out, "- %s", conflict.Type)
+			if conflict.Scheme != "" {
+				fmt.Fprintf(out, " scheme=%s", conflict.Scheme)
+			}
+			if conflict.OverlayID != "" {
+				fmt.Fprintf(out, " overlay=%s", conflict.OverlayID)
+			}
+			if label := operationMatchLabel(conflict.Match); label != "" {
+				fmt.Fprintf(out, " match=%s", label)
+			}
+			fmt.Fprintf(out, ": %s\n", conflict.Message)
+		}
+	}
+}
+
+func operationMatchLabel(match catalogpkg.OperationMatch) string {
+	var parts []string
+	if match.OperationID != "" {
+		parts = append(parts, "operation_id="+match.OperationID)
+	}
+	if match.Method != "" || match.Path != "" {
+		parts = append(parts, strings.ToUpper(match.Method)+" "+match.Path)
+	}
+	if len(match.Tags) > 0 {
+		parts = append(parts, "tags="+strings.Join(match.Tags, ","))
+	}
+	return strings.Join(parts, " ")
 }
 
 func writeResolvedReferenceDetails(out io.Writer, ref catalogpkg.ResolvedReference) {

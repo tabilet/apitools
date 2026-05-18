@@ -50,7 +50,7 @@ func TestCatalogHelpDocumentsSubcommands(t *testing.T) {
 		t.Fatalf("code = %d\n%s", code, out.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"Usage: apitools catalog", "list", "inspect", "security-report"} {
+	for _, expected := range []string{"Usage: apitools catalog", "list", "inspect", "overlay-view", "security-report"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
 		}
@@ -142,6 +142,46 @@ func TestCatalogSecurityReportJSON(t *testing.T) {
 	text := out.String()
 	if !strings.Contains(text, `"provider_id": "airtable"`) || !strings.Contains(text, `"status": "overlay-required"`) {
 		t.Fatalf("security report json missing expected metadata:\n%s", text)
+	}
+}
+
+func TestCatalogOverlayViewShowsProvenanceAndConflicts(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "overlay-view", "github"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	text := out.String()
+	for _, expected := range []string{
+		"Provider: GitHub (github)",
+		"Auth status: overlay-required",
+		"Classification: classification spec=github-rest-api-openapi status=overlay-required",
+		"githubBearer [overlay] overlay=github-rest-api-auth-overlay",
+		"overlay-only-addition scheme=githubBearer overlay=github-rest-api-auth-overlay",
+	} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("overlay-view output missing %q:\n%s", expected, text)
+		}
+	}
+}
+
+func TestCatalogOverlayViewJSON(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "overlay-view", "--json", "github"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	text := out.String()
+	for _, expected := range []string{
+		`"provider_id": "github"`,
+		`"provenance": "overlay"`,
+		`"type": "overlay-only-addition"`,
+	} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("overlay-view json missing %q:\n%s", expected, text)
+		}
 	}
 }
 
