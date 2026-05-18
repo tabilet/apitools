@@ -151,6 +151,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Calendly's official API reference is human documentation backed by Stoplight hosting in this catalog entry; no downloadable official OpenAPI document is recorded, so endpoint and security metadata come from advisory overlays.",
 	},
 	{
+		ProviderID: "clickup",
+		SpecRefID:  "clickup-api-v2-openapi",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://developer.clickup.com/openapi/clickup-api-v2-reference.json"},
+		SourceNote: "ClickUp's official OpenAPI document includes an Authorization header API key scheme and root security, but OAuth authorization-code flow details are documented separately rather than fully modeled in the security scheme.",
+	},
+	{
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",
 		Status:     AuthStatusOverlayRequired,

@@ -136,6 +136,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.0.2",
 	},
 	{
+		providerID: "clickup",
+		artifactID: "clickup-api-v2-openapi",
+		kind:       "openapi",
+		url:        "https://developer.clickup.com/openapi/clickup-api-v2-reference.json",
+		path:       "openapi/clickup-api-v2-reference.json",
+		title:      "ClickUp API v2 Reference",
+		openapi:    "3.1.0",
+	},
+	{
 		providerID: "gmail",
 		artifactID: "gmail-discovery-v1",
 		kind:       "google-discovery",

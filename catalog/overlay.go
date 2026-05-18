@@ -180,6 +180,40 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Calendly has human API docs in this catalog entry but no recorded downloadable official OpenAPI document; docs describe personal access tokens and OAuth 2.1, so OpenAPI imports need an advisory bearer-token overlay.",
 	},
 	{
+		ID:         "clickup-api-v2-auth-review",
+		ProviderID: "clickup",
+		SpecRefID:  "clickup-api-v2-openapi",
+		Status:     AuthStatusPresentIncomplete,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "Authorization_Token",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Authorization",
+				Description:   "ClickUp personal API token or OAuth2 bearer access token carried in the Authorization header.",
+			},
+			{
+				Name: "clickupOAuth2",
+				Type: SecuritySchemeOAuth2,
+				Flows: []OAuthFlow{
+					{
+						Type:             OAuthFlowAuthorizationCode,
+						AuthorizationURL: "https://app.clickup.com/api",
+						TokenURL:         "https://api.clickup.com/api/v2/oauth/token",
+					},
+				},
+				Description: "ClickUp OAuth 2.0 authorization code flow described in official authentication docs.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "Authorization_Token"}, {Scheme: "clickupOAuth2"}},
+		SourceRefs: []string{
+			"https://developer.clickup.com/openapi/clickup-api-v2-reference.json",
+			"https://developer.clickup.com/docs/authentication",
+			"https://developer.clickup.com/reference/getaccesstoken",
+		},
+		SourceNote: "ClickUp's official OpenAPI document includes an Authorization header API key scheme and root security; OAuth authorization-code endpoints are documented separately, so keep this as a present-incomplete auth review overlay.",
+	},
+	{
 		ID:         "gmail-discovery-auth-overlay",
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",
