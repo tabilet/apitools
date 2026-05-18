@@ -522,6 +522,33 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Shopify has human REST Admin API docs in this catalog entry but no recorded official OpenAPI document; docs describe Admin API access tokens and access scopes, so OpenAPI imports need an advisory header-token overlay.",
 	},
 	{
+		ID:         "servicenow-rest-auth-overlay",
+		ProviderID: "servicenow",
+		SpecRefID:  "servicenow-rest-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "servicenowBasic",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "ServiceNow REST API Basic authentication with a user name and password authorized by instance ACLs.",
+			},
+			{
+				Name:         "servicenowOAuth2",
+				Type:         SecuritySchemeHTTP,
+				Scheme:       "bearer",
+				BearerFormat: "OAuth 2.0 access token",
+				Description:  "ServiceNow OAuth 2.0 access token carried in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "servicenowBasic"}, {Scheme: "servicenowOAuth2"}},
+		SourceRefs: []string{
+			"https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/c_RESTAPI.html",
+			"https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/export-openapi-specification.html",
+		},
+		SourceNote: "ServiceNow REST API docs describe Basic authentication and OAuth for instance APIs; per-instance OpenAPI exports may need this advisory security overlay when exported metadata is absent or incomplete.",
+	},
+	{
 		ID:         "slack-web-api-auth-review",
 		ProviderID: "slack",
 		SpecRefID:  "slack-web-openapi-v2",

@@ -211,6 +211,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for transactional email, templates, contacts, suppression lists, and email analytics.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "servicenow",
+		displayName: "ServiceNow",
+		aliases:     []string{"servicenow api", "servicenow rest"},
+		category:    "it-service-management",
+		n8nNode:     "ServiceNow",
+		relevance:   "Popular workflow service for incidents, users, tables, service catalog, change records, and ITSM automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "shopify",
 		displayName: "Shopify",
 		aliases:     []string{"shopify api"},

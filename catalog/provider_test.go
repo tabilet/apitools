@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 30; got != want {
+	if got, want := len(catalog.ListProviders()), 31; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -41,6 +41,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"pagerduty",
 		"salesforce",
 		"sendgrid",
+		"servicenow",
 		"shopify",
 		"slack",
 		"stripe",
@@ -78,6 +79,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "okta management", id: "okta"},
 		{key: "salesforce rest api", id: "salesforce"},
 		{key: "twilio sendgrid", id: "sendgrid"},
+		{key: "servicenow rest", id: "servicenow"},
 		{key: "shopify admin api", id: "shopify"},
 		{key: "stripe api", id: "stripe"},
 		{key: "twilio sms", id: "twilio"},
@@ -141,6 +143,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "okta", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "salesforce", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "sendgrid", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
+		{id: "servicenow", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "shopify", openAPI: SpecAvailabilityUnknown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "pagerduty", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "slack", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
