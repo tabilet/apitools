@@ -123,6 +123,90 @@ func TestCatalogSpecsShowsRegisteredArtifactPath(t *testing.T) {
 	}
 }
 
+func TestCatalogRefreshCommandRegistersSelectedSpec(t *testing.T) {
+	dir := t.TempDir()
+	cacheDir := filepath.Join(dir, "catalog-openapi-cache")
+	cachePath := filepath.Join(cacheDir, "cache.sqlite")
+	var selected []catalog.RefreshableSpecReference
+	refresh := func(ctx context.Context, rows []catalog.RefreshableSpecReference, opts apitools.CatalogSpecRefreshOptions) (apitools.CatalogSpecRefreshReport, error) {
+		selected = append([]catalog.RefreshableSpecReference(nil), rows...)
+		artifactPath := "openapi/slack-web-openapi-v2.json"
+		fullPath := filepath.Join(opts.CacheDir, filepath.FromSlash(artifactPath))
+		if err := os.MkdirAll(filepath.Dir(fullPath), 0o755); err != nil {
+			return apitools.CatalogSpecRefreshReport{}, err
+		}
+		if err := os.WriteFile(fullPath, []byte(`{"openapi":"3.0.0","info":{"title":"Slack","version":"1.0.0"},"paths":{}}`), 0o644); err != nil {
+			return apitools.CatalogSpecRefreshReport{}, err
+		}
+		return apitools.CatalogSpecRefreshReport{Results: []apitools.CatalogSpecRefreshResult{{
+			ProviderID:       rows[0].ProviderID,
+			SpecRefID:        rows[0].SpecRefID,
+			Kind:             rows[0].Kind,
+			URL:              rows[0].URL,
+			FinalURL:         rows[0].URL,
+			DownloadStatus:   apitools.CatalogRefreshDownloaded,
+			ValidationStatus: apitools.CatalogRefreshValidSwagger,
+			ArtifactPath:     artifactPath,
+			SavedPath:        fullPath,
+			SHA256:           "abc",
+			Bytes:            72,
+			Metadata:         apitools.SpecMetadata{Title: "Slack", OpenAPI: "3.0.0"},
+			ManualFollowUps:  []string{"review manually"},
+		}}}, nil
+	}
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := runCatalogRefreshWithClient([]string{
+		"--provider", "slack",
+		"--cache-dir", cacheDir,
+		"--cache", cachePath,
+	}, &out, &errOut, func(*apitools.Client) catalogRefreshFunc { return refresh })
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if got, want := len(selected), 1; got != want {
+		t.Fatalf("selected len = %d, want %d", got, want)
+	}
+	if selected[0].SpecRefID != "slack-web-openapi-v2" {
+		t.Fatalf("selected spec = %q", selected[0].SpecRefID)
+	}
+	if !strings.Contains(out.String(), "Manual follow-ups") {
+		t.Fatalf("refresh output missing follow-ups:\n%s", out.String())
+	}
+	cache, err := sqlitecache.Open(cachePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+	artifacts, err := cache.ListCatalogArtifacts(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := len(artifacts), 1; got != want {
+		t.Fatalf("artifacts len = %d, want %d: %#v", got, want, artifacts)
+	}
+	if artifacts[0].Path != "openapi/slack-web-openapi-v2.json" {
+		t.Fatalf("artifact path = %q", artifacts[0].Path)
+	}
+}
+
+func TestCatalogRefreshRejectsProviderWithoutRefreshableSpecs(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := runCatalogRefreshWithClient([]string{"--provider", "mailchimp"}, &out, &errOut, func(*apitools.Client) catalogRefreshFunc {
+		return func(context.Context, []catalog.RefreshableSpecReference, apitools.CatalogSpecRefreshOptions) (apitools.CatalogSpecRefreshReport, error) {
+			t.Fatal("refresh should not run")
+			return apitools.CatalogSpecRefreshReport{}, nil
+		}
+	})
+	if code != 2 {
+		t.Fatalf("code = %d, want 2\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if !strings.Contains(errOut.String(), "has no refreshable spec references") {
+		t.Fatalf("stderr missing no refreshable specs message:\n%s", errOut.String())
+	}
+}
+
 func TestCatalogCheckOutputAndExitCode(t *testing.T) {
 	var out bytes.Buffer
 	var errOut bytes.Buffer

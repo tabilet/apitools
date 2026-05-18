@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -65,6 +66,8 @@ func runCatalog(args []string, out, errOut io.Writer) int {
 		return runCatalogList(args[1:], out, errOut)
 	case "specs":
 		return runCatalogSpecs(args[1:], out, errOut)
+	case "refresh":
+		return runCatalogRefresh(args[1:], out, errOut)
 	case "inspect":
 		return runCatalogInspect(args[1:], out, errOut)
 	case "overlay-view":
@@ -88,6 +91,7 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "  check            run offline catalog quality checks")
 	fmt.Fprintln(out, "  list             list built-in provider catalog metadata")
 	fmt.Fprintln(out, "  specs            list refreshable built-in spec references")
+	fmt.Fprintln(out, "  refresh          refresh one selected built-in spec reference")
 	fmt.Fprintln(out, "  inspect          inspect one provider and resolution status")
 	fmt.Fprintln(out, "  overlay-view     inspect advisory security overlay effects")
 	fmt.Fprintln(out, "  security-report  report auth/security status across providers")
@@ -252,6 +256,166 @@ func runCatalogSpecs(args []string, out, errOut io.Writer) int {
 		fmt.Fprintf(out, "%-18s %-34s %-16s %-18s %-12s %s\n", row.ProviderID, row.SpecRefID, row.Kind, row.SourceAuthority, row.VerifiedAt, row.RegisteredArtifactPath)
 	}
 	return 0
+}
+
+type catalogRefreshFunc func(context.Context, []catalogpkg.RefreshableSpecReference, apitools.CatalogSpecRefreshOptions) (apitools.CatalogSpecRefreshReport, error)
+
+func runCatalogRefresh(args []string, out, errOut io.Writer) int {
+	return runCatalogRefreshWithClient(args, out, errOut, func(client *apitools.Client) catalogRefreshFunc {
+		return client.RefreshCatalogSpecReferences
+	})
+}
+
+func runCatalogRefreshWithClient(args []string, out, errOut io.Writer, refresherFor func(*apitools.Client) catalogRefreshFunc) int {
+	fs := flag.NewFlagSet("apitools catalog refresh", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	providerKey := fs.String("provider", "", "Provider ID, display name, or alias to refresh")
+	specRefID := fs.String("spec", "", "Spec reference ID to refresh; required when provider has multiple refreshable specs")
+	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory for saved review artifacts")
+	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "SQLite cache path used to register saved artifact paths")
+	timeout := fs.Duration("timeout", apitools.DefaultTimeout, "Refresh download timeout")
+	maxBytes := fs.Int64("max-bytes", apitools.DefaultMaxBytes, "Maximum bytes to download")
+	allowUnsafeHosts := fs.Bool("allow-unsafe-hosts", false, "Allow localhost/private hosts; intended only for local tests")
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog refresh --provider <provider> [--spec <spec-ref>] [--cache-dir catalog-openapi-cache] [--cache catalog-openapi-cache/cache.sqlite] [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if fs.NArg() > 0 {
+		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
+		fs.Usage()
+		return 2
+	}
+	rows, err := selectRefreshableSpecRows(*providerKey, *specRefID)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 2
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	client := &apitools.Client{
+		Timeout:          *timeout,
+		MaxBytes:         *maxBytes,
+		AllowUnsafeHosts: *allowUnsafeHosts,
+	}
+	report, err := refresherFor(client)(ctx, rows, apitools.CatalogSpecRefreshOptions{CacheDir: *cacheDir})
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	if err := registerCatalogRefreshResults(ctx, *cachePath, *cacheDir, report); err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	if *jsonOut {
+		if err := writeJSON(out, report); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	writeCatalogRefreshReport(out, report)
+	return 0
+}
+
+func selectRefreshableSpecRows(providerKey, specRefID string) ([]catalogpkg.RefreshableSpecReference, error) {
+	providerKey = strings.TrimSpace(providerKey)
+	if providerKey == "" {
+		return nil, fmt.Errorf("missing --provider")
+	}
+	provider, ok := catalogpkg.FindBuiltInProvider(providerKey)
+	if !ok {
+		return nil, fmt.Errorf("unknown provider %q", providerKey)
+	}
+	specRefID = strings.TrimSpace(specRefID)
+	var rows []catalogpkg.RefreshableSpecReference
+	for _, row := range catalogpkg.BuiltInRefreshableSpecReferences(nil) {
+		if row.ProviderID != provider.ID {
+			continue
+		}
+		if specRefID != "" && row.SpecRefID != specRefID {
+			continue
+		}
+		rows = append(rows, row)
+	}
+	if len(rows) == 0 {
+		if specRefID != "" {
+			return nil, fmt.Errorf("provider %q has no refreshable spec %q", provider.ID, specRefID)
+		}
+		return nil, fmt.Errorf("provider %q has no refreshable spec references", provider.ID)
+	}
+	if specRefID == "" && len(rows) > 1 {
+		var ids []string
+		for _, row := range rows {
+			ids = append(ids, row.SpecRefID)
+		}
+		return nil, fmt.Errorf("provider %q has multiple refreshable specs; pass --spec (%s)", provider.ID, strings.Join(ids, ", "))
+	}
+	return rows, nil
+}
+
+func registerCatalogRefreshResults(ctx context.Context, cachePath, cacheDir string, report apitools.CatalogSpecRefreshReport) error {
+	cachePath = strings.TrimSpace(cachePath)
+	if cachePath == "" {
+		return fmt.Errorf("cache path is required")
+	}
+	cache, err := sqlitecache.Open(cachePath)
+	if err != nil {
+		return err
+	}
+	defer cache.Close()
+	for _, result := range report.Results {
+		contentPath := refreshContentPathForCache(cachePath, cacheDir, result)
+		if err := cache.StoreSpec(ctx, apitools.CachedSpec{
+			OriginalURL: result.URL,
+			FinalURL:    result.FinalURL,
+			ContentPath: contentPath,
+			Metadata:    result.Metadata,
+		}); err != nil {
+			return err
+		}
+		if err := cache.StoreCatalogArtifact(ctx, sqlitecache.CatalogArtifact{
+			ProviderID: result.ProviderID,
+			ArtifactID: result.SpecRefID,
+			Kind:       string(result.Kind),
+			Path:       contentPath,
+			SourceURL:  result.URL,
+			Metadata: map[string]string{
+				"official":          "true",
+				"kind":              string(result.Kind),
+				"validation_status": result.ValidationStatus,
+				"sha256":            result.SHA256,
+			},
+		}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func refreshContentPathForCache(cachePath, cacheDir string, result apitools.CatalogSpecRefreshResult) string {
+	cacheBase := filepath.Dir(cachePath)
+	fullPath := result.SavedPath
+	if strings.TrimSpace(fullPath) == "" {
+		fullPath = filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))
+	}
+	rel, err := filepath.Rel(cacheBase, fullPath)
+	if err == nil && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && rel != ".." && !filepath.IsAbs(rel) {
+		return filepath.ToSlash(rel)
+	}
+	return fullPath
 }
 
 func runCatalogInspect(args []string, out, errOut io.Writer) int {
@@ -560,6 +724,23 @@ func writeCatalogQualityReport(out io.Writer, report catalogpkg.CatalogQualityRe
 			subject = finding.OverlayID
 		}
 		fmt.Fprintf(out, "%-8s %-34s %-18s %-28s %s\n", finding.Severity, finding.Code, subject, finding.Field, finding.Message)
+	}
+}
+
+func writeCatalogRefreshReport(out io.Writer, report apitools.CatalogSpecRefreshReport) {
+	if len(report.Results) == 0 {
+		fmt.Fprintln(out, "No catalog specs refreshed.")
+		return
+	}
+	fmt.Fprintf(out, "%-18s %-34s %-20s %-12s %s\n", "PROVIDER", "SPEC_REF", "VALIDATION", "BYTES", "ARTIFACT")
+	for _, result := range report.Results {
+		fmt.Fprintf(out, "%-18s %-34s %-20s %-12d %s\n", result.ProviderID, result.SpecRefID, result.ValidationStatus, result.Bytes, result.ArtifactPath)
+	}
+	fmt.Fprintln(out, "Manual follow-ups:")
+	for _, result := range report.Results {
+		for _, followUp := range result.ManualFollowUps {
+			fmt.Fprintf(out, "- %s/%s: %s\n", result.ProviderID, result.SpecRefID, followUp)
+		}
 	}
 }
 
