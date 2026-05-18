@@ -108,9 +108,11 @@ baseline only; it does not override a team's local API contract.
 
 Catalog curation follows a fixed per-service workflow: try official
 OpenAPI/Swagger/Discovery sources first, review auth/security completeness, add
-security-overlay metadata when needed, and generate docs-derived advisory
-overlays only when no official OpenAPI document exists. The detailed workflow
-lives in [docs/catalog-curation.md](docs/catalog-curation.md). Downloaded specs
+security-overlay metadata when needed, and, when no official OpenAPI document
+exists but official API docs expose usable endpoint instructions, generate a
+service-specific docs-derived endpoint overlay asset in addition to any
+auth/security overlay metadata. The detailed workflow lives in
+[docs/catalog-curation.md](docs/catalog-curation.md). Downloaded specs
 and local SQLite caches stay ignored under `catalog-openapi-cache/`; generated
 advisory overlays and service-specific overlay builders are tracked catalog
 assets. For catalog curation, `cache.sqlite` records file paths for saved

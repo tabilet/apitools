@@ -40,12 +40,16 @@ For each service, use the same four-step review loop.
    overlay metadata with source references. Security overlays must contain only
    credential shape metadata, never credential values.
 
-3. Build a docs-derived advisory overlay when no official OpenAPI exists.
+3. Build a docs-derived endpoint overlay when no official OpenAPI exists.
 
-   For human-docs-only services, create a minimal OpenAPI-shaped advisory
-   overlay containing both reviewed endpoint coverage and auth/security
-   metadata. Mark it explicitly as docs-derived and not official provider
-   OpenAPI, for example with an `x-apitools-overlay` object containing:
+   For human-docs-only services, first decide whether official API docs expose
+   enough endpoint instructions to support a useful reviewed subset. When they
+   do, create a service-specific, minimal OpenAPI-shaped advisory overlay
+   containing both reviewed endpoint coverage and auth/security metadata. This
+   endpoint overlay is in addition to catalog auth/security overlay metadata,
+   not a replacement for it. Mark it explicitly as docs-derived and not
+   official provider OpenAPI, for example with an `x-apitools-overlay` object
+   containing:
 
    - `provider_id`;
    - `overlay_id`;
@@ -58,6 +62,10 @@ For each service, use the same four-step review loop.
    `catalog-openapi-cache/advisory-overlays/<provider>-...-overlay.json`.
    Register the overlay path in `cache.sqlite` as a catalog artifact so the
    cache can act as a local manifest of reviewed docs-derived assets.
+
+   If official docs only describe auth setup and do not expose enough endpoint
+   instructions for a useful subset, keep the work to catalog security overlay
+   metadata and record why no endpoint overlay asset was generated.
 
 4. Save the service-specific overlay builder.
 
