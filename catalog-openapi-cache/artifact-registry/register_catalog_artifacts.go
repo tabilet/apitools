@@ -307,4 +307,11 @@ var overlayArtifacts = []overlayArtifact{
 		builderPath: "overlay-builders/build_openweathermap_overlay.go",
 		sourceURL:   "https://openweathermap.org/api/one-call-3?collection=one_call_api_3.0",
 	},
+	{
+		providerID:  "salesforce",
+		artifactID:  "salesforce-rest-core-overlay",
+		path:        "advisory-overlays/salesforce-rest-core-overlay.json",
+		builderPath: "overlay-builders/build_salesforce_overlay.go",
+		sourceURL:   "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm",
+	},
 }

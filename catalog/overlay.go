@@ -452,6 +452,27 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "OpenWeather has human API docs in this catalog entry but no recorded official OpenAPI document; docs describe API key usage, so OpenAPI imports need an advisory appid query-key overlay.",
 	},
 	{
+		ID:         "salesforce-rest-auth-overlay",
+		ProviderID: "salesforce",
+		SpecRefID:  "salesforce-rest-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "salesforceBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Salesforce OAuth 2.0 access token carried in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "salesforceBearer"}},
+		SourceRefs: []string{
+			"https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm",
+			"https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm",
+			"https://help.salesforce.com/s/articleView?id=release-notes.rn_api_rest.htm&language=en_US&release=236&type=5",
+		},
+		SourceNote: "Salesforce has human REST API docs and org-side OpenAPI generation notes in this catalog entry but no recorded stable public OpenAPI document; OpenAPI-only consumers need an advisory bearer-token overlay.",
+	},
+	{
 		ID:         "slack-web-api-auth-review",
 		ProviderID: "slack",
 		SpecRefID:  "slack-web-openapi-v2",

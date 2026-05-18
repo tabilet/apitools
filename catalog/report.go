@@ -256,6 +256,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "PagerDuty's official OpenAPI document includes an Authorization header API key scheme and root security requirement.",
 	},
 	{
+		ProviderID: "salesforce",
+		SpecRefID:  "salesforce-rest-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm"},
+		SourceNote: "Salesforce has no recorded stable public downloadable OpenAPI document for the core REST API in the built-in catalog; OAuth bearer security metadata must come from advisory overlay notes.",
+	},
+	{
 		ProviderID: "slack",
 		SpecRefID:  "slack-web-openapi-v2",
 		Status:     AuthStatusPresentIncomplete,

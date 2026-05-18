@@ -455,6 +455,22 @@ var builtInProviders = []Provider{
 		},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "salesforce",
+		displayName:         "Salesforce",
+		aliases:             []string{"salesforce api", "salesforce rest api"},
+		category:            "crm",
+		relevance:           "Popular workflow service for CRM records, SOQL queries, search, and automation around accounts, contacts, leads, and opportunities.",
+		openAPIAvailability: SpecAvailabilityNeedsVerification,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("salesforce-rest-docs", "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm", "Official Salesforce REST API Developer Guide."),
+			humanDocsRef("salesforce-rest-auth-docs", "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm", "Official Salesforce REST API OAuth quick start documentation."),
+			humanDocsRef("salesforce-openapi-generation-notes", "https://help.salesforce.com/s/articleView?id=release-notes.rn_api_rest.htm&language=en_US&release=236&type=5", "Official Salesforce release note describing beta OpenAPI 3.0 spec generation for Salesforce Platform REST API."),
+		},
+		quirks: []string{"Salesforce REST API OpenAPI generation is org/configuration dependent in current official docs; no stable public downloadable core REST OpenAPI document is recorded in this catalog entry."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "slack",
 		displayName:         "Slack",
 		aliases:             []string{"slack api"},

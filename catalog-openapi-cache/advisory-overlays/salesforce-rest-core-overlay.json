@@ -1,0 +1,613 @@
+{
+  "components": {
+    "schemas": {
+      "Error": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "QueryResult": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SObjectList": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SObjectRecord": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SearchResult": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "salesforceBearer": {
+        "description": "Salesforce OAuth 2.0 access token.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Salesforce REST API human documentation. This is not an official Salesforce OpenAPI document.",
+    "title": "Salesforce REST API Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/": {
+      "get": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "listSalesforceResources",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectList"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectList"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "List Salesforce REST API resources"
+      }
+    },
+    "/query": {
+      "get": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "querySalesforce",
+        "parameters": [
+          {
+            "description": "SOQL query string.",
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryResult"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryResult"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "Run a Salesforce SOQL query"
+      }
+    },
+    "/search": {
+      "get": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "searchSalesforce",
+        "parameters": [
+          {
+            "description": "SOSL search string.",
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "Run a Salesforce SOSL search"
+      }
+    },
+    "/sobjects": {
+      "get": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "listSalesforceObjects",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectList"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectList"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "List Salesforce object metadata"
+      }
+    },
+    "/sobjects/{objectApiName}": {
+      "get": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "describeSalesforceObject",
+        "parameters": [
+          {
+            "description": "Salesforce object API name.",
+            "in": "path",
+            "name": "objectApiName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRecord"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRecord"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "Describe a Salesforce object"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "createSalesforceRecord",
+        "parameters": [
+          {
+            "description": "Salesforce object API name.",
+            "in": "path",
+            "name": "objectApiName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SObjectRecord"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRecord"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRecord"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "Create a Salesforce record"
+      }
+    },
+    "/sobjects/{objectApiName}/{recordId}": {
+      "delete": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "deleteSalesforceRecord",
+        "parameters": [
+          {
+            "description": "Salesforce object API name.",
+            "in": "path",
+            "name": "objectApiName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Salesforce record identifier.",
+            "in": "path",
+            "name": "recordId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRecord"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRecord"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "Delete a Salesforce record"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "getSalesforceRecord",
+        "parameters": [
+          {
+            "description": "Salesforce object API name.",
+            "in": "path",
+            "name": "objectApiName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Salesforce record identifier.",
+            "in": "path",
+            "name": "recordId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRecord"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRecord"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "Get a Salesforce record"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "updateSalesforceRecord",
+        "parameters": [
+          {
+            "description": "Salesforce object API name.",
+            "in": "path",
+            "name": "objectApiName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Salesforce record identifier.",
+            "in": "path",
+            "name": "recordId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SObjectRecord"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRecord"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRecord"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "Update a Salesforce record"
+      }
+    }
+  },
+  "security": [
+    {
+      "salesforceBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "description": "Salesforce instance REST API base URL.",
+      "url": "https://{instanceHost}/services/data/{apiVersion}",
+      "variables": {
+        "apiVersion": {
+          "default": "v61.0"
+        },
+        "instanceHost": {
+          "default": "your-domain.my.salesforce.com"
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "salesforce-rest-core-advisory-overlay",
+    "provider_id": "salesforce",
+    "source_note": "Salesforce documents REST API resources and org-side OpenAPI generation, but no stable public downloadable OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm",
+      "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm",
+      "https://help.salesforce.com/s/articleView?id=release-notes.rn_api_rest.htm\u0026language=en_US\u0026release=236\u0026type=5"
+    ]
+  }
+}

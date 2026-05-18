@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 21; got != want {
+	if got, want := len(catalog.ListProviders()), 22; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -37,6 +37,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"notion",
 		"openweathermap",
 		"pagerduty",
+		"salesforce",
 		"slack",
 		"trello",
 	}
@@ -65,6 +66,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "google calendar api", id: "google-calendar"},
 		{key: "google sheets api", id: "google-sheets"},
 		{key: "notion api", id: "notion"},
+		{key: "salesforce rest api", id: "salesforce"},
 	}
 	for _, test := range tests {
 		provider, ok := FindBuiltInProvider(test.key)
@@ -119,6 +121,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "jira-cloud", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "microsoft-graph", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "notion", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "salesforce", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "pagerduty", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "slack", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "trello", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
