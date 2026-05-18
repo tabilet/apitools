@@ -347,6 +347,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Stripe's official latest OpenAPI document includes basic and bearer HTTP security schemes plus root security requirements.",
 	},
 	{
+		ProviderID: "telegram",
+		SpecRefID:  "telegram-bot-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://core.telegram.org/bots/api"},
+		SourceNote: "Telegram has official Bot API docs but no OpenAPI document recorded in this catalog entry; bot-token path authentication needs advisory metadata and cannot be represented exactly as an OpenAPI security scheme.",
+	},
+	{
 		ProviderID: "trello",
 		SpecRefID:  "trello-cloud-openapi-v3",
 		Status:     AuthStatusComplete,

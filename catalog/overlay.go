@@ -640,6 +640,23 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Slack's official OpenAPI document includes OAuth metadata and operation security, but the repository is archived and lacks root security; keep this as a present-incomplete review overlay rather than treating it as current provider truth.",
 	},
 	{
+		ID:         "telegram-bot-token-auth-overlay",
+		ProviderID: "telegram",
+		SpecRefID:  "telegram-bot-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "telegramBotToken",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Advisory placeholder for Telegram Bot API token authentication; official requests embed the token in the URL path segment as bot<token> rather than an Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "telegramBotToken"}},
+		SourceRefs:   []string{"https://core.telegram.org/bots/api"},
+		SourceNote:   "Telegram Bot API docs define calls under https://api.telegram.org/bot<token>/METHOD_NAME; OpenAPI security schemes cannot model path-token auth exactly, so this overlay flags the token requirement for downstream review.",
+	},
+	{
 		ID:         "typeform-rest-auth-overlay",
 		ProviderID: "typeform",
 		SpecRefID:  "typeform-developer-docs",

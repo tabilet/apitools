@@ -722,6 +722,20 @@ var builtInProviders = []Provider{
 		quirks: []string{"Stripe's repository marks latest/openapi.spec3.json as the recommended GA public spec; openapi/spec3.json is legacy v1-only and should not be preferred for new imports."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "telegram",
+		displayName:         "Telegram",
+		aliases:             []string{"telegram api", "telegram bot api"},
+		category:            "messaging",
+		relevance:           "Popular messaging workflow service for bot messages, chats, updates, files, callbacks, and notifications.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("telegram-bot-api-docs", "https://core.telegram.org/bots/api", "Official Telegram Bot API documentation. No official OpenAPI document is recorded in this catalog entry."),
+		},
+		quirks: []string{"Telegram Bot API authentication embeds the bot token in the request URL path as bot<token>; OpenAPI security schemes cannot represent that cleanly without server/path templating conventions."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "trello",
 		displayName:         "Trello",
 		aliases:             []string{"trello api"},

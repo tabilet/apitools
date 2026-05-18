@@ -289,6 +289,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular payment platform for customers, charges, invoices, subscriptions, and billing automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "telegram",
+		displayName: "Telegram",
+		aliases:     []string{"telegram api", "telegram bot api"},
+		category:    "messaging",
+		n8nNode:     "Telegram",
+		relevance:   "Popular messaging workflow service for bot messages, chats, updates, files, callbacks, and notifications.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "trello",
 		displayName: "Trello",
 		aliases:     []string{"trello api"},

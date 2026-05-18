@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 38; got != want {
+	if got, want := len(catalog.ListProviders()), 39; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -50,6 +50,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"shopify",
 		"slack",
 		"stripe",
+		"telegram",
 		"trello",
 		"twilio",
 		"typeform",
@@ -94,6 +95,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "servicenow rest", id: "servicenow"},
 		{key: "shopify admin api", id: "shopify"},
 		{key: "stripe api", id: "stripe"},
+		{key: "telegram bot api", id: "telegram"},
 		{key: "twilio sms", id: "twilio"},
 		{key: "typeform api", id: "typeform"},
 		{key: "xero accounting", id: "xero"},
@@ -167,6 +169,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "pagerduty", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "slack", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "stripe", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "telegram", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "trello", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "twilio", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "typeform", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
