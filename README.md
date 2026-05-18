@@ -31,11 +31,6 @@ Keep these responsibilities in `apitools`:
 Keep these responsibilities downstream:
 
 - UWS workflow semantics and public workflow schema live in `../uws`.
-- Private UWS/OpenAPI lowering and runtime execution live in `../udon`.
-- Ramen project templates, example artifacts, approval evidence,
-  trusted-runner gates, and Symphony policy live in `../ramen`.
-- OpenW8M IaC intent, graph, planning, state, and executor-facing artifacts
-  live in `../openw8m`.
 
 `apitools` may describe what an OpenAPI document requires. It must not decide
 which production account to use, fetch secrets, sign live requests, or execute
