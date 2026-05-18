@@ -228,6 +228,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Atlassian's Jira Cloud OpenAPI document includes OAuth2/basic security schemes and operation-level security metadata.",
 	},
 	{
+		ProviderID: "linear",
+		SpecRefID:  "linear-graphql-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://linear.app/developers/graphql", "https://linear.app/docs/api/"},
+		SourceNote: "Linear's official public API is GraphQL and no OpenAPI document is recorded in this catalog entry; personal API key and OAuth bearer-token metadata must come from advisory overlay notes.",
+	},
+	{
 		ProviderID: "mailchimp",
 		SpecRefID:  "mailchimp-marketing-api-docs",
 		Status:     AuthStatusOverlayRequired,

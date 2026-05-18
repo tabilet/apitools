@@ -367,6 +367,21 @@ var builtInProviders = []Provider{
 		},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "linear",
+		displayName:         "Linear",
+		aliases:             []string{"linear api", "linear graphql"},
+		category:            "project-management",
+		relevance:           "Popular workflow service for issues, projects, teams, cycles, comments, and product-development automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("linear-graphql-docs", "https://linear.app/developers/graphql", "Official Linear GraphQL API documentation. Linear exposes GraphQL introspection rather than a public OpenAPI document."),
+			humanDocsRef("linear-api-docs", "https://linear.app/docs/api/", "Official Linear API documentation index."),
+		},
+		quirks: []string{"Linear's public API is GraphQL with introspection support, so OpenAPI-only workflows need a user-provided or generated OpenAPI document if REST-shaped operation metadata is required."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "mailchimp",
 		displayName:         "Mailchimp",
 		aliases:             []string{"mailchimp api", "mailchimp marketing"},

@@ -437,6 +437,27 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Mailchimp Marketing API docs describe API key authentication and OAuth for the Marketing API; because this catalog entry has no recorded downloadable OpenAPI document, OpenAPI-only consumers need advisory security metadata.",
 	},
 	{
+		ID:         "linear-graphql-auth-overlay",
+		ProviderID: "linear",
+		SpecRefID:  "linear-graphql-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:         "linearBearer",
+				Type:         SecuritySchemeHTTP,
+				Scheme:       "bearer",
+				BearerFormat: "API key or OAuth 2.0 access token",
+				Description:  "Linear personal API key or OAuth access token carried as a bearer token in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "linearBearer"}},
+		SourceRefs: []string{
+			"https://linear.app/developers/graphql",
+			"https://linear.app/docs/api/",
+		},
+		SourceNote: "Linear's GraphQL docs describe personal API keys and OAuth2 bearer tokens; OpenAPI-only imports need advisory bearer-token security metadata.",
+	},
+	{
 		ID:         "microsoft-graph-v1-auth-overlay",
 		ProviderID: "microsoft-graph",
 		SpecRefID:  "microsoft-graph-v1-openapi",

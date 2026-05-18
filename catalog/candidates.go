@@ -153,6 +153,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Common workflow service for issue tracking and project automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "linear",
+		displayName: "Linear",
+		aliases:     []string{"linear api", "linear graphql"},
+		category:    "project-management",
+		n8nNode:     "Linear",
+		relevance:   "Popular workflow service for issues, projects, teams, cycles, comments, and product-development automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "microsoft-graph",
 		displayName: "Microsoft Graph",
 		aliases:     []string{"microsoft graph api", "graph api", "office 365"},
