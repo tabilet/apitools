@@ -159,6 +159,27 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Airtable has human Web API docs in this catalog entry but no recorded official OpenAPI document; Airtable docs describe PAT or OAuth token authentication, so OpenAPI imports need an advisory bearer-token overlay.",
 	},
 	{
+		ID:         "calendly-public-api-auth-overlay",
+		ProviderID: "calendly",
+		SpecRefID:  "calendly-public-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "calendlyBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Calendly personal access token or OAuth 2.1 access token carried in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "calendlyBearer"}},
+		SourceRefs: []string{
+			"https://developer.calendly.com/getting-started",
+			"https://developer.calendly.com/authentication",
+			"https://developer.calendly.com/creating-an-oauth-app",
+		},
+		SourceNote: "Calendly has human API docs in this catalog entry but no recorded downloadable official OpenAPI document; docs describe personal access tokens and OAuth 2.1, so OpenAPI imports need an advisory bearer-token overlay.",
+	},
+	{
 		ID:         "gmail-discovery-auth-overlay",
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",

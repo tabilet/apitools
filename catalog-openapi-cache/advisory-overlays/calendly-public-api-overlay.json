@@ -1,0 +1,786 @@
+{
+  "components": {
+    "schemas": {
+      "CalendlyCollection": {
+        "additionalProperties": true,
+        "properties": {
+          "collection": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "pagination": {
+            "additionalProperties": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "CalendlyError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CalendlyResource": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SchedulingLinkRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "max_event_count": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "owner": {
+            "description": "Calendly event type URI.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "WebhookSubscriptionRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "events": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "routing_form": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "signing_key": {
+            "type": "string"
+          },
+          "subscription_id": {
+            "type": "string"
+          },
+          "url": {
+            "format": "uri",
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "calendlyBearer": {
+        "description": "Calendly personal access token or OAuth 2.1 access token carried in the Authorization header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Calendly human documentation. This is not an official Calendly OpenAPI document.",
+    "title": "Calendly Public API Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/event_types": {
+      "get": {
+        "description": "Advisory operation derived from official Calendly human documentation.",
+        "operationId": "listCalendlyEventTypes",
+        "parameters": [
+          {
+            "description": "Calendly user URI.",
+            "in": "query",
+            "name": "user",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Calendly organization URI.",
+            "in": "query",
+            "name": "organization",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of records to return.",
+            "in": "query",
+            "name": "count",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination token from a previous response.",
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyCollection"
+                }
+              }
+            },
+            "description": "Calendly response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyCollection"
+                }
+              }
+            },
+            "description": "Calendly resource created."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyError"
+                }
+              }
+            },
+            "description": "Calendly error response."
+          }
+        },
+        "security": [
+          {
+            "calendlyBearer": []
+          }
+        ],
+        "summary": "List Calendly event types"
+      }
+    },
+    "/scheduled_events": {
+      "get": {
+        "description": "Advisory operation derived from official Calendly human documentation.",
+        "operationId": "listCalendlyScheduledEvents",
+        "parameters": [
+          {
+            "description": "Calendly user URI.",
+            "in": "query",
+            "name": "user",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Calendly organization URI.",
+            "in": "query",
+            "name": "organization",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of records to return.",
+            "in": "query",
+            "name": "count",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination token from a previous response.",
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Lower scheduled-event start time bound.",
+            "in": "query",
+            "name": "min_start_time",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Upper scheduled-event start time bound.",
+            "in": "query",
+            "name": "max_start_time",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Scheduled event status.",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyCollection"
+                }
+              }
+            },
+            "description": "Calendly response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyCollection"
+                }
+              }
+            },
+            "description": "Calendly resource created."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyError"
+                }
+              }
+            },
+            "description": "Calendly error response."
+          }
+        },
+        "security": [
+          {
+            "calendlyBearer": []
+          }
+        ],
+        "summary": "List Calendly scheduled events"
+      }
+    },
+    "/scheduled_events/{event_uuid}": {
+      "get": {
+        "description": "Advisory operation derived from official Calendly human documentation.",
+        "operationId": "getCalendlyScheduledEvent",
+        "parameters": [
+          {
+            "description": "Scheduled event UUID.",
+            "in": "path",
+            "name": "event_uuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly resource created."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyError"
+                }
+              }
+            },
+            "description": "Calendly error response."
+          }
+        },
+        "security": [
+          {
+            "calendlyBearer": []
+          }
+        ],
+        "summary": "Get a Calendly scheduled event"
+      }
+    },
+    "/scheduled_events/{event_uuid}/invitees": {
+      "get": {
+        "description": "Advisory operation derived from official Calendly human documentation.",
+        "operationId": "listCalendlyEventInvitees",
+        "parameters": [
+          {
+            "description": "Scheduled event UUID.",
+            "in": "path",
+            "name": "event_uuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of records to return.",
+            "in": "query",
+            "name": "count",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination token from a previous response.",
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyCollection"
+                }
+              }
+            },
+            "description": "Calendly response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyCollection"
+                }
+              }
+            },
+            "description": "Calendly resource created."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyError"
+                }
+              }
+            },
+            "description": "Calendly error response."
+          }
+        },
+        "security": [
+          {
+            "calendlyBearer": []
+          }
+        ],
+        "summary": "List Calendly scheduled event invitees"
+      }
+    },
+    "/scheduling_links": {
+      "post": {
+        "description": "Advisory operation derived from official Calendly human documentation.",
+        "operationId": "createCalendlySchedulingLink",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SchedulingLinkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly resource created."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyError"
+                }
+              }
+            },
+            "description": "Calendly error response."
+          }
+        },
+        "security": [
+          {
+            "calendlyBearer": []
+          }
+        ],
+        "summary": "Create a Calendly scheduling link"
+      }
+    },
+    "/users/me": {
+      "get": {
+        "description": "Advisory operation derived from official Calendly human documentation.",
+        "operationId": "getCalendlyCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly resource created."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyError"
+                }
+              }
+            },
+            "description": "Calendly error response."
+          }
+        },
+        "security": [
+          {
+            "calendlyBearer": []
+          }
+        ],
+        "summary": "Get current Calendly user"
+      }
+    },
+    "/webhook_subscriptions": {
+      "get": {
+        "description": "Advisory operation derived from official Calendly human documentation.",
+        "operationId": "listCalendlyWebhookSubscriptions",
+        "parameters": [
+          {
+            "description": "Calendly organization URI.",
+            "in": "query",
+            "name": "organization",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Calendly user URI.",
+            "in": "query",
+            "name": "user",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webhook subscription scope.",
+            "in": "query",
+            "name": "scope",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of records to return.",
+            "in": "query",
+            "name": "count",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination token from a previous response.",
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyCollection"
+                }
+              }
+            },
+            "description": "Calendly response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyCollection"
+                }
+              }
+            },
+            "description": "Calendly resource created."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyError"
+                }
+              }
+            },
+            "description": "Calendly error response."
+          }
+        },
+        "security": [
+          {
+            "calendlyBearer": []
+          }
+        ],
+        "summary": "List Calendly webhook subscriptions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Calendly human documentation.",
+        "operationId": "createCalendlyWebhookSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookSubscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly resource created."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyError"
+                }
+              }
+            },
+            "description": "Calendly error response."
+          }
+        },
+        "security": [
+          {
+            "calendlyBearer": []
+          }
+        ],
+        "summary": "Create a Calendly webhook subscription"
+      }
+    },
+    "/webhook_subscriptions/{webhook_uuid}": {
+      "delete": {
+        "description": "Advisory operation derived from official Calendly human documentation.",
+        "operationId": "deleteCalendlyWebhookSubscription",
+        "parameters": [
+          {
+            "description": "Webhook subscription UUID.",
+            "in": "path",
+            "name": "webhook_uuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly resource created."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyError"
+                }
+              }
+            },
+            "description": "Calendly error response."
+          }
+        },
+        "security": [
+          {
+            "calendlyBearer": []
+          }
+        ],
+        "summary": "Delete a Calendly webhook subscription"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Calendly human documentation.",
+        "operationId": "getCalendlyWebhookSubscription",
+        "parameters": [
+          {
+            "description": "Webhook subscription UUID.",
+            "in": "path",
+            "name": "webhook_uuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyResource"
+                }
+              }
+            },
+            "description": "Calendly resource created."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendlyError"
+                }
+              }
+            },
+            "description": "Calendly error response."
+          }
+        },
+        "security": [
+          {
+            "calendlyBearer": []
+          }
+        ],
+        "summary": "Get a Calendly webhook subscription"
+      }
+    }
+  },
+  "security": [
+    {
+      "calendlyBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.calendly.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "calendly-public-api-advisory-overlay",
+    "provider_id": "calendly",
+    "source_note": "Calendly publishes official API v2 human documentation and Stoplight-hosted reference pages, but no official downloadable OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://developer.calendly.com/api-docs",
+      "https://developer.calendly.com/getting-started",
+      "https://developer.calendly.com/authentication",
+      "https://developer.calendly.com/creating-an-oauth-app",
+      "https://calendly.stoplight.io/docs/api-docs"
+    ]
+  }
+}

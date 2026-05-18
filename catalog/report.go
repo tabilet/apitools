@@ -144,6 +144,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Box's official OpenAPI document includes an OAuth2 authorization code security scheme and root security requirement.",
 	},
 	{
+		ProviderID: "calendly",
+		SpecRefID:  "calendly-public-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://developer.calendly.com/api-docs"},
+		SourceNote: "Calendly's official API reference is human documentation backed by Stoplight hosting in this catalog entry; no downloadable official OpenAPI document is recorded, so endpoint and security metadata come from advisory overlays.",
+	},
+	{
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",
 		Status:     AuthStatusOverlayRequired,

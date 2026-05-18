@@ -195,6 +195,13 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://airtable.com/developers/web/api/introduction",
 	},
 	{
+		providerID:  "calendly",
+		artifactID:  "calendly-public-api-overlay",
+		path:        "advisory-overlays/calendly-public-api-overlay.json",
+		builderPath: "overlay-builders/build_calendly_overlay.go",
+		sourceURL:   "https://developer.calendly.com/api-docs",
+	},
+	{
 		providerID:  "openweathermap",
 		artifactID:  "openweathermap-one-call-3-overlay",
 		path:        "advisory-overlays/openweathermap-one-call-3-overlay.json",

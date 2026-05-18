@@ -67,6 +67,21 @@ var builtInProviders = []Provider{
 		quirks: []string{"Box introduced versioned public API specs in 2025; this catalog entry points at the compatibility openapi.json until version-specific imports are selected."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "calendly",
+		displayName:         "Calendly",
+		aliases:             []string{"calendly api"},
+		category:            "scheduling",
+		relevance:           "Popular workflow service for scheduling links, event types, scheduled events, invitees, and webhook automation.",
+		openAPIAvailability: SpecAvailabilityUnknown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("calendly-public-api-docs", "https://developer.calendly.com/api-docs", "Official Calendly API reference. The portal points to Stoplight documentation, but this catalog entry records no downloadable official OpenAPI document."),
+			humanDocsRef("calendly-getting-started", "https://developer.calendly.com/getting-started", "Official Calendly getting started documentation for API v2, Embed API, Webhook API, and authentication choices."),
+		},
+		quirks: []string{"Calendly's public API reference is hosted through Stoplight; routine export URL probes did not return a downloadable official OpenAPI document during M6 review."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "gmail",
 		displayName:         "Gmail",
 		aliases:             []string{"google mail", "gmail api"},
