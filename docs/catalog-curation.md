@@ -23,7 +23,14 @@ For each service, use the same four-step review loop.
 
    - `catalog-openapi-cache/openapi/` for OpenAPI or Swagger documents;
    - `catalog-openapi-cache/google-discovery/` for Google Discovery documents;
-   - `catalog-openapi-cache/cache.sqlite` for optional local cache copies.
+   - `catalog-openapi-cache/cache.sqlite` for optional local cache metadata.
+
+   When the original document is already saved on disk, register the cache row
+   with `content_path` instead of duplicating the document bytes in SQLite.
+   `content_path` values should normally be relative to
+   `catalog-openapi-cache/`, such as `openapi/slack-web-openapi-v2.json`.
+   Use `catalog-openapi-cache/artifact-registry/register_catalog_artifacts.go`
+   to refresh the local path manifest for the current curated batch.
 
 2. Review auth/security completeness.
 
@@ -49,6 +56,8 @@ For each service, use the same four-step review loop.
 
    Store generated overlays as tracked catalog assets under
    `catalog-openapi-cache/advisory-overlays/<provider>-...-overlay.json`.
+   Register the overlay path in `cache.sqlite` as a catalog artifact so the
+   cache can act as a local manifest of reviewed docs-derived assets.
 
 4. Save the service-specific overlay builder.
 
@@ -74,6 +83,8 @@ advisory assets, and code:
 - `catalog/` provider, spec-reference, and security-overlay metadata;
 - `catalog-openapi-cache/advisory-overlays/` docs-derived advisory overlays;
 - `catalog-openapi-cache/overlay-builders/` service-specific builders;
+- `catalog-openapi-cache/artifact-registry/` local manifest registration
+  programs;
 - tests that validate catalog entries and overlays;
 - README or docs updates for public behavior.
 
@@ -82,7 +93,9 @@ updates when the catalog process changes.
 
 The public repository should not track downloaded provider specs, Google
 Discovery documents, or SQLite caches. Those review artifacts live under
-ignored paths in `catalog-openapi-cache/`.
+ignored paths in `catalog-openapi-cache/`. The SQLite cache should point at
+those files with paths instead of copying their document bodies into BLOB
+columns when a file-backed artifact exists.
 
 ## Verification
 

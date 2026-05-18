@@ -1,0 +1,174 @@
+//go:build ignore
+
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"time"
+
+	apitools "github.com/OpenUdon/apitools"
+	"github.com/OpenUdon/apitools/sqlitecache"
+)
+
+const cachePath = "catalog-openapi-cache/cache.sqlite"
+
+type specArtifact struct {
+	providerID string
+	artifactID string
+	kind       string
+	url        string
+	path       string
+}
+
+type overlayArtifact struct {
+	providerID  string
+	artifactID  string
+	path        string
+	builderPath string
+	sourceURL   string
+}
+
+func main() {
+	if err := run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
+	ctx := context.Background()
+	cache, err := sqlitecache.Open(cachePath)
+	if err != nil {
+		return err
+	}
+	defer cache.Close()
+
+	for _, spec := range specArtifacts {
+		if err := registerSpec(ctx, cache, spec); err != nil {
+			return err
+		}
+	}
+	for _, overlay := range overlayArtifacts {
+		if err := cache.StoreCatalogArtifact(ctx, sqlitecache.CatalogArtifact{
+			ProviderID:  overlay.providerID,
+			ArtifactID:  overlay.artifactID,
+			Kind:        "advisory-overlay",
+			Path:        overlay.path,
+			SourceURL:   overlay.sourceURL,
+			OverlayPath: overlay.path,
+			BuilderPath: overlay.builderPath,
+			Metadata: map[string]string{
+				"official_openapi":  "false",
+				"derived_from_docs": "true",
+			},
+		}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func registerSpec(ctx context.Context, cache *sqlitecache.Cache, artifact specArtifact) error {
+	cached, ok, err := cache.LoadSpec(ctx, artifact.url, 100*365*24*time.Hour)
+	if err != nil {
+		return err
+	}
+	metadata := cached.Metadata
+	finalURL := cached.FinalURL
+	if !ok {
+		finalURL = artifact.url
+	}
+	if finalURL == "" {
+		finalURL = artifact.url
+	}
+	if err := cache.StoreSpec(ctx, apitools.CachedSpec{
+		OriginalURL: artifact.url,
+		FinalURL:    finalURL,
+		ContentPath: artifact.path,
+		Metadata:    metadata,
+	}); err != nil {
+		return err
+	}
+	return cache.StoreCatalogArtifact(ctx, sqlitecache.CatalogArtifact{
+		ProviderID: artifact.providerID,
+		ArtifactID: artifact.artifactID,
+		Kind:       artifact.kind,
+		Path:       artifact.path,
+		SourceURL:  artifact.url,
+		Metadata: map[string]string{
+			"official": "true",
+			"kind":     artifact.kind,
+		},
+	})
+}
+
+var specArtifacts = []specArtifact{
+	{
+		providerID: "gmail",
+		artifactID: "gmail-discovery-v1",
+		kind:       "google-discovery",
+		url:        "https://gmail.googleapis.com/$discovery/rest?version=v1",
+		path:       "google-discovery/gmail-discovery-v1.json",
+	},
+	{
+		providerID: "google-drive",
+		artifactID: "drive-discovery-v3",
+		kind:       "google-discovery",
+		url:        "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
+		path:       "google-discovery/drive-discovery-v3.json",
+	},
+	{
+		providerID: "hubspot",
+		artifactID: "hubspot-public-api-spec-index",
+		kind:       "openapi-index",
+		url:        "https://api.hubapi.com/public/api/spec/v1/specs",
+		path:       "openapi/hubspot-public-api-spec-index.json",
+	},
+	{
+		providerID: "jira-cloud",
+		artifactID: "jira-cloud-platform-openapi-v3",
+		kind:       "openapi",
+		url:        "https://dac-static.atlassian.com/cloud/jira/platform/swagger-v3.v3.json",
+		path:       "openapi/jira-cloud-platform-openapi-v3.json",
+	},
+	{
+		providerID: "pagerduty",
+		artifactID: "pagerduty-rest-openapi-v3",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/PagerDuty/api-schema/main/reference/REST/openapiv3.json",
+		path:       "openapi/pagerduty-rest-openapi-v3.json",
+	},
+	{
+		providerID: "slack",
+		artifactID: "slack-web-openapi-v2",
+		kind:       "swagger",
+		url:        "https://raw.githubusercontent.com/slackapi/slack-api-specs/master/web-api/slack_web_openapi_v2_without_examples.json",
+		path:       "openapi/slack-web-openapi-v2.json",
+	},
+	{
+		providerID: "trello",
+		artifactID: "trello-cloud-openapi-v3",
+		kind:       "openapi",
+		url:        "https://dac-static.atlassian.com/cloud/trello/swagger.v3.json",
+		path:       "openapi/trello-cloud-openapi-v3.json",
+	},
+}
+
+var overlayArtifacts = []overlayArtifact{
+	{
+		providerID:  "airtable",
+		artifactID:  "airtable-web-api-overlay",
+		path:        "advisory-overlays/airtable-web-api-overlay.json",
+		builderPath: "overlay-builders/build_airtable_overlay.go",
+		sourceURL:   "https://airtable.com/developers/web/api/introduction",
+	},
+	{
+		providerID:  "openweathermap",
+		artifactID:  "openweathermap-one-call-3-overlay",
+		path:        "advisory-overlays/openweathermap-one-call-3-overlay.json",
+		builderPath: "overlay-builders/build_openweathermap_overlay.go",
+		sourceURL:   "https://openweathermap.org/api/one-call-3?collection=one_call_api_3.0",
+	},
+}

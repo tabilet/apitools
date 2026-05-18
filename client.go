@@ -151,6 +151,7 @@ type SearchCacheKey struct {
 type CachedSpec struct {
 	OriginalURL string       `json:"original_url"`
 	FinalURL    string       `json:"final_url"`
+	ContentPath string       `json:"content_path,omitempty"`
 	Content     []byte       `json:"-"`
 	SHA256      string       `json:"sha256"`
 	Bytes       int64        `json:"bytes"`

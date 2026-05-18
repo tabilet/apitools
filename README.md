@@ -109,7 +109,10 @@ overlays only when no official OpenAPI document exists. The detailed workflow
 lives in [docs/catalog-curation.md](docs/catalog-curation.md). Downloaded specs
 and local SQLite caches stay ignored under `catalog-openapi-cache/`; generated
 advisory overlays and service-specific overlay builders are tracked catalog
-assets.
+assets. For catalog curation, `cache.sqlite` records file paths for saved
+documents and overlay artifacts rather than duplicating already-saved document
+bodies; the local manifest registration program lives under
+`catalog-openapi-cache/artifact-registry/`.
 
 ## Go Usage
 
