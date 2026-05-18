@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 31; got != want {
+	if got, want := len(candidates), 32; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -39,6 +39,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"okta",
 		"openweathermap",
 		"pagerduty",
+		"paypal",
 		"salesforce",
 		"sendgrid",
 		"servicenow",

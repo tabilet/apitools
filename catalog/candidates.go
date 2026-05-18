@@ -195,6 +195,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Common workflow service for incident, escalation, and on-call automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "paypal",
+		displayName: "PayPal",
+		aliases:     []string{"paypal api", "paypal checkout"},
+		category:    "payments",
+		n8nNode:     "PayPal",
+		relevance:   "Popular payment platform for checkout orders, captures, authorizations, subscriptions, payouts, and transaction automation.",
+		userNeed:    UserOpenAPINeedPossible,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "salesforce",
 		displayName: "Salesforce",
 		aliases:     []string{"salesforce api", "salesforce crm"},

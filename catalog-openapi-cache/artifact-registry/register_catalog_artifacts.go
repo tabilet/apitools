@@ -258,6 +258,15 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/pagerduty-rest-openapi-v3.json",
 	},
 	{
+		providerID: "paypal",
+		artifactID: "paypal-checkout-orders-v2-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/main/openapi/checkout_orders_v2.json",
+		path:       "openapi/paypal-checkout-orders-v2-openapi.json",
+		title:      "Orders",
+		openapi:    "3.0.4",
+	},
+	{
 		providerID: "sendgrid",
 		artifactID: "sendgrid-mail-v3-openapi",
 		kind:       "openapi",

@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 31; got != want {
+	if got, want := len(catalog.ListProviders()), 32; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -39,6 +39,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"okta",
 		"openweathermap",
 		"pagerduty",
+		"paypal",
 		"salesforce",
 		"sendgrid",
 		"servicenow",
@@ -77,6 +78,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "mailchimp marketing", id: "mailchimp"},
 		{key: "notion api", id: "notion"},
 		{key: "okta management", id: "okta"},
+		{key: "paypal checkout", id: "paypal"},
 		{key: "salesforce rest api", id: "salesforce"},
 		{key: "twilio sendgrid", id: "sendgrid"},
 		{key: "servicenow rest", id: "servicenow"},
@@ -141,6 +143,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "microsoft-graph", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "notion", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "okta", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "paypal", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "salesforce", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "sendgrid", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "servicenow", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},

@@ -270,6 +270,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "PagerDuty's official OpenAPI document includes an Authorization header API key scheme and root security requirement.",
 	},
 	{
+		ProviderID: "paypal",
+		SpecRefID:  "paypal-checkout-orders-v2-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/main/openapi/checkout_orders_v2.json"},
+		SourceNote: "PayPal's official Checkout Orders v2 OpenAPI document includes OAuth2 security scheme metadata and operation-level security requirements.",
+	},
+	{
 		ProviderID: "salesforce",
 		SpecRefID:  "salesforce-rest-docs",
 		Status:     AuthStatusOverlayRequired,
