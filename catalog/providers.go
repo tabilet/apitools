@@ -523,6 +523,21 @@ var builtInProviders = []Provider{
 		quirks: []string{"PayPal publishes split OpenAPI documents by API family; this entry starts with Checkout Orders v2 because it covers common checkout workflows."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "quickbooks",
+		displayName:         "QuickBooks",
+		aliases:             []string{"quickbooks api", "quickbooks online", "intuit quickbooks"},
+		category:            "accounting",
+		relevance:           "Popular accounting platform for invoices, customers, bills, accounts, payments, and bookkeeping automation.",
+		openAPIAvailability: SpecAvailabilityNeedsVerification,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("quickbooks-online-api-docs", "https://developer.intuit.com/app/developer/qbo/docs/learn/explore-the-quickbooks-online-api", "Official Intuit QuickBooks Online Accounting API documentation. No stable public downloadable OpenAPI document is recorded in this catalog entry yet."),
+			humanDocsRef("quickbooks-oauth-docs", "https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0", "Official Intuit QuickBooks OAuth 2.0 authentication and authorization documentation."),
+		},
+		quirks: []string{"QuickBooks Online APIs are company/realm scoped and official docs emphasize OAuth 2.0, sandbox setup, and entity references; OpenAPI-only workflows likely need a user-supplied or generated document."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "salesforce",
 		displayName:         "Salesforce",
 		aliases:             []string{"salesforce api", "salesforce rest api"},

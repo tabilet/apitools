@@ -204,6 +204,15 @@ var builtInCandidates = []Candidate{
 		userNeed:    UserOpenAPINeedPossible,
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "quickbooks",
+		displayName: "QuickBooks",
+		aliases:     []string{"quickbooks api", "quickbooks online", "intuit quickbooks"},
+		category:    "accounting",
+		n8nNode:     "QuickBooks",
+		relevance:   "Popular accounting platform for invoices, customers, bills, accounts, payments, and bookkeeping automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "salesforce",
 		displayName: "Salesforce",
 		aliases:     []string{"salesforce api", "salesforce crm"},

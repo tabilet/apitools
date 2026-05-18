@@ -479,6 +479,27 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "OpenWeather has human API docs in this catalog entry but no recorded official OpenAPI document; docs describe API key usage, so OpenAPI imports need an advisory appid query-key overlay.",
 	},
 	{
+		ID:         "quickbooks-online-oauth-overlay",
+		ProviderID: "quickbooks",
+		SpecRefID:  "quickbooks-online-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:         "quickbooksOAuth2",
+				Type:         SecuritySchemeHTTP,
+				Scheme:       "bearer",
+				BearerFormat: "OAuth 2.0 access token",
+				Description:  "QuickBooks Online OAuth 2.0 access token carried in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "quickbooksOAuth2"}},
+		SourceRefs: []string{
+			"https://developer.intuit.com/app/developer/qbo/docs/learn/explore-the-quickbooks-online-api",
+			"https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0",
+		},
+		SourceNote: "QuickBooks Online REST API docs describe OAuth 2.0 authorization for sandbox and production companies; OpenAPI-only imports need advisory bearer-token security metadata.",
+	},
+	{
 		ID:         "salesforce-rest-auth-overlay",
 		ProviderID: "salesforce",
 		SpecRefID:  "salesforce-rest-docs",

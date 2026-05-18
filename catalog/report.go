@@ -277,6 +277,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "PayPal's official Checkout Orders v2 OpenAPI document includes OAuth2 security scheme metadata and operation-level security requirements.",
 	},
 	{
+		ProviderID: "quickbooks",
+		SpecRefID:  "quickbooks-online-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://developer.intuit.com/app/developer/qbo/docs/learn/explore-the-quickbooks-online-api", "https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0"},
+		SourceNote: "QuickBooks Online has official REST API and OAuth 2.0 docs but no stable public downloadable OpenAPI document recorded in this catalog entry; OAuth bearer security metadata must come from advisory overlay notes.",
+	},
+	{
 		ProviderID: "salesforce",
 		SpecRefID:  "salesforce-rest-docs",
 		Status:     AuthStatusOverlayRequired,
