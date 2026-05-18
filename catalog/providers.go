@@ -562,6 +562,36 @@ var builtInProviders = []Provider{
 		},
 		quirks: []string{"Trello authentication and token flows may require supplemental security review before downstream use."},
 	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "zendesk",
+		displayName:         "Zendesk",
+		aliases:             []string{"zendesk api", "zendesk support"},
+		category:            "customer-support",
+		relevance:           "Popular workflow service for support tickets, users, organizations, messaging, and customer-service automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedPossible,
+		specs: []SpecReference{
+			{
+				ID:              "zendesk-sunshine-conversations-openapi",
+				Kind:            SpecKindOpenAPI,
+				URL:             "https://raw.githubusercontent.com/zendesk/sunshine-conversations-api-spec/master/openapi.yaml",
+				SourceAuthority: SourceAuthorityOfficialGitHub,
+				Version:         "17.10.2",
+				VerifiedAt:      verifiedAt20260518,
+				Revision:        `repo:d5a86eab72b6c8f907724fa46f48372461dd7da2 etag:"79c7c9fa7dc292c5cb24d9f6f54894cc7a83dcc53806906bcf550db5bb00b1fa"`,
+				LicenseNote:     "No repository license is recorded in this catalog entry; Zendesk developer terms apply to documentation and generated clients.",
+				SourceNote:      "Official Zendesk Sunshine Conversations OpenAPI specification for the v2 messaging API; Zendesk states it is used to generate the hosted API reference.",
+			},
+			humanDocsRef("zendesk-sunshine-openapi-docs", "https://developer.zendesk.com/documentation/conversations/references/openapi-specification/", "Official Zendesk Messaging OpenAPI specification documentation."),
+			humanDocsRef("zendesk-support-api-docs", "https://developer.zendesk.com/api-reference/ticketing/introduction/", "Official Zendesk Support API reference documentation."),
+			humanDocsRef("zendesk-security-auth-docs", "https://developer.zendesk.com/api-reference/introduction/security-and-auth/", "Official Zendesk API security and authentication documentation."),
+		},
+		quirks: []string{
+			"The official OpenAPI document covers Sunshine Conversations / Zendesk Messaging v2, not the full Zendesk Support and Ticketing API surface.",
+			"Support API workflows may still need a user-supplied OpenAPI document or docs-derived advisory overlay for precise endpoint coverage.",
+		},
+	}),
 }
 
 type providerSeed struct {

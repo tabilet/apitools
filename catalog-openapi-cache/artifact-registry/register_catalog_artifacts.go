@@ -271,6 +271,15 @@ var specArtifacts = []specArtifact{
 		url:        "https://dac-static.atlassian.com/cloud/trello/swagger.v3.json",
 		path:       "openapi/trello-cloud-openapi-v3.json",
 	},
+	{
+		providerID: "zendesk",
+		artifactID: "zendesk-sunshine-conversations-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/zendesk/sunshine-conversations-api-spec/master/openapi.yaml",
+		path:       "openapi/zendesk-sunshine-conversations-openapi.yaml",
+		title:      "Sunshine Conversations API",
+		openapi:    "3.0.2",
+	},
 }
 
 var overlayArtifacts = []overlayArtifact{

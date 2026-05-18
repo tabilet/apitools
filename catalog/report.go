@@ -290,6 +290,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceRefs: []string{"https://dac-static.atlassian.com/cloud/trello/swagger.v3.json"},
 		SourceNote: "Atlassian's Trello OpenAPI document includes query API key/token security schemes and root security requirements.",
 	},
+	{
+		ProviderID: "zendesk",
+		SpecRefID:  "zendesk-sunshine-conversations-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/zendesk/sunshine-conversations-api-spec/master/openapi.yaml"},
+		SourceNote: "Zendesk's official Sunshine Conversations OpenAPI document includes basic and bearer HTTP security schemes plus root and operation security requirements for the messaging API surface.",
+	},
 }
 
 func validateSecurityClassification(classification SecurityClassification, providers map[string]Provider) error {

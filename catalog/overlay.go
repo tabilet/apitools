@@ -521,6 +521,33 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Slack's official OpenAPI document includes OAuth metadata and operation security, but the repository is archived and lacks root security; keep this as a present-incomplete review overlay rather than treating it as current provider truth.",
 	},
+	{
+		ID:         "zendesk-support-auth-review",
+		ProviderID: "zendesk",
+		SpecRefID:  "zendesk-support-api-docs",
+		Status:     AuthStatusPresentIncomplete,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "zendeskBasic",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Zendesk Support API token credentials carried with HTTP Basic authentication as email_address/token:api_token.",
+			},
+			{
+				Name:        "zendeskBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Zendesk OAuth or global OAuth access token carried in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "zendeskBasic"}, {Scheme: "zendeskBearer"}},
+		SourceRefs: []string{
+			"https://developer.zendesk.com/api-reference/introduction/security-and-auth/",
+			"https://developer.zendesk.com/api-reference/ticketing/introduction/",
+			"https://developer.zendesk.com/documentation/conversations/references/openapi-specification/",
+		},
+		SourceNote: "Zendesk's official Sunshine Conversations OpenAPI covers messaging security; broader Support API docs describe API-token basic auth and OAuth bearer tokens, so catalog consumers should treat support/ticketing auth as reviewed but endpoint coverage as incomplete without a user OpenAPI document.",
+	},
 }
 
 func googleOAuthScheme(name string, scopes []string) SecurityScheme {

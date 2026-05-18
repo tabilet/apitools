@@ -219,6 +219,14 @@ var builtInCandidates = []Candidate{
 		n8nNode:     "Trello",
 		relevance:   "Common workflow service for boards, lists, cards, and task automation.",
 	}),
+	workflowCandidate(candidateSeed{
+		id:          "zendesk",
+		displayName: "Zendesk",
+		aliases:     []string{"zendesk api", "zendesk support"},
+		category:    "customer-support",
+		n8nNode:     "Zendesk",
+		relevance:   "Popular workflow service for support tickets, users, organizations, messaging, and customer-service automation.",
+	}),
 }
 
 type candidateSeed struct {
