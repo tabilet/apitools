@@ -1,0 +1,244 @@
+package catalog
+
+const verifiedAt20260518 = "2026-05-18"
+
+var builtInProviders = []Provider{
+	providerCatalogEntry(providerSeed{
+		id:                  "airtable",
+		displayName:         "Airtable",
+		aliases:             []string{"airtable api"},
+		category:            "database",
+		relevance:           "Common workflow source and destination for records in bases and tables.",
+		openAPIAvailability: SpecAvailabilityUnknown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("airtable-web-api-docs", "https://airtable.com/developers/web/api/introduction", "Official Airtable Web API documentation. No official OpenAPI document is recorded in this catalog entry yet."),
+		},
+		quirks: []string{"Base-specific Airtable schemas can vary by workspace and base; user-provided OpenAPI may be needed for precise field shapes."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "gmail",
+		displayName:         "Gmail",
+		aliases:             []string{"google mail", "gmail api"},
+		category:            "email",
+		relevance:           "Common workflow service for reading, sending, and routing email messages.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityKnown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			{
+				ID:              "gmail-discovery-v1",
+				Kind:            SpecKindGoogleDiscovery,
+				URL:             "https://gmail.googleapis.com/$discovery/rest?version=v1",
+				SourceAuthority: SourceAuthorityOfficialProvider,
+				Version:         "v1",
+				VerifiedAt:      verifiedAt20260518,
+				LicenseNote:     "Google Developers Site Policies apply to documentation and code samples.",
+				SourceNote:      "Official Gmail API Discovery document; it is machine-readable but not OpenAPI.",
+			},
+			humanDocsRef("gmail-rest-docs", "https://developers.google.com/workspace/gmail/api/reference/rest", "Official Gmail API REST reference."),
+		},
+		quirks: []string{"Google Discovery documents are not OpenAPI and need conversion or a user-supplied OpenAPI document for OpenAPI-only workflows."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "google-drive",
+		displayName:         "Google Drive",
+		aliases:             []string{"drive", "google drive api"},
+		category:            "files",
+		relevance:           "Common workflow service for file storage, upload, search, and sharing.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityKnown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			{
+				ID:              "drive-discovery-v3",
+				Kind:            SpecKindGoogleDiscovery,
+				URL:             "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
+				SourceAuthority: SourceAuthorityOfficialProvider,
+				Version:         "v3",
+				VerifiedAt:      verifiedAt20260518,
+				LicenseNote:     "Google Developers Site Policies apply to documentation and code samples.",
+				SourceNote:      "Official Google Drive API Discovery document; it is machine-readable but not OpenAPI.",
+			},
+			humanDocsRef("drive-rest-docs", "https://developers.google.com/drive/api/reference/rest/v3", "Official Google Drive API v3 REST reference."),
+		},
+		quirks: []string{"Google Discovery documents are not OpenAPI and need conversion or a user-supplied OpenAPI document for OpenAPI-only workflows."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "hubspot",
+		displayName:         "HubSpot",
+		aliases:             []string{"hubspot crm", "hubspot api"},
+		category:            "crm",
+		relevance:           "Common workflow service for CRM records, tickets, contacts, and pipeline automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			{
+				ID:              "hubspot-public-api-spec-index",
+				Kind:            SpecKindOpenAPIIndex,
+				URL:             "https://api.hubapi.com/public/api/spec/v1/specs",
+				SourceAuthority: SourceAuthorityOfficialProvider,
+				VerifiedAt:      verifiedAt20260518,
+				LicenseNote:     "HubSpot public API spec repository notes proprietary specifications and directs external developers to official API documentation.",
+				SourceNote:      "Official HubSpot public API spec index endpoint; references multiple OpenAPI documents rather than one monolithic spec.",
+			},
+			humanDocsRef("hubspot-api-docs", "https://developers.hubspot.com/docs/reference/api", "Official HubSpot API reference documentation."),
+		},
+		quirks: []string{"HubSpot specs are split across API groups and versions; callers should select a specific spec from the index before import."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "jira-cloud",
+		displayName:         "Jira Cloud",
+		aliases:             []string{"jira", "atlassian jira", "jira api"},
+		category:            "project-management",
+		relevance:           "Common workflow service for issue tracking and project automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			{
+				ID:              "jira-cloud-platform-openapi-v3",
+				Kind:            SpecKindOpenAPI,
+				URL:             "https://dac-static.atlassian.com/cloud/jira/platform/swagger-v3.v3.json",
+				SourceAuthority: SourceAuthorityOfficialProvider,
+				Version:         "v3",
+				VerifiedAt:      verifiedAt20260518,
+				Revision:        `etag:"e6c0034518a2ce0a4005e9f04d23a0d8"`,
+				LicenseNote:     "Atlassian developer documentation terms apply.",
+				SourceNote:      "Atlassian-hosted Jira Cloud platform OpenAPI document.",
+			},
+			humanDocsRef("jira-cloud-rest-docs", "https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/", "Official Jira Cloud platform REST API documentation."),
+		},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "openweathermap",
+		displayName:         "OpenWeatherMap",
+		aliases:             []string{"open weather map", "openweathermap api"},
+		category:            "weather",
+		relevance:           "Common workflow data source for current weather and forecast enrichment.",
+		openAPIAvailability: SpecAvailabilityUnknown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("openweathermap-api-docs", "https://openweathermap.org/api", "Official OpenWeather API documentation. No official OpenAPI document is recorded in this catalog entry yet."),
+		},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "pagerduty",
+		displayName:         "PagerDuty",
+		aliases:             []string{"pagerduty api"},
+		category:            "incident-management",
+		relevance:           "Common workflow service for incident, escalation, and on-call automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			{
+				ID:              "pagerduty-rest-openapi-v3",
+				Kind:            SpecKindOpenAPI,
+				URL:             "https://raw.githubusercontent.com/PagerDuty/api-schema/main/reference/REST/openapiv3.json",
+				SourceAuthority: SourceAuthorityOfficialGitHub,
+				VerifiedAt:      verifiedAt20260518,
+				Revision:        "repo:fbfcadd0ec95e0e08fdb0fe013baa0b713fa13ab blob:b0cb8abda0635d34f10be108694b929afd2ac463",
+				LicenseNote:     "No release license is recorded in this catalog entry; review repository terms before vendoring.",
+				SourceNote:      "Official PagerDuty API schema repository OpenAPI document for REST APIs.",
+			},
+			humanDocsRef("pagerduty-api-docs", "https://developer.pagerduty.com/api-reference/", "Official PagerDuty API reference documentation."),
+		},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "slack",
+		displayName:         "Slack",
+		aliases:             []string{"slack api"},
+		category:            "messaging",
+		relevance:           "Common workflow service for messages, channels, and collaboration notifications.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedPossible,
+		specs: []SpecReference{
+			{
+				ID:              "slack-web-openapi-v2",
+				Kind:            SpecKindOpenAPI,
+				URL:             "https://raw.githubusercontent.com/slackapi/slack-api-specs/master/web-api/slack_web_openapi_v2_without_examples.json",
+				SourceAuthority: SourceAuthorityOfficialGitHub,
+				Version:         "OpenAPI 2.0",
+				VerifiedAt:      verifiedAt20260518,
+				Revision:        "repo:bc08db49625630e3585bf2f1322128ea04f2a7f3 blob:f7b1affd1fb34f9473cd87980428883019b29c07",
+				LicenseNote:     "Repository license applies; repository is archived and read-only.",
+				SourceNote:      "Official Slack API specs repository Web API OpenAPI document; repository was archived by its owner in 2024.",
+			},
+			humanDocsRef("slack-web-api-docs", "https://docs.slack.dev/apis/web-api", "Official Slack Web API documentation."),
+		},
+		quirks: []string{"The official Slack OpenAPI repository is archived, so freshness should be checked against current Slack docs before import."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "trello",
+		displayName:         "Trello",
+		aliases:             []string{"trello api"},
+		category:            "project-management",
+		relevance:           "Common workflow service for boards, lists, cards, and task automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			{
+				ID:              "trello-cloud-openapi-v3",
+				Kind:            SpecKindOpenAPI,
+				URL:             "https://dac-static.atlassian.com/cloud/trello/swagger.v3.json",
+				SourceAuthority: SourceAuthorityOfficialProvider,
+				Version:         "v3",
+				VerifiedAt:      verifiedAt20260518,
+				Revision:        `etag:"c4c69e7449085c4ef83e72a4b0344dfa"`,
+				LicenseNote:     "Atlassian developer documentation terms apply.",
+				SourceNote:      "Atlassian-hosted Trello Cloud OpenAPI document.",
+			},
+			humanDocsRef("trello-rest-docs", "https://developer.atlassian.com/cloud/trello/rest/", "Official Trello REST API documentation."),
+		},
+		quirks: []string{"Trello authentication and token flows may require supplemental security review before downstream use."},
+	}),
+}
+
+type providerSeed struct {
+	id                  string
+	displayName         string
+	aliases             []string
+	category            string
+	relevance           string
+	openAPIAvailability SpecAvailability
+	machineAvailability SpecAvailability
+	userNeed            UserOpenAPINeed
+	specs               []SpecReference
+	quirks              []string
+}
+
+func providerCatalogEntry(seed providerSeed) Provider {
+	return Provider{
+		ID:                              seed.id,
+		DisplayName:                     seed.displayName,
+		Aliases:                         append([]string(nil), seed.aliases...),
+		Category:                        seed.category,
+		WorkflowRelevance:               seed.relevance,
+		SourceHints:                     []string{"promoted-from-m2-candidate"},
+		ReviewState:                     ProviderReviewedCatalogEntry,
+		CandidateID:                     seed.id,
+		OfficialOpenAPIAvailability:     seed.openAPIAvailability,
+		OfficialMachineSpecAvailability: seed.machineAvailability,
+		UserOpenAPINeed:                 seed.userNeed,
+		SpecReferences:                  append([]SpecReference(nil), seed.specs...),
+		Quirks:                          append([]string(nil), seed.quirks...),
+	}
+}
+
+func humanDocsRef(id, url, note string) SpecReference {
+	return SpecReference{
+		ID:              id,
+		Kind:            SpecKindHumanDocs,
+		URL:             url,
+		SourceAuthority: SourceAuthorityOfficialDocs,
+		VerifiedAt:      verifiedAt20260518,
+		LicenseNote:     "Provider documentation terms apply.",
+		SourceNote:      note,
+	}
+}

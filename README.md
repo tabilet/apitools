@@ -180,9 +180,9 @@ and `.yml` files that parse but are not OpenAPI or Swagger are still ignored by
 
 - `github.com/OpenUdon/apitools`: core client, discovery, import, validation,
   inventories, authoring summaries, auth summaries, and operation ranking.
-- `github.com/OpenUdon/apitools/catalog`: metadata-only candidate service
-  inventory for future provider catalog curation. Candidate evidence is
-  prioritization/review metadata, not provider or n8n runtime compatibility.
+- `github.com/OpenUdon/apitools/catalog`: metadata-only candidate inventory,
+  durable provider catalog entries, and official spec references for catalog
+  curation. Catalog metadata is not provider or n8n runtime compatibility.
 - `github.com/OpenUdon/apitools/sqlitecache`: optional SQLite cache
   implementation for the core `Cache` interface.
 - `github.com/OpenUdon/apitools/openapidisco`: compatibility wrapper around
@@ -202,6 +202,6 @@ When changing exported APIs, run dependent checks in sibling consumers when
 available:
 
 ```bash
-(cd ../ramen && go test ./...)
+(cd ../openudon && go test ./...)
 (cd ../udon && go test ./...)
 ```
