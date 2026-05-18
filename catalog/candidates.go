@@ -222,6 +222,14 @@ var builtInCandidates = []Candidate{
 		userNeed:    UserOpenAPINeedPossible,
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "pipedrive",
+		displayName: "Pipedrive",
+		aliases:     []string{"pipedrive api", "pipedrive crm"},
+		category:    "crm",
+		n8nNode:     "Pipedrive",
+		relevance:   "Popular CRM workflow service for deals, persons, organizations, activities, leads, products, and pipeline automation.",
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "quickbooks",
 		displayName: "QuickBooks",
 		aliases:     []string{"quickbooks api", "quickbooks online", "intuit quickbooks"},

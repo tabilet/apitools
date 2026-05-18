@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 36; got != want {
+	if got, want := len(catalog.ListProviders()), 37; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -42,6 +42,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"openweathermap",
 		"pagerduty",
 		"paypal",
+		"pipedrive",
 		"quickbooks",
 		"salesforce",
 		"sendgrid",
@@ -85,6 +86,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "notion api", id: "notion"},
 		{key: "okta management", id: "okta"},
 		{key: "paypal checkout", id: "paypal"},
+		{key: "pipedrive crm", id: "pipedrive"},
 		{key: "intuit quickbooks", id: "quickbooks"},
 		{key: "salesforce rest api", id: "salesforce"},
 		{key: "twilio sendgrid", id: "sendgrid"},
@@ -154,6 +156,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "notion", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "okta", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "paypal", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
+		{id: "pipedrive", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "quickbooks", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "salesforce", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "sendgrid", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},

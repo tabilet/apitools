@@ -267,6 +267,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.0.4",
 	},
 	{
+		providerID: "pipedrive",
+		artifactID: "pipedrive-api-v2-openapi",
+		kind:       "openapi",
+		url:        "https://developers.pipedrive.com/docs/api/v1/openapi-v2.yaml",
+		path:       "openapi/pipedrive-api-v2-openapi.yaml",
+		title:      "Pipedrive API v2",
+		openapi:    "3.0.1",
+	},
+	{
 		providerID: "sendgrid",
 		artifactID: "sendgrid-mail-v3-openapi",
 		kind:       "openapi",

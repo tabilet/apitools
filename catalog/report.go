@@ -291,6 +291,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "PayPal's official Checkout Orders v2 OpenAPI document includes OAuth2 security scheme metadata and operation-level security requirements.",
 	},
 	{
+		ProviderID: "pipedrive",
+		SpecRefID:  "pipedrive-api-v2-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://developers.pipedrive.com/docs/api/v1/openapi-v2.yaml"},
+		SourceNote: "Pipedrive's official API v2 OpenAPI document includes API-token, OAuth2, and basic auth security schemes plus operation-level security requirements.",
+	},
+	{
 		ProviderID: "quickbooks",
 		SpecRefID:  "quickbooks-online-api-docs",
 		Status:     AuthStatusOverlayRequired,
