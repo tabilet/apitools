@@ -1,0 +1,541 @@
+{
+  "components": {
+    "schemas": {
+      "ContinueRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "cursor"
+        ],
+        "type": "object"
+      },
+      "DropboxError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DropboxRequest": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DropboxResponse": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ListFolderRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "include_deleted": {
+            "type": "boolean"
+          },
+          "include_has_explicit_shared_members": {
+            "type": "boolean"
+          },
+          "include_media_info": {
+            "type": "boolean"
+          },
+          "include_mounted_folders": {
+            "type": "boolean"
+          },
+          "limit": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "path": {
+            "type": "string"
+          },
+          "recursive": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "ListSharedLinksRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "cursor": {
+            "type": "string"
+          },
+          "direct_only": {
+            "description": "When true, return only links directly attached to the supplied path.",
+            "type": "boolean"
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "PathRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "type": "object"
+      },
+      "SharedLinkRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "settings": {
+            "additionalProperties": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "dropboxOAuth2": {
+        "description": "Dropbox OAuth 2.0 bearer access token with scoped permissions.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://www.dropbox.com/oauth2/authorize",
+            "scopes": {
+              "account_info.read": "Read basic account information.",
+              "files.content.read": "Read file contents.",
+              "files.content.write": "Write file contents.",
+              "files.metadata.read": "Read file and folder metadata.",
+              "sharing.read": "Read shared-link metadata.",
+              "sharing.write": "Create or modify sharing links."
+            },
+            "tokenUrl": "https://api.dropboxapi.com/oauth2/token"
+          }
+        },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Dropbox HTTP documentation and the official Dropbox Stone spec. This is not an official Dropbox OpenAPI document.",
+    "title": "Dropbox Core API Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/2/files/download": {
+      "post": {
+        "description": "Advisory operation derived from official Dropbox documentation and Stone spec names.",
+        "operationId": "downloadDropboxFile",
+        "parameters": [
+          {
+            "description": "JSON-encoded Dropbox endpoint argument header.",
+            "in": "header",
+            "name": "Dropbox-API-Arg",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Dropbox file content response. Metadata is returned in Dropbox-API-Result.",
+            "headers": {
+              "Dropbox-API-Result": {
+                "description": "JSON-encoded Dropbox file metadata.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxError"
+                }
+              }
+            },
+            "description": "Dropbox error response."
+          }
+        },
+        "security": [
+          {
+            "dropboxOAuth2": [
+              "files.content.read"
+            ]
+          }
+        ],
+        "servers": [
+          {
+            "url": "https://content.dropboxapi.com"
+          }
+        ],
+        "summary": "Download a Dropbox file"
+      }
+    },
+    "/2/files/get_metadata": {
+      "post": {
+        "description": "Advisory operation derived from official Dropbox documentation and Stone spec names.",
+        "operationId": "getDropboxMetadata",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PathRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxResponse"
+                }
+              }
+            },
+            "description": "Dropbox response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxError"
+                }
+              }
+            },
+            "description": "Dropbox error response."
+          }
+        },
+        "security": [
+          {
+            "dropboxOAuth2": [
+              "files.metadata.read"
+            ]
+          }
+        ],
+        "summary": "Get Dropbox file or folder metadata"
+      }
+    },
+    "/2/files/list_folder": {
+      "post": {
+        "description": "Advisory operation derived from official Dropbox documentation and Stone spec names.",
+        "operationId": "listDropboxFolder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListFolderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxResponse"
+                }
+              }
+            },
+            "description": "Dropbox response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxError"
+                }
+              }
+            },
+            "description": "Dropbox error response."
+          }
+        },
+        "security": [
+          {
+            "dropboxOAuth2": [
+              "files.metadata.read"
+            ]
+          }
+        ],
+        "summary": "List a Dropbox folder"
+      }
+    },
+    "/2/files/list_folder/continue": {
+      "post": {
+        "description": "Advisory operation derived from official Dropbox documentation and Stone spec names.",
+        "operationId": "continueDropboxFolderListing",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContinueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxResponse"
+                }
+              }
+            },
+            "description": "Dropbox response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxError"
+                }
+              }
+            },
+            "description": "Dropbox error response."
+          }
+        },
+        "security": [
+          {
+            "dropboxOAuth2": [
+              "files.metadata.read"
+            ]
+          }
+        ],
+        "summary": "Continue a Dropbox folder listing"
+      }
+    },
+    "/2/files/upload": {
+      "post": {
+        "description": "Advisory operation derived from official Dropbox documentation and Stone spec names.",
+        "operationId": "uploadDropboxFile",
+        "parameters": [
+          {
+            "description": "JSON-encoded Dropbox endpoint argument header.",
+            "in": "header",
+            "name": "Dropbox-API-Arg",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxResponse"
+                }
+              }
+            },
+            "description": "Dropbox response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxError"
+                }
+              }
+            },
+            "description": "Dropbox error response."
+          }
+        },
+        "security": [
+          {
+            "dropboxOAuth2": [
+              "files.content.write"
+            ]
+          }
+        ],
+        "servers": [
+          {
+            "url": "https://content.dropboxapi.com"
+          }
+        ],
+        "summary": "Upload a Dropbox file"
+      }
+    },
+    "/2/sharing/create_shared_link_with_settings": {
+      "post": {
+        "description": "Advisory operation derived from official Dropbox documentation and Stone spec names.",
+        "operationId": "createDropboxSharedLink",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharedLinkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxResponse"
+                }
+              }
+            },
+            "description": "Dropbox response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxError"
+                }
+              }
+            },
+            "description": "Dropbox error response."
+          }
+        },
+        "security": [
+          {
+            "dropboxOAuth2": [
+              "sharing.write"
+            ]
+          }
+        ],
+        "summary": "Create a Dropbox shared link"
+      }
+    },
+    "/2/sharing/list_shared_links": {
+      "post": {
+        "description": "Advisory operation derived from official Dropbox documentation and Stone spec names.",
+        "operationId": "listDropboxSharedLinks",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListSharedLinksRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxResponse"
+                }
+              }
+            },
+            "description": "Dropbox response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxError"
+                }
+              }
+            },
+            "description": "Dropbox error response."
+          }
+        },
+        "security": [
+          {
+            "dropboxOAuth2": [
+              "sharing.read"
+            ]
+          }
+        ],
+        "summary": "List Dropbox shared links"
+      }
+    },
+    "/2/users/get_current_account": {
+      "post": {
+        "description": "Advisory operation derived from official Dropbox documentation and Stone spec names.",
+        "operationId": "getDropboxCurrentAccount",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxResponse"
+                }
+              }
+            },
+            "description": "Dropbox response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropboxError"
+                }
+              }
+            },
+            "description": "Dropbox error response."
+          }
+        },
+        "security": [
+          {
+            "dropboxOAuth2": [
+              "account_info.read"
+            ]
+          }
+        ],
+        "summary": "Get current Dropbox account"
+      }
+    }
+  },
+  "security": [
+    {
+      "dropboxOAuth2": [
+        "files.metadata.read"
+      ]
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.dropboxapi.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "dropbox-core-api-advisory-overlay",
+    "provider_id": "dropbox",
+    "source_note": "Dropbox publishes an official API v2 Stone specification for SDK generation and human HTTP documentation, but no official OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://github.com/dropbox/dropbox-api-spec",
+      "https://www.dropbox.com/developers/documentation/http/documentation",
+      "https://developers.dropbox.com/oauth-guide"
+    ]
+  }
+}

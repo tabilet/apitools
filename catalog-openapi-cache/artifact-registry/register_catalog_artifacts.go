@@ -154,6 +154,14 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.1.0",
 	},
 	{
+		providerID: "dropbox",
+		artifactID: "dropbox-api-stone-spec",
+		kind:       "dropbox-stone",
+		url:        "https://github.com/dropbox/dropbox-api-spec/archive/refs/heads/main.tar.gz",
+		path:       "openapi/dropbox-api-spec-main.tar.gz",
+		title:      "Dropbox API Stone Spec",
+	},
+	{
 		providerID: "gmail",
 		artifactID: "gmail-discovery-v1",
 		kind:       "google-discovery",
@@ -218,6 +226,13 @@ var overlayArtifacts = []overlayArtifact{
 		path:        "advisory-overlays/calendly-public-api-overlay.json",
 		builderPath: "overlay-builders/build_calendly_overlay.go",
 		sourceURL:   "https://developer.calendly.com/api-docs",
+	},
+	{
+		providerID:  "dropbox",
+		artifactID:  "dropbox-core-api-overlay",
+		path:        "advisory-overlays/dropbox-core-api-overlay.json",
+		builderPath: "overlay-builders/build_dropbox_overlay.go",
+		sourceURL:   "https://www.dropbox.com/developers/documentation/http/documentation",
 	},
 	{
 		providerID:  "openweathermap",

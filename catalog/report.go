@@ -165,6 +165,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Discord's official OpenAPI v10 preview document includes BotToken and OAuth2 security schemes with operation-level security requirements.",
 	},
 	{
+		ProviderID: "dropbox",
+		SpecRefID:  "dropbox-api-stone-spec",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://github.com/dropbox/dropbox-api-spec"},
+		SourceNote: "Dropbox's official machine-readable source is a Stone spec, not OpenAPI; OAuth security metadata needs advisory OpenAPI overlay mapping for OpenAPI-only consumers.",
+	},
+	{
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",
 		Status:     AuthStatusOverlayRequired,

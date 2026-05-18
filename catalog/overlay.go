@@ -214,6 +214,41 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "ClickUp's official OpenAPI document includes an Authorization header API key scheme and root security; OAuth authorization-code endpoints are documented separately, so keep this as a present-incomplete auth review overlay.",
 	},
 	{
+		ID:         "dropbox-api-auth-overlay",
+		ProviderID: "dropbox",
+		SpecRefID:  "dropbox-api-stone-spec",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name: "dropboxOAuth2",
+				Type: SecuritySchemeOAuth2,
+				Flows: []OAuthFlow{
+					{
+						Type:             OAuthFlowAuthorizationCode,
+						AuthorizationURL: "https://www.dropbox.com/oauth2/authorize",
+						TokenURL:         "https://api.dropboxapi.com/oauth2/token",
+						Scopes: []string{
+							"account_info.read",
+							"files.content.read",
+							"files.content.write",
+							"files.metadata.read",
+							"sharing.read",
+							"sharing.write",
+						},
+					},
+				},
+				Description: "Dropbox OAuth 2.0 authorization code flow with scoped bearer access tokens.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "dropboxOAuth2", Scopes: []string{"files.metadata.read"}}},
+		SourceRefs: []string{
+			"https://developers.dropbox.com/oauth-guide",
+			"https://www.dropbox.com/developers/documentation/http/documentation",
+			"https://github.com/dropbox/dropbox-api-spec",
+		},
+		SourceNote: "Dropbox publishes an official Stone machine spec rather than OpenAPI; official OAuth docs describe bearer-token scopes, so OpenAPI-only consumers need an advisory OAuth2 overlay.",
+	},
+	{
 		ID:         "gmail-discovery-auth-overlay",
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",

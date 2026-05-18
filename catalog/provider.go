@@ -33,6 +33,7 @@ type SpecKind string
 const (
 	SpecKindOpenAPI         SpecKind = "openapi"
 	SpecKindOpenAPIIndex    SpecKind = "openapi-index"
+	SpecKindDropboxStone    SpecKind = "dropbox-stone"
 	SpecKindGoogleDiscovery SpecKind = "google-discovery"
 	SpecKindHumanDocs       SpecKind = "human-docs"
 )
@@ -184,7 +185,7 @@ func validateProvider(provider Provider) error {
 	if provider.OfficialOpenAPIAvailability == SpecAvailabilityKnown && !provider.hasSpecKind(SpecKindOpenAPI, SpecKindOpenAPIIndex) {
 		return fmt.Errorf("provider %q: known OpenAPI availability requires an OpenAPI spec reference", provider.ID)
 	}
-	if provider.OfficialMachineSpecAvailability == SpecAvailabilityKnown && !provider.hasSpecKind(SpecKindGoogleDiscovery) {
+	if provider.OfficialMachineSpecAvailability == SpecAvailabilityKnown && !provider.hasMachineSpecKind() {
 		return fmt.Errorf("provider %q: known machine spec availability requires a machine spec reference", provider.ID)
 	}
 	return nil
@@ -253,6 +254,10 @@ func (p Provider) hasSpecKind(kinds ...SpecKind) bool {
 	return false
 }
 
+func (p Provider) hasMachineSpecKind() bool {
+	return p.hasSpecKind(SpecKindDropboxStone, SpecKindGoogleDiscovery)
+}
+
 func validProviderReviewState(value ProviderReviewState) bool {
 	switch value {
 	case ProviderReviewedCatalogEntry, ProviderCandidateOnly:
@@ -273,7 +278,7 @@ func validSpecAvailability(value SpecAvailability) bool {
 
 func validSpecKind(value SpecKind) bool {
 	switch value {
-	case SpecKindOpenAPI, SpecKindOpenAPIIndex, SpecKindGoogleDiscovery, SpecKindHumanDocs:
+	case SpecKindOpenAPI, SpecKindOpenAPIIndex, SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindHumanDocs:
 		return true
 	default:
 		return false
