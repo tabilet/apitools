@@ -86,7 +86,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 23; got != want {
+	if got, want := len(overlays), 24; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -207,6 +207,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"stripe",
 		"trello",
 		"twilio",
+		"typeform",
 		"xero",
 		"zendesk",
 		"zoom",
@@ -249,6 +250,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"stripe":          AuthStatusComplete,
 		"trello":          AuthStatusComplete,
 		"twilio":          AuthStatusComplete,
+		"typeform":        AuthStatusOverlayRequired,
 		"xero":            AuthStatusComplete,
 		"zendesk":         AuthStatusPresentIncomplete,
 		"zoom":            AuthStatusPresentIncomplete,

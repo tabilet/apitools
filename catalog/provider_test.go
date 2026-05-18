@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 37; got != want {
+	if got, want := len(catalog.ListProviders()), 38; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -52,6 +52,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"stripe",
 		"trello",
 		"twilio",
+		"typeform",
 		"xero",
 		"zendesk",
 		"zoom",
@@ -94,6 +95,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "shopify admin api", id: "shopify"},
 		{key: "stripe api", id: "stripe"},
 		{key: "twilio sms", id: "twilio"},
+		{key: "typeform api", id: "typeform"},
 		{key: "xero accounting", id: "xero"},
 		{key: "zoom meetings", id: "zoom"},
 		{key: "zendesk support", id: "zendesk"},
@@ -167,6 +169,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "stripe", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "trello", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "twilio", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "typeform", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "xero", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "zendesk", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "zoom", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},

@@ -306,6 +306,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for SMS, voice, messaging, phone numbers, and communication automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "typeform",
+		displayName: "Typeform",
+		aliases:     []string{"typeform api"},
+		category:    "forms",
+		n8nNode:     "Typeform",
+		relevance:   "Popular workflow service for forms, responses, webhooks, workspaces, themes, and survey automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "xero",
 		displayName: "Xero",
 		aliases:     []string{"xero api", "xero accounting"},

@@ -640,6 +640,28 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Slack's official OpenAPI document includes OAuth metadata and operation security, but the repository is archived and lacks root security; keep this as a present-incomplete review overlay rather than treating it as current provider truth.",
 	},
 	{
+		ID:         "typeform-rest-auth-overlay",
+		ProviderID: "typeform",
+		SpecRefID:  "typeform-developer-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:         "typeformBearer",
+				Type:         SecuritySchemeHTTP,
+				Scheme:       "bearer",
+				BearerFormat: "Personal access token or OAuth 2.0 access token",
+				Description:  "Typeform personal access token or OAuth access token carried in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "typeformBearer"}},
+		SourceRefs: []string{
+			"https://www.typeform.com/developers/get-started/",
+			"https://www.typeform.com/developers/get-started/personal-access-token/",
+			"https://www.typeform.com/developers/get-started/applications/",
+		},
+		SourceNote: "Typeform docs describe personal access tokens and OAuth 2.0 access tokens passed in the Authorization header; OpenAPI-only imports need advisory bearer-token security metadata.",
+	},
+	{
 		ID:         "zendesk-support-auth-review",
 		ProviderID: "zendesk",
 		SpecRefID:  "zendesk-support-api-docs",

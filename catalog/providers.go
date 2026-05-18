@@ -773,6 +773,23 @@ var builtInProviders = []Provider{
 		quirks: []string{"Twilio publishes many product-specific OpenAPI files; this entry starts with the core API v2010 spec used by common SMS and voice workflows."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "typeform",
+		displayName:         "Typeform",
+		aliases:             []string{"typeform api"},
+		category:            "forms",
+		relevance:           "Popular workflow service for forms, responses, webhooks, workspaces, themes, and survey automation.",
+		openAPIAvailability: SpecAvailabilityNeedsVerification,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("typeform-developer-docs", "https://www.typeform.com/developers/get-started/", "Official Typeform developer platform documentation. No stable public downloadable OpenAPI document is recorded in this catalog entry yet."),
+			humanDocsRef("typeform-create-api-docs", "https://www.typeform.com/developers/create/", "Official Typeform Create API documentation."),
+			humanDocsRef("typeform-auth-docs", "https://www.typeform.com/developers/get-started/personal-access-token/", "Official Typeform personal access token documentation."),
+			humanDocsRef("typeform-oauth-docs", "https://www.typeform.com/developers/get-started/applications/", "Official Typeform OAuth application documentation."),
+		},
+		quirks: []string{"Typeform docs describe REST APIs for Create, Responses, and Webhooks, but this catalog entry records no stable public downloadable OpenAPI document; OpenAPI-only workflows likely need a user-supplied or generated document."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "xero",
 		displayName:         "Xero",
 		aliases:             []string{"xero api", "xero accounting"},

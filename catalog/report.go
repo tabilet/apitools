@@ -361,6 +361,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Twilio's official OpenAPI v2010 document includes an HTTP Basic security scheme and operation-level security requirements for Account SID/Auth Token authentication.",
 	},
 	{
+		ProviderID: "typeform",
+		SpecRefID:  "typeform-developer-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://www.typeform.com/developers/get-started/", "https://www.typeform.com/developers/get-started/personal-access-token/", "https://www.typeform.com/developers/get-started/applications/"},
+		SourceNote: "Typeform has official REST API and token/OAuth docs but no stable public downloadable OpenAPI document recorded in this catalog entry; bearer-token security metadata must come from advisory overlay notes.",
+	},
+	{
 		ProviderID: "xero",
 		SpecRefID:  "xero-accounting-openapi",
 		Status:     AuthStatusComplete,
