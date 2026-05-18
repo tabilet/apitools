@@ -63,6 +63,8 @@ func runCatalog(args []string, out, errOut io.Writer) int {
 		return runCatalogCheck(args[1:], out, errOut)
 	case "list":
 		return runCatalogList(args[1:], out, errOut)
+	case "specs":
+		return runCatalogSpecs(args[1:], out, errOut)
 	case "inspect":
 		return runCatalogInspect(args[1:], out, errOut)
 	case "overlay-view":
@@ -85,6 +87,7 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "Commands:")
 	fmt.Fprintln(out, "  check            run offline catalog quality checks")
 	fmt.Fprintln(out, "  list             list built-in provider catalog metadata")
+	fmt.Fprintln(out, "  specs            list refreshable built-in spec references")
 	fmt.Fprintln(out, "  inspect          inspect one provider and resolution status")
 	fmt.Fprintln(out, "  overlay-view     inspect advisory security overlay effects")
 	fmt.Fprintln(out, "  security-report  report auth/security status across providers")
@@ -200,6 +203,53 @@ func runCatalogList(args []string, out, errOut io.Writer) int {
 	fmt.Fprintf(out, "%-18s %-20s %-18s %-18s %-18s %s\n", "ID", "NAME", "OPENAPI", "MACHINE", "USER_OPENAPI", "AUTH")
 	for _, row := range rows {
 		fmt.Fprintf(out, "%-18s %-20s %-18s %-18s %-18s %s\n", row.ID, row.DisplayName, row.OpenAPIAvailability, row.MachineAvailability, row.UserOpenAPINeed, row.AuthStatus)
+	}
+	return 0
+}
+
+func runCatalogSpecs(args []string, out, errOut io.Writer) int {
+	fs := flag.NewFlagSet("apitools catalog specs", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	cachePath := fs.String("cache", "", "SQLite cache path used to show registered artifact paths")
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog specs [--cache catalog-openapi-cache/cache.sqlite] [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if fs.NArg() > 0 {
+		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
+		fs.Usage()
+		return 2
+	}
+	artifacts, closeCache, err := catalogSpecArtifactsFromCache(*cachePath)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	defer closeCache()
+	rows := catalogpkg.BuiltInRefreshableSpecReferences(artifacts)
+	if *jsonOut {
+		if err := writeJSON(out, rows); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	fmt.Fprintf(out, "%-18s %-34s %-16s %-18s %-12s %s\n", "PROVIDER", "SPEC_REF", "KIND", "SOURCE", "VERIFIED", "ARTIFACT")
+	for _, row := range rows {
+		fmt.Fprintf(out, "%-18s %-34s %-16s %-18s %-12s %s\n", row.ProviderID, row.SpecRefID, row.Kind, row.SourceAuthority, row.VerifiedAt, row.RegisteredArtifactPath)
 	}
 	return 0
 }
@@ -726,6 +776,32 @@ func clientForCache(path string) (*apitools.Client, func(), error) {
 		return nil, nil, err
 	}
 	return &apitools.Client{Cache: cache}, func() { _ = cache.Close() }, nil
+}
+
+func catalogSpecArtifactsFromCache(path string) ([]catalogpkg.CatalogSpecArtifact, func(), error) {
+	if strings.TrimSpace(path) == "" {
+		return nil, func() {}, nil
+	}
+	cache, err := sqlitecache.Open(path)
+	if err != nil {
+		return nil, nil, err
+	}
+	closeCache := func() { _ = cache.Close() }
+	artifacts, err := cache.ListCatalogArtifacts(context.Background())
+	if err != nil {
+		closeCache()
+		return nil, nil, err
+	}
+	rows := make([]catalogpkg.CatalogSpecArtifact, 0, len(artifacts))
+	for _, artifact := range artifacts {
+		rows = append(rows, catalogpkg.CatalogSpecArtifact{
+			ProviderID: artifact.ProviderID,
+			SpecRefID:  artifact.ArtifactID,
+			Kind:       artifact.Kind,
+			Path:       artifact.Path,
+		})
+	}
+	return rows, closeCache, nil
 }
 
 func singleLine(value string) string {

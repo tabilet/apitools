@@ -51,10 +51,75 @@ func TestCatalogHelpDocumentsSubcommands(t *testing.T) {
 		t.Fatalf("code = %d\n%s", code, out.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"Usage: apitools catalog", "check", "list", "inspect", "overlay-view", "security-report"} {
+	for _, expected := range []string{"Usage: apitools catalog", "check", "list", "specs", "inspect", "overlay-view", "security-report"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
 		}
+	}
+}
+
+func TestCatalogSpecsOutputAndJSON(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "specs"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	text := out.String()
+	for _, expected := range []string{"PROVIDER", "slack-web-openapi-v2", "openapi", "official-github"} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("catalog specs output missing %q:\n%s", expected, text)
+		}
+	}
+	if strings.Contains(text, "human-docs") {
+		t.Fatalf("catalog specs output should not include human docs:\n%s", text)
+	}
+
+	out.Reset()
+	errOut.Reset()
+	code = run([]string{"catalog", "specs", "--json"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if !strings.Contains(out.String(), `"spec_ref_id": "slack-web-openapi-v2"`) {
+		t.Fatalf("catalog specs json missing slack row:\n%s", out.String())
+	}
+}
+
+func TestCatalogSpecsShowsRegisteredArtifactPath(t *testing.T) {
+	dir := t.TempDir()
+	cachePath := filepath.Join(dir, "cache.sqlite")
+	artifactPath := filepath.Join("openapi", "slack-web-openapi-v2.json")
+	if err := os.MkdirAll(filepath.Join(dir, "openapi"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, filepath.FromSlash(artifactPath)), []byte(`{"openapi":"3.0.0"}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cache, err := sqlitecache.Open(cachePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.StoreCatalogArtifact(context.Background(), sqlitecache.CatalogArtifact{
+		ProviderID: "slack",
+		ArtifactID: "slack-web-openapi-v2",
+		Kind:       "openapi",
+		Path:       artifactPath,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "specs", "--cache", cachePath}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if !strings.Contains(out.String(), artifactPath) {
+		t.Fatalf("catalog specs output missing registered artifact path:\n%s", out.String())
 	}
 }
 

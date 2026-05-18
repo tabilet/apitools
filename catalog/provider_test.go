@@ -212,6 +212,39 @@ func TestProvidersWithUnknownOpenAPIHaveDocsReferences(t *testing.T) {
 	}
 }
 
+func TestBuiltInRefreshableSpecReferences(t *testing.T) {
+	rows := BuiltInRefreshableSpecReferences([]CatalogSpecArtifact{
+		{ProviderID: "slack", SpecRefID: "slack-web-openapi-v2", Path: "openapi/slack-web-openapi-v2.json"},
+	})
+	if len(rows) == 0 {
+		t.Fatal("BuiltInRefreshableSpecReferences() returned no rows")
+	}
+	var foundSlack bool
+	var foundHumanDocs bool
+	for _, row := range rows {
+		if row.Kind == SpecKindHumanDocs {
+			foundHumanDocs = true
+		}
+		if row.ProviderID == "slack" && row.SpecRefID == "slack-web-openapi-v2" {
+			foundSlack = true
+			if row.RegisteredArtifactPath != "openapi/slack-web-openapi-v2.json" {
+				t.Fatalf("slack registered path = %q", row.RegisteredArtifactPath)
+			}
+		}
+	}
+	if foundHumanDocs {
+		t.Fatal("refreshable rows included human docs")
+	}
+	if !foundSlack {
+		t.Fatal("refreshable rows missing slack OpenAPI reference")
+	}
+	for i := 1; i < len(rows); i++ {
+		if rows[i-1].ProviderID > rows[i].ProviderID || rows[i-1].ProviderID == rows[i].ProviderID && rows[i-1].SpecRefID > rows[i].SpecRefID {
+			t.Fatalf("rows are not deterministic at %d: %#v before %#v", i, rows[i-1], rows[i])
+		}
+	}
+}
+
 func TestBuiltInProvidersReturnCopies(t *testing.T) {
 	providers := BuiltInProviders()
 	providers[0].Aliases[0] = "mutated"
