@@ -233,6 +233,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.0.4",
 	},
 	{
+		providerID: "notion",
+		artifactID: "notion-api-openapi",
+		kind:       "openapi",
+		url:        "https://developers.notion.com/openapi.json",
+		path:       "openapi/notion-api-openapi.json",
+		title:      "Notion API",
+		openapi:    "3.1.0",
+	},
+	{
 		providerID: "pagerduty",
 		artifactID: "pagerduty-rest-openapi-v3",
 		kind:       "openapi",

@@ -235,6 +235,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Microsoft Graph's official OpenAPI v1.0 document lacks OpenAPI security schemes; official auth docs need advisory bearer-token overlay mapping.",
 	},
 	{
+		ProviderID: "notion",
+		SpecRefID:  "notion-api-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://developers.notion.com/openapi.json"},
+		SourceNote: "Notion's official OpenAPI document includes bearer auth security scheme metadata and a root security requirement.",
+	},
+	{
 		ProviderID: "openweathermap",
 		SpecRefID:  "openweathermap-api-docs",
 		Status:     AuthStatusOverlayRequired,
