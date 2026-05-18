@@ -180,6 +180,9 @@ and `.yml` files that parse but are not OpenAPI or Swagger are still ignored by
 
 - `github.com/OpenUdon/apitools`: core client, discovery, import, validation,
   inventories, authoring summaries, auth summaries, and operation ranking.
+- `github.com/OpenUdon/apitools/catalog`: metadata-only candidate service
+  inventory for future provider catalog curation. Candidate evidence is
+  prioritization/review metadata, not provider or n8n runtime compatibility.
 - `github.com/OpenUdon/apitools/sqlitecache`: optional SQLite cache
   implementation for the core `Cache` interface.
 - `github.com/OpenUdon/apitools/openapidisco`: compatibility wrapper around
