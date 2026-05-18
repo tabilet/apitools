@@ -263,6 +263,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Salesforce has no recorded stable public downloadable OpenAPI document for the core REST API in the built-in catalog; OAuth bearer security metadata must come from advisory overlay notes.",
 	},
 	{
+		ProviderID: "shopify",
+		SpecRefID:  "shopify-admin-rest-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://shopify.dev/docs/api/admin-rest"},
+		SourceNote: "Shopify has no recorded official OpenAPI document in the built-in catalog; Admin REST access-token security metadata must come from advisory overlay notes.",
+	},
+	{
 		ProviderID: "slack",
 		SpecRefID:  "slack-web-openapi-v2",
 		Status:     AuthStatusPresentIncomplete,

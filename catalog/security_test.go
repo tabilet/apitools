@@ -86,7 +86,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 15; got != want {
+	if got, want := len(overlays), 16; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -193,6 +193,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"openweathermap",
 		"pagerduty",
 		"salesforce",
+		"shopify",
 		"slack",
 		"trello",
 	}
@@ -220,6 +221,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"openweathermap":  AuthStatusOverlayRequired,
 		"pagerduty":       AuthStatusComplete,
 		"salesforce":      AuthStatusOverlayRequired,
+		"shopify":         AuthStatusOverlayRequired,
 		"slack":           AuthStatusPresentIncomplete,
 		"trello":          AuthStatusComplete,
 	}

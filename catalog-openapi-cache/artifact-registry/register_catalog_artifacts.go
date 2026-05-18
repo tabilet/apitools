@@ -314,4 +314,11 @@ var overlayArtifacts = []overlayArtifact{
 		builderPath: "overlay-builders/build_salesforce_overlay.go",
 		sourceURL:   "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm",
 	},
+	{
+		providerID:  "shopify",
+		artifactID:  "shopify-admin-rest-overlay",
+		path:        "advisory-overlays/shopify-admin-rest-overlay.json",
+		builderPath: "overlay-builders/build_shopify_overlay.go",
+		sourceURL:   "https://shopify.dev/docs/api/admin-rest",
+	},
 }

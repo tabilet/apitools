@@ -471,6 +471,22 @@ var builtInProviders = []Provider{
 		quirks: []string{"Salesforce REST API OpenAPI generation is org/configuration dependent in current official docs; no stable public downloadable core REST OpenAPI document is recorded in this catalog entry."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "shopify",
+		displayName:         "Shopify",
+		aliases:             []string{"shopify api", "shopify admin api"},
+		category:            "commerce",
+		relevance:           "Popular workflow service for products, orders, customers, inventory, and commerce automation.",
+		openAPIAvailability: SpecAvailabilityUnknown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("shopify-admin-rest-docs", "https://shopify.dev/docs/api/admin-rest", "Official Shopify REST Admin API reference."),
+			humanDocsRef("shopify-admin-rest-auth-docs", "https://shopify.dev/api/admin-rest/usage/access-scopes", "Official Shopify REST Admin API access scope documentation."),
+			humanDocsRef("shopify-admin-rest-versioning", "https://shopify.dev/docs/api/admin-rest/usage/versioning", "Official Shopify REST Admin API versioning documentation."),
+		},
+		quirks: []string{"Shopify's REST Admin API is versioned in endpoint URLs and public docs emphasize access scopes; no stable public downloadable OpenAPI document is recorded in this catalog entry."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "slack",
 		displayName:         "Slack",
 		aliases:             []string{"slack api"},

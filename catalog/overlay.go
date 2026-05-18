@@ -473,6 +473,28 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Salesforce has human REST API docs and org-side OpenAPI generation notes in this catalog entry but no recorded stable public OpenAPI document; OpenAPI-only consumers need an advisory bearer-token overlay.",
 	},
 	{
+		ID:         "shopify-admin-rest-auth-overlay",
+		ProviderID: "shopify",
+		SpecRefID:  "shopify-admin-rest-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "shopifyAccessToken",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "X-Shopify-Access-Token",
+				Description:   "Shopify Admin API access token carried in the X-Shopify-Access-Token header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "shopifyAccessToken"}},
+		SourceRefs: []string{
+			"https://shopify.dev/docs/api/admin-rest",
+			"https://shopify.dev/api/admin-rest/usage/access-scopes",
+			"https://shopify.dev/docs/api/admin-rest/usage/versioning",
+		},
+		SourceNote: "Shopify has human REST Admin API docs in this catalog entry but no recorded official OpenAPI document; docs describe Admin API access tokens and access scopes, so OpenAPI imports need an advisory header-token overlay.",
+	},
+	{
 		ID:         "slack-web-api-auth-review",
 		ProviderID: "slack",
 		SpecRefID:  "slack-web-openapi-v2",

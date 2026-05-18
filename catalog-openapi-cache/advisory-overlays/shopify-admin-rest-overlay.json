@@ -1,0 +1,806 @@
+{
+  "components": {
+    "schemas": {
+      "Customer": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "Error": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "Order": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "Product": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "shopifyAccessToken": {
+        "description": "Shopify Admin API access token.",
+        "in": "header",
+        "name": "X-Shopify-Access-Token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Shopify REST Admin API human documentation. This is not an official Shopify OpenAPI document.",
+    "title": "Shopify Admin REST API Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/customers.json": {
+      "get": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "listShopifyCustomers",
+        "parameters": [
+          {
+            "description": "Maximum records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "page_info",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "List Shopify customers"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "createShopifyCustomer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Customer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Create a Shopify customer"
+      }
+    },
+    "/customers/{customerId}.json": {
+      "delete": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "deleteShopifyCustomer",
+        "parameters": [
+          {
+            "description": "Customer identifier.",
+            "in": "path",
+            "name": "customerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Delete a Shopify customer"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "getShopifyCustomer",
+        "parameters": [
+          {
+            "description": "Customer identifier.",
+            "in": "path",
+            "name": "customerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Get a Shopify customer"
+      },
+      "put": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "updateShopifyCustomer",
+        "parameters": [
+          {
+            "description": "Customer identifier.",
+            "in": "path",
+            "name": "customerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Customer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Update a Shopify customer"
+      }
+    },
+    "/orders.json": {
+      "get": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "listShopifyOrders",
+        "parameters": [
+          {
+            "description": "Order status filter.",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "page_info",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "List Shopify orders"
+      }
+    },
+    "/orders/{orderId}.json": {
+      "get": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "getShopifyOrder",
+        "parameters": [
+          {
+            "description": "Order identifier.",
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Get a Shopify order"
+      }
+    },
+    "/products.json": {
+      "get": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "listShopifyProducts",
+        "parameters": [
+          {
+            "description": "Maximum records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "page_info",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "List Shopify products"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "createShopifyProduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Create a Shopify product"
+      }
+    },
+    "/products/{productId}.json": {
+      "delete": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "deleteShopifyProduct",
+        "parameters": [
+          {
+            "description": "Product identifier.",
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Delete a Shopify product"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "getShopifyProduct",
+        "parameters": [
+          {
+            "description": "Product identifier.",
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Get a Shopify product"
+      },
+      "put": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "updateShopifyProduct",
+        "parameters": [
+          {
+            "description": "Product identifier.",
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Update a Shopify product"
+      }
+    }
+  },
+  "security": [
+    {
+      "shopifyAccessToken": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://{shop}.myshopify.com/admin/api/{apiVersion}",
+      "variables": {
+        "apiVersion": {
+          "default": "2026-01"
+        },
+        "shop": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "shopify-admin-rest-advisory-overlay",
+    "provider_id": "shopify",
+    "source_note": "Shopify publishes REST Admin API human documentation, but no official downloadable OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://shopify.dev/docs/api/admin-rest",
+      "https://shopify.dev/api/admin-rest/usage/access-scopes",
+      "https://shopify.dev/docs/api/admin-rest/usage/versioning"
+    ]
+  }
+}
