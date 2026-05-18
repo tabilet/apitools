@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 23; got != want {
+	if got, want := len(catalog.ListProviders()), 24; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -40,6 +40,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"salesforce",
 		"shopify",
 		"slack",
+		"stripe",
 		"trello",
 	}
 	if !reflect.DeepEqual(got, want) {
@@ -69,6 +70,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "notion api", id: "notion"},
 		{key: "salesforce rest api", id: "salesforce"},
 		{key: "shopify admin api", id: "shopify"},
+		{key: "stripe api", id: "stripe"},
 	}
 	for _, test := range tests {
 		provider, ok := FindBuiltInProvider(test.key)
@@ -127,6 +129,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "shopify", openAPI: SpecAvailabilityUnknown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "pagerduty", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "slack", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
+		{id: "stripe", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "trello", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 	}
 	for _, test := range tests {

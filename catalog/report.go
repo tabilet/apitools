@@ -277,6 +277,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Slack's archived official OpenAPI document includes OAuth metadata and operation security but needs freshness review against current Slack docs.",
 	},
 	{
+		ProviderID: "stripe",
+		SpecRefID:  "stripe-latest-openapi-spec3",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/stripe/openapi/master/latest/openapi.spec3.json"},
+		SourceNote: "Stripe's official latest OpenAPI document includes basic and bearer HTTP security schemes plus root security requirements.",
+	},
+	{
 		ProviderID: "trello",
 		SpecRefID:  "trello-cloud-openapi-v3",
 		Status:     AuthStatusComplete,

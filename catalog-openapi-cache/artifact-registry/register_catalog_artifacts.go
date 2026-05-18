@@ -256,6 +256,15 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/slack-web-openapi-v2.json",
 	},
 	{
+		providerID: "stripe",
+		artifactID: "stripe-latest-openapi-spec3",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/stripe/openapi/master/latest/openapi.spec3.json",
+		path:       "openapi/stripe-latest-openapi-spec3.json",
+		title:      "Stripe API",
+		openapi:    "3.0.0",
+	},
+	{
 		providerID: "trello",
 		artifactID: "trello-cloud-openapi-v3",
 		kind:       "openapi",
