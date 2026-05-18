@@ -123,6 +123,13 @@ func (r SecurityReport) FindProvider(providerID string) (ProviderSecurityReport,
 
 var builtInSecurityClassifications = []SecurityClassification{
 	{
+		ProviderID: "asana",
+		SpecRefID:  "asana-openapi-v1",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/Asana/openapi/master/defs/asana_oas.yaml"},
+		SourceNote: "Asana's official OpenAPI document includes bearer personal access token and OAuth2 security schemes plus root and operation security requirements.",
+	},
+	{
 		ProviderID: "airtable",
 		SpecRefID:  "airtable-web-api-docs",
 		Status:     AuthStatusOverlayRequired,

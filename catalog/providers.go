@@ -4,6 +4,30 @@ const verifiedAt20260518 = "2026-05-18"
 
 var builtInProviders = []Provider{
 	providerCatalogEntry(providerSeed{
+		id:                  "asana",
+		displayName:         "Asana",
+		aliases:             []string{"asana api"},
+		category:            "project-management",
+		relevance:           "Popular workflow service for task, project, and work-management automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			{
+				ID:              "asana-openapi-v1",
+				Kind:            SpecKindOpenAPI,
+				URL:             "https://raw.githubusercontent.com/Asana/openapi/master/defs/asana_oas.yaml",
+				SourceAuthority: SourceAuthorityOfficialGitHub,
+				Version:         "1.0",
+				VerifiedAt:      verifiedAt20260518,
+				Revision:        `repo:e698f9acf281833c71add9261f0f49f296da6003 etag:"60f0c277b59cdbc22c8e6e2aea2cfe2f61471fd4c2f7fa4bc3c41918f722bbec"`,
+				LicenseNote:     "Asana OpenAPI document declares Apache 2.0 license metadata; provider documentation terms still apply to docs content.",
+				SourceNote:      "Official Asana OpenAPI repository REST API specification.",
+			},
+			humanDocsRef("asana-api-docs", "https://developers.asana.com/docs/api-features", "Official Asana API documentation."),
+		},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "airtable",
 		displayName:         "Airtable",
 		aliases:             []string{"airtable api"},

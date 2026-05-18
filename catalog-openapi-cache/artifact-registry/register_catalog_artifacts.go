@@ -20,6 +20,9 @@ type specArtifact struct {
 	kind       string
 	url        string
 	path       string
+	title      string
+	openapi    string
+	swagger    string
 }
 
 type overlayArtifact struct {
@@ -80,6 +83,15 @@ func registerSpec(ctx context.Context, cache *sqlitecache.Cache, artifact specAr
 	if !ok {
 		finalURL = artifact.url
 	}
+	if metadata.Title == "" {
+		metadata.Title = artifact.title
+	}
+	if metadata.OpenAPI == "" {
+		metadata.OpenAPI = artifact.openapi
+	}
+	if metadata.Swagger == "" {
+		metadata.Swagger = artifact.swagger
+	}
 	if finalURL == "" {
 		finalURL = artifact.url
 	}
@@ -105,6 +117,15 @@ func registerSpec(ctx context.Context, cache *sqlitecache.Cache, artifact specAr
 }
 
 var specArtifacts = []specArtifact{
+	{
+		providerID: "asana",
+		artifactID: "asana-openapi-v1",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/Asana/openapi/master/defs/asana_oas.yaml",
+		path:       "openapi/asana-openapi-v1.yaml",
+		title:      "Asana",
+		openapi:    "3.0.0",
+	},
 	{
 		providerID: "gmail",
 		artifactID: "gmail-discovery-v1",

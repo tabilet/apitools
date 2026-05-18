@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 9; got != want {
+	if got, want := len(catalog.ListProviders()), 10; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -19,6 +19,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 	got := ProviderIDs(BuiltInProviders())
 	want := []string{
 		"airtable",
+		"asana",
 		"gmail",
 		"google-drive",
 		"hubspot",
@@ -41,6 +42,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "Jira", id: "jira-cloud"},
 		{key: "google drive api", id: "google-drive"},
 		{key: "Open Weather Map", id: "openweathermap"},
+		{key: "asana api", id: "asana"},
 	}
 	for _, test := range tests {
 		provider, ok := FindBuiltInProvider(test.key)
@@ -79,6 +81,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		userOpenAPINeed UserOpenAPINeed
 		specKind        SpecKind
 	}{
+		{id: "asana", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "gmail", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-drive", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "hubspot", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPIIndex},
