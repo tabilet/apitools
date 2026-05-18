@@ -1,6 +1,9 @@
 *.test
 coverage.out
 dist/
+catalog-openapi-cache/cache.sqlite
+catalog-openapi-cache/google-discovery
+catalog-openapi-cache/openapi
 AGENTS.md
 memory-bank
 memory-bank/

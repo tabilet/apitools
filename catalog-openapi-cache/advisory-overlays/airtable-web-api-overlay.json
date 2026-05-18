@@ -1,0 +1,528 @@
+{
+  "components": {
+    "schemas": {
+      "AirtableBaseList": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AirtableError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AirtableRecord": {
+        "properties": {
+          "createdTime": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "fields": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "AirtableRecordsRequest": {
+        "properties": {
+          "records": {
+            "items": {
+              "properties": {
+                "fields": {
+                  "additionalProperties": true,
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "typecast": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "AirtableRecordsResponse": {
+        "properties": {
+          "offset": {
+            "type": "string"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/AirtableRecord"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "AirtableTableList": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "airtableBearer": {
+        "description": "Airtable Personal Access Token or OAuth access token carried in the Authorization header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Airtable Web API human documentation. This is not an official Airtable OpenAPI document.",
+    "title": "Airtable Web API Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v0/meta/bases": {
+      "get": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "listAirtableBases",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableBaseList"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "List Airtable bases"
+      }
+    },
+    "/v0/meta/bases/{baseId}/tables": {
+      "get": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "listAirtableBaseTables",
+        "parameters": [
+          {
+            "description": "Airtable base ID.",
+            "in": "path",
+            "name": "baseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableTableList"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "List Airtable base tables"
+      }
+    },
+    "/v0/{baseId}/{tableIdOrName}": {
+      "get": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "listAirtableRecords",
+        "parameters": [
+          {
+            "description": "Airtable base ID.",
+            "in": "path",
+            "name": "baseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Airtable table ID or table name.",
+            "in": "path",
+            "name": "tableIdOrName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of records per page. Airtable documents 100 as the maximum.",
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Pagination offset from a previous response.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "View name or ID.",
+            "in": "query",
+            "name": "view",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Airtable formula used to filter records.",
+            "in": "query",
+            "name": "filterByFormula",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableRecordsResponse"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "List Airtable records"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "updateAirtableRecords",
+        "parameters": [
+          {
+            "description": "Airtable base ID.",
+            "in": "path",
+            "name": "baseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Airtable table ID or table name.",
+            "in": "path",
+            "name": "tableIdOrName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AirtableRecordsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableRecordsResponse"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "Update Airtable records"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "createAirtableRecords",
+        "parameters": [
+          {
+            "description": "Airtable base ID.",
+            "in": "path",
+            "name": "baseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Airtable table ID or table name.",
+            "in": "path",
+            "name": "tableIdOrName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AirtableRecordsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableRecordsResponse"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "Create Airtable records"
+      }
+    },
+    "/v0/{baseId}/{tableIdOrName}/{recordId}": {
+      "delete": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "deleteAirtableRecord",
+        "parameters": [
+          {
+            "description": "Airtable base ID.",
+            "in": "path",
+            "name": "baseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Airtable table ID or table name.",
+            "in": "path",
+            "name": "tableIdOrName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Airtable record ID.",
+            "in": "path",
+            "name": "recordId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableRecord"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "Delete an Airtable record"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "getAirtableRecord",
+        "parameters": [
+          {
+            "description": "Airtable base ID.",
+            "in": "path",
+            "name": "baseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Airtable table ID or table name.",
+            "in": "path",
+            "name": "tableIdOrName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Airtable record ID.",
+            "in": "path",
+            "name": "recordId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableRecord"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "Get an Airtable record"
+      }
+    }
+  },
+  "security": [
+    {
+      "airtableBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.airtable.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "airtable-web-api-advisory-overlay",
+    "provider_id": "airtable",
+    "source_note": "Airtable publishes official Web API human documentation and client libraries, but no official OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://airtable.com/developers/web/api/introduction",
+      "https://airtable.com/developers/web/api/oauth-integration",
+      "https://support.airtable.com/docs/getting-started-with-airtables-web-api",
+      "https://support.airtable.com/docs/airtable-webhooks-api-overview"
+    ]
+  }
+}

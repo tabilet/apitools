@@ -1,0 +1,196 @@
+{
+  "components": {
+    "schemas": {
+      "OneCallResponse": {
+        "description": "Partial advisory schema for documented One Call API 3.0 top-level response fields.",
+        "properties": {
+          "alerts": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "current": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "daily": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "hourly": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "lat": {
+            "type": "number"
+          },
+          "lon": {
+            "type": "number"
+          },
+          "minutely": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "timezone_offset": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "OpenWeatherError": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "openWeatherAPIKey": {
+        "description": "OpenWeather API key passed as the appid query parameter.",
+        "in": "query",
+        "name": "appid",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official OpenWeatherMap human documentation. This is not an official OpenWeatherMap OpenAPI document.",
+    "title": "OpenWeatherMap One Call 3.0 Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/data/3.0/onecall": {
+      "get": {
+        "description": "Advisory operation derived from official OpenWeatherMap One Call API 3.0 documentation.",
+        "operationId": "getOpenWeatherMapOneCall3",
+        "parameters": [
+          {
+            "description": "Latitude.",
+            "in": "query",
+            "name": "lat",
+            "required": true,
+            "schema": {
+              "maximum": 90,
+              "minimum": -90,
+              "type": "number"
+            }
+          },
+          {
+            "description": "Longitude.",
+            "in": "query",
+            "name": "lon",
+            "required": true,
+            "schema": {
+              "maximum": 180,
+              "minimum": -180,
+              "type": "number"
+            }
+          },
+          {
+            "description": "OpenWeather API key.",
+            "in": "query",
+            "name": "appid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated weather data blocks to exclude, such as current,minutely,hourly,daily,alerts.",
+            "in": "query",
+            "name": "exclude",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Units of measurement.",
+            "in": "query",
+            "name": "units",
+            "required": false,
+            "schema": {
+              "enum": [
+                "standard",
+                "metric",
+                "imperial"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Language code.",
+            "in": "query",
+            "name": "lang",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OneCallResponse"
+                }
+              }
+            },
+            "description": "One Call API 3.0 response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenWeatherError"
+                }
+              }
+            },
+            "description": "OpenWeather error response."
+          }
+        },
+        "security": [
+          {
+            "openWeatherAPIKey": []
+          }
+        ],
+        "summary": "Get One Call API 3.0 weather data"
+      }
+    }
+  },
+  "security": [
+    {
+      "openWeatherAPIKey": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.openweathermap.org"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "openweathermap-one-call-3-advisory-overlay",
+    "provider_id": "openweathermap",
+    "source_note": "OpenWeatherMap publishes human documentation for One Call API 3.0 and API key usage, but no official OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://openweathermap.org/api/one-call-3?collection=one_call_api_3.0",
+      "https://openweathermap.org/appid"
+    ]
+  }
+}

@@ -102,6 +102,15 @@ project-local documents take precedence over built-in spec references and
 built-in advisory security overlays. Built-in catalog metadata is a discovery
 baseline only; it does not override a team's local API contract.
 
+Catalog curation follows a fixed per-service workflow: try official
+OpenAPI/Swagger/Discovery sources first, review auth/security completeness, add
+security-overlay metadata when needed, and generate docs-derived advisory
+overlays only when no official OpenAPI document exists. The detailed workflow
+lives in [docs/catalog-curation.md](docs/catalog-curation.md). Downloaded specs
+and local SQLite caches stay ignored under `catalog-openapi-cache/`; generated
+advisory overlays and service-specific overlay builders are tracked catalog
+assets.
+
 ## Go Usage
 
 ```go
