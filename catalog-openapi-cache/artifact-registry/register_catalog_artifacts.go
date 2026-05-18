@@ -162,6 +162,15 @@ var specArtifacts = []specArtifact{
 		title:      "Dropbox API Stone Spec",
 	},
 	{
+		providerID: "github",
+		artifactID: "github-rest-api-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json",
+		path:       "openapi/github-rest-api-openapi.json",
+		title:      "GitHub v3 REST API",
+		openapi:    "3.0.3",
+	},
+	{
 		providerID: "gmail",
 		artifactID: "gmail-discovery-v1",
 		kind:       "google-discovery",

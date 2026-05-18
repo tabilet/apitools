@@ -172,6 +172,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Dropbox's official machine-readable source is a Stone spec, not OpenAPI; OAuth security metadata needs advisory OpenAPI overlay mapping for OpenAPI-only consumers.",
 	},
 	{
+		ProviderID: "github",
+		SpecRefID:  "github-rest-api-openapi",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json"},
+		SourceNote: "GitHub's official OpenAPI document omits security schemes and requirements; official REST authentication docs need advisory bearer/basic overlay mapping.",
+	},
+	{
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",
 		Status:     AuthStatusOverlayRequired,

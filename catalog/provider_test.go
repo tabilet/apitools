@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 15; got != want {
+	if got, want := len(catalog.ListProviders()), 16; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -25,6 +25,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"clickup",
 		"discord",
 		"dropbox",
+		"github",
 		"gmail",
 		"google-drive",
 		"hubspot",
@@ -53,6 +54,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "clickup api", id: "clickup"},
 		{key: "discord api", id: "discord"},
 		{key: "dropbox api", id: "dropbox"},
+		{key: "github rest api", id: "github"},
 	}
 	for _, test := range tests {
 		provider, ok := FindBuiltInProvider(test.key)
@@ -97,6 +99,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "clickup", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "discord", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "dropbox", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindDropboxStone},
+		{id: "github", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "gmail", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-drive", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "hubspot", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPIIndex},

@@ -249,6 +249,34 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Dropbox publishes an official Stone machine spec rather than OpenAPI; official OAuth docs describe bearer-token scopes, so OpenAPI-only consumers need an advisory OAuth2 overlay.",
 	},
 	{
+		ID:         "github-rest-api-auth-overlay",
+		ProviderID: "github",
+		SpecRefID:  "github-rest-api-openapi",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "githubBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "GitHub personal access token, GitHub App token, OAuth token, or GitHub Actions GITHUB_TOKEN carried in the Authorization header.",
+			},
+			{
+				Name:          "githubBasic",
+				Type:          SecuritySchemeHTTP,
+				Scheme:        "basic",
+				Description:   "GitHub app or OAuth app client ID and client secret for app management endpoints that require basic authentication.",
+				ParameterName: "Authorization",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "githubBearer"}},
+		SourceRefs: []string{
+			"https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json",
+			"https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api",
+			"https://github.com/github/rest-api-description",
+		},
+		SourceNote: "GitHub's official OpenAPI description has no security schemes or security requirements; official REST docs describe Authorization bearer tokens for most requests and basic authentication for some app-management endpoints.",
+	},
+	{
 		ID:         "gmail-discovery-auth-overlay",
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",
