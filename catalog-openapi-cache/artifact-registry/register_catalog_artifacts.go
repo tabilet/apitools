@@ -145,6 +145,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.1.0",
 	},
 	{
+		providerID: "discord",
+		artifactID: "discord-api-v10-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/discord/discord-api-spec/main/specs/openapi.json",
+		path:       "openapi/discord-api-v10-openapi.json",
+		title:      "Discord HTTP API (Preview)",
+		openapi:    "3.1.0",
+	},
+	{
 		providerID: "gmail",
 		artifactID: "gmail-discovery-v1",
 		kind:       "google-discovery",

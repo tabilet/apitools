@@ -158,6 +158,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "ClickUp's official OpenAPI document includes an Authorization header API key scheme and root security, but OAuth authorization-code flow details are documented separately rather than fully modeled in the security scheme.",
 	},
 	{
+		ProviderID: "discord",
+		SpecRefID:  "discord-api-v10-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/discord/discord-api-spec/main/specs/openapi.json"},
+		SourceNote: "Discord's official OpenAPI v10 preview document includes BotToken and OAuth2 security schemes with operation-level security requirements.",
+	},
+	{
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",
 		Status:     AuthStatusOverlayRequired,
