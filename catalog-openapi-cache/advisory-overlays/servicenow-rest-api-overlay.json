@@ -1,0 +1,452 @@
+{
+  "components": {
+    "schemas": {
+      "ServiceNowCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ServiceNowError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ServiceNowObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "servicenowBasic": {
+        "description": "ServiceNow REST API Basic authentication authorized by instance ACLs.",
+        "scheme": "basic",
+        "type": "http"
+      },
+      "servicenowOAuth2": {
+        "bearerFormat": "OAuth 2.0 access token",
+        "description": "ServiceNow OAuth 2.0 access token carried in the Authorization header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official ServiceNow REST API Explorer and Table API human documentation. This is not an official ServiceNow OpenAPI document.",
+    "title": "ServiceNow REST API Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/now/attachment/file": {
+      "post": {
+        "description": "Advisory operation derived from official ServiceNow human documentation.",
+        "operationId": "uploadServiceNowAttachment",
+        "parameters": [
+          {
+            "description": "Target table name.",
+            "in": "query",
+            "name": "table_name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Target record sys_id.",
+            "in": "query",
+            "name": "table_sys_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Attachment file name.",
+            "in": "query",
+            "name": "file_name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowError"
+                }
+              }
+            },
+            "description": "ServiceNow error response."
+          }
+        },
+        "security": [
+          {
+            "servicenowBasic": []
+          },
+          {
+            "servicenowOAuth2": []
+          }
+        ],
+        "summary": "Upload an attachment"
+      }
+    },
+    "/api/now/table/{tableName}": {
+      "get": {
+        "description": "Advisory operation derived from official ServiceNow human documentation.",
+        "operationId": "listServiceNowTableRecords",
+        "parameters": [
+          {
+            "description": "ServiceNow table name, such as incident.",
+            "in": "path",
+            "name": "tableName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Encoded query string.",
+            "in": "query",
+            "name": "sysparm_query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated field list.",
+            "in": "query",
+            "name": "sysparm_fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of records to return.",
+            "in": "query",
+            "name": "sysparm_limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "sysparm_offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowError"
+                }
+              }
+            },
+            "description": "ServiceNow error response."
+          }
+        },
+        "security": [
+          {
+            "servicenowBasic": []
+          },
+          {
+            "servicenowOAuth2": []
+          }
+        ],
+        "summary": "List table records"
+      },
+      "post": {
+        "description": "Advisory operation derived from official ServiceNow human documentation.",
+        "operationId": "createServiceNowTableRecord",
+        "parameters": [
+          {
+            "description": "ServiceNow table name, such as incident.",
+            "in": "path",
+            "name": "tableName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceNowObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowError"
+                }
+              }
+            },
+            "description": "ServiceNow error response."
+          }
+        },
+        "security": [
+          {
+            "servicenowBasic": []
+          },
+          {
+            "servicenowOAuth2": []
+          }
+        ],
+        "summary": "Create a table record"
+      }
+    },
+    "/api/now/table/{tableName}/{sys_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official ServiceNow human documentation.",
+        "operationId": "deleteServiceNowTableRecord",
+        "parameters": [
+          {
+            "description": "ServiceNow table name.",
+            "in": "path",
+            "name": "tableName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "ServiceNow record sys_id.",
+            "in": "path",
+            "name": "sys_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowError"
+                }
+              }
+            },
+            "description": "ServiceNow error response."
+          }
+        },
+        "security": [
+          {
+            "servicenowBasic": []
+          },
+          {
+            "servicenowOAuth2": []
+          }
+        ],
+        "summary": "Delete a table record"
+      },
+      "get": {
+        "description": "Advisory operation derived from official ServiceNow human documentation.",
+        "operationId": "getServiceNowTableRecord",
+        "parameters": [
+          {
+            "description": "ServiceNow table name.",
+            "in": "path",
+            "name": "tableName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "ServiceNow record sys_id.",
+            "in": "path",
+            "name": "sys_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowError"
+                }
+              }
+            },
+            "description": "ServiceNow error response."
+          }
+        },
+        "security": [
+          {
+            "servicenowBasic": []
+          },
+          {
+            "servicenowOAuth2": []
+          }
+        ],
+        "summary": "Get a table record"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official ServiceNow human documentation.",
+        "operationId": "updateServiceNowTableRecord",
+        "parameters": [
+          {
+            "description": "ServiceNow table name.",
+            "in": "path",
+            "name": "tableName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "ServiceNow record sys_id.",
+            "in": "path",
+            "name": "sys_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceNowObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowError"
+                }
+              }
+            },
+            "description": "ServiceNow error response."
+          }
+        },
+        "security": [
+          {
+            "servicenowBasic": []
+          },
+          {
+            "servicenowOAuth2": []
+          }
+        ],
+        "summary": "Update a table record"
+      }
+    }
+  },
+  "security": [
+    {
+      "servicenowBasic": []
+    },
+    {
+      "servicenowOAuth2": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://{instance}.service-now.com",
+      "variables": {
+        "instance": {
+          "default": "example",
+          "description": "ServiceNow instance host prefix."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "servicenow-rest-api-overlay",
+    "provider_id": "servicenow",
+    "source_note": "ServiceNow documents REST API Explorer and per-instance OpenAPI export, but no stable public downloadable OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/c_RESTAPI.html",
+      "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/export-openapi-specification.html"
+    ]
+  }
+}

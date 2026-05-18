@@ -382,11 +382,25 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://developers.google.com/workspace/sheets/api/reference/rest",
 	},
 	{
+		providerID:  "mailchimp",
+		artifactID:  "mailchimp-marketing-api-overlay",
+		path:        "advisory-overlays/mailchimp-marketing-api-overlay.json",
+		builderPath: "overlay-builders/build_mailchimp_overlay.go",
+		sourceURL:   "https://mailchimp.com/developer/marketing/api/",
+	},
+	{
 		providerID:  "openweathermap",
 		artifactID:  "openweathermap-one-call-3-overlay",
 		path:        "advisory-overlays/openweathermap-one-call-3-overlay.json",
 		builderPath: "overlay-builders/build_openweathermap_overlay.go",
 		sourceURL:   "https://openweathermap.org/api/one-call-3?collection=one_call_api_3.0",
+	},
+	{
+		providerID:  "quickbooks",
+		artifactID:  "quickbooks-online-accounting-api-overlay",
+		path:        "advisory-overlays/quickbooks-online-accounting-api-overlay.json",
+		builderPath: "overlay-builders/build_quickbooks_overlay.go",
+		sourceURL:   "https://developer.intuit.com/app/developer/qbo/docs/learn/explore-the-quickbooks-online-api",
 	},
 	{
 		providerID:  "salesforce",
@@ -396,10 +410,24 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm",
 	},
 	{
+		providerID:  "servicenow",
+		artifactID:  "servicenow-rest-api-overlay",
+		path:        "advisory-overlays/servicenow-rest-api-overlay.json",
+		builderPath: "overlay-builders/build_servicenow_overlay.go",
+		sourceURL:   "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/c_RESTAPI.html",
+	},
+	{
 		providerID:  "shopify",
 		artifactID:  "shopify-admin-rest-overlay",
 		path:        "advisory-overlays/shopify-admin-rest-overlay.json",
 		builderPath: "overlay-builders/build_shopify_overlay.go",
 		sourceURL:   "https://shopify.dev/docs/api/admin-rest",
+	},
+	{
+		providerID:  "typeform",
+		artifactID:  "typeform-rest-api-overlay",
+		path:        "advisory-overlays/typeform-rest-api-overlay.json",
+		builderPath: "overlay-builders/build_typeform_overlay.go",
+		sourceURL:   "https://www.typeform.com/developers/get-started/",
 	},
 }

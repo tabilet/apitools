@@ -1,0 +1,548 @@
+{
+  "components": {
+    "schemas": {
+      "TypeformCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TypeformError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TypeformObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "typeformBearer": {
+        "bearerFormat": "Personal access token or OAuth 2.0 access token",
+        "description": "Typeform personal access token or OAuth access token carried in the Authorization header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Typeform human documentation. This is not an official Typeform OpenAPI document.",
+    "title": "Typeform REST API Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/forms": {
+      "get": {
+        "description": "Advisory operation derived from official Typeform human documentation.",
+        "operationId": "listTypeformForms",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformError"
+                }
+              }
+            },
+            "description": "Typeform error response."
+          }
+        },
+        "security": [
+          {
+            "typeformBearer": []
+          }
+        ],
+        "summary": "List forms"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Typeform human documentation.",
+        "operationId": "createTypeformForm",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TypeformObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformError"
+                }
+              }
+            },
+            "description": "Typeform error response."
+          }
+        },
+        "security": [
+          {
+            "typeformBearer": []
+          }
+        ],
+        "summary": "Create a form"
+      }
+    },
+    "/forms/{form_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official Typeform human documentation.",
+        "operationId": "deleteTypeformForm",
+        "parameters": [
+          {
+            "description": "Typeform form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformError"
+                }
+              }
+            },
+            "description": "Typeform error response."
+          }
+        },
+        "security": [
+          {
+            "typeformBearer": []
+          }
+        ],
+        "summary": "Delete a form"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Typeform human documentation.",
+        "operationId": "getTypeformForm",
+        "parameters": [
+          {
+            "description": "Typeform form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformError"
+                }
+              }
+            },
+            "description": "Typeform error response."
+          }
+        },
+        "security": [
+          {
+            "typeformBearer": []
+          }
+        ],
+        "summary": "Get a form"
+      },
+      "put": {
+        "description": "Advisory operation derived from official Typeform human documentation.",
+        "operationId": "updateTypeformForm",
+        "parameters": [
+          {
+            "description": "Typeform form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TypeformObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformError"
+                }
+              }
+            },
+            "description": "Typeform error response."
+          }
+        },
+        "security": [
+          {
+            "typeformBearer": []
+          }
+        ],
+        "summary": "Update a form"
+      }
+    },
+    "/forms/{form_id}/responses": {
+      "get": {
+        "description": "Advisory operation derived from official Typeform human documentation.",
+        "operationId": "listTypeformResponses",
+        "parameters": [
+          {
+            "description": "Typeform form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of responses to return.",
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Lower bound response submitted timestamp.",
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Upper bound response submitted timestamp.",
+            "in": "query",
+            "name": "until",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformError"
+                }
+              }
+            },
+            "description": "Typeform error response."
+          }
+        },
+        "security": [
+          {
+            "typeformBearer": []
+          }
+        ],
+        "summary": "List form responses"
+      }
+    },
+    "/forms/{form_id}/webhooks/{tag}": {
+      "delete": {
+        "description": "Advisory operation derived from official Typeform human documentation.",
+        "operationId": "deleteTypeformWebhook",
+        "parameters": [
+          {
+            "description": "Typeform form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webhook tag.",
+            "in": "path",
+            "name": "tag",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformError"
+                }
+              }
+            },
+            "description": "Typeform error response."
+          }
+        },
+        "security": [
+          {
+            "typeformBearer": []
+          }
+        ],
+        "summary": "Delete a webhook"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Typeform human documentation.",
+        "operationId": "getTypeformWebhook",
+        "parameters": [
+          {
+            "description": "Typeform form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webhook tag.",
+            "in": "path",
+            "name": "tag",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformError"
+                }
+              }
+            },
+            "description": "Typeform error response."
+          }
+        },
+        "security": [
+          {
+            "typeformBearer": []
+          }
+        ],
+        "summary": "Get a webhook"
+      },
+      "put": {
+        "description": "Advisory operation derived from official Typeform human documentation.",
+        "operationId": "upsertTypeformWebhook",
+        "parameters": [
+          {
+            "description": "Typeform form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webhook tag.",
+            "in": "path",
+            "name": "tag",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TypeformObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformError"
+                }
+              }
+            },
+            "description": "Typeform error response."
+          }
+        },
+        "security": [
+          {
+            "typeformBearer": []
+          }
+        ],
+        "summary": "Create or update a webhook"
+      }
+    },
+    "/workspaces": {
+      "get": {
+        "description": "Advisory operation derived from official Typeform human documentation.",
+        "operationId": "listTypeformWorkspaces",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeformError"
+                }
+              }
+            },
+            "description": "Typeform error response."
+          }
+        },
+        "security": [
+          {
+            "typeformBearer": []
+          }
+        ],
+        "summary": "List workspaces"
+      }
+    }
+  },
+  "security": [
+    {
+      "typeformBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.typeform.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "typeform-rest-api-overlay",
+    "provider_id": "typeform",
+    "source_note": "Typeform publishes official REST API human documentation, but no stable public downloadable OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://www.typeform.com/developers/get-started/",
+      "https://www.typeform.com/developers/create/",
+      "https://www.typeform.com/developers/get-started/personal-access-token/",
+      "https://www.typeform.com/developers/get-started/applications/"
+    ]
+  }
+}

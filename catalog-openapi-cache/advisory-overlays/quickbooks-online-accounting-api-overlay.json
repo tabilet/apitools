@@ -1,0 +1,490 @@
+{
+  "components": {
+    "schemas": {
+      "QuickBooksError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "QuickBooksObject": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "QuickBooksQueryResponse": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "quickbooksOAuth2": {
+        "bearerFormat": "OAuth 2.0 access token",
+        "description": "QuickBooks Online OAuth 2.0 access token carried in the Authorization header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Intuit QuickBooks Online API human documentation. This is not an official Intuit OpenAPI document.",
+    "title": "QuickBooks Online Accounting API Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v3/company/{realmId}/companyinfo/{realmId}": {
+      "get": {
+        "description": "Advisory operation derived from official QuickBooks human documentation.",
+        "operationId": "getQuickBooksCompanyInfo",
+        "parameters": [
+          {
+            "description": "QuickBooks company realm ID.",
+            "in": "path",
+            "name": "realmId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional QuickBooks minor version.",
+            "in": "query",
+            "name": "minorversion",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksError"
+                }
+              }
+            },
+            "description": "QuickBooks error response."
+          }
+        },
+        "security": [
+          {
+            "quickbooksOAuth2": []
+          }
+        ],
+        "summary": "Get company information"
+      }
+    },
+    "/v3/company/{realmId}/customer": {
+      "post": {
+        "description": "Advisory operation derived from official QuickBooks human documentation.",
+        "operationId": "createQuickBooksCustomer",
+        "parameters": [
+          {
+            "description": "QuickBooks company realm ID.",
+            "in": "path",
+            "name": "realmId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional QuickBooks minor version.",
+            "in": "query",
+            "name": "minorversion",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickBooksObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksError"
+                }
+              }
+            },
+            "description": "QuickBooks error response."
+          }
+        },
+        "security": [
+          {
+            "quickbooksOAuth2": []
+          }
+        ],
+        "summary": "Create a customer"
+      }
+    },
+    "/v3/company/{realmId}/customer/{customerId}": {
+      "get": {
+        "description": "Advisory operation derived from official QuickBooks human documentation.",
+        "operationId": "getQuickBooksCustomer",
+        "parameters": [
+          {
+            "description": "QuickBooks company realm ID.",
+            "in": "path",
+            "name": "realmId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "QuickBooks customer ID.",
+            "in": "path",
+            "name": "customerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional QuickBooks minor version.",
+            "in": "query",
+            "name": "minorversion",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksError"
+                }
+              }
+            },
+            "description": "QuickBooks error response."
+          }
+        },
+        "security": [
+          {
+            "quickbooksOAuth2": []
+          }
+        ],
+        "summary": "Get a customer"
+      }
+    },
+    "/v3/company/{realmId}/invoice": {
+      "post": {
+        "description": "Advisory operation derived from official QuickBooks human documentation.",
+        "operationId": "createQuickBooksInvoice",
+        "parameters": [
+          {
+            "description": "QuickBooks company realm ID.",
+            "in": "path",
+            "name": "realmId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional QuickBooks minor version.",
+            "in": "query",
+            "name": "minorversion",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickBooksObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksError"
+                }
+              }
+            },
+            "description": "QuickBooks error response."
+          }
+        },
+        "security": [
+          {
+            "quickbooksOAuth2": []
+          }
+        ],
+        "summary": "Create an invoice"
+      }
+    },
+    "/v3/company/{realmId}/invoice/{invoiceId}": {
+      "get": {
+        "description": "Advisory operation derived from official QuickBooks human documentation.",
+        "operationId": "getQuickBooksInvoice",
+        "parameters": [
+          {
+            "description": "QuickBooks company realm ID.",
+            "in": "path",
+            "name": "realmId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "QuickBooks invoice ID.",
+            "in": "path",
+            "name": "invoiceId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional QuickBooks minor version.",
+            "in": "query",
+            "name": "minorversion",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksError"
+                }
+              }
+            },
+            "description": "QuickBooks error response."
+          }
+        },
+        "security": [
+          {
+            "quickbooksOAuth2": []
+          }
+        ],
+        "summary": "Get an invoice"
+      }
+    },
+    "/v3/company/{realmId}/payment": {
+      "post": {
+        "description": "Advisory operation derived from official QuickBooks human documentation.",
+        "operationId": "createQuickBooksPayment",
+        "parameters": [
+          {
+            "description": "QuickBooks company realm ID.",
+            "in": "path",
+            "name": "realmId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional QuickBooks minor version.",
+            "in": "query",
+            "name": "minorversion",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickBooksObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksError"
+                }
+              }
+            },
+            "description": "QuickBooks error response."
+          }
+        },
+        "security": [
+          {
+            "quickbooksOAuth2": []
+          }
+        ],
+        "summary": "Create a payment"
+      }
+    },
+    "/v3/company/{realmId}/query": {
+      "get": {
+        "description": "Advisory operation derived from official QuickBooks human documentation.",
+        "operationId": "queryQuickBooks",
+        "parameters": [
+          {
+            "description": "QuickBooks company realm ID.",
+            "in": "path",
+            "name": "realmId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "SQL-like QuickBooks query statement.",
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional QuickBooks minor version.",
+            "in": "query",
+            "name": "minorversion",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksQueryResponse"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickBooksError"
+                }
+              }
+            },
+            "description": "QuickBooks error response."
+          }
+        },
+        "security": [
+          {
+            "quickbooksOAuth2": []
+          }
+        ],
+        "summary": "Query QuickBooks entities"
+      }
+    }
+  },
+  "security": [
+    {
+      "quickbooksOAuth2": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://quickbooks.api.intuit.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "quickbooks-online-accounting-api-overlay",
+    "provider_id": "quickbooks",
+    "source_note": "Intuit publishes official QuickBooks Online REST API human documentation and OAuth docs, but no stable public downloadable OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://developer.intuit.com/app/developer/qbo/docs/learn/explore-the-quickbooks-online-api",
+      "https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0"
+    ]
+  }
+}

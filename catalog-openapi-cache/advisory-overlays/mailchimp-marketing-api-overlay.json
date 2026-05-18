@@ -1,0 +1,712 @@
+{
+  "components": {
+    "schemas": {
+      "MailchimpCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MailchimpError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MailchimpObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "mailchimpBasic": {
+        "description": "Mailchimp Marketing API key carried with HTTP Basic authentication as anystring:api_key.",
+        "scheme": "basic",
+        "type": "http"
+      },
+      "mailchimpOAuth2": {
+        "description": "Mailchimp OAuth 2 access token carried in the Authorization header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Mailchimp Marketing API human documentation. This is not an official Mailchimp OpenAPI document.",
+    "title": "Mailchimp Marketing API Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/": {
+      "get": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "getMailchimpAccountRoot",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "Get account root information"
+      }
+    },
+    "/campaigns": {
+      "get": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "listMailchimpCampaigns",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "List campaigns"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "createMailchimpCampaign",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailchimpObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "Create a campaign"
+      }
+    },
+    "/campaigns/{campaign_id}/actions/send": {
+      "post": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "sendMailchimpCampaign",
+        "parameters": [
+          {
+            "description": "Mailchimp campaign ID.",
+            "in": "path",
+            "name": "campaign_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "Send a campaign"
+      }
+    },
+    "/lists": {
+      "get": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "listMailchimpAudiences",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "List audiences"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "createMailchimpAudience",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailchimpObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "Create an audience"
+      }
+    },
+    "/lists/{list_id}/members": {
+      "get": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "listMailchimpAudienceMembers",
+        "parameters": [
+          {
+            "description": "Mailchimp audience ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "List audience members"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "addMailchimpAudienceMember",
+        "parameters": [
+          {
+            "description": "Mailchimp audience ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailchimpObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "Add an audience member"
+      }
+    },
+    "/lists/{list_id}/members/{subscriber_hash}": {
+      "delete": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "deleteMailchimpAudienceMember",
+        "parameters": [
+          {
+            "description": "Mailchimp audience ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "MD5 hash of the lowercase subscriber email address.",
+            "in": "path",
+            "name": "subscriber_hash",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "Delete an audience member"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "getMailchimpAudienceMember",
+        "parameters": [
+          {
+            "description": "Mailchimp audience ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "MD5 hash of the lowercase subscriber email address.",
+            "in": "path",
+            "name": "subscriber_hash",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "Get an audience member"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "updateMailchimpAudienceMember",
+        "parameters": [
+          {
+            "description": "Mailchimp audience ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "MD5 hash of the lowercase subscriber email address.",
+            "in": "path",
+            "name": "subscriber_hash",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailchimpObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "Update an audience member"
+      },
+      "put": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "upsertMailchimpAudienceMember",
+        "parameters": [
+          {
+            "description": "Mailchimp audience ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "MD5 hash of the lowercase subscriber email address.",
+            "in": "path",
+            "name": "subscriber_hash",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailchimpObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "Add or update an audience member"
+      }
+    },
+    "/reports/{campaign_id}": {
+      "get": {
+        "description": "Advisory operation derived from official Mailchimp human documentation.",
+        "operationId": "getMailchimpCampaignReport",
+        "parameters": [
+          {
+            "description": "Mailchimp campaign ID.",
+            "in": "path",
+            "name": "campaign_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailchimpError"
+                }
+              }
+            },
+            "description": "Mailchimp error response."
+          }
+        },
+        "security": [
+          {
+            "mailchimpBasic": []
+          },
+          {
+            "mailchimpOAuth2": []
+          }
+        ],
+        "summary": "Get campaign report"
+      }
+    }
+  },
+  "security": [
+    {
+      "mailchimpBasic": []
+    },
+    {
+      "mailchimpOAuth2": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://{dc}.api.mailchimp.com/3.0",
+      "variables": {
+        "dc": {
+          "default": "us1",
+          "description": "Mailchimp data center prefix from the account API key or account metadata."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "mailchimp-marketing-api-overlay",
+    "provider_id": "mailchimp",
+    "source_note": "Mailchimp publishes official Marketing API human documentation and notes OpenAPI-backed endpoint pages, but no stable public downloadable OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://mailchimp.com/developer/marketing/api/",
+      "https://mailchimp.com/developer/marketing/docs/fundamentals/",
+      "https://mailchimp.com/developer/marketing/guides/quick-start/"
+    ]
+  }
+}
