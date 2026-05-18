@@ -127,6 +127,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.0.0",
 	},
 	{
+		providerID: "box",
+		artifactID: "box-platform-openapi-v3",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/box/box-openapi/main/openapi.json",
+		path:       "openapi/box-platform-openapi-v3.json",
+		title:      "Box Platform API",
+		openapi:    "3.0.2",
+	},
+	{
 		providerID: "gmail",
 		artifactID: "gmail-discovery-v1",
 		kind:       "google-discovery",

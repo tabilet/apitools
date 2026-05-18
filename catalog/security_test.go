@@ -175,6 +175,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 	wantIDs := []string{
 		"airtable",
 		"asana",
+		"box",
 		"gmail",
 		"google-drive",
 		"hubspot",
@@ -190,6 +191,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 	wantStatuses := map[string]AuthCompletenessStatus{
 		"airtable":       AuthStatusOverlayRequired,
 		"asana":          AuthStatusComplete,
+		"box":            AuthStatusComplete,
 		"gmail":          AuthStatusOverlayRequired,
 		"google-drive":   AuthStatusOverlayRequired,
 		"hubspot":        AuthStatusOverlayRequired,

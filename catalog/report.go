@@ -137,6 +137,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Airtable has no recorded official OpenAPI document in the built-in catalog; security metadata must come from advisory overlay notes when importing a user-provided spec.",
 	},
 	{
+		ProviderID: "box",
+		SpecRefID:  "box-platform-openapi-v3",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/box/box-openapi/main/openapi.json"},
+		SourceNote: "Box's official OpenAPI document includes an OAuth2 authorization code security scheme and root security requirement.",
+	},
+	{
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",
 		Status:     AuthStatusOverlayRequired,
