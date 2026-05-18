@@ -242,6 +242,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.1.0",
 	},
 	{
+		providerID: "okta",
+		artifactID: "okta-management-minimal-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/okta/okta-management-openapi-spec/master/dist/current/management-minimal.yaml",
+		path:       "openapi/okta-management-minimal-openapi.yaml",
+		title:      "Okta Admin Management API",
+		openapi:    "3.0.3",
+	},
+	{
 		providerID: "pagerduty",
 		artifactID: "pagerduty-rest-openapi-v3",
 		kind:       "openapi",

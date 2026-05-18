@@ -169,6 +169,14 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for pages, databases, and knowledge-base automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "okta",
+		displayName: "Okta",
+		aliases:     []string{"okta api", "okta management"},
+		category:    "identity",
+		n8nNode:     "Okta",
+		relevance:   "Popular identity platform for users, groups, applications, events, and organization administration automation.",
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "openweathermap",
 		displayName: "OpenWeatherMap",
 		aliases:     []string{"open weather map", "openweathermap api"},

@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 29; got != want {
+	if got, want := len(catalog.ListProviders()), 30; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -36,6 +36,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"mailchimp",
 		"microsoft-graph",
 		"notion",
+		"okta",
 		"openweathermap",
 		"pagerduty",
 		"salesforce",
@@ -74,6 +75,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "google sheets api", id: "google-sheets"},
 		{key: "mailchimp marketing", id: "mailchimp"},
 		{key: "notion api", id: "notion"},
+		{key: "okta management", id: "okta"},
 		{key: "salesforce rest api", id: "salesforce"},
 		{key: "twilio sendgrid", id: "sendgrid"},
 		{key: "shopify admin api", id: "shopify"},
@@ -136,6 +138,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "mailchimp", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "microsoft-graph", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "notion", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "okta", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "salesforce", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "sendgrid", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "shopify", openAPI: SpecAvailabilityUnknown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},

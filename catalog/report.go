@@ -249,6 +249,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Notion's official OpenAPI document includes bearer auth security scheme metadata and a root security requirement.",
 	},
 	{
+		ProviderID: "okta",
+		SpecRefID:  "okta-management-minimal-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/okta/okta-management-openapi-spec/master/dist/current/management-minimal.yaml", "https://developer.okta.com/docs/api/openapi/okta-management/guides/overview/"},
+		SourceNote: "Okta's official Management OpenAPI document includes SSWS API-token and OAuth2 security schemes with operation-level security metadata; official docs recommend scoped OAuth2 access tokens where possible.",
+	},
+	{
 		ProviderID: "openweathermap",
 		SpecRefID:  "openweathermap-api-docs",
 		Status:     AuthStatusOverlayRequired,
