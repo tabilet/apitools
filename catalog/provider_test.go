@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 26; got != want {
+	if got, want := len(catalog.ListProviders()), 27; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -38,6 +38,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"openweathermap",
 		"pagerduty",
 		"salesforce",
+		"sendgrid",
 		"shopify",
 		"slack",
 		"stripe",
@@ -71,6 +72,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "google sheets api", id: "google-sheets"},
 		{key: "notion api", id: "notion"},
 		{key: "salesforce rest api", id: "salesforce"},
+		{key: "twilio sendgrid", id: "sendgrid"},
 		{key: "shopify admin api", id: "shopify"},
 		{key: "stripe api", id: "stripe"},
 		{key: "twilio sms", id: "twilio"},
@@ -130,6 +132,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "microsoft-graph", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "notion", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "salesforce", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "sendgrid", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "shopify", openAPI: SpecAvailabilityUnknown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "pagerduty", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "slack", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},

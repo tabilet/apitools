@@ -186,6 +186,14 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular CRM platform for leads, accounts, opportunities, and customer automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "sendgrid",
+		displayName: "SendGrid",
+		aliases:     []string{"sendgrid api", "twilio sendgrid"},
+		category:    "email",
+		n8nNode:     "SendGrid",
+		relevance:   "Popular workflow service for transactional email, templates, contacts, suppression lists, and email analytics.",
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "shopify",
 		displayName: "Shopify",
 		aliases:     []string{"shopify api"},

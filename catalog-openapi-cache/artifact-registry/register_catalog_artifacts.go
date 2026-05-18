@@ -249,6 +249,15 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/pagerduty-rest-openapi-v3.json",
 	},
 	{
+		providerID: "sendgrid",
+		artifactID: "sendgrid-mail-v3-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/twilio/sendgrid-oai/main/spec/json/tsg_mail_v3.json",
+		path:       "openapi/sendgrid-mail-v3-openapi.json",
+		title:      "Twilio SendGrid Mail API",
+		openapi:    "3.1.0",
+	},
+	{
 		providerID: "slack",
 		artifactID: "slack-web-openapi-v2",
 		kind:       "swagger",

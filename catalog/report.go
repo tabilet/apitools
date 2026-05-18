@@ -263,6 +263,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Salesforce has no recorded stable public downloadable OpenAPI document for the core REST API in the built-in catalog; OAuth bearer security metadata must come from advisory overlay notes.",
 	},
 	{
+		ProviderID: "sendgrid",
+		SpecRefID:  "sendgrid-mail-v3-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/twilio/sendgrid-oai/main/spec/json/tsg_mail_v3.json"},
+		SourceNote: "Twilio SendGrid's official Mail v3 OpenAPI document includes bearer API-key security metadata and root security requirements.",
+	},
+	{
 		ProviderID: "shopify",
 		SpecRefID:  "shopify-admin-rest-docs",
 		Status:     AuthStatusOverlayRequired,
