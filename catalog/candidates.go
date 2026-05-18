@@ -135,6 +135,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Common workflow service for CRM records, tickets, contacts, and pipeline automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "mailchimp",
+		displayName: "Mailchimp",
+		aliases:     []string{"mailchimp api", "mailchimp marketing"},
+		category:    "email-marketing",
+		n8nNode:     "Mailchimp",
+		relevance:   "Popular workflow service for audiences, contacts, campaigns, templates, reports, and marketing automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "jira-cloud",
 		displayName: "Jira Cloud",
 		aliases:     []string{"jira", "atlassian jira", "jira api"},

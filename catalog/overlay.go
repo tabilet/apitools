@@ -410,6 +410,33 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "HubSpot exposes an official split OpenAPI spec index; official docs describe OAuth and private app bearer tokens, so selected specs should be checked with an advisory bearer-token overlay.",
 	},
 	{
+		ID:         "mailchimp-marketing-auth-overlay",
+		ProviderID: "mailchimp",
+		SpecRefID:  "mailchimp-marketing-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "mailchimpBasic",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Mailchimp Marketing API key carried with HTTP Basic authentication as anystring:api_key.",
+			},
+			{
+				Name:        "mailchimpOAuth2",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Mailchimp OAuth 2 access token carried in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "mailchimpBasic"}, {Scheme: "mailchimpOAuth2"}},
+		SourceRefs: []string{
+			"https://mailchimp.com/developer/marketing/guides/quick-start/",
+			"https://mailchimp.com/developer/marketing/docs/fundamentals/",
+			"https://mailchimp.com/developer/marketing/api/",
+		},
+		SourceNote: "Mailchimp Marketing API docs describe API key authentication and OAuth for the Marketing API; because this catalog entry has no recorded downloadable OpenAPI document, OpenAPI-only consumers need advisory security metadata.",
+	},
+	{
 		ID:         "microsoft-graph-v1-auth-overlay",
 		ProviderID: "microsoft-graph",
 		SpecRefID:  "microsoft-graph-v1-openapi",

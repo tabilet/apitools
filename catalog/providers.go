@@ -367,6 +367,22 @@ var builtInProviders = []Provider{
 		},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "mailchimp",
+		displayName:         "Mailchimp",
+		aliases:             []string{"mailchimp api", "mailchimp marketing"},
+		category:            "email-marketing",
+		relevance:           "Popular workflow service for audiences, contacts, campaigns, templates, reports, and marketing automation.",
+		openAPIAvailability: SpecAvailabilityNeedsVerification,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("mailchimp-marketing-api-docs", "https://mailchimp.com/developer/marketing/api/", "Official Mailchimp Marketing API reference documentation. Mailchimp states the API uses OpenAPI for endpoint descriptions, but this catalog entry records no stable public downloadable OpenAPI document yet."),
+			humanDocsRef("mailchimp-marketing-fundamentals", "https://mailchimp.com/developer/marketing/docs/fundamentals/", "Official Mailchimp Marketing API fundamentals documentation."),
+			humanDocsRef("mailchimp-marketing-auth-docs", "https://mailchimp.com/developer/marketing/guides/quick-start/", "Official Mailchimp Marketing API quick start and authentication documentation."),
+		},
+		quirks: []string{"Mailchimp documentation says the Marketing API uses OpenAPI endpoint descriptions, but a stable public downloadable OpenAPI document is not recorded in this catalog entry."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "microsoft-graph",
 		displayName:         "Microsoft Graph",
 		aliases:             []string{"graph", "microsoft graph api", "ms graph"},

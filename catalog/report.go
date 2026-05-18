@@ -228,6 +228,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Atlassian's Jira Cloud OpenAPI document includes OAuth2/basic security schemes and operation-level security metadata.",
 	},
 	{
+		ProviderID: "mailchimp",
+		SpecRefID:  "mailchimp-marketing-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://mailchimp.com/developer/marketing/api/", "https://mailchimp.com/developer/marketing/guides/quick-start/"},
+		SourceNote: "Mailchimp's official Marketing API docs describe OpenAPI-backed endpoint documentation and API-key authentication, but no stable public downloadable OpenAPI document is recorded in this catalog entry; security metadata must come from advisory overlay notes.",
+	},
+	{
 		ProviderID: "microsoft-graph",
 		SpecRefID:  "microsoft-graph-v1-openapi",
 		Status:     AuthStatusOverlayRequired,
