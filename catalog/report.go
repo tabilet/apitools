@@ -179,6 +179,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "GitHub's official OpenAPI document omits security schemes and requirements; official REST authentication docs need advisory bearer/basic overlay mapping.",
 	},
 	{
+		ProviderID: "gitlab",
+		SpecRefID:  "gitlab-openapi-v2",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://gitlab.com/gitlab-org/gitlab/-/raw/master/doc/api/openapi/openapi_v2.yaml"},
+		SourceNote: "GitLab's official Swagger 2.0 document includes token security definitions but no root security; official REST auth docs describe additional bearer-token forms.",
+	},
+	{
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",
 		Status:     AuthStatusOverlayRequired,

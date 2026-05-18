@@ -277,6 +277,41 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "GitHub's official OpenAPI description has no security schemes or security requirements; official REST docs describe Authorization bearer tokens for most requests and basic authentication for some app-management endpoints.",
 	},
 	{
+		ID:         "gitlab-openapi-v2-auth-review",
+		ProviderID: "gitlab",
+		SpecRefID:  "gitlab-openapi-v2",
+		Status:     AuthStatusPresentIncomplete,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "access_token_header",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "PRIVATE-TOKEN",
+				Description:   "GitLab personal, project, group, or impersonation access token carried in the PRIVATE-TOKEN header.",
+			},
+			{
+				Name:          "access_token_query",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInQuery,
+				ParameterName: "private_token",
+				Description:   "GitLab access token carried in the private_token query parameter.",
+			},
+			{
+				Name:        "gitlabBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "GitLab OAuth 2.0 token or access token carried in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "access_token_header"}, {Scheme: "gitlabBearer"}},
+		SourceRefs: []string{
+			"https://gitlab.com/gitlab-org/gitlab/-/raw/master/doc/api/openapi/openapi_v2.yaml",
+			"https://docs.gitlab.com/api/rest/authentication/",
+			"https://docs.gitlab.com/api/openapi/openapi_interactive/",
+		},
+		SourceNote: "GitLab's official Swagger 2.0 document includes PRIVATE-TOKEN security definitions but no root security; official docs also describe OAuth bearer tokens and other token forms, so keep this as present-incomplete auth metadata.",
+	},
+	{
 		ID:         "gmail-discovery-auth-overlay",
 		ProviderID: "gmail",
 		SpecRefID:  "gmail-discovery-v1",

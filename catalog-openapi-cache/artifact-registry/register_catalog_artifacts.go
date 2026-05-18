@@ -171,6 +171,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.0.3",
 	},
 	{
+		providerID: "gitlab",
+		artifactID: "gitlab-openapi-v2",
+		kind:       "swagger",
+		url:        "https://gitlab.com/gitlab-org/gitlab/-/raw/master/doc/api/openapi/openapi_v2.yaml",
+		path:       "openapi/gitlab-openapi-v2.yaml",
+		title:      "GitLab API",
+		swagger:    "2.0",
+	},
+	{
 		providerID: "gmail",
 		artifactID: "gmail-discovery-v1",
 		kind:       "google-discovery",
