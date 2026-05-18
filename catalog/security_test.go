@@ -203,6 +203,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"stripe",
 		"trello",
 		"twilio",
+		"xero",
 		"zendesk",
 		"zoom",
 	}
@@ -240,6 +241,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"stripe":          AuthStatusComplete,
 		"trello":          AuthStatusComplete,
 		"twilio":          AuthStatusComplete,
+		"xero":            AuthStatusComplete,
 		"zendesk":         AuthStatusPresentIncomplete,
 		"zoom":            AuthStatusPresentIncomplete,
 	}

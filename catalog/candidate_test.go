@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 32; got != want {
+	if got, want := len(candidates), 33; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -48,6 +48,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"stripe",
 		"trello",
 		"twilio",
+		"xero",
 		"zendesk",
 		"zoom",
 	}
@@ -121,6 +122,7 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"shopify",
 		"stripe",
 		"twilio",
+		"xero",
 		"zendesk",
 		"zoom",
 	} {

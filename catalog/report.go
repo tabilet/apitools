@@ -333,6 +333,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Twilio's official OpenAPI v2010 document includes an HTTP Basic security scheme and operation-level security requirements for Account SID/Auth Token authentication.",
 	},
 	{
+		ProviderID: "xero",
+		SpecRefID:  "xero-accounting-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/xero_accounting.yaml"},
+		SourceNote: "Xero's official Accounting OpenAPI document includes OAuth2 authorization code security metadata and operation-level scope requirements.",
+	},
+	{
 		ProviderID: "zoom",
 		SpecRefID:  "zoom-api-v2-openapi",
 		Status:     AuthStatusPresentIncomplete,

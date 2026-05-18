@@ -308,6 +308,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.0.1",
 	},
 	{
+		providerID: "xero",
+		artifactID: "xero-accounting-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/xero_accounting.yaml",
+		path:       "openapi/xero-accounting-openapi.yaml",
+		title:      "Xero Accounting API",
+		openapi:    "3.0.0",
+	},
+	{
 		providerID: "zoom",
 		artifactID: "zoom-api-v2-openapi",
 		kind:       "swagger",

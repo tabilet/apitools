@@ -271,6 +271,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for SMS, voice, messaging, phone numbers, and communication automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "xero",
+		displayName: "Xero",
+		aliases:     []string{"xero api", "xero accounting"},
+		category:    "accounting",
+		n8nNode:     "Xero",
+		relevance:   "Popular accounting platform for contacts, invoices, bills, payments, bank transactions, and finance automation.",
+		userNeed:    UserOpenAPINeedPossible,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "zoom",
 		displayName: "Zoom",
 		aliases:     []string{"zoom api", "zoom meetings"},
