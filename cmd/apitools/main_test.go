@@ -43,6 +43,120 @@ func TestImportHelpDocumentsFlags(t *testing.T) {
 	}
 }
 
+func TestCatalogHelpDocumentsSubcommands(t *testing.T) {
+	var out bytes.Buffer
+	code := run([]string{"catalog", "--help"}, &out, &out)
+	if code != 0 {
+		t.Fatalf("code = %d\n%s", code, out.String())
+	}
+	text := out.String()
+	for _, expected := range []string{"Usage: apitools catalog", "list", "inspect", "security-report"} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("help missing %q:\n%s", expected, text)
+		}
+	}
+}
+
+func TestCatalogListOutputIsDeterministic(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "list"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	text := out.String()
+	airtable := strings.Index(text, "airtable")
+	gmail := strings.Index(text, "gmail")
+	if airtable < 0 || gmail < 0 {
+		t.Fatalf("catalog list missing expected providers:\n%s", text)
+	}
+	if airtable > gmail {
+		t.Fatalf("catalog list not deterministic by provider id:\n%s", text)
+	}
+	if !strings.Contains(text, "overlay-required") || !strings.Contains(text, "complete") {
+		t.Fatalf("catalog list missing auth status:\n%s", text)
+	}
+}
+
+func TestCatalogInspectShowsResolutionAndNotes(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "inspect", "slack"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	text := out.String()
+	for _, expected := range []string{
+		"Provider: Slack (slack)",
+		"Resolved OpenAPI: built-in-spec-reference",
+		"Resolved security: built-in-security-overlay",
+		"Auth status: present-incomplete",
+		"slack-web-openapi-v2",
+		"slack-web-api-auth-review",
+	} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("inspect output missing %q:\n%s", expected, text)
+		}
+	}
+}
+
+func TestCatalogInspectUserOpenAPIOverridesBuiltInSecurity(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "inspect", "slack", "--openapi", "./openapi/slack.yaml"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	text := out.String()
+	for _, expected := range []string{
+		"Resolved OpenAPI: user-openapi",
+		"./openapi/slack.yaml",
+		"Resolved security: none",
+		"Auth status: unknown",
+	} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("inspect override output missing %q:\n%s", expected, text)
+		}
+	}
+}
+
+func TestCatalogInspectAcceptsFlagsBeforeProvider(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "inspect", "--json", "slack"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if !strings.Contains(out.String(), `"id": "slack"`) {
+		t.Fatalf("inspect json missing provider:\n%s", out.String())
+	}
+}
+
+func TestCatalogSecurityReportJSON(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "security-report", "--json"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	text := out.String()
+	if !strings.Contains(text, `"provider_id": "airtable"`) || !strings.Contains(text, `"status": "overlay-required"`) {
+		t.Fatalf("security report json missing expected metadata:\n%s", text)
+	}
+}
+
+func TestCatalogListRejectsUnexpectedArgs(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "list", "slack"}, &out, &errOut)
+	if code != 2 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if !strings.Contains(errOut.String(), "unexpected argument") {
+		t.Fatalf("expected unexpected argument error, got:\n%s", errOut.String())
+	}
+}
+
 func TestSearchParseErrorsUseStderr(t *testing.T) {
 	var out bytes.Buffer
 	var errOut bytes.Buffer

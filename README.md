@@ -44,6 +44,9 @@ go run ./cmd/apitools search --query slack
 go run ./cmd/apitools search --query slack --json
 go run ./cmd/apitools search --query slack --cache ~/.cache/apitools/cache.sqlite
 go run ./cmd/apitools import --url https://example.com/openapi.yaml --dir ./openapi --name example
+go run ./cmd/apitools catalog list
+go run ./cmd/apitools catalog inspect slack
+go run ./cmd/apitools catalog security-report
 ```
 
 Search uses APIs.guru first and can fall back to public-apis by probing common
@@ -79,6 +82,25 @@ go run ./cmd/apitools import \
 
 Cache modes are `read-write`, `refresh`, `offline`, and `bypass`. The
 `--offline` flag is shorthand for `--cache-mode offline`.
+
+Catalog commands expose built-in provider metadata and security-overlay status
+without fetching provider documents, executing operations, resolving
+credentials, or claiming runtime compatibility:
+
+```bash
+go run ./cmd/apitools catalog list
+go run ./cmd/apitools catalog inspect slack
+go run ./cmd/apitools catalog inspect slack \
+  --openapi ./openapi/slack.yaml \
+  --security-overlay ./openapi/slack-security.json
+go run ./cmd/apitools catalog security-report --json
+```
+
+Catalog resolution is intentionally conservative. Explicit user OpenAPI inputs
+and user security overlays take precedence over project-local documents, and
+project-local documents take precedence over built-in spec references and
+built-in advisory security overlays. Built-in catalog metadata is a discovery
+baseline only; it does not override a team's local API contract.
 
 ## Go Usage
 
@@ -144,6 +166,21 @@ requirements := apitools.AuthRequirementsForOperations("stripe", docs[0].Operati
 _ = requirements
 ```
 
+Provider catalog helpers live in `github.com/OpenUdon/apitools/catalog`:
+
+```go
+import "github.com/OpenUdon/apitools/catalog"
+
+resolved, err := catalog.ResolveProvider(catalog.ResolveProviderOptions{
+	ProviderKey: "slack",
+	UserOpenAPI: "./openapi/slack.yaml",
+})
+_, _ = resolved, err
+
+securityReport, err := catalog.BuiltInSecurityReport()
+_, _ = securityReport, err
+```
+
 Caching is optional through `github.com/OpenUdon/apitools/sqlitecache` or the
 CLI `--cache` flag. Cache modes include `read-write`, `refresh`, `offline`, and
 `bypass`.
@@ -181,7 +218,8 @@ and `.yml` files that parse but are not OpenAPI or Swagger are still ignored by
 - `github.com/OpenUdon/apitools`: core client, discovery, import, validation,
   inventories, authoring summaries, auth summaries, and operation ranking.
 - `github.com/OpenUdon/apitools/catalog`: metadata-only candidate inventory,
-  durable provider catalog entries, and official spec references for catalog
+  durable provider catalog entries, official spec references, security
+  overlays, auth/security reports, and provider resolution helpers for catalog
   curation. Catalog metadata is not provider or n8n runtime compatibility.
 - `github.com/OpenUdon/apitools/sqlitecache`: optional SQLite cache
   implementation for the core `Cache` interface.
@@ -196,6 +234,9 @@ go vet ./...
 git diff --check
 go run ./cmd/apitools search --help
 go run ./cmd/apitools import --help
+go run ./cmd/apitools catalog list
+go run ./cmd/apitools catalog inspect slack
+go run ./cmd/apitools catalog security-report
 ```
 
 When changing exported APIs, run dependent checks in sibling consumers when
