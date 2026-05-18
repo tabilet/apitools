@@ -202,6 +202,14 @@ var specArtifacts = []specArtifact{
 		path:       "google-discovery/drive-discovery-v3.json",
 	},
 	{
+		providerID: "google-sheets",
+		artifactID: "sheets-discovery-v4",
+		kind:       "google-discovery",
+		url:        "https://sheets.googleapis.com/$discovery/rest?version=v4",
+		path:       "google-discovery/google-sheets-discovery-v4.json",
+		title:      "Google Sheets API",
+	},
+	{
 		providerID: "hubspot",
 		artifactID: "hubspot-public-api-spec-index",
 		kind:       "openapi-index",
@@ -266,6 +274,13 @@ var overlayArtifacts = []overlayArtifact{
 		path:        "advisory-overlays/google-calendar-v3-overlay.json",
 		builderPath: "overlay-builders/build_google_calendar_overlay.go",
 		sourceURL:   "https://developers.google.com/workspace/calendar/api/v3/reference",
+	},
+	{
+		providerID:  "google-sheets",
+		artifactID:  "google-sheets-v4-overlay",
+		path:        "advisory-overlays/google-sheets-v4-overlay.json",
+		builderPath: "overlay-builders/build_google_sheets_overlay.go",
+		sourceURL:   "https://developers.google.com/workspace/sheets/api/reference/rest",
 	},
 	{
 		providerID:  "openweathermap",

@@ -207,6 +207,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Google Drive's official machine-readable source is Google Discovery, not OpenAPI; OAuth security metadata needs advisory OpenAPI overlay mapping.",
 	},
 	{
+		ProviderID: "google-sheets",
+		SpecRefID:  "sheets-discovery-v4",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://sheets.googleapis.com/$discovery/rest?version=v4"},
+		SourceNote: "Google Sheets' official machine-readable source is Google Discovery, not OpenAPI; OAuth security metadata needs advisory OpenAPI overlay mapping.",
+	},
+	{
 		ProviderID: "hubspot",
 		SpecRefID:  "hubspot-public-api-spec-index",
 		Status:     AuthStatusOverlayRequired,

@@ -1,0 +1,531 @@
+{
+  "components": {
+    "schemas": {
+      "BatchUpdateRequest": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "Error": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "Spreadsheet": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SpreadsheetRequest": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ValueRange": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "googleOAuth2": {
+        "description": "Google OAuth 2.0 authorization code flow with Sheets API scopes.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+            "scopes": {
+              "https://www.googleapis.com/auth/drive.file": "Read and write only files opened or created by the app.",
+              "https://www.googleapis.com/auth/spreadsheets": "Read and write Google Sheets spreadsheets.",
+              "https://www.googleapis.com/auth/spreadsheets.readonly": "Read Google Sheets spreadsheets."
+            },
+            "tokenUrl": "https://oauth2.googleapis.com/token"
+          }
+        },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from the official Google Sheets Discovery document and REST documentation. This is not an official Google OpenAPI document.",
+    "title": "Google Sheets API v4 Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v4/spreadsheets": {
+      "post": {
+        "description": "Advisory operation derived from official Google Sheets Discovery and REST documentation.",
+        "operationId": "createGoogleSpreadsheet",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpreadsheetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Spreadsheet"
+                }
+              }
+            },
+            "description": "Google Sheets response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/spreadsheets"
+            ]
+          }
+        ],
+        "summary": "Create a Google spreadsheet"
+      }
+    },
+    "/v4/spreadsheets/{spreadsheetId}": {
+      "get": {
+        "description": "Advisory operation derived from official Google Sheets Discovery and REST documentation.",
+        "operationId": "getGoogleSpreadsheet",
+        "parameters": [
+          {
+            "description": "Spreadsheet identifier.",
+            "in": "path",
+            "name": "spreadsheetId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "A1 notation ranges to retrieve.",
+            "in": "query",
+            "name": "ranges",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Whether to include grid data.",
+            "in": "query",
+            "name": "includeGridData",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Spreadsheet"
+                }
+              }
+            },
+            "description": "Google Sheets response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/spreadsheets.readonly"
+            ]
+          }
+        ],
+        "summary": "Get a Google spreadsheet"
+      }
+    },
+    "/v4/spreadsheets/{spreadsheetId}/values/{range}": {
+      "get": {
+        "description": "Advisory operation derived from official Google Sheets Discovery and REST documentation.",
+        "operationId": "getGoogleSheetValues",
+        "parameters": [
+          {
+            "description": "Spreadsheet identifier.",
+            "in": "path",
+            "name": "spreadsheetId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "A1 notation range.",
+            "in": "path",
+            "name": "range",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Major dimension for values.",
+            "in": "query",
+            "name": "majorDimension",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "How values should be represented.",
+            "in": "query",
+            "name": "valueRenderOption",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValueRange"
+                }
+              }
+            },
+            "description": "Google Sheets response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/spreadsheets.readonly"
+            ]
+          }
+        ],
+        "summary": "Get Google Sheets values"
+      },
+      "put": {
+        "description": "Advisory operation derived from official Google Sheets Discovery and REST documentation.",
+        "operationId": "updateGoogleSheetValues",
+        "parameters": [
+          {
+            "description": "Spreadsheet identifier.",
+            "in": "path",
+            "name": "spreadsheetId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "A1 notation range.",
+            "in": "path",
+            "name": "range",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "How input data should be interpreted.",
+            "in": "query",
+            "name": "valueInputOption",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValueRange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValueRange"
+                }
+              }
+            },
+            "description": "Google Sheets response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/spreadsheets"
+            ]
+          }
+        ],
+        "summary": "Update Google Sheets values"
+      }
+    },
+    "/v4/spreadsheets/{spreadsheetId}/values/{range}:append": {
+      "post": {
+        "description": "Advisory operation derived from official Google Sheets Discovery and REST documentation.",
+        "operationId": "appendGoogleSheetValues",
+        "parameters": [
+          {
+            "description": "Spreadsheet identifier.",
+            "in": "path",
+            "name": "spreadsheetId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "A1 notation range.",
+            "in": "path",
+            "name": "range",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "How input data should be interpreted.",
+            "in": "query",
+            "name": "valueInputOption",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "How inserted data should be handled.",
+            "in": "query",
+            "name": "insertDataOption",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValueRange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValueRange"
+                }
+              }
+            },
+            "description": "Google Sheets response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/spreadsheets"
+            ]
+          }
+        ],
+        "summary": "Append Google Sheets values"
+      }
+    },
+    "/v4/spreadsheets/{spreadsheetId}/values:batchUpdate": {
+      "post": {
+        "description": "Advisory operation derived from official Google Sheets Discovery and REST documentation.",
+        "operationId": "batchUpdateGoogleSheetValues",
+        "parameters": [
+          {
+            "description": "Spreadsheet identifier.",
+            "in": "path",
+            "name": "spreadsheetId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValueRange"
+                }
+              }
+            },
+            "description": "Google Sheets response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/spreadsheets"
+            ]
+          }
+        ],
+        "summary": "Batch update Google Sheets values"
+      }
+    },
+    "/v4/spreadsheets/{spreadsheetId}:batchUpdate": {
+      "post": {
+        "description": "Advisory operation derived from official Google Sheets Discovery and REST documentation.",
+        "operationId": "batchUpdateGoogleSpreadsheet",
+        "parameters": [
+          {
+            "description": "Spreadsheet identifier.",
+            "in": "path",
+            "name": "spreadsheetId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Spreadsheet"
+                }
+              }
+            },
+            "description": "Google Sheets response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/spreadsheets"
+            ]
+          }
+        ],
+        "summary": "Batch update a Google spreadsheet"
+      }
+    }
+  },
+  "security": [
+    {
+      "googleOAuth2": [
+        "https://www.googleapis.com/auth/spreadsheets.readonly"
+      ]
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://sheets.googleapis.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "google-sheets-v4-advisory-overlay",
+    "provider_id": "google-sheets",
+    "source_note": "Google Sheets publishes an official Discovery document, but no official OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://sheets.googleapis.com/$discovery/rest?version=v4",
+      "https://developers.google.com/workspace/sheets/api/reference/rest",
+      "https://developers.google.com/workspace/sheets/api/scopes"
+    ]
+  }
+}

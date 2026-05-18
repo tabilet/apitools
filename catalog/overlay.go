@@ -370,6 +370,25 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Google Drive publishes an official Google Discovery document rather than OpenAPI; Google documents Drive OAuth scopes separately, so OpenAPI-only consumers need an advisory OAuth2 overlay.",
 	},
 	{
+		ID:         "google-sheets-discovery-auth-overlay",
+		ProviderID: "google-sheets",
+		SpecRefID:  "sheets-discovery-v4",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			googleOAuthScheme("googleOAuth2", []string{
+				"https://www.googleapis.com/auth/drive.file",
+				"https://www.googleapis.com/auth/spreadsheets",
+				"https://www.googleapis.com/auth/spreadsheets.readonly",
+			}),
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "googleOAuth2", Scopes: []string{"https://www.googleapis.com/auth/spreadsheets.readonly"}}},
+		SourceRefs: []string{
+			"https://sheets.googleapis.com/$discovery/rest?version=v4",
+			"https://developers.google.com/workspace/sheets/api/scopes",
+		},
+		SourceNote: "Google Sheets publishes an official Google Discovery document rather than OpenAPI; Google documents OAuth scopes separately, so OpenAPI-only consumers need an advisory OAuth2 overlay.",
+	},
+	{
 		ID:         "hubspot-public-api-auth-overlay",
 		ProviderID: "hubspot",
 		SpecRefID:  "hubspot-public-api-spec-index",
