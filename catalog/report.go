@@ -249,6 +249,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Microsoft Graph's official OpenAPI v1.0 document lacks OpenAPI security schemes; official auth docs need advisory bearer-token overlay mapping.",
 	},
 	{
+		ProviderID: "monday-com",
+		SpecRefID:  "monday-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://developer.monday.com/api-reference/docs", "https://developer.monday.com/api-reference/docs/getting-started"},
+		SourceNote: "Monday.com's official API is GraphQL and no OpenAPI document is recorded in this catalog entry; Authorization-header token metadata must come from advisory overlay notes.",
+	},
+	{
 		ProviderID: "notion",
 		SpecRefID:  "notion-api-openapi",
 		Status:     AuthStatusComplete,

@@ -479,6 +479,28 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Microsoft Graph's official OpenAPI v1.0 document lacks OpenAPI security schemes; official docs describe Microsoft identity platform access tokens sent as Authorization bearer tokens.",
 	},
 	{
+		ID:         "monday-graphql-auth-overlay",
+		ProviderID: "monday-com",
+		SpecRefID:  "monday-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "mondayAuthorization",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Authorization",
+				Description:   "Monday.com API token or OAuth-generated token carried in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "mondayAuthorization"}},
+		SourceRefs: []string{
+			"https://developer.monday.com/api-reference/docs",
+			"https://developer.monday.com/api-reference/docs/getting-started",
+			"https://support.monday.com/hc/en-us/articles/360005144659-Does-monday-com-have-an-API",
+		},
+		SourceNote: "Monday.com GraphQL docs describe Authorization-header API tokens and OAuth-generated tokens; OpenAPI-only imports need advisory token-header security metadata.",
+	},
+	{
 		ID:         "openweathermap-api-key-overlay",
 		ProviderID: "openweathermap",
 		SpecRefID:  "openweathermap-api-docs",

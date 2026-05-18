@@ -170,6 +170,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular platform API for Microsoft 365 users, files, mail, calendars, and collaboration automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "monday-com",
+		displayName: "Monday.com",
+		aliases:     []string{"monday api", "monday.com api", "monday graphql"},
+		category:    "project-management",
+		n8nNode:     "Monday.com",
+		relevance:   "Popular workflow service for boards, items, columns, updates, users, files, and work-management automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "notion",
 		displayName: "Notion",
 		aliases:     []string{"notion api"},

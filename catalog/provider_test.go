@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 35; got != want {
+	if got, want := len(catalog.ListProviders()), 36; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -36,6 +36,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"linear",
 		"mailchimp",
 		"microsoft-graph",
+		"monday-com",
 		"notion",
 		"okta",
 		"openweathermap",
@@ -80,6 +81,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "google sheets api", id: "google-sheets"},
 		{key: "linear graphql", id: "linear"},
 		{key: "mailchimp marketing", id: "mailchimp"},
+		{key: "monday graphql", id: "monday-com"},
 		{key: "notion api", id: "notion"},
 		{key: "okta management", id: "okta"},
 		{key: "paypal checkout", id: "paypal"},
@@ -148,6 +150,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "linear", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "mailchimp", openAPI: SpecAvailabilityNeedsVerification, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "microsoft-graph", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "monday-com", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "notion", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "okta", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "paypal", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},

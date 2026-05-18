@@ -424,6 +424,22 @@ var builtInProviders = []Provider{
 		quirks: []string{"The Microsoft Graph v1.0 OpenAPI document is very large and lacks OpenAPI security schemes; importers should use catalog auth overlay metadata and preserve source path-backed caching."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "monday-com",
+		displayName:         "Monday.com",
+		aliases:             []string{"monday api", "monday.com api", "monday graphql"},
+		category:            "project-management",
+		relevance:           "Popular workflow service for boards, items, columns, updates, users, files, and work-management automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("monday-api-docs", "https://developer.monday.com/api-reference/docs", "Official Monday.com API documentation. Monday.com documents a GraphQL API rather than a public OpenAPI document."),
+			humanDocsRef("monday-getting-started-docs", "https://developer.monday.com/api-reference/docs/getting-started", "Official Monday.com API getting started documentation."),
+			humanDocsRef("monday-api-support-docs", "https://support.monday.com/hc/en-us/articles/360005144659-Does-monday-com-have-an-API", "Official Monday.com support article describing the GraphQL API and token authentication."),
+		},
+		quirks: []string{"Monday.com's API is GraphQL with a single endpoint, so OpenAPI-only workflows need a user-provided or generated OpenAPI document if REST-shaped operation metadata is required."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "notion",
 		displayName:         "Notion",
 		aliases:             []string{"notion api"},
