@@ -86,7 +86,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 11; got != want {
+	if got, want := len(overlays), 12; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -183,6 +183,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"github",
 		"gitlab",
 		"gmail",
+		"google-calendar",
 		"google-drive",
 		"hubspot",
 		"jira-cloud",
@@ -195,23 +196,24 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		t.Fatalf("report provider ids = %#v, want %#v", gotIDs, wantIDs)
 	}
 	wantStatuses := map[string]AuthCompletenessStatus{
-		"airtable":       AuthStatusOverlayRequired,
-		"asana":          AuthStatusComplete,
-		"box":            AuthStatusComplete,
-		"calendly":       AuthStatusOverlayRequired,
-		"clickup":        AuthStatusPresentIncomplete,
-		"discord":        AuthStatusComplete,
-		"dropbox":        AuthStatusOverlayRequired,
-		"github":         AuthStatusOverlayRequired,
-		"gitlab":         AuthStatusPresentIncomplete,
-		"gmail":          AuthStatusOverlayRequired,
-		"google-drive":   AuthStatusOverlayRequired,
-		"hubspot":        AuthStatusOverlayRequired,
-		"jira-cloud":     AuthStatusComplete,
-		"openweathermap": AuthStatusOverlayRequired,
-		"pagerduty":      AuthStatusComplete,
-		"slack":          AuthStatusPresentIncomplete,
-		"trello":         AuthStatusComplete,
+		"airtable":        AuthStatusOverlayRequired,
+		"asana":           AuthStatusComplete,
+		"box":             AuthStatusComplete,
+		"calendly":        AuthStatusOverlayRequired,
+		"clickup":         AuthStatusPresentIncomplete,
+		"discord":         AuthStatusComplete,
+		"dropbox":         AuthStatusOverlayRequired,
+		"github":          AuthStatusOverlayRequired,
+		"gitlab":          AuthStatusPresentIncomplete,
+		"gmail":           AuthStatusOverlayRequired,
+		"google-calendar": AuthStatusOverlayRequired,
+		"google-drive":    AuthStatusOverlayRequired,
+		"hubspot":         AuthStatusOverlayRequired,
+		"jira-cloud":      AuthStatusComplete,
+		"openweathermap":  AuthStatusOverlayRequired,
+		"pagerduty":       AuthStatusComplete,
+		"slack":           AuthStatusPresentIncomplete,
+		"trello":          AuthStatusComplete,
 	}
 	if !reflect.DeepEqual(statusByID, wantStatuses) {
 		t.Fatalf("report statuses = %#v, want %#v", statusByID, wantStatuses)

@@ -331,6 +331,26 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Gmail publishes an official Google Discovery document rather than OpenAPI; Google documents OAuth scopes separately, so OpenAPI-only consumers need an advisory OAuth2 overlay.",
 	},
 	{
+		ID:         "google-calendar-discovery-auth-overlay",
+		ProviderID: "google-calendar",
+		SpecRefID:  "calendar-discovery-v3",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			googleOAuthScheme("googleOAuth2", []string{
+				"https://www.googleapis.com/auth/calendar.calendarlist.readonly",
+				"https://www.googleapis.com/auth/calendar.calendars",
+				"https://www.googleapis.com/auth/calendar.events",
+				"https://www.googleapis.com/auth/calendar.events.readonly",
+			}),
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "googleOAuth2", Scopes: []string{"https://www.googleapis.com/auth/calendar.events.readonly"}}},
+		SourceRefs: []string{
+			"https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+			"https://developers.google.com/workspace/calendar/api/auth",
+		},
+		SourceNote: "Google Calendar publishes an official Google Discovery document rather than OpenAPI; Google documents OAuth scopes separately, so OpenAPI-only consumers need an advisory OAuth2 overlay.",
+	},
+	{
 		ID:         "google-drive-discovery-auth-overlay",
 		ProviderID: "google-drive",
 		SpecRefID:  "drive-discovery-v3",

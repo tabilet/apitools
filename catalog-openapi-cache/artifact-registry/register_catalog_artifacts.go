@@ -187,6 +187,14 @@ var specArtifacts = []specArtifact{
 		path:       "google-discovery/gmail-discovery-v1.json",
 	},
 	{
+		providerID: "google-calendar",
+		artifactID: "calendar-discovery-v3",
+		kind:       "google-discovery",
+		url:        "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+		path:       "google-discovery/google-calendar-discovery-v3.json",
+		title:      "Calendar API",
+	},
+	{
 		providerID: "google-drive",
 		artifactID: "drive-discovery-v3",
 		kind:       "google-discovery",
@@ -251,6 +259,13 @@ var overlayArtifacts = []overlayArtifact{
 		path:        "advisory-overlays/dropbox-core-api-overlay.json",
 		builderPath: "overlay-builders/build_dropbox_overlay.go",
 		sourceURL:   "https://www.dropbox.com/developers/documentation/http/documentation",
+	},
+	{
+		providerID:  "google-calendar",
+		artifactID:  "google-calendar-v3-overlay",
+		path:        "advisory-overlays/google-calendar-v3-overlay.json",
+		builderPath: "overlay-builders/build_google_calendar_overlay.go",
+		sourceURL:   "https://developers.google.com/workspace/calendar/api/v3/reference",
 	},
 	{
 		providerID:  "openweathermap",

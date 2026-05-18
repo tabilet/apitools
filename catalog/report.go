@@ -193,6 +193,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Gmail's official machine-readable source is Google Discovery, not OpenAPI; OAuth security metadata needs advisory OpenAPI overlay mapping.",
 	},
 	{
+		ProviderID: "google-calendar",
+		SpecRefID:  "calendar-discovery-v3",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"},
+		SourceNote: "Google Calendar's official machine-readable source is Google Discovery, not OpenAPI; OAuth security metadata needs advisory OpenAPI overlay mapping.",
+	},
+	{
 		ProviderID: "google-drive",
 		SpecRefID:  "drive-discovery-v3",
 		Status:     AuthStatusOverlayRequired,

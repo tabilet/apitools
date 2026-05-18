@@ -1,0 +1,617 @@
+{
+  "components": {
+    "schemas": {
+      "Calendar": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CalendarList": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "Error": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "Event": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "EventRequest": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "googleOAuth2": {
+        "description": "Google OAuth 2.0 authorization code flow with Calendar API scopes.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+            "scopes": {
+              "https://www.googleapis.com/auth/calendar.calendarlist.readonly": "Read calendar list entries.",
+              "https://www.googleapis.com/auth/calendar.calendars": "Create and manage calendars.",
+              "https://www.googleapis.com/auth/calendar.events": "Read and write calendar events.",
+              "https://www.googleapis.com/auth/calendar.events.readonly": "Read calendar events."
+            },
+            "tokenUrl": "https://oauth2.googleapis.com/token"
+          }
+        },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from the official Google Calendar Discovery document and REST documentation. This is not an official Google OpenAPI document.",
+    "title": "Google Calendar API v3 Advisory Overlay",
+    "version": "2026-05-18"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/calendars": {
+      "post": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "insertGoogleCalendar",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Calendar"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Calendar"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.calendars"
+            ]
+          }
+        ],
+        "summary": "Create a secondary Google Calendar"
+      }
+    },
+    "/calendars/{calendarId}": {
+      "delete": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "deleteGoogleCalendar",
+        "parameters": [
+          {
+            "description": "Calendar identifier.",
+            "in": "path",
+            "name": "calendarId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Calendar"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.calendars"
+            ]
+          }
+        ],
+        "summary": "Delete a secondary Google Calendar"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "getGoogleCalendar",
+        "parameters": [
+          {
+            "description": "Calendar identifier.",
+            "in": "path",
+            "name": "calendarId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Calendar"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.events.readonly"
+            ]
+          }
+        ],
+        "summary": "Get Google Calendar metadata"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "patchGoogleCalendar",
+        "parameters": [
+          {
+            "description": "Calendar identifier.",
+            "in": "path",
+            "name": "calendarId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Calendar"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Calendar"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.calendars"
+            ]
+          }
+        ],
+        "summary": "Patch Google Calendar metadata"
+      }
+    },
+    "/calendars/{calendarId}/events": {
+      "get": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "listGoogleCalendarEvents",
+        "parameters": [
+          {
+            "description": "Calendar identifier.",
+            "in": "path",
+            "name": "calendarId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Lower bound for event start time.",
+            "in": "query",
+            "name": "timeMin",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Upper bound for event start time.",
+            "in": "query",
+            "name": "timeMax",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Free text search terms.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination token.",
+            "in": "query",
+            "name": "pageToken",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendarList"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.events.readonly"
+            ]
+          }
+        ],
+        "summary": "List Google Calendar events"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "insertGoogleCalendarEvent",
+        "parameters": [
+          {
+            "description": "Calendar identifier.",
+            "in": "path",
+            "name": "calendarId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Event"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.events"
+            ]
+          }
+        ],
+        "summary": "Create a Google Calendar event"
+      }
+    },
+    "/calendars/{calendarId}/events/{eventId}": {
+      "delete": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "deleteGoogleCalendarEvent",
+        "parameters": [
+          {
+            "description": "Calendar identifier.",
+            "in": "path",
+            "name": "calendarId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Event identifier.",
+            "in": "path",
+            "name": "eventId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Event"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.events"
+            ]
+          }
+        ],
+        "summary": "Delete a Google Calendar event"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "getGoogleCalendarEvent",
+        "parameters": [
+          {
+            "description": "Calendar identifier.",
+            "in": "path",
+            "name": "calendarId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Event identifier.",
+            "in": "path",
+            "name": "eventId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Event"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.events.readonly"
+            ]
+          }
+        ],
+        "summary": "Get a Google Calendar event"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "patchGoogleCalendarEvent",
+        "parameters": [
+          {
+            "description": "Calendar identifier.",
+            "in": "path",
+            "name": "calendarId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Event identifier.",
+            "in": "path",
+            "name": "eventId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Event"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.events"
+            ]
+          }
+        ],
+        "summary": "Patch a Google Calendar event"
+      }
+    },
+    "/users/me/calendarList": {
+      "get": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "listGoogleCalendarList",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendarList"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.calendarlist.readonly"
+            ]
+          }
+        ],
+        "summary": "List Google Calendar calendar-list entries"
+      }
+    }
+  },
+  "security": [
+    {
+      "googleOAuth2": [
+        "https://www.googleapis.com/auth/calendar.events.readonly"
+      ]
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://www.googleapis.com/calendar/v3"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "google-calendar-v3-advisory-overlay",
+    "provider_id": "google-calendar",
+    "source_note": "Google Calendar publishes an official Discovery document, but no official OpenAPI document is recorded in the apitools catalog.",
+    "source_refs": [
+      "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+      "https://developers.google.com/workspace/calendar/api/v3/reference",
+      "https://developers.google.com/workspace/calendar/api/auth"
+    ]
+  }
+}
