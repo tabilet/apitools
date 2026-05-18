@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 9; got != want {
+	if got, want := len(candidates), 24; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -19,13 +19,28 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 	got := CandidateIDs(BuiltInCandidates())
 	want := []string{
 		"airtable",
+		"asana",
+		"box",
+		"calendly",
+		"clickup",
+		"discord",
+		"dropbox",
+		"github",
+		"gitlab",
 		"gmail",
+		"google-calendar",
 		"google-drive",
+		"google-sheets",
 		"hubspot",
 		"jira-cloud",
+		"microsoft-graph",
+		"notion",
 		"openweathermap",
 		"pagerduty",
+		"salesforce",
+		"shopify",
 		"slack",
+		"stripe",
 		"trello",
 	}
 	if !reflect.DeepEqual(got, want) {
@@ -41,6 +56,8 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "Jira", id: "jira-cloud"},
 		{key: "google drive api", id: "google-drive"},
 		{key: "Open Weather Map", id: "openweathermap"},
+		{key: "office 365", id: "microsoft-graph"},
+		{key: "click up", id: "clickup"},
 	}
 	for _, test := range tests {
 		candidate, ok := FindBuiltInCandidate(test.key)
@@ -55,11 +72,8 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 
 func TestBuiltInCandidatesCaptureFixtureAndPriorityEvidence(t *testing.T) {
 	for _, candidate := range BuiltInCandidates() {
-		if candidate.LocalOpenAPIFixture == "" {
-			t.Fatalf("%s missing local OpenAPI fixture", candidate.ID)
-		}
-		if !candidate.HasEvidence(EvidenceTryN8nLocalFixture) {
-			t.Fatalf("%s missing try-n8n fixture evidence", candidate.ID)
+		if candidate.LocalOpenAPIFixture != "" && !candidate.HasEvidence(EvidenceTryN8nLocalFixture) {
+			t.Fatalf("%s has local fixture but missing try-n8n fixture evidence", candidate.ID)
 		}
 		var foundN8n bool
 		for _, evidence := range candidate.Evidence {
@@ -77,6 +91,37 @@ func TestBuiltInCandidatesCaptureFixtureAndPriorityEvidence(t *testing.T) {
 	}
 }
 
+func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
+	for _, id := range []string{
+		"asana",
+		"box",
+		"calendly",
+		"clickup",
+		"discord",
+		"dropbox",
+		"github",
+		"gitlab",
+		"google-calendar",
+		"google-sheets",
+		"microsoft-graph",
+		"notion",
+		"salesforce",
+		"shopify",
+		"stripe",
+	} {
+		candidate, ok := FindBuiltInCandidate(id)
+		if !ok {
+			t.Fatalf("missing candidate %s", id)
+		}
+		if candidate.LocalOpenAPIFixture != "" || candidate.HasEvidence(EvidenceTryN8nLocalFixture) {
+			t.Fatalf("%s should not claim local fixture evidence before source review: %#v", id, candidate)
+		}
+		if !candidate.HasEvidence(EvidenceN8nNodeDirectory) {
+			t.Fatalf("%s missing priority-only n8n evidence", id)
+		}
+	}
+}
+
 func TestBuiltInCandidateClassificationValues(t *testing.T) {
 	for _, candidate := range BuiltInCandidates() {
 		if candidate.OfficialOpenAPIStatus != SpecStatusNeedsVerification {
@@ -86,7 +131,7 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 			t.Fatalf("%s auth review = %q, want %q", candidate.ID, candidate.AuthSecurityReview, AuthSecurityNotReviewed)
 		}
 	}
-	for _, id := range []string{"gmail", "google-drive"} {
+	for _, id := range []string{"gmail", "google-calendar", "google-drive", "google-sheets"} {
 		candidate, ok := FindBuiltInCandidate(id)
 		if !ok {
 			t.Fatalf("missing %s", id)
