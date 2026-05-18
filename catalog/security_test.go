@@ -197,6 +197,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"slack",
 		"stripe",
 		"trello",
+		"twilio",
 		"zendesk",
 	}
 	if !reflect.DeepEqual(gotIDs, wantIDs) {
@@ -227,6 +228,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"slack":           AuthStatusPresentIncomplete,
 		"stripe":          AuthStatusComplete,
 		"trello":          AuthStatusComplete,
+		"twilio":          AuthStatusComplete,
 		"zendesk":         AuthStatusPresentIncomplete,
 	}
 	if !reflect.DeepEqual(statusByID, wantStatuses) {

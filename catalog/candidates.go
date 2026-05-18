@@ -220,6 +220,14 @@ var builtInCandidates = []Candidate{
 		relevance:   "Common workflow service for boards, lists, cards, and task automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "twilio",
+		displayName: "Twilio",
+		aliases:     []string{"twilio api", "twilio sms"},
+		category:    "communications",
+		n8nNode:     "Twilio",
+		relevance:   "Popular workflow service for SMS, voice, messaging, phone numbers, and communication automation.",
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "zendesk",
 		displayName: "Zendesk",
 		aliases:     []string{"zendesk api", "zendesk support"},

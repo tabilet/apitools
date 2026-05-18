@@ -291,6 +291,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Atlassian's Trello OpenAPI document includes query API key/token security schemes and root security requirements.",
 	},
 	{
+		ProviderID: "twilio",
+		SpecRefID:  "twilio-api-v2010-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/twilio/twilio-oai/main/spec/json/twilio_api_v2010.json"},
+		SourceNote: "Twilio's official OpenAPI v2010 document includes an HTTP Basic security scheme and operation-level security requirements for Account SID/Auth Token authentication.",
+	},
+	{
 		ProviderID: "zendesk",
 		SpecRefID:  "zendesk-sunshine-conversations-openapi",
 		Status:     AuthStatusComplete,

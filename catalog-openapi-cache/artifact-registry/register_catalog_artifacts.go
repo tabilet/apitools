@@ -272,6 +272,15 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/trello-cloud-openapi-v3.json",
 	},
 	{
+		providerID: "twilio",
+		artifactID: "twilio-api-v2010-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/twilio/twilio-oai/main/spec/json/twilio_api_v2010.json",
+		path:       "openapi/twilio-api-v2010-openapi.json",
+		title:      "Twilio - Api",
+		openapi:    "3.0.1",
+	},
+	{
 		providerID: "zendesk",
 		artifactID: "zendesk-sunshine-conversations-openapi",
 		kind:       "openapi",
