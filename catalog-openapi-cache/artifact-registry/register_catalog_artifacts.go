@@ -469,6 +469,13 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://developer.calendly.com/api-docs",
 	},
 	{
+		providerID:  "databricks",
+		artifactID:  "databricks-workspace-rest-overlay",
+		path:        "advisory-overlays/databricks-workspace-rest-overlay.json",
+		builderPath: "overlay-builders/build_m20_human_docs_overlays.go",
+		sourceURL:   "https://docs.databricks.com/api/workspace/introduction",
+	},
+	{
 		providerID:  "dropbox",
 		artifactID:  "dropbox-core-api-overlay",
 		path:        "advisory-overlays/dropbox-core-api-overlay.json",
@@ -488,6 +495,13 @@ var overlayArtifacts = []overlayArtifact{
 		path:        "advisory-overlays/google-sheets-v4-overlay.json",
 		builderPath: "overlay-builders/build_google_sheets_overlay.go",
 		sourceURL:   "https://developers.google.com/workspace/sheets/api/reference/rest",
+	},
+	{
+		providerID:  "jenkins",
+		artifactID:  "jenkins-remote-api-overlay",
+		path:        "advisory-overlays/jenkins-remote-api-overlay.json",
+		builderPath: "overlay-builders/build_m20_human_docs_overlays.go",
+		sourceURL:   "https://www.jenkins.io/doc/book/using/remote-access-api/",
 	},
 	{
 		providerID:  "mailchimp",
@@ -518,6 +532,13 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm",
 	},
 	{
+		providerID:  "sentry",
+		artifactID:  "sentry-rest-api-overlay",
+		path:        "advisory-overlays/sentry-rest-api-overlay.json",
+		builderPath: "overlay-builders/build_m20_human_docs_overlays.go",
+		sourceURL:   "https://docs.sentry.io/api/",
+	},
+	{
 		providerID:  "servicenow",
 		artifactID:  "servicenow-rest-api-overlay",
 		path:        "advisory-overlays/servicenow-rest-api-overlay.json",
@@ -530,6 +551,20 @@ var overlayArtifacts = []overlayArtifact{
 		path:        "advisory-overlays/shopify-admin-rest-overlay.json",
 		builderPath: "overlay-builders/build_shopify_overlay.go",
 		sourceURL:   "https://shopify.dev/docs/api/admin-rest",
+	},
+	{
+		providerID:  "splunk",
+		artifactID:  "splunk-enterprise-rest-overlay",
+		path:        "advisory-overlays/splunk-enterprise-rest-overlay.json",
+		builderPath: "overlay-builders/build_m20_human_docs_overlays.go",
+		sourceURL:   "https://docs.splunk.com/Documentation/Splunk/latest/RESTREF",
+	},
+	{
+		providerID:  "telegram",
+		artifactID:  "telegram-bot-api-overlay",
+		path:        "advisory-overlays/telegram-bot-api-overlay.json",
+		builderPath: "overlay-builders/build_m20_human_docs_overlays.go",
+		sourceURL:   "https://core.telegram.org/bots/api",
 	},
 	{
 		providerID:  "typeform",

@@ -1,0 +1,413 @@
+{
+  "components": {
+    "schemas": {
+      "SentryCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SentryError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SentryObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "sentryBearer": {
+        "description": "Sentry authentication token carried in the Authorization header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Sentry API human documentation. This is not an official Sentry OpenAPI document.",
+    "title": "Sentry REST API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/issues/{issue_id}/": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteSentryIssue",
+        "parameters": [
+          {
+            "description": "Sentry issue ID.",
+            "in": "path",
+            "name": "issue_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentryObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sentryBearer": []
+          }
+        ],
+        "summary": "Delete an issue"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getSentryIssue",
+        "parameters": [
+          {
+            "description": "Sentry issue ID.",
+            "in": "path",
+            "name": "issue_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentryObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sentryBearer": []
+          }
+        ],
+        "summary": "Retrieve an issue"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateSentryIssue",
+        "parameters": [
+          {
+            "description": "Sentry issue ID.",
+            "in": "path",
+            "name": "issue_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SentryObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentryObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sentryBearer": []
+          }
+        ],
+        "summary": "Update an issue"
+      }
+    },
+    "/issues/{issue_id}/events/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSentryIssueEvents",
+        "parameters": [
+          {
+            "description": "Sentry issue ID.",
+            "in": "path",
+            "name": "issue_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentryCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sentryBearer": []
+          }
+        ],
+        "summary": "List an issue's events"
+      }
+    },
+    "/organizations/{organization_slug}/events/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSentryOrganizationEvents",
+        "parameters": [
+          {
+            "description": "Sentry organization slug.",
+            "in": "path",
+            "name": "organization_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Project filter.",
+            "in": "query",
+            "name": "project",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Relative time window.",
+            "in": "query",
+            "name": "statsPeriod",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentryCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sentryBearer": []
+          }
+        ],
+        "summary": "List organization events"
+      }
+    },
+    "/organizations/{organization_slug}/issues/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSentryOrganizationIssues",
+        "parameters": [
+          {
+            "description": "Sentry organization slug.",
+            "in": "path",
+            "name": "organization_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Issue search query.",
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Project filter.",
+            "in": "query",
+            "name": "project",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentryCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sentryBearer": []
+          }
+        ],
+        "summary": "List organization issues"
+      }
+    },
+    "/organizations/{organization_slug}/projects/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSentryOrganizationProjects",
+        "parameters": [
+          {
+            "description": "Sentry organization slug.",
+            "in": "path",
+            "name": "organization_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentryCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sentryBearer": []
+          }
+        ],
+        "summary": "List organization projects"
+      }
+    },
+    "/projects/{organization_slug}/{project_slug}/releases/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSentryProjectReleases",
+        "parameters": [
+          {
+            "description": "Sentry organization slug.",
+            "in": "path",
+            "name": "organization_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Sentry project slug.",
+            "in": "path",
+            "name": "project_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentryCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sentryBearer": []
+          }
+        ],
+        "summary": "List project releases"
+      }
+    }
+  },
+  "security": [
+    {
+      "sentryBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://sentry.io/api/0"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "sentry-rest-api-advisory-overlay",
+    "provider_id": "sentry",
+    "source_note": "Sentry publishes official human API reference pages with REST paths and bearer token guidance; region-specific domains may be required by operators.",
+    "source_refs": [
+      "https://docs.sentry.io/api/",
+      "https://docs.sentry.io/api/auth/",
+      "https://docs.sentry.io/api/events/",
+      "https://docs.sentry.io/api/organizations/",
+      "https://docs.sentry.io/api/projects/",
+      "https://docs.sentry.io/api/releases/"
+    ]
+  }
+}

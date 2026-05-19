@@ -1,0 +1,375 @@
+{
+  "components": {
+    "schemas": {
+      "SplunkCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SplunkError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SplunkObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "splunkBasic": {
+        "description": "Splunk username and password authentication for deployments that allow Basic auth.",
+        "scheme": "basic",
+        "type": "http"
+      },
+      "splunkBearer": {
+        "bearerFormat": "Splunk session key or token",
+        "description": "Splunk bearer token or session key carried in the Authorization header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Splunk REST API human documentation. This is not an official Splunk OpenAPI document.",
+    "title": "Splunk Enterprise REST API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/services/search/jobs": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSplunkSearchJobs",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SplunkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "splunkBearer": []
+          }
+        ],
+        "summary": "List search jobs"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createSplunkSearchJob",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SplunkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SplunkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "splunkBearer": []
+          }
+        ],
+        "summary": "Create a search job"
+      }
+    },
+    "/services/search/jobs/{sid}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteSplunkSearchJob",
+        "parameters": [
+          {
+            "description": "Splunk search job ID.",
+            "in": "path",
+            "name": "sid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SplunkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "splunkBearer": []
+          }
+        ],
+        "summary": "Delete a search job"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getSplunkSearchJob",
+        "parameters": [
+          {
+            "description": "Splunk search job ID.",
+            "in": "path",
+            "name": "sid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SplunkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "splunkBearer": []
+          }
+        ],
+        "summary": "Get a search job"
+      }
+    },
+    "/services/search/jobs/{sid}/results": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getSplunkSearchJobResults",
+        "parameters": [
+          {
+            "description": "Splunk search job ID.",
+            "in": "path",
+            "name": "sid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Response output mode.",
+            "in": "query",
+            "name": "output_mode",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SplunkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "splunkBearer": []
+          }
+        ],
+        "summary": "Get search job results"
+      }
+    },
+    "/services/server/info": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getSplunkServerInfo",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SplunkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "splunkBearer": []
+          }
+        ],
+        "summary": "Get server information"
+      }
+    },
+    "/servicesNS/{owner}/{app}/saved/searches": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSplunkSavedSearches",
+        "parameters": [
+          {
+            "description": "Splunk namespace owner.",
+            "in": "path",
+            "name": "owner",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Splunk app namespace.",
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SplunkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "splunkBearer": []
+          }
+        ],
+        "summary": "List saved searches"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createSplunkSavedSearch",
+        "parameters": [
+          {
+            "description": "Splunk namespace owner.",
+            "in": "path",
+            "name": "owner",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Splunk app namespace.",
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SplunkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SplunkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "splunkBearer": []
+          }
+        ],
+        "summary": "Create a saved search"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{splunk_host}:8089",
+      "variables": {
+        "splunk_host": {
+          "default": "splunk.example.com",
+          "description": "Operator-supplied Splunk management host."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "splunk-enterprise-rest-advisory-overlay",
+    "provider_id": "splunk",
+    "source_note": "Splunk Enterprise REST documentation is broad and version-specific; this overlay covers a small reviewed search/admin subset.",
+    "source_refs": [
+      "https://docs.splunk.com/Documentation/Splunk/latest/RESTREF",
+      "https://docs.splunk.com/Documentation/Splunk/latest/RESTUM/RESTusing",
+      "https://docs.splunk.com/Documentation/Splunk/9.4.2/RESTREF/RESTsearch",
+      "https://docs.splunk.com/Documentation/Splunk/9.4.2/RESTTUT/RESTsearches"
+    ]
+  }
+}

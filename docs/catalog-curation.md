@@ -36,6 +36,10 @@ For each service, use the same four-step review loop.
 
    ```bash
    go run ./cmd/apitools catalog specs --cache catalog-openapi-cache/cache.sqlite
+   go run ./cmd/apitools catalog stats \
+     --cache-dir catalog-openapi-cache \
+     --cache catalog-openapi-cache/cache.sqlite \
+     --as-of 2026-05-19
    go run ./cmd/apitools catalog refresh-report \
      --cache-dir catalog-openapi-cache \
      --cache catalog-openapi-cache/cache.sqlite \
@@ -47,7 +51,10 @@ For each service, use the same four-step review loop.
      --cache catalog-openapi-cache/cache.sqlite
    ```
 
-   `catalog refresh-report` is read-only and offline. It joins built-in
+   `catalog stats` is read-only and offline. It summarizes provider protocol
+   classifications, local artifact registry counts by kind, and refresh
+   artifact validation buckets. `catalog refresh-report` is also read-only and
+   offline. It joins built-in
    refreshable references with existing SQLite artifact registrations and saved
    cache files, then reports missing registrations, missing files, SHA-256 and
    byte evidence, validation status, stale verification dates, and manual
@@ -96,9 +103,12 @@ For each service, use the same four-step review loop.
 4. Save the service-specific overlay builder.
 
    Overlay builders may be specific to one service because documentation shape,
-   endpoint coverage, and security conventions differ by provider. Save each
-   tracked builder individually under
-   `catalog-openapi-cache/overlay-builders/build_<provider>_overlay.go`.
+   endpoint coverage, and security conventions differ by provider. Prefer a
+   tracked builder under
+   `catalog-openapi-cache/overlay-builders/build_<provider>_overlay.go`; a
+   single batch builder may generate multiple overlays only when the services
+   share a narrowly scoped curation pass and each generated artifact still
+   carries service-specific source refs and notes.
 
    Required builder conventions:
 

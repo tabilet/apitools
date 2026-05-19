@@ -1,0 +1,231 @@
+{
+  "components": {
+    "schemas": {
+      "TelegramCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TelegramError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TelegramObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {}
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Telegram Bot API human documentation. This is not an official Telegram OpenAPI document.",
+    "title": "Telegram Bot API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/answerCallbackQuery": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "answerTelegramCallbackQuery",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Answer a callback query"
+      }
+    },
+    "/editMessageText": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "editTelegramMessageText",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Edit a text message"
+      }
+    },
+    "/getMe": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTelegramBotMe",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Get bot information"
+      }
+    },
+    "/getUpdates": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTelegramUpdates",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Get incoming updates"
+      }
+    },
+    "/sendDocument": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendTelegramDocument",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Send a document"
+      }
+    },
+    "/sendMessage": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendTelegramMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Send a text message"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.telegram.org/bot{token}",
+      "variables": {
+        "token": {
+          "default": "000000:bot_token",
+          "description": "Telegram bot token. OpenAPI security schemes cannot model this path token exactly."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "telegram-bot-api-advisory-overlay",
+    "provider_id": "telegram",
+    "source_note": "Telegram Bot API docs define bot methods under https://api.telegram.org/bot\u003ctoken\u003e/METHOD_NAME and allow GET or POST; this overlay uses POST for common methods.",
+    "source_refs": [
+      "https://core.telegram.org/bots/api"
+    ]
+  },
+  "x-apitools-token-placement": "Bot token is modeled as a server variable for advisory endpoint shape only; credential handling remains downstream."
+}

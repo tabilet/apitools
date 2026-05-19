@@ -51,7 +51,7 @@ func TestCatalogHelpDocumentsSubcommands(t *testing.T) {
 		t.Fatalf("code = %d\n%s", code, out.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"Usage: apitools catalog", "advisory", "check", "list", "specs", "refresh-report", "inspect", "overlay-view", "security-report"} {
+	for _, expected := range []string{"Usage: apitools catalog", "advisory", "check", "list", "specs", "stats", "refresh-report", "inspect", "overlay-view", "security-report"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
 		}
@@ -217,6 +217,58 @@ func TestCatalogSpecsShowsRegisteredArtifactPath(t *testing.T) {
 	}
 	if !strings.Contains(out.String(), artifactPath) {
 		t.Fatalf("catalog specs output missing registered artifact path:\n%s", out.String())
+	}
+}
+
+func TestCatalogStatsOutputAndJSON(t *testing.T) {
+	dir := t.TempDir()
+	cacheDir := filepath.Join(dir, "catalog-openapi-cache")
+	cachePath := filepath.Join(cacheDir, "cache.sqlite")
+	artifactPath := filepath.Join("openapi", "slack-web-openapi-v2.json")
+	if err := os.MkdirAll(filepath.Join(cacheDir, "openapi"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(cacheDir, filepath.FromSlash(artifactPath)), []byte(`{"swagger":"2.0","info":{"title":"Slack","version":"1.0.0"},"paths":{}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cache, err := sqlitecache.Open(cachePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.StoreCatalogArtifact(context.Background(), sqlitecache.CatalogArtifact{
+		ProviderID: "slack",
+		ArtifactID: "slack-web-openapi-v2",
+		Kind:       "openapi",
+		Path:       artifactPath,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "stats", "--cache-dir", cacheDir, "--cache", cachePath, "--as-of", "2026-05-19"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{"Provider protocols: 54 provider(s)", "OpenAPI", "25", "Swagger", "4", "Human docs", "16", "Artifact registry", "openapi", "Refresh artifacts", "valid-swagger"} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("catalog stats output missing %q:\n%s", expected, out.String())
+		}
+	}
+
+	out.Reset()
+	errOut.Reset()
+	code = run([]string{"catalog", "stats", "--cache-dir", cacheDir, "--cache", cachePath, "--as-of", "2026-05-19", "--json"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{`"provider_count": 54`, `"protocol": "openapi"`, `"count": 25`, `"artifact_registry"`, `"kind": "openapi"`, `"status": "valid-swagger"`} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("catalog stats json missing %q:\n%s", expected, out.String())
+		}
 	}
 }
 

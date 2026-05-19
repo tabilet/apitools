@@ -1,0 +1,325 @@
+{
+  "components": {
+    "schemas": {
+      "DatabricksCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DatabricksError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DatabricksObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "databricksBearer": {
+        "description": "Databricks personal access token or OAuth bearer token carried in the Authorization header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Databricks REST API human documentation. This is not an official Databricks OpenAPI document.",
+    "title": "Databricks Workspace REST API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/2.0/clusters/get": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getDatabricksCluster",
+        "parameters": [
+          {
+            "description": "Databricks cluster ID.",
+            "in": "query",
+            "name": "cluster_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabricksObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "databricksBearer": []
+          }
+        ],
+        "summary": "Get a cluster"
+      }
+    },
+    "/api/2.0/clusters/list": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listDatabricksClusters",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabricksCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "databricksBearer": []
+          }
+        ],
+        "summary": "List clusters"
+      }
+    },
+    "/api/2.0/dbfs/list": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listDatabricksDBFS",
+        "parameters": [
+          {
+            "description": "DBFS path.",
+            "in": "query",
+            "name": "path",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabricksCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "databricksBearer": []
+          }
+        ],
+        "summary": "List DBFS files"
+      }
+    },
+    "/api/2.0/workspace/list": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listDatabricksWorkspaceObjects",
+        "parameters": [
+          {
+            "description": "Workspace path.",
+            "in": "query",
+            "name": "path",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabricksCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "databricksBearer": []
+          }
+        ],
+        "summary": "List workspace objects"
+      }
+    },
+    "/api/2.1/jobs/get": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getDatabricksJob",
+        "parameters": [
+          {
+            "description": "Databricks job ID.",
+            "in": "query",
+            "name": "job_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabricksObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "databricksBearer": []
+          }
+        ],
+        "summary": "Get a job"
+      }
+    },
+    "/api/2.1/jobs/list": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listDatabricksJobs",
+        "parameters": [
+          {
+            "description": "Maximum number of jobs to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Offset for pagination.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabricksCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "databricksBearer": []
+          }
+        ],
+        "summary": "List jobs"
+      }
+    },
+    "/api/2.1/jobs/run-now": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "runDatabricksJobNow",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatabricksObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabricksObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "databricksBearer": []
+          }
+        ],
+        "summary": "Trigger a job run"
+      }
+    }
+  },
+  "security": [
+    {
+      "databricksBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://{workspace_host}",
+      "variables": {
+        "workspace_host": {
+          "default": "dbc.example.cloud.databricks.com",
+          "description": "Operator-supplied Databricks workspace host."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "databricks-workspace-rest-advisory-overlay",
+    "provider_id": "databricks",
+    "source_note": "Databricks publishes official human REST API documentation and auth docs; workspace/account host selection remains operator supplied.",
+    "source_refs": [
+      "https://docs.databricks.com/api/workspace/introduction",
+      "https://docs.databricks.com/aws/en/reference/jobs-api-2-1-updates",
+      "https://docs.databricks.com/aws/en/dev-tools/auth",
+      "https://docs.databricks.com/aws/en/dev-tools/auth/pat"
+    ]
+  }
+}

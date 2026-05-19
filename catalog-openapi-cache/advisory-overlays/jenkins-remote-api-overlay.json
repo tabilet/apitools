@@ -1,0 +1,288 @@
+{
+  "components": {
+    "schemas": {
+      "JenkinsCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "JenkinsError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "JenkinsObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "jenkinsBasic": {
+        "description": "Jenkins user name with API token or password for HTTP Basic authentication.",
+        "scheme": "basic",
+        "type": "http"
+      },
+      "jenkinsCrumb": {
+        "description": "Optional CSRF crumb header when required by the Jenkins controller.",
+        "in": "header",
+        "name": "Jenkins-Crumb",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Jenkins Remote Access API human documentation. This is not an official Jenkins OpenAPI document.",
+    "title": "Jenkins Remote Access API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getJenkinsRoot",
+        "parameters": [
+          {
+            "description": "Optional Jenkins tree depth.",
+            "in": "query",
+            "name": "depth",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JenkinsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jenkinsBasic": []
+          }
+        ],
+        "summary": "Get Jenkins root API data"
+      }
+    },
+    "/crumbIssuer/api/json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getJenkinsCrumb",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JenkinsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jenkinsBasic": []
+          }
+        ],
+        "summary": "Get CSRF crumb"
+      }
+    },
+    "/job/{job_name}/api/json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getJenkinsJob",
+        "parameters": [
+          {
+            "description": "Jenkins job name.",
+            "in": "path",
+            "name": "job_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional Jenkins tree depth.",
+            "in": "query",
+            "name": "depth",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JenkinsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jenkinsBasic": []
+          }
+        ],
+        "summary": "Get job API data"
+      }
+    },
+    "/job/{job_name}/build": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "buildJenkinsJob",
+        "parameters": [
+          {
+            "description": "Jenkins job name.",
+            "in": "path",
+            "name": "job_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JenkinsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jenkinsBasic": [],
+            "jenkinsCrumb": []
+          }
+        ],
+        "summary": "Trigger a job build"
+      }
+    },
+    "/job/{job_name}/buildWithParameters": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "buildJenkinsJobWithParameters",
+        "parameters": [
+          {
+            "description": "Jenkins job name.",
+            "in": "path",
+            "name": "job_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JenkinsObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JenkinsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jenkinsBasic": [],
+            "jenkinsCrumb": []
+          }
+        ],
+        "summary": "Trigger a parameterized job build"
+      }
+    },
+    "/queue/api/json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getJenkinsQueue",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JenkinsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jenkinsBasic": []
+          }
+        ],
+        "summary": "Get build queue"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{jenkins_host}",
+      "variables": {
+        "jenkins_host": {
+          "default": "jenkins.example.com",
+          "description": "Operator-supplied Jenkins controller host."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "jenkins-remote-api-advisory-overlay",
+    "provider_id": "jenkins",
+    "source_note": "Jenkins exposes REST-like JSON API endpoints under object-specific /api/ URLs; installed plugins and controller configuration affect the available surface.",
+    "source_refs": [
+      "https://www.jenkins.io/doc/book/using/remote-access-api/",
+      "https://www.jenkins.io/blog/2018/07/02/new-api-token-system/"
+    ]
+  }
+}

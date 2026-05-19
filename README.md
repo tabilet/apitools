@@ -1,9 +1,10 @@
 # apitools
 
 `github.com/OpenUdon/apitools` is a Go library and CLI for OpenAPI document
-tooling: discovery, URL-safe download, validation, local file scanning,
-importing, caching, operation inventories, operation summaries, auth/security
-summaries, and deterministic operation ranking.
+tooling and provider API-source metadata: discovery, URL-safe download,
+validation, local file scanning, importing, caching, operation inventories,
+operation summaries, auth/security summaries, deterministic operation ranking,
+catalog protocol classification, and advisory endpoint overlays.
 
 The module is intentionally narrow. It handles OpenAPI and Swagger documents as
 untrusted data. It does not own workflow semantics, review handoff contracts,
@@ -50,6 +51,7 @@ go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog overlay-view github
 go run ./cmd/apitools catalog security-report
 go run ./cmd/apitools catalog check
+go run ./cmd/apitools catalog stats
 go run ./cmd/apitools catalog refresh-report
 ```
 
@@ -103,6 +105,10 @@ go run ./cmd/apitools catalog overlay-view github --json
 go run ./cmd/apitools catalog security-report --json
 go run ./cmd/apitools catalog check --as-of 2026-05-18 --json
 go run ./cmd/apitools catalog specs --cache catalog-openapi-cache/cache.sqlite
+go run ./cmd/apitools catalog stats \
+  --cache-dir catalog-openapi-cache \
+  --cache catalog-openapi-cache/cache.sqlite \
+  --as-of 2026-05-19
 go run ./cmd/apitools catalog refresh-report \
   --cache-dir catalog-openapi-cache \
   --cache catalog-openapi-cache/cache.sqlite \
@@ -153,6 +159,11 @@ built-in providers, candidates, source notes, verification dates, security
 classifications, and overlay references without probing URLs or downloading
 provider documents. Error-level findings return a nonzero exit code; warning-only
 reports remain exit code 0 for inspection.
+
+Catalog stats are offline. `catalog stats` summarizes primary provider
+protocol classifications, local catalog artifact registry counts by kind, and
+refresh artifact validation buckets without probing URLs or executing provider
+operations.
 
 Catalog spec refresh is opt-in and selected. `catalog specs` lists known
 machine-readable built-in spec references without network access, optionally
@@ -320,6 +331,7 @@ go run ./cmd/apitools catalog list
 go run ./cmd/apitools catalog advisory slack
 go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog security-report
+go run ./cmd/apitools catalog stats
 ```
 
 When changing exported APIs, run dependent checks in sibling consumers when

@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -68,6 +69,8 @@ func runCatalog(args []string, out, errOut io.Writer) int {
 		return runCatalogList(args[1:], out, errOut)
 	case "specs":
 		return runCatalogSpecs(args[1:], out, errOut)
+	case "stats":
+		return runCatalogStats(args[1:], out, errOut)
 	case "refresh":
 		return runCatalogRefresh(args[1:], out, errOut)
 	case "refresh-report":
@@ -96,6 +99,7 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "  check            run offline catalog quality checks")
 	fmt.Fprintln(out, "  list             list built-in provider catalog metadata")
 	fmt.Fprintln(out, "  specs            list refreshable built-in spec references")
+	fmt.Fprintln(out, "  stats            summarize catalog protocol and artifact status")
 	fmt.Fprintln(out, "  refresh          refresh one selected built-in spec reference")
 	fmt.Fprintln(out, "  refresh-report   review saved refresh artifacts offline")
 	fmt.Fprintln(out, "  inspect          inspect one provider and resolution status")
@@ -327,6 +331,73 @@ func runCatalogSpecs(args []string, out, errOut io.Writer) int {
 	for _, row := range rows {
 		fmt.Fprintf(out, "%-18s %-34s %-16s %-16s %-18s %-12s %s\n", row.ProviderID, row.SpecRefID, row.Kind, protocolLabel(row.Protocol, row.ProtocolVersion), row.SourceAuthority, row.VerifiedAt, row.RegisteredArtifactPath)
 	}
+	return 0
+}
+
+func runCatalogStats(args []string, out, errOut io.Writer) int {
+	fs := flag.NewFlagSet("apitools catalog stats", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory containing saved review artifacts")
+	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
+	asOf := fs.String("as-of", "", "Check refresh verification freshness as of YYYY-MM-DD; defaults to today")
+	staleDays := fs.Int("stale-days", catalogpkg.DefaultStaleVerificationDays, "Warn when spec verification is older than this many days")
+	maxBytes := fs.Int64("max-bytes", apitools.CatalogRefreshReviewDefaultMaxBytes, "Maximum bytes to read from each saved artifact")
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog stats [--cache-dir catalog-openapi-cache] [--cache catalog-openapi-cache/cache.sqlite] [--as-of YYYY-MM-DD] [--stale-days 365] [--max-bytes N] [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if fs.NArg() > 0 {
+		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
+		fs.Usage()
+		return 2
+	}
+	opts := apitools.CatalogSpecRefreshReviewOptions{
+		CacheDir:              *cacheDir,
+		StaleVerificationDays: *staleDays,
+		MaxBytes:              *maxBytes,
+	}
+	if strings.TrimSpace(*asOf) != "" {
+		parsed, err := time.Parse("2006-01-02", strings.TrimSpace(*asOf))
+		if err != nil {
+			fmt.Fprintf(errOut, "invalid --as-of %q: expected YYYY-MM-DD\n", *asOf)
+			return 2
+		}
+		opts.AsOf = parsed
+	}
+	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	defer closeCache()
+	opts.Artifacts = artifacts
+	refreshReport, err := apitools.BuiltInCatalogSpecRefreshReviewReport(opts)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	report := buildCatalogStatsReport(catalogpkg.BuiltInProviders(), artifacts, refreshReport)
+	if *jsonOut {
+		if err := writeJSON(out, report); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	writeCatalogStatsReport(out, report)
 	return 0
 }
 
@@ -749,6 +820,268 @@ type catalogListRow struct {
 	MachineAvailability catalogpkg.SpecAvailability       `json:"machine_availability"`
 	UserOpenAPINeed     catalogpkg.UserOpenAPINeed        `json:"user_openapi_need"`
 	AuthStatus          catalogpkg.AuthCompletenessStatus `json:"auth_status"`
+}
+
+type catalogStatsReport struct {
+	ProviderCount    int                          `json:"provider_count"`
+	Protocols        []catalogStatsProtocol       `json:"protocols"`
+	ArtifactRegistry catalogStatsArtifactRegistry `json:"artifact_registry"`
+	Refresh          catalogStatsRefreshEvidence  `json:"refresh"`
+}
+
+type catalogStatsProtocol struct {
+	Protocol    catalogpkg.SpecProtocol `json:"protocol"`
+	DisplayName string                  `json:"display_name"`
+	Count       int                     `json:"count"`
+	ProviderIDs []string                `json:"provider_ids,omitempty"`
+}
+
+type catalogStatsRefreshEvidence struct {
+	RefreshableSpecCount       int                      `json:"refreshable_spec_count"`
+	RegisteredArtifactCount    int                      `json:"registered_artifact_count"`
+	ExistingArtifactCount      int                      `json:"existing_artifact_count"`
+	MissingRegistrationCount   int                      `json:"missing_registration_count"`
+	MissingRegisteredFileCount int                      `json:"missing_registered_file_count"`
+	InvalidArtifactCount       int                      `json:"invalid_artifact_count"`
+	StaleVerificationCount     int                      `json:"stale_verification_count"`
+	TotalBytes                 int64                    `json:"total_bytes"`
+	ValidationStatuses         []catalogStatsValidation `json:"validation_statuses,omitempty"`
+	Protocols                  []catalogStatsProtocol   `json:"protocols,omitempty"`
+}
+
+type catalogStatsArtifactRegistry struct {
+	ArtifactCount int                        `json:"artifact_count"`
+	Kinds         []catalogStatsArtifactKind `json:"kinds,omitempty"`
+}
+
+type catalogStatsArtifactKind struct {
+	Kind        string   `json:"kind"`
+	Count       int      `json:"count"`
+	ArtifactIDs []string `json:"artifact_ids,omitempty"`
+}
+
+type catalogStatsValidation struct {
+	Status     string   `json:"status"`
+	Count      int      `json:"count"`
+	SpecRefIDs []string `json:"spec_ref_ids,omitempty"`
+}
+
+func buildCatalogStatsReport(providers []catalogpkg.Provider, artifacts []catalogpkg.CatalogSpecArtifact, refreshReport apitools.CatalogSpecRefreshReviewReport) catalogStatsReport {
+	return catalogStatsReport{
+		ProviderCount:    len(providers),
+		Protocols:        catalogProviderProtocolStats(providers),
+		ArtifactRegistry: catalogArtifactRegistryStats(artifacts),
+		Refresh:          catalogRefreshEvidenceStats(refreshReport),
+	}
+}
+
+func catalogProviderProtocolStats(providers []catalogpkg.Provider) []catalogStatsProtocol {
+	providerIDsByProtocol := map[catalogpkg.SpecProtocol][]string{}
+	for _, provider := range providers {
+		protocol := primaryProviderProtocol(provider).Protocol
+		providerIDsByProtocol[protocol] = append(providerIDsByProtocol[protocol], provider.ID)
+	}
+	out := make([]catalogStatsProtocol, 0, len(catalogProtocolOrder()))
+	for _, protocol := range catalogProtocolOrder() {
+		providerIDs := providerIDsByProtocol[protocol]
+		out = append(out, catalogStatsProtocol{
+			Protocol:    protocol,
+			DisplayName: catalogProtocolDisplayName(protocol),
+			Count:       len(providerIDs),
+			ProviderIDs: append([]string(nil), providerIDs...),
+		})
+	}
+	return out
+}
+
+func primaryProviderProtocol(provider catalogpkg.Provider) catalogpkg.SpecProtocolClassification {
+	for _, ref := range provider.SpecReferences {
+		if ref.Kind != catalogpkg.SpecKindHumanDocs {
+			return ref.ProtocolClassification()
+		}
+	}
+	for _, ref := range provider.SpecReferences {
+		if ref.Kind == catalogpkg.SpecKindHumanDocs {
+			return ref.ProtocolClassification()
+		}
+	}
+	return catalogpkg.SpecProtocolClassification{Protocol: catalogpkg.SpecProtocolUnknown}
+}
+
+func catalogRefreshEvidenceStats(report apitools.CatalogSpecRefreshReviewReport) catalogStatsRefreshEvidence {
+	statusIDs := map[string][]string{}
+	providerIDsByProtocol := map[catalogpkg.SpecProtocol][]string{}
+	stats := catalogStatsRefreshEvidence{RefreshableSpecCount: len(report.Results)}
+	for _, result := range report.Results {
+		key := result.ProviderID + "/" + result.SpecRefID
+		if strings.TrimSpace(result.RegisteredArtifactPath) != "" {
+			stats.RegisteredArtifactCount++
+		}
+		if result.Exists {
+			stats.ExistingArtifactCount++
+		}
+		if result.ValidationStatus == apitools.CatalogRefreshMissingRegistration {
+			stats.MissingRegistrationCount++
+		}
+		if result.ValidationStatus == apitools.CatalogRefreshMissingFile {
+			stats.MissingRegisteredFileCount++
+		}
+		if result.ValidationStatus == apitools.CatalogRefreshInvalid {
+			stats.InvalidArtifactCount++
+		}
+		if result.VerificationStale {
+			stats.StaleVerificationCount++
+		}
+		stats.TotalBytes += result.Bytes
+		statusIDs[result.ValidationStatus] = append(statusIDs[result.ValidationStatus], key)
+		providerIDsByProtocol[result.Protocol] = append(providerIDsByProtocol[result.Protocol], key)
+	}
+	for _, status := range catalogRefreshValidationOrder(statusIDs) {
+		ids := statusIDs[status]
+		stats.ValidationStatuses = append(stats.ValidationStatuses, catalogStatsValidation{
+			Status:     status,
+			Count:      len(ids),
+			SpecRefIDs: append([]string(nil), ids...),
+		})
+	}
+	for _, protocol := range catalogProtocolOrder() {
+		ids := providerIDsByProtocol[protocol]
+		if len(ids) == 0 {
+			continue
+		}
+		stats.Protocols = append(stats.Protocols, catalogStatsProtocol{
+			Protocol:    protocol,
+			DisplayName: catalogProtocolDisplayName(protocol),
+			Count:       len(ids),
+			ProviderIDs: append([]string(nil), ids...),
+		})
+	}
+	return stats
+}
+
+func catalogArtifactRegistryStats(artifacts []catalogpkg.CatalogSpecArtifact) catalogStatsArtifactRegistry {
+	idsByKind := map[string][]string{}
+	for _, artifact := range artifacts {
+		kind := strings.TrimSpace(artifact.Kind)
+		if kind == "" {
+			kind = "unknown"
+		}
+		idsByKind[kind] = append(idsByKind[kind], artifact.ProviderID+"/"+artifact.SpecRefID)
+	}
+	kinds := make([]string, 0, len(idsByKind))
+	for kind := range idsByKind {
+		kinds = append(kinds, kind)
+	}
+	sort.Strings(kinds)
+	stats := catalogStatsArtifactRegistry{ArtifactCount: len(artifacts)}
+	for _, kind := range kinds {
+		ids := idsByKind[kind]
+		sort.Strings(ids)
+		stats.Kinds = append(stats.Kinds, catalogStatsArtifactKind{
+			Kind:        kind,
+			Count:       len(ids),
+			ArtifactIDs: append([]string(nil), ids...),
+		})
+	}
+	return stats
+}
+
+func catalogRefreshValidationOrder(statusIDs map[string][]string) []string {
+	preferred := []string{
+		apitools.CatalogRefreshValidOpenAPI,
+		apitools.CatalogRefreshValidSwagger,
+		apitools.CatalogRefreshParseableOpenAPIInvalid,
+		apitools.CatalogRefreshParseableSwaggerInvalid,
+		apitools.CatalogRefreshValidStructured,
+		apitools.CatalogRefreshSkippedValidation,
+		apitools.CatalogRefreshMissingRegistration,
+		apitools.CatalogRefreshMissingFile,
+		apitools.CatalogRefreshInvalid,
+	}
+	seen := map[string]struct{}{}
+	var out []string
+	for _, status := range preferred {
+		if _, ok := statusIDs[status]; ok {
+			out = append(out, status)
+			seen[status] = struct{}{}
+		}
+	}
+	var extra []string
+	for status := range statusIDs {
+		if _, ok := seen[status]; !ok {
+			extra = append(extra, status)
+		}
+	}
+	sort.Strings(extra)
+	return append(out, extra...)
+}
+
+func catalogProtocolOrder() []catalogpkg.SpecProtocol {
+	return []catalogpkg.SpecProtocol{
+		catalogpkg.SpecProtocolOpenAPI,
+		catalogpkg.SpecProtocolSwagger,
+		catalogpkg.SpecProtocolSmithy,
+		catalogpkg.SpecProtocolGoogleDiscovery,
+		catalogpkg.SpecProtocolDropboxStone,
+		catalogpkg.SpecProtocolOpenAPIIndex,
+		catalogpkg.SpecProtocolHumanDocs,
+		catalogpkg.SpecProtocolUnknown,
+	}
+}
+
+func catalogProtocolDisplayName(protocol catalogpkg.SpecProtocol) string {
+	switch protocol {
+	case catalogpkg.SpecProtocolOpenAPI:
+		return "OpenAPI"
+	case catalogpkg.SpecProtocolSwagger:
+		return "Swagger"
+	case catalogpkg.SpecProtocolSmithy:
+		return "Smithy"
+	case catalogpkg.SpecProtocolGoogleDiscovery:
+		return "Google Discovery"
+	case catalogpkg.SpecProtocolDropboxStone:
+		return "Dropbox Stone"
+	case catalogpkg.SpecProtocolOpenAPIIndex:
+		return "OpenAPI index"
+	case catalogpkg.SpecProtocolHumanDocs:
+		return "Human docs"
+	default:
+		return "Unknown"
+	}
+}
+
+func writeCatalogStatsReport(out io.Writer, report catalogStatsReport) {
+	fmt.Fprintf(out, "Provider protocols: %d provider(s)\n", report.ProviderCount)
+	fmt.Fprintf(out, "%-18s %-7s %s\n", "PROTOCOL", "COUNT", "PROVIDERS")
+	for _, bucket := range report.Protocols {
+		fmt.Fprintf(out, "%-18s %-7d %s\n", bucket.DisplayName, bucket.Count, strings.Join(bucket.ProviderIDs, ", "))
+	}
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Artifact registry:")
+	fmt.Fprintf(out, "- artifacts: %d\n", report.ArtifactRegistry.ArtifactCount)
+	if len(report.ArtifactRegistry.Kinds) > 0 {
+		fmt.Fprintf(out, "%-18s %-7s %s\n", "KIND", "COUNT", "ARTIFACTS")
+		for _, bucket := range report.ArtifactRegistry.Kinds {
+			fmt.Fprintf(out, "%-18s %-7d %s\n", bucket.Kind, bucket.Count, strings.Join(bucket.ArtifactIDs, ", "))
+		}
+	}
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Refresh artifacts:")
+	fmt.Fprintf(out, "- refreshable specs: %d\n", report.Refresh.RefreshableSpecCount)
+	fmt.Fprintf(out, "- registered artifacts: %d\n", report.Refresh.RegisteredArtifactCount)
+	fmt.Fprintf(out, "- existing artifacts: %d\n", report.Refresh.ExistingArtifactCount)
+	fmt.Fprintf(out, "- missing registrations: %d\n", report.Refresh.MissingRegistrationCount)
+	fmt.Fprintf(out, "- missing registered files: %d\n", report.Refresh.MissingRegisteredFileCount)
+	fmt.Fprintf(out, "- invalid artifacts: %d\n", report.Refresh.InvalidArtifactCount)
+	fmt.Fprintf(out, "- stale verifications: %d\n", report.Refresh.StaleVerificationCount)
+	fmt.Fprintf(out, "- total bytes: %d\n", report.Refresh.TotalBytes)
+	if len(report.Refresh.ValidationStatuses) > 0 {
+		fmt.Fprintln(out, "Validation statuses:")
+		fmt.Fprintf(out, "%-28s %-7s %s\n", "STATUS", "COUNT", "SPEC_REFS")
+		for _, bucket := range report.Refresh.ValidationStatuses {
+			fmt.Fprintf(out, "%-28s %-7d %s\n", bucket.Status, bucket.Count, strings.Join(bucket.SpecRefIDs, ", "))
+		}
+	}
 }
 
 func writeCatalogAdvisoryReport(out io.Writer, report catalogpkg.ProviderAdvisoryReport) {
