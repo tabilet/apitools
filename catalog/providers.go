@@ -650,15 +650,15 @@ var builtInProviders = []Provider{
 		aliases:             []string{"servicenow api", "servicenow rest"},
 		category:            "it-service-management",
 		relevance:           "Popular workflow service for incidents, users, tables, service catalog, change records, and ITSM automation.",
-		openAPIAvailability: SpecAvailabilityNeedsVerification,
+		openAPIAvailability: SpecAvailabilityUnavailable,
 		machineAvailability: SpecAvailabilityUnknown,
 		userNeed:            UserOpenAPINeedLikely,
 		specs: []SpecReference{
-			humanDocsRef("servicenow-rest-api-docs", "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/c_RESTAPI.html", "Official ServiceNow REST API documentation. ServiceNow documents instance-side REST API Explorer export to OpenAPI, but this catalog entry records no stable public downloadable OpenAPI document."),
+			humanDocsRef("servicenow-rest-api-docs", "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/c_RESTAPI.html", "Official ServiceNow REST API documentation. ServiceNow documents instance-side REST API Explorer and REST access requirements."),
 			humanDocsRef("servicenow-openapi-export-docs", "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/export-openapi-specification.html", "Official ServiceNow documentation for exporting a REST API as an OpenAPI specification from a ServiceNow instance."),
 		},
 		quirks: []string{
-			"ServiceNow REST API Explorer exports are instance- and API-selection-specific and require appropriate roles, so catalog users likely need a user-provided export for precise table and custom API shapes.",
+			"ServiceNow REST API Explorer OpenAPI exports are instance- and API-selection-specific and require appropriate roles; M12 review records no stable public downloadable provider-wide OpenAPI document.",
 			"ServiceNow warns that REST API Explorer can interact with the current instance; catalog tooling must treat exported specs as untrusted metadata and never execute API operations.",
 		},
 	}),
