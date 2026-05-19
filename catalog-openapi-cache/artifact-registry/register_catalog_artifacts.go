@@ -23,6 +23,7 @@ type specArtifact struct {
 	title      string
 	openapi    string
 	swagger    string
+	status     string
 }
 
 type overlayArtifact struct {
@@ -103,16 +104,20 @@ func registerSpec(ctx context.Context, cache *sqlitecache.Cache, artifact specAr
 	}); err != nil {
 		return err
 	}
+	artifactMetadata := map[string]string{
+		"official": "true",
+		"kind":     artifact.kind,
+	}
+	if artifact.status != "" {
+		artifactMetadata["validation_status"] = artifact.status
+	}
 	return cache.StoreCatalogArtifact(ctx, sqlitecache.CatalogArtifact{
 		ProviderID: artifact.providerID,
 		ArtifactID: artifact.artifactID,
 		Kind:       artifact.kind,
 		Path:       artifact.path,
 		SourceURL:  artifact.url,
-		Metadata: map[string]string{
-			"official": "true",
-			"kind":     artifact.kind,
-		},
+		Metadata:   artifactMetadata,
 	})
 }
 
@@ -125,6 +130,7 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/asana-openapi-v1.yaml",
 		title:      "Asana",
 		openapi:    "3.0.0",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "aws-lambda",
@@ -151,6 +157,16 @@ var specArtifacts = []specArtifact{
 		title:      "Amazon SNS Smithy Model",
 	},
 	{
+		providerID: "bitbucket",
+		artifactID: "bitbucket-cloud-swagger-v2",
+		kind:       "openapi",
+		url:        "https://api.bitbucket.org/swagger.json",
+		path:       "openapi/bitbucket-cloud-swagger-v2.json",
+		title:      "Bitbucket API",
+		swagger:    "2.0",
+		status:     apitools.CatalogRefreshParseableSwaggerInvalid,
+	},
+	{
 		providerID: "box",
 		artifactID: "box-platform-openapi-v3",
 		kind:       "openapi",
@@ -158,6 +174,7 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/box-platform-openapi-v3.json",
 		title:      "Box Platform API",
 		openapi:    "3.0.2",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "clickup",
@@ -167,6 +184,27 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/clickup-api-v2-reference.json",
 		title:      "ClickUp API v2 Reference",
 		openapi:    "3.1.0",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
+	},
+	{
+		providerID: "circleci",
+		artifactID: "circleci-api-v2-openapi",
+		kind:       "openapi",
+		url:        "https://circleci.com/api/v2/openapi.json",
+		path:       "openapi/circleci-api-v2-openapi.json",
+		title:      "CircleCI API",
+		openapi:    "3.0.3",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
+	},
+	{
+		providerID: "cloudflare",
+		artifactID: "cloudflare-api-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/cloudflare/api-schemas/main/openapi.yaml",
+		path:       "openapi/cloudflare-api-openapi.yaml",
+		title:      "Cloudflare API",
+		openapi:    "3.0.3",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "discord",
@@ -202,6 +240,7 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/github-rest-api-openapi.json",
 		title:      "GitHub v3 REST API",
 		openapi:    "3.0.3",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "gitlab",
@@ -255,6 +294,7 @@ var specArtifacts = []specArtifact{
 		kind:       "openapi",
 		url:        "https://dac-static.atlassian.com/cloud/jira/platform/swagger-v3.v3.json",
 		path:       "openapi/jira-cloud-platform-openapi-v3.json",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "microsoft-graph",
@@ -282,6 +322,7 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/notion-api-openapi.json",
 		title:      "Notion API",
 		openapi:    "3.1.0",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "okta",
@@ -291,6 +332,7 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/okta-management-minimal-openapi.yaml",
 		title:      "Okta Admin Management API",
 		openapi:    "3.0.3",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "pagerduty",
@@ -298,6 +340,7 @@ var specArtifacts = []specArtifact{
 		kind:       "openapi",
 		url:        "https://raw.githubusercontent.com/PagerDuty/api-schema/main/reference/REST/openapiv3.json",
 		path:       "openapi/pagerduty-rest-openapi-v3.json",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "paypal",
@@ -316,6 +359,7 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/pipedrive-api-v2-openapi.yaml",
 		title:      "Pipedrive API v2",
 		openapi:    "3.0.1",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "sendgrid",
@@ -332,6 +376,7 @@ var specArtifacts = []specArtifact{
 		kind:       "swagger",
 		url:        "https://raw.githubusercontent.com/slackapi/slack-api-specs/master/web-api/slack_web_openapi_v2_without_examples.json",
 		path:       "openapi/slack-web-openapi-v2.json",
+		status:     apitools.CatalogRefreshParseableSwaggerInvalid,
 	},
 	{
 		providerID: "snowflake",
@@ -352,11 +397,22 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.0.0",
 	},
 	{
+		providerID: "supabase",
+		artifactID: "supabase-management-api-openapi",
+		kind:       "openapi",
+		url:        "https://api.supabase.com/api/v1-json",
+		path:       "openapi/supabase-management-api-openapi.json",
+		title:      "Supabase API (v1)",
+		openapi:    "3.0.0",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
+	},
+	{
 		providerID: "trello",
 		artifactID: "trello-cloud-openapi-v3",
 		kind:       "openapi",
 		url:        "https://dac-static.atlassian.com/cloud/trello/swagger.v3.json",
 		path:       "openapi/trello-cloud-openapi-v3.json",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "twilio",
@@ -393,6 +449,7 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/zendesk-sunshine-conversations-openapi.yaml",
 		title:      "Sunshine Conversations API",
 		openapi:    "3.0.2",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 }
 

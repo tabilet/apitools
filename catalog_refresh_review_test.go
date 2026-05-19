@@ -66,6 +66,31 @@ func TestCatalogSpecRefreshReviewValidOpenAPI(t *testing.T) {
 	}
 }
 
+func TestCatalogSpecRefreshReviewReportsParseableInvalidOpenAPI(t *testing.T) {
+	dir := t.TempDir()
+	ref := refreshReviewTestRef("demo", catalog.SpecKindOpenAPI)
+	ref.RegisteredArtifactPath = "openapi/demo.json"
+	writeRefreshReviewArtifact(t, dir, ref.RegisteredArtifactPath, `{"openapi":"3.0.0","info":{"title":"Demo","version":"1.0.0"},"paths":{"/items":{"get":{"responses":{"200":{}}}}}}`)
+
+	report, err := BuildCatalogSpecRefreshReviewReport([]catalog.RefreshableSpecReference{ref}, CatalogSpecRefreshReviewOptions{CacheDir: dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := singleRefreshReviewResult(t, report)
+	if result.ValidationStatus != CatalogRefreshParseableOpenAPIInvalid {
+		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshParseableOpenAPIInvalid)
+	}
+	if result.ValidationError == "" {
+		t.Fatalf("validation error is empty")
+	}
+	if result.Metadata.Title != "Demo" || result.Metadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", result.Metadata)
+	}
+	if !hasRefreshReviewFollowUp(result, "strict validation errors") {
+		t.Fatalf("missing strict validation follow-up: %#v", result.ManualFollowUps)
+	}
+}
+
 func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 	for _, tc := range []struct {
 		name string

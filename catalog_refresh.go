@@ -16,12 +16,14 @@ import (
 )
 
 const (
-	CatalogRefreshDownloaded        = "downloaded"
-	CatalogRefreshValidOpenAPI      = "valid-openapi"
-	CatalogRefreshValidSwagger      = "valid-swagger"
-	CatalogRefreshValidStructured   = "valid-structured"
-	CatalogRefreshSkippedValidation = "skipped-non-openapi"
-	CatalogRefreshInvalid           = "invalid"
+	CatalogRefreshDownloaded              = "downloaded"
+	CatalogRefreshValidOpenAPI            = "valid-openapi"
+	CatalogRefreshValidSwagger            = "valid-swagger"
+	CatalogRefreshParseableOpenAPIInvalid = "parseable-openapi-invalid"
+	CatalogRefreshParseableSwaggerInvalid = "parseable-swagger-invalid"
+	CatalogRefreshValidStructured         = "valid-structured"
+	CatalogRefreshSkippedValidation       = "skipped-non-openapi"
+	CatalogRefreshInvalid                 = "invalid"
 )
 
 // CatalogSpecRefreshOptions controls a selected, opt-in catalog spec refresh.
@@ -45,6 +47,7 @@ type CatalogSpecRefreshResult struct {
 	FinalURL         string           `json:"final_url,omitempty"`
 	DownloadStatus   string           `json:"download_status"`
 	ValidationStatus string           `json:"validation_status"`
+	ValidationError  string           `json:"validation_error,omitempty"`
 	ArtifactPath     string           `json:"artifact_path,omitempty"`
 	SavedPath        string           `json:"saved_path,omitempty"`
 	SHA256           string           `json:"sha256,omitempty"`
@@ -80,8 +83,12 @@ func (c *Client) refreshCatalogSpecReference(ctx context.Context, ref catalog.Re
 		return CatalogSpecRefreshResult{}, err
 	}
 	validationStatus, metadata, err := validateCatalogRefreshContent(ctx, ref, content, finalURL.String())
-	if err != nil {
+	if err != nil && !catalogRefreshStatusAllowsSave(validationStatus) {
 		return CatalogSpecRefreshResult{}, err
+	}
+	validationError := ""
+	if err != nil {
+		validationError = err.Error()
 	}
 	artifactPath, err := catalogRefreshArtifactPath(ref, content)
 	if err != nil {
@@ -92,6 +99,13 @@ func (c *Client) refreshCatalogSpecReference(ctx context.Context, ref catalog.Re
 		return CatalogSpecRefreshResult{}, err
 	}
 	digest := sha256.Sum256(content)
+	manualFollowUps := []string{
+		"Review the downloaded artifact before updating durable catalog metadata.",
+		"Update spec revision, verification date, and security classification manually if the refreshed artifact is accepted.",
+	}
+	if catalogRefreshStatusNeedsStrictReview(validationStatus) {
+		manualFollowUps = append(manualFollowUps, "Review strict validation errors before treating this artifact as import-ready metadata.")
+	}
 	return CatalogSpecRefreshResult{
 		ProviderID:       ref.ProviderID,
 		SpecRefID:        ref.SpecRefID,
@@ -100,15 +114,13 @@ func (c *Client) refreshCatalogSpecReference(ctx context.Context, ref catalog.Re
 		FinalURL:         finalURL.String(),
 		DownloadStatus:   CatalogRefreshDownloaded,
 		ValidationStatus: validationStatus,
+		ValidationError:  validationError,
 		ArtifactPath:     artifactPath,
 		SavedPath:        savedPath,
 		SHA256:           hex.EncodeToString(digest[:]),
 		Bytes:            int64(len(content)),
 		Metadata:         metadata,
-		ManualFollowUps: []string{
-			"Review the downloaded artifact before updating durable catalog metadata.",
-			"Update spec revision, verification date, and security classification manually if the refreshed artifact is accepted.",
-		},
+		ManualFollowUps:  manualFollowUps,
 	}, nil
 }
 
@@ -117,6 +129,10 @@ func validateCatalogRefreshContent(ctx context.Context, ref catalog.RefreshableS
 	case catalog.SpecKindOpenAPI:
 		metadata, ok := downloadedSpecMetadata(ctx, content, sourceURL)
 		if !ok {
+			status, metadata, parseable := parseableInvalidCatalogOpenAPIMetadata(ctx, content)
+			if parseable {
+				return status, metadata, fmt.Errorf("%s/%s: downloaded document is parseable as OpenAPI or Swagger but fails strict semantic validation", ref.ProviderID, ref.SpecRefID)
+			}
 			return CatalogRefreshInvalid, SpecMetadata{}, fmt.Errorf("%s/%s: downloaded document does not validate as OpenAPI or Swagger", ref.ProviderID, ref.SpecRefID)
 		}
 		if metadata.Swagger != "" {
@@ -136,6 +152,122 @@ func validateCatalogRefreshContent(ctx context.Context, ref catalog.RefreshableS
 	default:
 		return CatalogRefreshInvalid, SpecMetadata{}, fmt.Errorf("%s/%s: unsupported refresh spec kind %q", ref.ProviderID, ref.SpecRefID, ref.Kind)
 	}
+}
+
+func catalogRefreshStatusAllowsSave(status string) bool {
+	switch status {
+	case CatalogRefreshValidOpenAPI, CatalogRefreshValidSwagger, CatalogRefreshParseableOpenAPIInvalid, CatalogRefreshParseableSwaggerInvalid, CatalogRefreshValidStructured, CatalogRefreshSkippedValidation:
+		return true
+	default:
+		return false
+	}
+}
+
+func catalogRefreshStatusNeedsStrictReview(status string) bool {
+	switch status {
+	case CatalogRefreshParseableOpenAPIInvalid, CatalogRefreshParseableSwaggerInvalid:
+		return true
+	default:
+		return false
+	}
+}
+
+func parseableInvalidCatalogOpenAPIMetadata(ctx context.Context, content []byte) (string, SpecMetadata, bool) {
+	if ctx != nil {
+		if err := ctx.Err(); err != nil {
+			return CatalogRefreshInvalid, SpecMetadata{}, false
+		}
+	}
+	trimmed := bytes.TrimSpace(content)
+	if len(trimmed) == 0 {
+		return CatalogRefreshInvalid, SpecMetadata{}, false
+	}
+	var root map[string]any
+	if trimmed[0] == '{' {
+		if err := json.Unmarshal(trimmed, &root); err != nil {
+			return CatalogRefreshInvalid, SpecMetadata{}, false
+		}
+	} else if err := yaml.Unmarshal(trimmed, &root); err != nil {
+		return CatalogRefreshInvalid, SpecMetadata{}, false
+	}
+	if len(root) == 0 || containsExternalRef(root, 0) {
+		return CatalogRefreshInvalid, SpecMetadata{}, false
+	}
+	if metadata, ok := parseableInvalidOpenAPI3Metadata(root); ok {
+		return CatalogRefreshParseableOpenAPIInvalid, metadata, true
+	}
+	if metadata, ok := parseableInvalidSwagger2Metadata(root); ok {
+		return CatalogRefreshParseableSwaggerInvalid, metadata, true
+	}
+	return CatalogRefreshInvalid, SpecMetadata{}, false
+}
+
+func parseableInvalidOpenAPI3Metadata(root map[string]any) (SpecMetadata, bool) {
+	openapi := strings.TrimSpace(catalogRefreshStringValue(root, "openapi"))
+	if !strings.HasPrefix(openapi, "3.0") && !strings.HasPrefix(openapi, "3.1") {
+		return SpecMetadata{}, false
+	}
+	info, ok := root["info"].(map[string]any)
+	if !ok {
+		return SpecMetadata{}, false
+	}
+	title := catalogRefreshStringValue(info, "title")
+	version := catalogRefreshStringValue(info, "version")
+	if title == "" || version == "" {
+		return SpecMetadata{}, false
+	}
+	paths, ok := root["paths"].(map[string]any)
+	if !ok {
+		return SpecMetadata{}, false
+	}
+	for path, value := range paths {
+		if !strings.HasPrefix(path, "/") && !strings.HasPrefix(path, "x-") {
+			return SpecMetadata{}, false
+		}
+		if _, ok := value.(map[string]any); !ok {
+			return SpecMetadata{}, false
+		}
+	}
+	return SpecMetadata{
+		Title:          title,
+		Description:    catalogRefreshStringValue(info, "description"),
+		OpenAPI:        openapi,
+		OperationCount: looseOperationCount(paths),
+	}, true
+}
+
+func parseableInvalidSwagger2Metadata(root map[string]any) (SpecMetadata, bool) {
+	swagger := strings.TrimSpace(catalogRefreshStringValue(root, "swagger"))
+	if swagger != "2.0" {
+		return SpecMetadata{}, false
+	}
+	info, ok := root["info"].(map[string]any)
+	if !ok {
+		return SpecMetadata{}, false
+	}
+	title := catalogRefreshStringValue(info, "title")
+	version := catalogRefreshStringValue(info, "version")
+	if title == "" || version == "" {
+		return SpecMetadata{}, false
+	}
+	paths, ok := root["paths"].(map[string]any)
+	if !ok {
+		return SpecMetadata{}, false
+	}
+	for path, value := range paths {
+		if !strings.HasPrefix(path, "/") && !strings.HasPrefix(path, "x-") {
+			return SpecMetadata{}, false
+		}
+		if _, ok := value.(map[string]any); !ok {
+			return SpecMetadata{}, false
+		}
+	}
+	return SpecMetadata{
+		Title:          title,
+		Description:    catalogRefreshStringValue(info, "description"),
+		Swagger:        swagger,
+		OperationCount: looseOperationCount(paths),
+	}, true
 }
 
 func validStructuredCatalogArtifact(content []byte) bool {

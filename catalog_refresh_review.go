@@ -164,9 +164,11 @@ func reviewCatalogRefreshArtifact(ref catalog.RefreshableSpecReference, opts Cat
 	result.ValidationStatus = status
 	result.Metadata = metadata
 	if err != nil {
-		result.ValidationStatus = CatalogRefreshInvalid
 		result.ValidationError = err.Error()
-		result.ManualFollowUps = append(result.ManualFollowUps, "Review or replace the saved artifact before promoting durable catalog metadata.")
+		if !catalogRefreshStatusAllowsSave(status) {
+			result.ValidationStatus = CatalogRefreshInvalid
+			result.ManualFollowUps = append(result.ManualFollowUps, "Review or replace the saved artifact before promoting durable catalog metadata.")
+		}
 	}
 	result.addCatalogRefreshReviewFollowUps(opts)
 	return result, nil
@@ -188,6 +190,9 @@ func (result *CatalogSpecRefreshReviewResult) addCatalogRefreshReviewFollowUps(o
 	case CatalogRefreshValidOpenAPI, CatalogRefreshValidSwagger, CatalogRefreshValidStructured, CatalogRefreshSkippedValidation:
 		result.ManualFollowUps = append(result.ManualFollowUps, "Review the local artifact before updating durable catalog metadata.")
 		result.ManualFollowUps = append(result.ManualFollowUps, "Update spec revision, verification date, and security classification manually if the artifact is accepted.")
+	case CatalogRefreshParseableOpenAPIInvalid, CatalogRefreshParseableSwaggerInvalid:
+		result.ManualFollowUps = append(result.ManualFollowUps, "Review the local artifact before updating durable catalog metadata.")
+		result.ManualFollowUps = append(result.ManualFollowUps, "Review strict validation errors before treating this artifact as import-ready metadata.")
 	}
 }
 
