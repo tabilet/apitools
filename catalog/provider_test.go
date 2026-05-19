@@ -167,7 +167,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "salesforce", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "sendgrid", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "servicenow", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
-		{id: "shopify", openAPI: SpecAvailabilityUnknown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "shopify", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "pagerduty", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "slack", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "stripe", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
@@ -195,21 +195,6 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		}
 		if refs := provider.SpecReferencesByKind(test.specKind); len(refs) == 0 {
 			t.Fatalf("%s missing spec reference kind %q", test.id, test.specKind)
-		}
-	}
-}
-
-func TestProvidersWithUnknownOpenAPIHaveDocsReferences(t *testing.T) {
-	for _, id := range []string{"shopify"} {
-		provider, ok := FindBuiltInProvider(id)
-		if !ok {
-			t.Fatalf("missing provider %s", id)
-		}
-		if provider.OfficialOpenAPIAvailability != SpecAvailabilityUnknown {
-			t.Fatalf("%s OpenAPI availability = %q, want %q", id, provider.OfficialOpenAPIAvailability, SpecAvailabilityUnknown)
-		}
-		if refs := provider.SpecReferencesByKind(SpecKindHumanDocs); len(refs) == 0 {
-			t.Fatalf("%s missing human docs reference", id)
 		}
 	}
 }
