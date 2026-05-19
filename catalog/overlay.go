@@ -139,6 +139,86 @@ func providerHasSpecRef(provider Provider, id string) bool {
 
 var builtInSecurityOverlays = []SecurityOverlay{
 	{
+		ID:         "action-network-api-auth-overlay",
+		ProviderID: "action-network",
+		SpecRefID:  "action-network-api-v2-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:          "actionNetworkAPIToken",
+			Type:          SecuritySchemeAPIKey,
+			In:            APIKeyInHeader,
+			ParameterName: "OSDI-API-Token",
+			Description:   "Action Network API key carried in the OSDI-API-Token header for most API v2 endpoints.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "actionNetworkAPIToken"}},
+		SourceRefs: []string{
+			"https://actionnetwork.org/docs/v2/",
+		},
+		SourceNote: "Action Network has human REST API v2 docs in this catalog entry but no recorded official OpenAPI document; docs describe OSDI-API-Token header authentication for most endpoints.",
+	},
+	{
+		ID:         "adalo-api-auth-overlay",
+		ProviderID: "adalo",
+		SpecRefID:  "adalo-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:        "adaloBearer",
+			Type:        SecuritySchemeHTTP,
+			Scheme:      "bearer",
+			Description: "Adalo app API key carried as an Authorization bearer token.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "adaloBearer"}},
+		SourceRefs: []string{
+			"https://help.adalo.com/integrations/the-adalo-api/collections",
+			"https://help.adalo.com/integrations/the-adalo-api/push-notifications",
+		},
+		SourceNote: "Adalo has human API docs in this catalog entry but no recorded official OpenAPI document; docs describe app API-key authentication and push notification requests with Authorization: Bearer.",
+	},
+	{
+		ID:         "affinity-api-auth-overlay",
+		ProviderID: "affinity",
+		SpecRefID:  "affinity-v1-api-reference",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "affinityBasic",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Affinity API key supplied as the HTTP Basic password with no username.",
+			},
+			{
+				Name:        "affinityBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Affinity API key supplied as an Authorization bearer token.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "affinityBasic"}, {Scheme: "affinityBearer"}},
+		SourceRefs: []string{
+			"https://api-docs.affinity.co/",
+			"https://support.affinity.co/s/article/How-to-Create-and-Manage-API-Keys",
+		},
+		SourceNote: "Affinity has human V1 API docs in this catalog entry but no recorded official OpenAPI document; docs describe HTTP Basic and bearer API-key authentication alternatives.",
+	},
+	{
+		ID:         "agile-crm-api-auth-overlay",
+		ProviderID: "agile-crm",
+		SpecRefID:  "agile-crm-rest-api-github",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:        "agileCRMBasic",
+			Type:        SecuritySchemeHTTP,
+			Scheme:      "basic",
+			Description: "Agile CRM user email and REST API key supplied with HTTP Basic authentication.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "agileCRMBasic"}},
+		SourceRefs: []string{
+			"https://www.agilecrm.com/api",
+			"https://github.com/agilecrm/rest-api",
+		},
+		SourceNote: "Agile CRM has official human/GitHub REST API docs in this catalog entry but no recorded official OpenAPI document; docs describe email plus API key using HTTP Basic authentication.",
+	},
+	{
 		ID:         "airtable-web-api-auth-overlay",
 		ProviderID: "airtable",
 		SpecRefID:  "airtable-web-api-docs",

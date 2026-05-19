@@ -123,6 +123,34 @@ func (r SecurityReport) FindProvider(providerID string) (ProviderSecurityReport,
 
 var builtInSecurityClassifications = []SecurityClassification{
 	{
+		ProviderID: "action-network",
+		SpecRefID:  "action-network-api-v2-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://actionnetwork.org/docs/v2/"},
+		SourceNote: "Action Network has official REST API v2 human docs but no recorded stable public official OpenAPI document; OSDI-API-Token metadata comes from advisory overlay notes.",
+	},
+	{
+		ProviderID: "adalo",
+		SpecRefID:  "adalo-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://help.adalo.com/integrations/the-adalo-api/collections", "https://help.adalo.com/integrations/the-adalo-api/push-notifications"},
+		SourceNote: "Adalo has official API human docs and app-specific generated collection docs but no recorded stable public official OpenAPI document; bearer API-key metadata comes from advisory overlay notes.",
+	},
+	{
+		ProviderID: "affinity",
+		SpecRefID:  "affinity-v1-api-reference",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://api-docs.affinity.co/"},
+		SourceNote: "Affinity has official V1 API human docs but no recorded stable public official OpenAPI document; basic and bearer API-key metadata comes from advisory overlay notes.",
+	},
+	{
+		ProviderID: "agile-crm",
+		SpecRefID:  "agile-crm-rest-api-github",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://www.agilecrm.com/api", "https://github.com/agilecrm/rest-api"},
+		SourceNote: "Agile CRM has official API human docs and REST API GitHub documentation but no recorded stable public official OpenAPI document; email/API-key basic auth metadata comes from advisory overlay notes.",
+	},
+	{
 		ProviderID: "asana",
 		SpecRefID:  "asana-openapi-v1",
 		Status:     AuthStatusComplete,

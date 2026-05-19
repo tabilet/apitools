@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 83; got != want {
+	if got, want := len(candidates), 87; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -18,8 +18,12 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 	got := CandidateIDs(BuiltInCandidates())
 	want := []string{
+		"action-network",
 		"activecampaign",
 		"acuity-scheduling",
+		"adalo",
+		"affinity",
+		"agile-crm",
 		"airtable",
 		"asana",
 		"aws-lambda",
@@ -118,6 +122,10 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "office 365", id: "microsoft-graph"},
 		{key: "click up", id: "clickup"},
 		{key: "active campaign", id: "activecampaign"},
+		{key: "actionnetwork", id: "action-network"},
+		{key: "adalo collections api", id: "adalo"},
+		{key: "affinity crm api", id: "affinity"},
+		{key: "agilecrm", id: "agile-crm"},
 		{key: "acuity scheduling api", id: "acuity-scheduling"},
 		{key: "lambda", id: "aws-lambda"},
 		{key: "s3", id: "aws-s3"},
@@ -197,6 +205,10 @@ func TestBuiltInCandidatesCaptureFixtureAndPriorityEvidence(t *testing.T) {
 func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 	for _, id := range []string{
 		"asana",
+		"action-network",
+		"adalo",
+		"affinity",
+		"agile-crm",
 		"aws-lambda",
 		"aws-s3",
 		"aws-sns",

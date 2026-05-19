@@ -590,6 +590,34 @@ var specArtifacts = []specArtifact{
 
 var overlayArtifacts = []overlayArtifact{
 	{
+		providerID:  "action-network",
+		artifactID:  "action-network-api-v2-overlay",
+		path:        "advisory-overlays/action-network-api-v2-overlay.json",
+		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
+		sourceURL:   "https://actionnetwork.org/docs/v2/",
+	},
+	{
+		providerID:  "adalo",
+		artifactID:  "adalo-api-overlay",
+		path:        "advisory-overlays/adalo-api-overlay.json",
+		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
+		sourceURL:   "https://help.adalo.com/integrations/the-adalo-api",
+	},
+	{
+		providerID:  "affinity",
+		artifactID:  "affinity-v1-api-overlay",
+		path:        "advisory-overlays/affinity-v1-api-overlay.json",
+		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
+		sourceURL:   "https://api-docs.affinity.co/",
+	},
+	{
+		providerID:  "agile-crm",
+		artifactID:  "agile-crm-rest-api-overlay",
+		path:        "advisory-overlays/agile-crm-rest-api-overlay.json",
+		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
+		sourceURL:   "https://github.com/agilecrm/rest-api",
+	},
+	{
 		providerID:  "acuity-scheduling",
 		artifactID:  "acuity-scheduling-api-v1-overlay",
 		path:        "advisory-overlays/acuity-scheduling-api-v1-overlay.json",

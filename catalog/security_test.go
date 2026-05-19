@@ -86,7 +86,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 66; got != want {
+	if got, want := len(overlays), 70; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -173,8 +173,12 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		statusByID[provider.ProviderID] = provider.Status
 	}
 	wantIDs := []string{
+		"action-network",
 		"activecampaign",
 		"acuity-scheduling",
+		"adalo",
+		"affinity",
+		"agile-crm",
 		"airtable",
 		"asana",
 		"aws-lambda",
@@ -262,6 +266,10 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 	}
 	wantStatuses := map[string]AuthCompletenessStatus{
 		"activecampaign":    AuthStatusOverlayRequired,
+		"action-network":    AuthStatusOverlayRequired,
+		"adalo":             AuthStatusOverlayRequired,
+		"affinity":          AuthStatusOverlayRequired,
+		"agile-crm":         AuthStatusOverlayRequired,
 		"acuity-scheduling": AuthStatusOverlayRequired,
 		"airtable":          AuthStatusOverlayRequired,
 		"asana":             AuthStatusPresentIncomplete,

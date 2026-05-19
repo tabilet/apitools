@@ -1,0 +1,758 @@
+{
+  "components": {
+    "schemas": {
+      "ActionNetworkCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ActionNetworkError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ActionNetworkObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "actionNetworkAPIToken": {
+        "description": "Action Network API key carried in the OSDI-API-Token header for most API v2 endpoints.",
+        "in": "header",
+        "name": "OSDI-API-Token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Action Network API v2 human documentation. This is not an official Action Network OpenAPI document.",
+    "title": "Action Network API v2 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getActionNetworkAPIEntryPoint",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "Get API entry point"
+      }
+    },
+    "/events": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listActionNetworkEvents",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "OData filter expression.",
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "List events"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createActionNetworkEvent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionNetworkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "Create an event"
+      }
+    },
+    "/events/{event_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getActionNetworkEvent",
+        "parameters": [
+          {
+            "description": "Action Network event ID.",
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "Get an event"
+      }
+    },
+    "/forms": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listActionNetworkForms",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "OData filter expression.",
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "List forms"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createActionNetworkForm",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionNetworkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "Create a form"
+      }
+    },
+    "/forms/{form_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getActionNetworkForm",
+        "parameters": [
+          {
+            "description": "Action Network form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "Get a form"
+      }
+    },
+    "/people": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listActionNetworkPeople",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "OData filter expression.",
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "List people"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createActionNetworkPerson",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionNetworkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "Create a person"
+      }
+    },
+    "/people/{person_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getActionNetworkPerson",
+        "parameters": [
+          {
+            "description": "Action Network person ID.",
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "Get a person"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateActionNetworkPerson",
+        "parameters": [
+          {
+            "description": "Action Network person ID.",
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionNetworkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "Update a person"
+      }
+    },
+    "/petitions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listActionNetworkPetitions",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "OData filter expression.",
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "List petitions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createActionNetworkPetition",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionNetworkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "Create a petition"
+      }
+    },
+    "/petitions/{petition_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getActionNetworkPetition",
+        "parameters": [
+          {
+            "description": "Action Network petition ID.",
+            "in": "path",
+            "name": "petition_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "Get a petition"
+      }
+    },
+    "/taggings": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listActionNetworkTaggings",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "OData filter expression.",
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "List taggings"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createActionNetworkTagging",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionNetworkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "Create a tagging"
+      }
+    },
+    "/tags": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listActionNetworkTags",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "OData filter expression.",
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "List tags"
+      }
+    },
+    "/webhooks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listActionNetworkWebhooks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionNetworkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "actionNetworkAPIToken": []
+          }
+        ],
+        "summary": "List webhooks"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://actionnetwork.org/api/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "action-network",
+    "source_note": "Action Network publishes OSDI/HAL+JSON REST API v2 docs with OSDI-API-Token header metadata; this overlay covers the API entry point, people, petitions, forms, events, tags, taggings, and webhooks.",
+    "source_refs": [
+      "https://actionnetwork.org/docs/v2/",
+      "https://actionnetwork.org/docs/v2/webhooks"
+    ]
+  }
+}

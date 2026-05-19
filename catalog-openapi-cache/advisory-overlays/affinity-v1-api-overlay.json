@@ -1,0 +1,1051 @@
+{
+  "components": {
+    "schemas": {
+      "AffinityCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AffinityError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AffinityObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "affinityBasic": {
+        "description": "Affinity API key supplied as the HTTP Basic password with no username.",
+        "scheme": "basic",
+        "type": "http"
+      },
+      "affinityBearer": {
+        "description": "Affinity API key supplied as an Authorization bearer token.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Affinity V1 API human documentation. This is not an official Affinity OpenAPI document.",
+    "title": "Affinity V1 API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/auth/whoami": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAffinityWhoami",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Get authentication metadata"
+      }
+    },
+    "/entity-files": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAffinityEntityFiles",
+        "parameters": [
+          {
+            "description": "Pagination token.",
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "List entity files"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAffinityEntityFile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Create an entity file"
+      }
+    },
+    "/field-values": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAffinityFieldValues",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "List field values"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAffinityFieldValue",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Create a field value"
+      }
+    },
+    "/fields": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAffinityFields",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "List fields"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAffinityField",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Create a field"
+      }
+    },
+    "/interactions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAffinityInteractions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "List interactions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAffinityInteraction",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Create an interaction"
+      }
+    },
+    "/lists": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAffinityLists",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "List lists"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAffinityList",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Create a list"
+      }
+    },
+    "/lists/{list_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAffinityList",
+        "parameters": [
+          {
+            "description": "Affinity list ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Get a list"
+      }
+    },
+    "/lists/{list_id}/list-entries": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAffinityListEntries",
+        "parameters": [
+          {
+            "description": "Affinity list ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination token.",
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "List list entries"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAffinityListEntry",
+        "parameters": [
+          {
+            "description": "Affinity list ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Create a list entry"
+      }
+    },
+    "/notes": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAffinityNotes",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "List notes"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAffinityNote",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Create a note"
+      }
+    },
+    "/opportunities": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAffinityOpportunities",
+        "parameters": [
+          {
+            "description": "Search term.",
+            "in": "query",
+            "name": "term",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination token.",
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "List opportunities"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAffinityOpportunity",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Create an opportunity"
+      }
+    },
+    "/organizations": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAffinityOrganizations",
+        "parameters": [
+          {
+            "description": "Search term.",
+            "in": "query",
+            "name": "term",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination token.",
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "List organizations"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAffinityOrganization",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Create an organization"
+      }
+    },
+    "/persons": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAffinityPersons",
+        "parameters": [
+          {
+            "description": "Search term.",
+            "in": "query",
+            "name": "term",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination token.",
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "List persons"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAffinityPerson",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Create a person"
+      }
+    },
+    "/persons/{person_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteAffinityPerson",
+        "parameters": [
+          {
+            "description": "Affinity person ID.",
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Delete a person"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAffinityPerson",
+        "parameters": [
+          {
+            "description": "Affinity person ID.",
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Get a person"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateAffinityPerson",
+        "parameters": [
+          {
+            "description": "Affinity person ID.",
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Update a person"
+      }
+    },
+    "/rate-limit": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAffinityRateLimit",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Get rate limit usage"
+      }
+    },
+    "/webhook": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAffinityWebhookSubscriptions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "List webhook subscriptions"
+      }
+    },
+    "/webhook/subscribe": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAffinityWebhookSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffinityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffinityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "affinityBearer": []
+          }
+        ],
+        "summary": "Create a webhook subscription"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.affinity.co"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "affinity",
+    "source_note": "Affinity publishes human V1 API docs with HTTP Basic and bearer API-key metadata; this overlay covers authentication, rate limits, lists, fields, field values, people, organizations, opportunities, interactions, notes, files, and webhooks.",
+    "source_refs": [
+      "https://api-docs.affinity.co/",
+      "https://support.affinity.co/s/article/How-to-Create-and-Manage-API-Keys"
+    ]
+  }
+}

@@ -1,0 +1,452 @@
+{
+  "components": {
+    "schemas": {
+      "AdaloCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AdaloError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AdaloNotificationRequest": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AdaloObject": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AdaloRecord": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "adaloBearer": {
+        "description": "Adalo app API key carried as an Authorization bearer token.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Adalo API human documentation. This is not an official Adalo OpenAPI document.",
+    "title": "Adalo API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/notifications": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendAdaloPushNotification",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdaloNotificationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaloObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "adaloBearer": []
+          }
+        ],
+        "summary": "Send a push notification"
+      }
+    },
+    "/v0/apps/{app_id}/collections/{collection_id}/records": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAdaloCollectionRecords",
+        "parameters": [
+          {
+            "description": "Adalo app ID.",
+            "in": "path",
+            "name": "app_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Adalo collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Collection field key for simple filtering.",
+            "in": "query",
+            "name": "filterKey",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter value.",
+            "in": "query",
+            "name": "filterValue",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaloCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "adaloBearer": []
+          }
+        ],
+        "summary": "List collection records"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAdaloCollectionRecord",
+        "parameters": [
+          {
+            "description": "Adalo app ID.",
+            "in": "path",
+            "name": "app_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Adalo collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdaloRecord"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaloRecord"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "adaloBearer": []
+          }
+        ],
+        "summary": "Create a collection record"
+      }
+    },
+    "/v0/apps/{app_id}/collections/{collection_id}/records/{record_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteAdaloCollectionRecord",
+        "parameters": [
+          {
+            "description": "Adalo app ID.",
+            "in": "path",
+            "name": "app_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Adalo collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Adalo record ID.",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaloObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "adaloBearer": []
+          }
+        ],
+        "summary": "Delete a collection record"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAdaloCollectionRecord",
+        "parameters": [
+          {
+            "description": "Adalo app ID.",
+            "in": "path",
+            "name": "app_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Adalo collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Adalo record ID.",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaloRecord"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "adaloBearer": []
+          }
+        ],
+        "summary": "Get a collection record"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateAdaloCollectionRecord",
+        "parameters": [
+          {
+            "description": "Adalo app ID.",
+            "in": "path",
+            "name": "app_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Adalo collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Adalo record ID.",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdaloRecord"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaloRecord"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "adaloBearer": []
+          }
+        ],
+        "summary": "Update a collection record"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "replaceAdaloCollectionRecord",
+        "parameters": [
+          {
+            "description": "Adalo app ID.",
+            "in": "path",
+            "name": "app_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Adalo collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Adalo record ID.",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdaloRecord"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaloRecord"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "adaloBearer": []
+          }
+        ],
+        "summary": "Replace a collection record"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.adalo.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "adalo",
+    "source_note": "Adalo publishes human API docs for app-specific Collections API endpoints and push notifications with bearer API-key metadata; this overlay covers variable app, collection, record, and notification endpoints.",
+    "source_refs": [
+      "https://help.adalo.com/integrations/the-adalo-api",
+      "https://help.adalo.com/integrations/the-adalo-api/collections",
+      "https://help.adalo.com/integrations/the-adalo-api/push-notifications"
+    ]
+  }
+}

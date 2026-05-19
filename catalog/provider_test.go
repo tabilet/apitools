@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 83; got != want {
+	if got, want := len(catalog.ListProviders()), 87; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -18,8 +18,12 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 	got := ProviderIDs(BuiltInProviders())
 	want := []string{
+		"action-network",
 		"activecampaign",
 		"acuity-scheduling",
+		"adalo",
+		"affinity",
+		"agile-crm",
 		"airtable",
 		"asana",
 		"aws-lambda",
@@ -117,6 +121,10 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "Open Weather Map", id: "openweathermap"},
 		{key: "ms graph", id: "microsoft-graph"},
 		{key: "activecampaign api", id: "activecampaign"},
+		{key: "action network api", id: "action-network"},
+		{key: "adalo collections api", id: "adalo"},
+		{key: "affinity crm api", id: "affinity"},
+		{key: "agile crm", id: "agile-crm"},
 		{key: "acuity scheduling api", id: "acuity-scheduling"},
 		{key: "asana api", id: "asana"},
 		{key: "box api", id: "box"},
@@ -228,6 +236,10 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		specKind        SpecKind
 	}{
 		{id: "asana", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "action-network", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "adalo", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "affinity", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "agile-crm", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "acuity-scheduling", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "activecampaign", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "aws-lambda", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindSmithyJSON},

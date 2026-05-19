@@ -1,0 +1,921 @@
+{
+  "components": {
+    "schemas": {
+      "AgileCRMCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AgileCRMError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AgileCRMObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "agileCRMBasic": {
+        "description": "Agile CRM user email and REST API key supplied with HTTP Basic authentication.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Agile CRM REST API human and GitHub documentation. This is not an official Agile CRM OpenAPI document.",
+    "title": "Agile CRM REST API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/campaigns": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAgileCRMCampaigns",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "List campaigns"
+      }
+    },
+    "/api/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAgileCRMContacts",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAgileCRMContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgileCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Create a contact or company"
+      }
+    },
+    "/api/contacts/edit-properties": {
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateAgileCRMContactProperties",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgileCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Update contact or company properties"
+      }
+    },
+    "/api/contacts/search/email/{email}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchAgileCRMContactByEmail",
+        "parameters": [
+          {
+            "description": "Contact email address.",
+            "in": "path",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Search contact by email"
+      }
+    },
+    "/api/contacts/{id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteAgileCRMContact",
+        "parameters": [
+          {
+            "description": "Agile CRM contact or company ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Delete a contact or company"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAgileCRMContact",
+        "parameters": [
+          {
+            "description": "Agile CRM contact or company ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Get a contact or company"
+      }
+    },
+    "/api/events": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAgileCRMEvents",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "List events"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAgileCRMEvent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgileCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Create an event"
+      }
+    },
+    "/api/events/{id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteAgileCRMEvent",
+        "parameters": [
+          {
+            "description": "Agile CRM event ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Delete an event"
+      }
+    },
+    "/api/opportunity": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAgileCRMDeals",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "List deals"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAgileCRMDeal",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgileCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Create a deal"
+      }
+    },
+    "/api/opportunity/partial-update": {
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateAgileCRMDeal",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgileCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Update a deal"
+      }
+    },
+    "/api/opportunity/{id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteAgileCRMDeal",
+        "parameters": [
+          {
+            "description": "Agile CRM deal ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Delete a deal"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAgileCRMDeal",
+        "parameters": [
+          {
+            "description": "Agile CRM deal ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Get a deal"
+      }
+    },
+    "/api/search": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchAgileCRMContactsCompanies",
+        "parameters": [
+          {
+            "description": "Search query.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Contact type.",
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Search contacts and companies"
+      }
+    },
+    "/api/tasks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAgileCRMTasks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "List tasks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAgileCRMTask",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgileCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Create a task"
+      }
+    },
+    "/api/tasks/{id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteAgileCRMTask",
+        "parameters": [
+          {
+            "description": "Agile CRM task ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Delete a task"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAgileCRMTask",
+        "parameters": [
+          {
+            "description": "Agile CRM task ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Get a task"
+      }
+    },
+    "/api/tickets": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAgileCRMHelpDeskTickets",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "List help desk tickets"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAgileCRMHelpDeskTicket",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgileCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Create a help desk ticket"
+      }
+    },
+    "/api/tracks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAgileCRMTracks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "List tracks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAgileCRMTrack",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgileCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgileCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "agileCRMBasic": []
+          }
+        ],
+        "summary": "Create a track"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{domain}.agilecrm.com/dev",
+      "variables": {
+        "domain": {
+          "default": "example",
+          "description": "Operator-supplied Agile CRM account subdomain."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "agile-crm",
+    "source_note": "Agile CRM publishes REST API docs with account-subdomain base URLs and HTTP Basic email/API-key metadata; this overlay covers contacts, companies, deals, tasks, events, tracks, campaigns, documents, and help desk records.",
+    "source_refs": [
+      "https://www.agilecrm.com/api",
+      "https://github.com/agilecrm/rest-api"
+    ]
+  }
+}
