@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 43; got != want {
+	if got, want := len(catalog.ListProviders()), 44; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -26,6 +26,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"bitbucket",
 		"box",
 		"calendly",
+		"circleci",
 		"clickup",
 		"discord",
 		"dropbox",
@@ -83,6 +84,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "amazon sns", id: "aws-sns"},
 		{key: "bitbucket cloud", id: "bitbucket"},
 		{key: "calendly api", id: "calendly"},
+		{key: "circleci api", id: "circleci"},
 		{key: "clickup api", id: "clickup"},
 		{key: "discord api", id: "discord"},
 		{key: "dropbox api", id: "dropbox"},
@@ -155,6 +157,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "box", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "airtable", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "calendly", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "circleci", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "clickup", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "discord", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "dropbox", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindDropboxStone},

@@ -179,6 +179,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Calendly's official API reference is human documentation backed by Stoplight hosting in this catalog entry; no downloadable official OpenAPI document is recorded, so endpoint and security metadata come from advisory overlays.",
 	},
 	{
+		ProviderID: "circleci",
+		SpecRefID:  "circleci-api-v2-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://circleci.com/api/v2/openapi.json", "https://circleci.com/docs/api/v2/", "https://circleci.com/docs/guides/toolkit/managing-api-tokens/"},
+		SourceNote: "CircleCI's official API v2 OpenAPI document includes Circle-Token header, basic-auth, and deprecated query-token security schemes with root security requirements.",
+	},
+	{
 		ProviderID: "clickup",
 		SpecRefID:  "clickup-api-v2-openapi",
 		Status:     AuthStatusPresentIncomplete,

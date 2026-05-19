@@ -81,6 +81,14 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for scheduling events, invitees, and booking automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "circleci",
+		displayName: "CircleCI",
+		aliases:     []string{"circleci api", "circleci v2"},
+		category:    "ci-cd",
+		n8nNode:     "CircleCi",
+		relevance:   "Popular workflow service for pipelines, workflows, jobs, artifacts, contexts, and CI/CD automation.",
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "clickup",
 		displayName: "ClickUp",
 		aliases:     []string{"clickup api", "click up"},
