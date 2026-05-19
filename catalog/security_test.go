@@ -86,7 +86,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 74; got != want {
+	if got, want := len(overlays), 76; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -214,10 +214,12 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"eventbrite",
 		"figma",
 		"freshdesk",
+		"freshservice",
 		"ghost",
 		"github",
 		"gitlab",
 		"gmail",
+		"gong",
 		"google-calendar",
 		"google-drive",
 		"google-sheets",
@@ -310,10 +312,12 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"eventbrite":        AuthStatusOverlayRequired,
 		"figma":             AuthStatusComplete,
 		"freshdesk":         AuthStatusOverlayRequired,
+		"freshservice":      AuthStatusOverlayRequired,
 		"ghost":             AuthStatusOverlayRequired,
 		"github":            AuthStatusOverlayRequired,
 		"gitlab":            AuthStatusPresentIncomplete,
 		"gmail":             AuthStatusOverlayRequired,
+		"gong":              AuthStatusOverlayRequired,
 		"google-calendar":   AuthStatusOverlayRequired,
 		"google-drive":      AuthStatusOverlayRequired,
 		"google-sheets":     AuthStatusOverlayRequired,

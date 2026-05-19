@@ -1,0 +1,184 @@
+{
+  "components": {
+    "schemas": {
+      "GongCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "GongError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "GongObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "gongBasic": {
+        "description": "Gong access key and access key secret supplied with HTTP Basic authentication.",
+        "scheme": "basic",
+        "type": "http"
+      },
+      "gongBearer": {
+        "description": "Gong OAuth access token supplied as an Authorization bearer token for customer API base URLs.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Gong human documentation. This is not an official Gong OpenAPI document.",
+    "title": "Gong Public API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v2/calls": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createGongCall",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GongObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GongObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gongBasic": []
+          }
+        ],
+        "summary": "Upload call metadata"
+      }
+    },
+    "/v2/calls/{call_id}/media": {
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "uploadGongCallMedia",
+        "parameters": [
+          {
+            "description": "Gong call ID returned by the call metadata request.",
+            "in": "path",
+            "name": "call_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GongObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GongObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gongBasic": []
+          }
+        ],
+        "summary": "Upload call media"
+      }
+    },
+    "/v2/users": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGongUsers",
+        "parameters": [
+          {
+            "description": "Pagination cursor returned by a previous users response.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GongCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gongBasic": []
+          }
+        ],
+        "summary": "List users"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{api_base_host}",
+      "variables": {
+        "api_base_host": {
+          "default": "api.gong.io",
+          "description": "Gong public API host or OAuth-provided customer API base host."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "gong",
+    "source_note": "Gong publishes public help docs for API access, rate limits, OAuth customer API base URLs, and a call-upload integration guide with users, calls, and call media endpoint examples; the full API reference is account-session gated.",
+    "source_refs": [
+      "https://help.gong.io/docs/what-the-gong-api-provides",
+      "https://help.gong.io/docs/receive-access-to-the-api",
+      "https://help.gong.io/docs/create-an-app-for-gong",
+      "https://help.gong.io/hc/en-us/articles/360046818511-Uploading-calls-from-a-non-integrated-telephony-system"
+    ]
+  }
+}

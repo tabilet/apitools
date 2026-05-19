@@ -1570,6 +1570,51 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Freshdesk has human API docs in this catalog entry but no recorded official OpenAPI document; docs describe API-key Basic authentication for account-domain API hosts.",
 	},
+	{
+		ID:         "freshservice-api-auth-overlay",
+		ProviderID: "freshservice",
+		SpecRefID:  "freshservice-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:        "freshserviceBasic",
+			Type:        SecuritySchemeHTTP,
+			Scheme:      "basic",
+			Description: "Freshservice API key supplied as the HTTP Basic username with a dummy password.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "freshserviceBasic"}},
+		SourceRefs: []string{
+			"https://api.freshservice.com/",
+			"https://support.freshservice.com/support/solutions/articles/50000012704-working-with-apis-in-freshservice",
+		},
+		SourceNote: "Freshservice has human API v2 docs in this catalog entry but no recorded official OpenAPI document; docs describe API-key HTTP Basic authentication on account-domain API hosts.",
+	},
+	{
+		ID:         "gong-api-auth-overlay",
+		ProviderID: "gong",
+		SpecRefID:  "gong-api-access-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "gongBasic",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Gong access key and access key secret supplied with HTTP Basic authentication.",
+			},
+			{
+				Name:        "gongBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Gong OAuth access token supplied as an Authorization bearer token for customer API base URLs.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "gongBasic"}, {Scheme: "gongBearer"}},
+		SourceRefs: []string{
+			"https://help.gong.io/docs/receive-access-to-the-api",
+			"https://help.gong.io/docs/create-an-app-for-gong",
+			"https://help.gong.io/hc/en-us/articles/360046818511-Uploading-calls-from-a-non-integrated-telephony-system",
+		},
+		SourceNote: "Gong has human API docs in this catalog entry but no recorded official OpenAPI document; docs describe access key/secret Basic authentication and OAuth bearer-token authentication for customer API base URLs.",
+	},
 	parseableSpecAuthReviewOverlay(
 		"mailgun-send-api-auth-review",
 		"mailgun",

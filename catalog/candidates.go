@@ -291,6 +291,15 @@ var builtInCandidates = []Candidate{
 		userNeed:    UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "freshservice",
+		displayName: "Freshservice",
+		aliases:     []string{"freshservice api", "freshservice service desk api"},
+		category:    "it-service-management",
+		n8nNode:     "Freshservice",
+		relevance:   "Popular IT service management platform for tickets, problems, changes, releases, requesters, agents, assets, and service catalog automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:              "gmail",
 		displayName:     "Gmail",
 		aliases:         []string{"google mail", "gmail api"},
@@ -352,6 +361,15 @@ var builtInCandidates = []Candidate{
 		category:    "database",
 		n8nNode:     "Grist",
 		relevance:   "Popular relational spreadsheet platform for organizations, workspaces, documents, tables, records, and webhooks.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "gong",
+		displayName: "Gong",
+		aliases:     []string{"gong api", "gong public api"},
+		category:    "sales",
+		n8nNode:     "Gong",
+		relevance:   "Popular revenue intelligence platform for calls, users, conversation analytics, transcripts, CRM data, and call-upload automation.",
 		userNeed:    UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{

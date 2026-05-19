@@ -732,6 +732,13 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://developers.freshdesk.com/api",
 	},
 	{
+		providerID:  "freshservice",
+		artifactID:  "freshservice-api-v2-overlay",
+		path:        "advisory-overlays/freshservice-api-v2-overlay.json",
+		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
+		sourceURL:   "https://api.freshservice.com/",
+	},
+	{
 		providerID:  "ghost",
 		artifactID:  "ghost-admin-api-overlay",
 		path:        "advisory-overlays/ghost-admin-api-overlay.json",
@@ -744,6 +751,13 @@ var overlayArtifacts = []overlayArtifact{
 		path:        "advisory-overlays/grist-rest-api-overlay.json",
 		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
 		sourceURL:   "https://support.getgrist.com/rest-api/",
+	},
+	{
+		providerID:  "gong",
+		artifactID:  "gong-public-api-overlay",
+		path:        "advisory-overlays/gong-public-api-overlay.json",
+		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
+		sourceURL:   "https://help.gong.io/docs/what-the-gong-api-provides",
 	},
 	{
 		providerID:  "harvest",

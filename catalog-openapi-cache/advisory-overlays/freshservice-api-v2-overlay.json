@@ -1,0 +1,1749 @@
+{
+  "components": {
+    "schemas": {
+      "FreshserviceCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FreshserviceError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FreshserviceObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "freshserviceBasic": {
+        "description": "Freshservice API key supplied as the HTTP Basic username with a dummy password.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Freshservice API v2 human documentation. This is not an official Freshservice OpenAPI document.",
+    "title": "Freshservice API v2 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/v2/agents": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshserviceAgents",
+        "parameters": [
+          {
+            "description": "Agent email address.",
+            "in": "query",
+            "name": "email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Agent state.",
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "List agents"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceAgent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create an agent"
+      }
+    },
+    "/api/v2/assets": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshserviceAssets",
+        "parameters": [
+          {
+            "description": "Optional included asset details.",
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Workspace ID.",
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "List assets"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceAsset",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create an asset"
+      }
+    },
+    "/api/v2/assets/{asset_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteFreshserviceAsset",
+        "parameters": [
+          {
+            "description": "Freshservice asset display ID.",
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Delete an asset"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFreshserviceAsset",
+        "parameters": [
+          {
+            "description": "Freshservice asset display ID.",
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional included asset details.",
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Get an asset"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateFreshserviceAsset",
+        "parameters": [
+          {
+            "description": "Freshservice asset display ID.",
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Update an asset"
+      }
+    },
+    "/api/v2/changes": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshserviceChanges",
+        "parameters": [
+          {
+            "description": "Freshservice change view.",
+            "in": "query",
+            "name": "view",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Workspace ID.",
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "List changes"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceChange",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create a change"
+      }
+    },
+    "/api/v2/changes/{change_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteFreshserviceChange",
+        "parameters": [
+          {
+            "description": "Freshservice change ID.",
+            "in": "path",
+            "name": "change_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Delete a change"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFreshserviceChange",
+        "parameters": [
+          {
+            "description": "Freshservice change ID.",
+            "in": "path",
+            "name": "change_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Get a change"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateFreshserviceChange",
+        "parameters": [
+          {
+            "description": "Freshservice change ID.",
+            "in": "path",
+            "name": "change_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Update a change"
+      }
+    },
+    "/api/v2/departments": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshserviceDepartments",
+        "parameters": [
+          {
+            "description": "Department search query.",
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "List departments"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceDepartment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create a department"
+      }
+    },
+    "/api/v2/groups": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshserviceGroups",
+        "parameters": [
+          {
+            "description": "Workspace ID.",
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "List groups"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceGroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create a group"
+      }
+    },
+    "/api/v2/problems": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshserviceProblems",
+        "parameters": [
+          {
+            "description": "Workspace ID.",
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "List problems"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceProblem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create a problem"
+      }
+    },
+    "/api/v2/problems/{problem_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteFreshserviceProblem",
+        "parameters": [
+          {
+            "description": "Freshservice problem ID.",
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Delete a problem"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFreshserviceProblem",
+        "parameters": [
+          {
+            "description": "Freshservice problem ID.",
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Get a problem"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateFreshserviceProblem",
+        "parameters": [
+          {
+            "description": "Freshservice problem ID.",
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Update a problem"
+      }
+    },
+    "/api/v2/releases": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshserviceReleases",
+        "parameters": [
+          {
+            "description": "Freshservice release filter name.",
+            "in": "query",
+            "name": "filter_name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Workspace ID.",
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "List releases"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceRelease",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create a release"
+      }
+    },
+    "/api/v2/releases/{release_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteFreshserviceRelease",
+        "parameters": [
+          {
+            "description": "Freshservice release ID.",
+            "in": "path",
+            "name": "release_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Delete a release"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFreshserviceRelease",
+        "parameters": [
+          {
+            "description": "Freshservice release ID.",
+            "in": "path",
+            "name": "release_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Get a release"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateFreshserviceRelease",
+        "parameters": [
+          {
+            "description": "Freshservice release ID.",
+            "in": "path",
+            "name": "release_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Update a release"
+      }
+    },
+    "/api/v2/requesters": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshserviceRequesters",
+        "parameters": [
+          {
+            "description": "Requester email address.",
+            "in": "query",
+            "name": "email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Requester search query.",
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "List requesters"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceRequester",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create a requester"
+      }
+    },
+    "/api/v2/requesters/{requester_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteFreshserviceRequester",
+        "parameters": [
+          {
+            "description": "Freshservice requester ID.",
+            "in": "path",
+            "name": "requester_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Delete a requester"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFreshserviceRequester",
+        "parameters": [
+          {
+            "description": "Freshservice requester ID.",
+            "in": "path",
+            "name": "requester_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Get a requester"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateFreshserviceRequester",
+        "parameters": [
+          {
+            "description": "Freshservice requester ID.",
+            "in": "path",
+            "name": "requester_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Update a requester"
+      }
+    },
+    "/api/v2/service-catalog/items": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshserviceServiceCatalogItems",
+        "parameters": [
+          {
+            "description": "Workspace ID.",
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "List service catalog items"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceServiceCatalogItem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create a service catalog item"
+      }
+    },
+    "/api/v2/tickets": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshserviceTickets",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Workspace ID.",
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "List tickets"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceTicket",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create a ticket"
+      }
+    },
+    "/api/v2/tickets/filter": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "filterFreshserviceTickets",
+        "parameters": [
+          {
+            "description": "Freshservice ticket filter query.",
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Filter tickets"
+      }
+    },
+    "/api/v2/tickets/{ticket_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteFreshserviceTicket",
+        "parameters": [
+          {
+            "description": "Freshservice ticket ID.",
+            "in": "path",
+            "name": "ticket_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Delete a ticket"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFreshserviceTicket",
+        "parameters": [
+          {
+            "description": "Freshservice ticket ID.",
+            "in": "path",
+            "name": "ticket_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Get a ticket"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateFreshserviceTicket",
+        "parameters": [
+          {
+            "description": "Freshservice ticket ID.",
+            "in": "path",
+            "name": "ticket_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Update a ticket"
+      }
+    },
+    "/api/v2/tickets/{ticket_id}/conversations": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshserviceTicketConversations",
+        "parameters": [
+          {
+            "description": "Freshservice ticket ID.",
+            "in": "path",
+            "name": "ticket_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "List ticket conversations"
+      }
+    },
+    "/api/v2/tickets/{ticket_id}/notes": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceTicketNote",
+        "parameters": [
+          {
+            "description": "Freshservice ticket ID.",
+            "in": "path",
+            "name": "ticket_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create a ticket note"
+      }
+    },
+    "/api/v2/tickets/{ticket_id}/reply": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshserviceTicketReply",
+        "parameters": [
+          {
+            "description": "Freshservice ticket ID.",
+            "in": "path",
+            "name": "ticket_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshserviceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshserviceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshserviceBasic": []
+          }
+        ],
+        "summary": "Create a ticket reply"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{domain}.freshservice.com",
+      "variables": {
+        "domain": {
+          "default": "example",
+          "description": "Operator-supplied Freshservice account domain."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "freshservice",
+    "source_note": "Freshservice publishes REST API v2 docs with account-domain base URLs and API-key Basic authentication; this overlay covers tickets, problems, changes, releases, requesters, agents, groups, departments, assets, and service catalog items.",
+    "source_refs": [
+      "https://api.freshservice.com/",
+      "https://support.freshservice.com/support/solutions/articles/50000012704-working-with-apis-in-freshservice",
+      "https://support.freshservice.com/support/solutions/articles/50000004220-introducing-upgraded-apis-for-freshservice"
+    ]
+  }
+}

@@ -326,11 +326,25 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Grist has official REST API usage and reference docs but no recorded stable public official OpenAPI document; bearer API-key metadata comes from advisory overlay notes.",
 	},
 	{
+		ProviderID: "freshservice",
+		SpecRefID:  "freshservice-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://api.freshservice.com/", "https://support.freshservice.com/support/solutions/articles/50000012704-working-with-apis-in-freshservice"},
+		SourceNote: "Freshservice has official API v2 human docs but no recorded stable public official OpenAPI document; API-key Basic auth metadata comes from advisory overlay notes.",
+	},
+	{
 		ProviderID: "gitlab",
 		SpecRefID:  "gitlab-openapi-v2",
 		Status:     AuthStatusPresentIncomplete,
 		SourceRefs: []string{"https://gitlab.com/gitlab-org/gitlab/-/raw/master/doc/api/openapi/openapi_v2.yaml"},
 		SourceNote: "GitLab's official Swagger 2.0 document includes token security definitions but no root security; official REST auth docs describe additional bearer-token forms.",
+	},
+	{
+		ProviderID: "gong",
+		SpecRefID:  "gong-api-access-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://help.gong.io/docs/receive-access-to-the-api", "https://help.gong.io/docs/create-an-app-for-gong", "https://help.gong.io/hc/en-us/articles/360046818511-Uploading-calls-from-a-non-integrated-telephony-system"},
+		SourceNote: "Gong has official API human docs but no recorded stable public official OpenAPI document; access key/secret Basic auth and OAuth bearer metadata comes from advisory overlay notes.",
 	},
 	{
 		ProviderID: "gmail",

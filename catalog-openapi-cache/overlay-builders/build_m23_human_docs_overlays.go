@@ -32,6 +32,8 @@ func main() {
 		beeminderOverlay(),
 		clearbitOverlay(),
 		copperOverlay(),
+		freshserviceOverlay(),
+		gongOverlay(),
 		gristOverlay(),
 	} {
 		write(spec.OutputPath, build(spec))
@@ -287,6 +289,107 @@ func copperOverlay() overlaySpec {
 			"/tasks/search":         {"post": op("searchCopperTasks", "Search tasks", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
 			"/activities/search":    {"post": op("searchCopperActivities", "Search activities", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
 			"/webhooks":             {"get": op("listCopperWebhookSubscriptions", "List webhook subscriptions", nil, "", "#/components/schemas/CopperCollection", "copperAccessToken"), "post": op("createCopperWebhookSubscription", "Create a webhook subscription", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken")},
+		},
+	}
+}
+
+func freshserviceOverlay() overlaySpec {
+	security := map[string]map[string]any{
+		"freshserviceBasic": {"type": "http", "scheme": "basic", "description": "Freshservice API key supplied as the HTTP Basic username with a dummy password."},
+	}
+	return overlaySpec{
+		ProviderID:  "freshservice",
+		Title:       "Freshservice API v2 Advisory Overlay",
+		Description: "Advisory OpenAPI overlay derived from official Freshservice API v2 human documentation. This is not an official Freshservice OpenAPI document.",
+		ServerURL:   "https://{domain}.freshservice.com",
+		ServerVars:  map[string]map[string]any{"domain": {"default": "example", "description": "Operator-supplied Freshservice account domain."}},
+		Sources:     []string{"https://api.freshservice.com/", "https://support.freshservice.com/support/solutions/articles/50000012704-working-with-apis-in-freshservice", "https://support.freshservice.com/support/solutions/articles/50000004220-introducing-upgraded-apis-for-freshservice"},
+		SourceNote:  "Freshservice publishes REST API v2 docs with account-domain base URLs and API-key Basic authentication; this overlay covers tickets, problems, changes, releases, requesters, agents, groups, departments, assets, and service catalog items.",
+		Security:    security,
+		Schemas:     []string{"FreshserviceObject", "FreshserviceCollection", "FreshserviceError"},
+		OutputPath:  "catalog-openapi-cache/advisory-overlays/freshservice-api-v2-overlay.json",
+		Paths: map[string]map[string]any{
+			"/api/v2/tickets": {
+				"get":  op("listFreshserviceTickets", "List tickets", params(query("page", "Page number."), query("per_page", "Page size."), query("workspace_id", "Workspace ID.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic"),
+				"post": op("createFreshserviceTicket", "Create a ticket", nil, "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+			},
+			"/api/v2/tickets/{ticket_id}": {
+				"get":    op("getFreshserviceTicket", "Get a ticket", params(path("ticket_id", "Freshservice ticket ID.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+				"put":    op("updateFreshserviceTicket", "Update a ticket", params(path("ticket_id", "Freshservice ticket ID.")), "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+				"delete": op("deleteFreshserviceTicket", "Delete a ticket", params(path("ticket_id", "Freshservice ticket ID.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+			},
+			"/api/v2/tickets/filter":                    {"get": op("filterFreshserviceTickets", "Filter tickets", params(query("query", "Freshservice ticket filter query.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic")},
+			"/api/v2/tickets/{ticket_id}/conversations": {"get": op("listFreshserviceTicketConversations", "List ticket conversations", params(path("ticket_id", "Freshservice ticket ID.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic")},
+			"/api/v2/tickets/{ticket_id}/reply":         {"post": op("createFreshserviceTicketReply", "Create a ticket reply", params(path("ticket_id", "Freshservice ticket ID.")), "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic")},
+			"/api/v2/tickets/{ticket_id}/notes":         {"post": op("createFreshserviceTicketNote", "Create a ticket note", params(path("ticket_id", "Freshservice ticket ID.")), "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic")},
+			"/api/v2/problems": {
+				"get":  op("listFreshserviceProblems", "List problems", params(query("workspace_id", "Workspace ID.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic"),
+				"post": op("createFreshserviceProblem", "Create a problem", nil, "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+			},
+			"/api/v2/problems/{problem_id}": {
+				"get":    op("getFreshserviceProblem", "Get a problem", params(path("problem_id", "Freshservice problem ID.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+				"put":    op("updateFreshserviceProblem", "Update a problem", params(path("problem_id", "Freshservice problem ID.")), "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+				"delete": op("deleteFreshserviceProblem", "Delete a problem", params(path("problem_id", "Freshservice problem ID.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+			},
+			"/api/v2/changes": {
+				"get":  op("listFreshserviceChanges", "List changes", params(query("view", "Freshservice change view."), query("workspace_id", "Workspace ID.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic"),
+				"post": op("createFreshserviceChange", "Create a change", nil, "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+			},
+			"/api/v2/changes/{change_id}": {
+				"get":    op("getFreshserviceChange", "Get a change", params(path("change_id", "Freshservice change ID.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+				"put":    op("updateFreshserviceChange", "Update a change", params(path("change_id", "Freshservice change ID.")), "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+				"delete": op("deleteFreshserviceChange", "Delete a change", params(path("change_id", "Freshservice change ID.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+			},
+			"/api/v2/releases": {
+				"get":  op("listFreshserviceReleases", "List releases", params(query("filter_name", "Freshservice release filter name."), query("workspace_id", "Workspace ID.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic"),
+				"post": op("createFreshserviceRelease", "Create a release", nil, "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+			},
+			"/api/v2/releases/{release_id}": {
+				"get":    op("getFreshserviceRelease", "Get a release", params(path("release_id", "Freshservice release ID.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+				"put":    op("updateFreshserviceRelease", "Update a release", params(path("release_id", "Freshservice release ID.")), "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+				"delete": op("deleteFreshserviceRelease", "Delete a release", params(path("release_id", "Freshservice release ID.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+			},
+			"/api/v2/requesters": {
+				"get":  op("listFreshserviceRequesters", "List requesters", params(query("email", "Requester email address."), query("query", "Requester search query.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic"),
+				"post": op("createFreshserviceRequester", "Create a requester", nil, "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic"),
+			},
+			"/api/v2/requesters/{requester_id}": {"get": op("getFreshserviceRequester", "Get a requester", params(path("requester_id", "Freshservice requester ID.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic"), "put": op("updateFreshserviceRequester", "Update a requester", params(path("requester_id", "Freshservice requester ID.")), "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic"), "delete": op("deleteFreshserviceRequester", "Delete a requester", params(path("requester_id", "Freshservice requester ID.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic")},
+			"/api/v2/agents":                    {"get": op("listFreshserviceAgents", "List agents", params(query("email", "Agent email address."), query("state", "Agent state.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic"), "post": op("createFreshserviceAgent", "Create an agent", nil, "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic")},
+			"/api/v2/groups":                    {"get": op("listFreshserviceGroups", "List groups", params(query("workspace_id", "Workspace ID.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic"), "post": op("createFreshserviceGroup", "Create a group", nil, "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic")},
+			"/api/v2/departments":               {"get": op("listFreshserviceDepartments", "List departments", params(query("query", "Department search query.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic"), "post": op("createFreshserviceDepartment", "Create a department", nil, "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic")},
+			"/api/v2/assets":                    {"get": op("listFreshserviceAssets", "List assets", params(query("include", "Optional included asset details."), query("workspace_id", "Workspace ID.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic"), "post": op("createFreshserviceAsset", "Create an asset", nil, "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic")},
+			"/api/v2/assets/{asset_id}":         {"get": op("getFreshserviceAsset", "Get an asset", params(path("asset_id", "Freshservice asset display ID."), query("include", "Optional included asset details.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic"), "put": op("updateFreshserviceAsset", "Update an asset", params(path("asset_id", "Freshservice asset display ID.")), "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic"), "delete": op("deleteFreshserviceAsset", "Delete an asset", params(path("asset_id", "Freshservice asset display ID.")), "", "#/components/schemas/FreshserviceObject", "freshserviceBasic")},
+			"/api/v2/service-catalog/items":     {"get": op("listFreshserviceServiceCatalogItems", "List service catalog items", params(query("workspace_id", "Workspace ID.")), "", "#/components/schemas/FreshserviceCollection", "freshserviceBasic"), "post": op("createFreshserviceServiceCatalogItem", "Create a service catalog item", nil, "#/components/schemas/FreshserviceObject", "#/components/schemas/FreshserviceObject", "freshserviceBasic")},
+		},
+	}
+}
+
+func gongOverlay() overlaySpec {
+	security := map[string]map[string]any{
+		"gongBasic":  {"type": "http", "scheme": "basic", "description": "Gong access key and access key secret supplied with HTTP Basic authentication."},
+		"gongBearer": {"type": "http", "scheme": "bearer", "description": "Gong OAuth access token supplied as an Authorization bearer token for customer API base URLs."},
+	}
+	return overlaySpec{
+		ProviderID:  "gong",
+		Title:       "Gong Public API Advisory Overlay",
+		Description: "Advisory OpenAPI overlay derived from official Gong human documentation. This is not an official Gong OpenAPI document.",
+		ServerURL:   "https://{api_base_host}",
+		ServerVars:  map[string]map[string]any{"api_base_host": {"default": "api.gong.io", "description": "Gong public API host or OAuth-provided customer API base host."}},
+		Sources:     []string{"https://help.gong.io/docs/what-the-gong-api-provides", "https://help.gong.io/docs/receive-access-to-the-api", "https://help.gong.io/docs/create-an-app-for-gong", "https://help.gong.io/hc/en-us/articles/360046818511-Uploading-calls-from-a-non-integrated-telephony-system"},
+		SourceNote:  "Gong publishes public help docs for API access, rate limits, OAuth customer API base URLs, and a call-upload integration guide with users, calls, and call media endpoint examples; the full API reference is account-session gated.",
+		Security:    security,
+		Schemas:     []string{"GongObject", "GongCollection", "GongError"},
+		OutputPath:  "catalog-openapi-cache/advisory-overlays/gong-public-api-overlay.json",
+		Paths: map[string]map[string]any{
+			"/v2/users": {
+				"get": op("listGongUsers", "List users", params(query("cursor", "Pagination cursor returned by a previous users response.")), "", "#/components/schemas/GongCollection", "gongBasic"),
+			},
+			"/v2/calls": {
+				"post": op("createGongCall", "Upload call metadata", nil, "#/components/schemas/GongObject", "#/components/schemas/GongObject", "gongBasic"),
+			},
+			"/v2/calls/{call_id}/media": {
+				"put": op("uploadGongCallMedia", "Upload call media", params(path("call_id", "Gong call ID returned by the call metadata request.")), "#/components/schemas/GongObject", "#/components/schemas/GongObject", "gongBasic"),
+			},
 		},
 	}
 }

@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 91; got != want {
+	if got, want := len(catalog.ListProviders()), 93; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -59,10 +59,12 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"eventbrite",
 		"figma",
 		"freshdesk",
+		"freshservice",
 		"ghost",
 		"github",
 		"gitlab",
 		"gmail",
+		"gong",
 		"google-calendar",
 		"google-drive",
 		"google-sheets",
@@ -164,9 +166,11 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "eventbrite api", id: "eventbrite"},
 		{key: "figma rest api", id: "figma"},
 		{key: "freshdesk api", id: "freshdesk"},
+		{key: "freshservice service desk api", id: "freshservice"},
 		{key: "ghost admin api", id: "ghost"},
 		{key: "github rest api", id: "github"},
 		{key: "gitlab rest api", id: "gitlab"},
+		{key: "gong public api", id: "gong"},
 		{key: "google calendar api", id: "google-calendar"},
 		{key: "google sheets api", id: "google-sheets"},
 		{key: "grafana api", id: "grafana"},
@@ -284,10 +288,12 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "eventbrite", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "figma", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "freshdesk", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "freshservice", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "ghost", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "github", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "gitlab", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "gmail", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
+		{id: "gong", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "google-calendar", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-drive", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-sheets", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},

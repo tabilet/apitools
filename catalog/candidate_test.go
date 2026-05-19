@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 91; got != want {
+	if got, want := len(candidates), 93; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -59,10 +59,12 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"eventbrite",
 		"figma",
 		"freshdesk",
+		"freshservice",
 		"ghost",
 		"github",
 		"gitlab",
 		"gmail",
+		"gong",
 		"google-calendar",
 		"google-drive",
 		"google-sheets",
@@ -158,8 +160,10 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "elasticsearch api", id: "elastic"},
 		{key: "eventbrite api", id: "eventbrite"},
 		{key: "freshdesk api", id: "freshdesk"},
+		{key: "freshservice service desk api", id: "freshservice"},
 		{key: "figma rest api", id: "figma"},
 		{key: "ghost admin api", id: "ghost"},
+		{key: "gong public api", id: "gong"},
 		{key: "grafana http api", id: "grafana"},
 		{key: "grist rest api", id: "grist"},
 		{key: "harvestapp", id: "harvest"},
@@ -245,6 +249,7 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"dropbox",
 		"elastic",
 		"figma",
+		"freshservice",
 		"ghost",
 		"github",
 		"gitlab",
@@ -257,6 +262,7 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"mailjet",
 		"google-calendar",
 		"google-sheets",
+		"gong",
 		"grafana",
 		"grist",
 		"microsoft-graph",
