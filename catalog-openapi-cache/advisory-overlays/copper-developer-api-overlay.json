@@ -73,7 +73,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Search activities"
@@ -110,7 +112,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Create a company"
@@ -147,7 +151,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Search companies"
@@ -184,7 +190,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Create a lead"
@@ -221,7 +229,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Search leads"
@@ -259,7 +269,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Delete a lead"
@@ -295,7 +307,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Fetch a lead"
@@ -341,7 +355,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Update a lead"
@@ -378,7 +394,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Create an opportunity"
@@ -415,7 +433,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Search opportunities"
@@ -452,7 +472,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Create a person"
@@ -489,7 +511,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Search people"
@@ -527,7 +551,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Delete a person"
@@ -563,7 +589,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Fetch a person"
@@ -609,7 +637,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Update a person"
@@ -646,7 +676,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Search projects"
@@ -683,7 +715,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Search tasks"
@@ -710,7 +744,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "List users"
@@ -737,7 +773,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Fetch API user"
@@ -764,7 +802,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "List webhook subscriptions"
@@ -799,7 +839,9 @@
         },
         "security": [
           {
-            "copperAccessToken": []
+            "copperAccessToken": [],
+            "copperApplication": [],
+            "copperUserEmail": []
           }
         ],
         "summary": "Create a webhook subscription"

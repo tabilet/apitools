@@ -273,22 +273,22 @@ func copperOverlay() overlaySpec {
 		Schemas:     []string{"CopperObject", "CopperCollection", "CopperError"},
 		OutputPath:  "catalog-openapi-cache/advisory-overlays/copper-developer-api-overlay.json",
 		Paths: map[string]map[string]any{
-			"/users/me":             {"get": op("getCopperAPIUser", "Fetch API user", nil, "", "#/components/schemas/CopperObject", "copperAccessToken")},
-			"/users":                {"get": op("listCopperUsers", "List users", nil, "", "#/components/schemas/CopperCollection", "copperAccessToken")},
-			"/leads/search":         {"post": op("searchCopperLeads", "Search leads", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
-			"/leads":                {"post": op("createCopperLead", "Create a lead", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken")},
-			"/leads/{lead_id}":      {"get": op("getCopperLead", "Fetch a lead", params(path("lead_id", "Copper lead ID.")), "", "#/components/schemas/CopperObject", "copperAccessToken"), "put": op("updateCopperLead", "Update a lead", params(path("lead_id", "Copper lead ID.")), "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken"), "delete": op("deleteCopperLead", "Delete a lead", params(path("lead_id", "Copper lead ID.")), "", "#/components/schemas/CopperObject", "copperAccessToken")},
-			"/people/search":        {"post": op("searchCopperPeople", "Search people", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
-			"/people":               {"post": op("createCopperPerson", "Create a person", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken")},
-			"/people/{person_id}":   {"get": op("getCopperPerson", "Fetch a person", params(path("person_id", "Copper person ID.")), "", "#/components/schemas/CopperObject", "copperAccessToken"), "put": op("updateCopperPerson", "Update a person", params(path("person_id", "Copper person ID.")), "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken"), "delete": op("deleteCopperPerson", "Delete a person", params(path("person_id", "Copper person ID.")), "", "#/components/schemas/CopperObject", "copperAccessToken")},
-			"/companies/search":     {"post": op("searchCopperCompanies", "Search companies", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
-			"/companies":            {"post": op("createCopperCompany", "Create a company", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken")},
-			"/opportunities/search": {"post": op("searchCopperOpportunities", "Search opportunities", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
-			"/opportunities":        {"post": op("createCopperOpportunity", "Create an opportunity", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken")},
-			"/projects/search":      {"post": op("searchCopperProjects", "Search projects", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
-			"/tasks/search":         {"post": op("searchCopperTasks", "Search tasks", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
-			"/activities/search":    {"post": op("searchCopperActivities", "Search activities", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
-			"/webhooks":             {"get": op("listCopperWebhookSubscriptions", "List webhook subscriptions", nil, "", "#/components/schemas/CopperCollection", "copperAccessToken"), "post": op("createCopperWebhookSubscription", "Create a webhook subscription", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken")},
+			"/users/me":             {"get": copperOp("getCopperAPIUser", "Fetch API user", nil, "", "#/components/schemas/CopperObject")},
+			"/users":                {"get": copperOp("listCopperUsers", "List users", nil, "", "#/components/schemas/CopperCollection")},
+			"/leads/search":         {"post": copperOp("searchCopperLeads", "Search leads", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection")},
+			"/leads":                {"post": copperOp("createCopperLead", "Create a lead", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject")},
+			"/leads/{lead_id}":      {"get": copperOp("getCopperLead", "Fetch a lead", params(path("lead_id", "Copper lead ID.")), "", "#/components/schemas/CopperObject"), "put": copperOp("updateCopperLead", "Update a lead", params(path("lead_id", "Copper lead ID.")), "#/components/schemas/CopperObject", "#/components/schemas/CopperObject"), "delete": copperOp("deleteCopperLead", "Delete a lead", params(path("lead_id", "Copper lead ID.")), "", "#/components/schemas/CopperObject")},
+			"/people/search":        {"post": copperOp("searchCopperPeople", "Search people", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection")},
+			"/people":               {"post": copperOp("createCopperPerson", "Create a person", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject")},
+			"/people/{person_id}":   {"get": copperOp("getCopperPerson", "Fetch a person", params(path("person_id", "Copper person ID.")), "", "#/components/schemas/CopperObject"), "put": copperOp("updateCopperPerson", "Update a person", params(path("person_id", "Copper person ID.")), "#/components/schemas/CopperObject", "#/components/schemas/CopperObject"), "delete": copperOp("deleteCopperPerson", "Delete a person", params(path("person_id", "Copper person ID.")), "", "#/components/schemas/CopperObject")},
+			"/companies/search":     {"post": copperOp("searchCopperCompanies", "Search companies", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection")},
+			"/companies":            {"post": copperOp("createCopperCompany", "Create a company", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject")},
+			"/opportunities/search": {"post": copperOp("searchCopperOpportunities", "Search opportunities", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection")},
+			"/opportunities":        {"post": copperOp("createCopperOpportunity", "Create an opportunity", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject")},
+			"/projects/search":      {"post": copperOp("searchCopperProjects", "Search projects", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection")},
+			"/tasks/search":         {"post": copperOp("searchCopperTasks", "Search tasks", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection")},
+			"/activities/search":    {"post": copperOp("searchCopperActivities", "Search activities", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection")},
+			"/webhooks":             {"get": copperOp("listCopperWebhookSubscriptions", "List webhook subscriptions", nil, "", "#/components/schemas/CopperCollection"), "post": copperOp("createCopperWebhookSubscription", "Create a webhook subscription", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject")},
 		},
 	}
 }
@@ -505,7 +505,11 @@ func build(spec overlaySpec) map[string]any {
 	return doc
 }
 
-func op(operationID, summary string, parameters []map[string]any, requestRef, responseRef, securityName string) map[string]any {
+func copperOp(operationID, summary string, parameters []map[string]any, requestRef, responseRef string) map[string]any {
+	return op(operationID, summary, parameters, requestRef, responseRef, "copperAccessToken", "copperApplication", "copperUserEmail")
+}
+
+func op(operationID, summary string, parameters []map[string]any, requestRef, responseRef string, securityNames ...string) map[string]any {
 	out := map[string]any{
 		"operationId": operationID,
 		"summary":     summary,
@@ -516,7 +520,15 @@ func op(operationID, summary string, parameters []map[string]any, requestRef, re
 				"description": "Provider error response.",
 			},
 		},
-		"security": []map[string][]string{{securityName: []string{}}},
+	}
+	if len(securityNames) > 0 {
+		requirement := map[string][]string{}
+		for _, name := range securityNames {
+			if name != "" {
+				requirement[name] = []string{}
+			}
+		}
+		out["security"] = []map[string][]string{requirement}
 	}
 	if len(parameters) > 0 {
 		out["parameters"] = parameters

@@ -162,6 +162,37 @@ func TestClockifyAdvisoryOverlayAuthAlternatives(t *testing.T) {
 	}
 }
 
+func TestCopperAdvisoryOverlayCombinesRequiredHeaders(t *testing.T) {
+	content, err := os.ReadFile("catalog-openapi-cache/advisory-overlays/copper-developer-api-overlay.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var doc struct {
+		Paths map[string]map[string]struct {
+			OperationID string                `json:"operationId"`
+			Security    []map[string][]string `json:"security"`
+		} `json:"paths"`
+	}
+	if err := json.Unmarshal(content, &doc); err != nil {
+		t.Fatalf("Copper overlay JSON parse error: %v", err)
+	}
+
+	operationCount := 0
+	for path, pathItem := range doc.Paths {
+		for method, operation := range pathItem {
+			if operation.OperationID == "" {
+				continue
+			}
+			operationCount++
+			assertCopperRequiredHeaders(t, method+" "+path, operation.Security)
+		}
+	}
+	if operationCount == 0 {
+		t.Fatal("Copper overlay has no operations")
+	}
+}
+
 type endpointOverlayDecisions struct {
 	built     map[string]string
 	noOverlay map[string]struct{}
@@ -279,5 +310,26 @@ func assertClockifyAuthAlternatives(t *testing.T, context string, requirements [
 	}
 	if !seenAPIKey || !seenAddonToken {
 		t.Fatalf("%s requirements = %#v, want clockifyAPIKey and clockifyAddonToken alternatives", context, requirements)
+	}
+}
+
+func assertCopperRequiredHeaders(t *testing.T, context string, requirements []map[string][]string) {
+	t.Helper()
+	if len(requirements) != 1 {
+		t.Fatalf("%s requirement count = %d, want 1 combined requirement", context, len(requirements))
+	}
+	requirement := requirements[0]
+	want := []string{"copperAccessToken", "copperApplication", "copperUserEmail"}
+	if len(requirement) != len(want) {
+		t.Fatalf("%s requirement = %#v, want exactly Copper's three required header schemes", context, requirement)
+	}
+	for _, scheme := range want {
+		scopes, ok := requirement[scheme]
+		if !ok {
+			t.Fatalf("%s requirement = %#v, missing %s", context, requirement, scheme)
+		}
+		if len(scopes) != 0 {
+			t.Fatalf("%s %s scopes = %#v, want none", context, scheme, scopes)
+		}
 	}
 }
