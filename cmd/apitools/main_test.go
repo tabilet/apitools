@@ -128,6 +128,73 @@ func TestCatalogAdvisoryShowsRegisteredArtifactPath(t *testing.T) {
 	}
 }
 
+func TestCatalogAdvisoryShowsRegisteredEndpointOverlay(t *testing.T) {
+	dir := t.TempDir()
+	cachePath := filepath.Join(dir, "cache.sqlite")
+	overlayPath := filepath.Join("advisory-overlays", "activecampaign-api-v3-overlay.json")
+	builderPath := filepath.Join("overlay-builders", "build_m21_human_docs_overlays.go")
+	if err := os.MkdirAll(filepath.Join(dir, "advisory-overlays"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, filepath.FromSlash(overlayPath)), []byte(`{"openapi":"3.0.3"}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cache, err := sqlitecache.Open(cachePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.StoreCatalogArtifact(context.Background(), sqlitecache.CatalogArtifact{
+		ProviderID:  "activecampaign",
+		ArtifactID:  "activecampaign-api-v3-overlay",
+		Kind:        "advisory-overlay",
+		Path:        overlayPath,
+		OverlayPath: overlayPath,
+		BuilderPath: builderPath,
+		Metadata: map[string]string{
+			"official_openapi":  "false",
+			"derived_from_docs": "true",
+		},
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "advisory", "activecampaign", "--cache", cachePath}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{
+		"Endpoint overlays:",
+		"activecampaign-api-v3-overlay",
+		overlayPath,
+		"builder: " + builderPath,
+		"Review registered docs-derived endpoint overlay metadata",
+	} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("catalog advisory output missing %q:\n%s", expected, out.String())
+		}
+	}
+	if strings.Contains(out.String(), "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.") {
+		t.Fatalf("catalog advisory output kept generic OpenAPI follow-up despite endpoint overlay:\n%s", out.String())
+	}
+
+	out.Reset()
+	errOut.Reset()
+	code = run([]string{"catalog", "advisory", "activecampaign", "--cache", cachePath, "--json"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{`"endpoint_overlays"`, `"artifact_id": "activecampaign-api-v3-overlay"`, `"builder_path": "` + builderPath + `"`} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("catalog advisory json missing %q:\n%s", expected, out.String())
+		}
+	}
+}
+
 func TestCatalogAdvisoryMissingCacheDoesNotCreateFile(t *testing.T) {
 	cachePath := filepath.Join(t.TempDir(), "missing.sqlite")
 	var out bytes.Buffer

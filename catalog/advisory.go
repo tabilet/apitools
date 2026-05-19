@@ -39,6 +39,7 @@ type ProviderAdvisory struct {
 	Quirks                  []string                     `json:"quirks,omitempty"`
 	ManualFollowUps         []string                     `json:"manual_follow_ups,omitempty"`
 	RegisteredArtifactPaths []AdvisoryRegisteredArtifact `json:"registered_artifact_paths,omitempty"`
+	EndpointOverlays        []AdvisoryEndpointOverlay    `json:"endpoint_overlays,omitempty"`
 	ResolvedOpenAPI         ResolvedReference            `json:"resolved_openapi"`
 	ResolvedSecurity        ResolvedReference            `json:"resolved_security"`
 }
@@ -66,6 +67,16 @@ type AdvisoryRegisteredArtifact struct {
 	SpecRefID string `json:"spec_ref_id"`
 	Kind      string `json:"kind,omitempty"`
 	Path      string `json:"path"`
+}
+
+// AdvisoryEndpointOverlay records a docs-derived endpoint overlay registered
+// in the local catalog artifact cache.
+type AdvisoryEndpointOverlay struct {
+	ArtifactID  string `json:"artifact_id"`
+	Kind        string `json:"kind,omitempty"`
+	Path        string `json:"path"`
+	OverlayPath string `json:"overlay_path,omitempty"`
+	BuilderPath string `json:"builder_path,omitempty"`
 }
 
 // BuiltInProviderAdvisoryReport builds advisory output for built-in catalog
@@ -111,6 +122,7 @@ func BuildProviderAdvisoryReport(options ProviderAdvisoryOptions) (ProviderAdvis
 	}
 
 	artifactPathByKey := advisoryArtifactPathMap(options.Artifacts)
+	endpointOverlaysByProvider := advisoryEndpointOverlaysByProvider(options.Artifacts)
 	overlaysByProvider := map[string][]SecurityOverlay{}
 	for _, overlay := range catalog.ListSecurityOverlays() {
 		overlaysByProvider[overlay.ProviderID] = append(overlaysByProvider[overlay.ProviderID], overlay)
@@ -141,6 +153,7 @@ func BuildProviderAdvisoryReport(options ProviderAdvisoryOptions) (ProviderAdvis
 			SecuritySpecRefIDs:      append([]string(nil), report.SpecRefIDs...),
 			SecuritySourceNotes:     append([]string(nil), report.SourceNotes...),
 			Quirks:                  append([]string(nil), provider.Quirks...),
+			EndpointOverlays:        cloneAdvisoryEndpointOverlays(endpointOverlaysByProvider[provider.ID]),
 			ResolvedOpenAPI:         resolved.OpenAPI,
 			ResolvedSecurity:        resolved.Security,
 		}
@@ -169,7 +182,7 @@ func BuildProviderAdvisoryReport(options ProviderAdvisoryOptions) (ProviderAdvis
 				})
 			}
 		}
-		advisory.ManualFollowUps = advisoryManualFollowUps(provider, report, overlaysByProvider[provider.ID], advisory.SpecReferences)
+		advisory.ManualFollowUps = advisoryManualFollowUps(provider, report, overlaysByProvider[provider.ID], advisory.SpecReferences, advisory.EndpointOverlays)
 		out = append(out, advisory)
 	}
 	sort.SliceStable(out, func(i, j int) bool {
@@ -200,10 +213,59 @@ func advisoryArtifactPathMap(artifacts []CatalogSpecArtifact) map[string]advisor
 	return out
 }
 
-func advisoryManualFollowUps(provider Provider, report ProviderSecurityReport, overlays []SecurityOverlay, refs []AdvisorySpecReference) []string {
+func advisoryEndpointOverlaysByProvider(artifacts []CatalogSpecArtifact) map[string][]AdvisoryEndpointOverlay {
+	out := map[string][]AdvisoryEndpointOverlay{}
+	for _, artifact := range artifacts {
+		if strings.TrimSpace(artifact.Kind) != "advisory-overlay" {
+			continue
+		}
+		providerID := strings.TrimSpace(artifact.ProviderID)
+		path := strings.TrimSpace(artifact.Path)
+		if providerID == "" || path == "" {
+			continue
+		}
+		artifactID := strings.TrimSpace(artifact.ArtifactID)
+		if artifactID == "" {
+			artifactID = strings.TrimSpace(artifact.SpecRefID)
+		}
+		if artifactID == "" {
+			continue
+		}
+		overlayPath := strings.TrimSpace(artifact.OverlayPath)
+		if overlayPath == "" {
+			overlayPath = path
+		}
+		out[providerID] = append(out[providerID], AdvisoryEndpointOverlay{
+			ArtifactID:  artifactID,
+			Kind:        strings.TrimSpace(artifact.Kind),
+			Path:        path,
+			OverlayPath: overlayPath,
+			BuilderPath: strings.TrimSpace(artifact.BuilderPath),
+		})
+	}
+	for providerID := range out {
+		sort.SliceStable(out[providerID], func(i, j int) bool {
+			if out[providerID][i].ArtifactID == out[providerID][j].ArtifactID {
+				return out[providerID][i].Path < out[providerID][j].Path
+			}
+			return out[providerID][i].ArtifactID < out[providerID][j].ArtifactID
+		})
+	}
+	return out
+}
+
+func cloneAdvisoryEndpointOverlays(overlays []AdvisoryEndpointOverlay) []AdvisoryEndpointOverlay {
+	return append([]AdvisoryEndpointOverlay(nil), overlays...)
+}
+
+func advisoryManualFollowUps(provider Provider, report ProviderSecurityReport, overlays []SecurityOverlay, refs []AdvisorySpecReference, endpointOverlays []AdvisoryEndpointOverlay) []string {
 	var followUps []string
 	if provider.UserOpenAPINeed == UserOpenAPINeedLikely {
-		followUps = append(followUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
+		if len(endpointOverlays) > 0 {
+			followUps = append(followUps, "Review registered docs-derived endpoint overlay metadata for the covered advisory subset; broader workflows may still need a user-provided or generated OpenAPI document.")
+		} else {
+			followUps = append(followUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
+		}
 	}
 	if len(report.OverlayIDs) > 0 {
 		followUps = append(followUps, "Review advisory security overlay metadata before using it with an imported OpenAPI document.")

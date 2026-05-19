@@ -1,6 +1,9 @@
 package catalog
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestBuiltInProviderAdvisoryReportDeterministic(t *testing.T) {
 	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{})
@@ -84,6 +87,54 @@ func TestBuiltInProviderAdvisoryReportJoinsArtifactPath(t *testing.T) {
 	}
 }
 
+func TestBuiltInProviderAdvisoryReportJoinsEndpointOverlay(t *testing.T) {
+	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{
+		ProviderKey: "activecampaign",
+		Artifacts: []CatalogSpecArtifact{
+			{
+				ProviderID:  "activecampaign",
+				SpecRefID:   "activecampaign-api-v3-overlay",
+				ArtifactID:  "activecampaign-api-v3-overlay",
+				Kind:        "advisory-overlay",
+				Path:        "advisory-overlays/activecampaign-api-v3-overlay.json",
+				OverlayPath: "advisory-overlays/activecampaign-api-v3-overlay.json",
+				BuilderPath: "overlay-builders/build_m21_human_docs_overlays.go",
+			},
+			{
+				ProviderID:  "webflow",
+				SpecRefID:   "webflow-data-api-v2-overlay",
+				ArtifactID:  "webflow-data-api-v2-overlay",
+				Kind:        "advisory-overlay",
+				Path:        "advisory-overlays/webflow-data-api-v2-overlay.json",
+				OverlayPath: "advisory-overlays/webflow-data-api-v2-overlay.json",
+				BuilderPath: "overlay-builders/build_m21_human_docs_overlays.go",
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("BuiltInProviderAdvisoryReport() error = %v", err)
+	}
+	row := report.Providers[0]
+	if got, want := len(row.EndpointOverlays), 1; got != want {
+		t.Fatalf("endpoint overlays len = %d, want %d", got, want)
+	}
+	overlay := row.EndpointOverlays[0]
+	if overlay.ArtifactID != "activecampaign-api-v3-overlay" {
+		t.Fatalf("endpoint overlay artifact = %q", overlay.ArtifactID)
+	}
+	if overlay.Path != "advisory-overlays/activecampaign-api-v3-overlay.json" {
+		t.Fatalf("endpoint overlay path = %q", overlay.Path)
+	}
+	if overlay.BuilderPath != "overlay-builders/build_m21_human_docs_overlays.go" {
+		t.Fatalf("endpoint overlay builder = %q", overlay.BuilderPath)
+	}
+	if len(row.RegisteredArtifactPaths) != 0 {
+		t.Fatalf("registered spec artifact paths = %#v, want none", row.RegisteredArtifactPaths)
+	}
+	assertHasFollowUp(t, row.ManualFollowUps, "Review registered docs-derived endpoint overlay metadata")
+	assertNoFollowUp(t, row.ManualFollowUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
+}
+
 func TestBuiltInProviderAdvisoryReportMissingCacheHasNoArtifactPath(t *testing.T) {
 	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{ProviderKey: "slack"})
 	if err != nil {
@@ -92,6 +143,9 @@ func TestBuiltInProviderAdvisoryReportMissingCacheHasNoArtifactPath(t *testing.T
 	row := report.Providers[0]
 	if len(row.RegisteredArtifactPaths) != 0 {
 		t.Fatalf("registered artifact paths = %#v, want none", row.RegisteredArtifactPaths)
+	}
+	if len(row.EndpointOverlays) != 0 {
+		t.Fatalf("endpoint overlays = %#v, want none", row.EndpointOverlays)
 	}
 	for _, ref := range row.SpecReferences {
 		if ref.RegisteredArtifactPath != "" {
@@ -113,6 +167,7 @@ func TestProviderAdvisoryReportReturnsCopies(t *testing.T) {
 	}
 	report.Providers[0].Aliases[0] = "mutated"
 	report.Providers[0].SpecReferences[0].RegisteredArtifactPath = "mutated"
+	report.Providers[0].EndpointOverlays = append(report.Providers[0].EndpointOverlays, AdvisoryEndpointOverlay{ArtifactID: "mutated"})
 
 	fresh, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{ProviderKey: "slack"})
 	if err != nil {
@@ -124,4 +179,30 @@ func TestProviderAdvisoryReportReturnsCopies(t *testing.T) {
 	if fresh.Providers[0].SpecReferences[0].RegisteredArtifactPath == "mutated" {
 		t.Fatal("advisory report leaked spec reference slice")
 	}
+	if len(fresh.Providers[0].EndpointOverlays) != 0 {
+		t.Fatal("advisory report leaked endpoint overlay slice")
+	}
+}
+
+func assertHasFollowUp(t *testing.T, values []string, want string) {
+	t.Helper()
+	for _, value := range values {
+		if contains(value, want) {
+			return
+		}
+	}
+	t.Fatalf("manual follow-ups missing %q: %#v", want, values)
+}
+
+func assertNoFollowUp(t *testing.T, values []string, unwanted string) {
+	t.Helper()
+	for _, value := range values {
+		if contains(value, unwanted) {
+			t.Fatalf("manual follow-ups unexpectedly contain %q: %#v", unwanted, values)
+		}
+	}
+}
+
+func contains(value, substr string) bool {
+	return strings.Contains(value, substr)
 }

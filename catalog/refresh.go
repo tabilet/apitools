@@ -8,10 +8,13 @@ import (
 // CatalogSpecArtifact records a locally registered catalog artifact path that
 // can be joined with refreshable spec references for maintainer review.
 type CatalogSpecArtifact struct {
-	ProviderID string `json:"provider_id"`
-	SpecRefID  string `json:"spec_ref_id"`
-	Kind       string `json:"kind,omitempty"`
-	Path       string `json:"path,omitempty"`
+	ProviderID  string `json:"provider_id"`
+	SpecRefID   string `json:"spec_ref_id"`
+	ArtifactID  string `json:"artifact_id,omitempty"`
+	Kind        string `json:"kind,omitempty"`
+	Path        string `json:"path,omitempty"`
+	OverlayPath string `json:"overlay_path,omitempty"`
+	BuilderPath string `json:"builder_path,omitempty"`
 }
 
 // RefreshableSpecReference is a deterministic, metadata-only row describing a

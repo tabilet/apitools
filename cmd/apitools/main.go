@@ -1120,6 +1120,18 @@ func writeCatalogAdvisoryReport(out io.Writer, report catalogpkg.ProviderAdvisor
 		if len(provider.SecurityOverlayIDs) > 0 {
 			fmt.Fprintf(out, "Security overlays: %s\n", strings.Join(provider.SecurityOverlayIDs, ", "))
 		}
+		if len(provider.EndpointOverlays) > 0 {
+			fmt.Fprintln(out, "Endpoint overlays:")
+			for _, overlay := range provider.EndpointOverlays {
+				fmt.Fprintf(out, "- %s [%s] %s\n", overlay.ArtifactID, overlay.Kind, overlay.Path)
+				if overlay.OverlayPath != "" && overlay.OverlayPath != overlay.Path {
+					fmt.Fprintf(out, "  overlay: %s\n", overlay.OverlayPath)
+				}
+				if overlay.BuilderPath != "" {
+					fmt.Fprintf(out, "  builder: %s\n", overlay.BuilderPath)
+				}
+			}
+		}
 		if len(provider.ManualFollowUps) > 0 {
 			fmt.Fprintln(out, "Manual follow-ups:")
 			for _, followUp := range provider.ManualFollowUps {
@@ -1527,10 +1539,13 @@ func catalogSpecArtifactsFromCache(path string) ([]catalogpkg.CatalogSpecArtifac
 	rows := make([]catalogpkg.CatalogSpecArtifact, 0, len(artifacts))
 	for _, artifact := range artifacts {
 		rows = append(rows, catalogpkg.CatalogSpecArtifact{
-			ProviderID: artifact.ProviderID,
-			SpecRefID:  artifact.ArtifactID,
-			Kind:       artifact.Kind,
-			Path:       artifact.Path,
+			ProviderID:  artifact.ProviderID,
+			SpecRefID:   artifact.ArtifactID,
+			ArtifactID:  artifact.ArtifactID,
+			Kind:        artifact.Kind,
+			Path:        artifact.Path,
+			OverlayPath: artifact.OverlayPath,
+			BuilderPath: artifact.BuilderPath,
 		})
 	}
 	return rows, closeCache, nil
