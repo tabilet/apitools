@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"sort"
 	"strings"
@@ -28,6 +29,58 @@ func TestTrackedAdvisoryOverlayArtifactsLoad(t *testing.T) {
 			}
 			if len(index.OperationIDs) == 0 {
 				t.Fatalf("%s has no indexed operations", path)
+			}
+		})
+	}
+}
+
+func TestTrackedAdvisoryOverlaySecurityMatchesCatalogRequirements(t *testing.T) {
+	paths, err := filepath.Glob("catalog-openapi-cache/advisory-overlays/*-overlay.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(paths) == 0 {
+		t.Fatal("no advisory overlay artifacts found")
+	}
+	for _, path := range paths {
+		t.Run(filepath.Base(path), func(t *testing.T) {
+			content, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var doc struct {
+				Components struct {
+					SecuritySchemes map[string]json.RawMessage `json:"securitySchemes"`
+				} `json:"components"`
+				Security []map[string][]string `json:"security"`
+				Paths    map[string]map[string]struct {
+					OperationID string                `json:"operationId"`
+					Security    []map[string][]string `json:"security"`
+				} `json:"paths"`
+				Overlay struct {
+					ProviderID string `json:"provider_id"`
+				} `json:"x-apitools-overlay"`
+			}
+			if err := json.Unmarshal(content, &doc); err != nil {
+				t.Fatalf("%s JSON parse error: %v", path, err)
+			}
+			if doc.Overlay.ProviderID == "" {
+				t.Fatalf("%s missing x-apitools-overlay.provider_id", path)
+			}
+
+			assertSecurityRequirementsUseDeclaredSchemes(t, "root security", doc.Security, doc.Components.SecuritySchemes)
+			expectedSets := catalogRootSecuritySetsForProvider(doc.Overlay.ProviderID)
+			for route, pathItem := range doc.Paths {
+				for method, operation := range pathItem {
+					if operation.OperationID == "" {
+						continue
+					}
+					context := method + " " + route
+					assertSecurityRequirementsUseDeclaredSchemes(t, context, operation.Security, doc.Components.SecuritySchemes)
+					if len(expectedSets) > 0 {
+						assertOperationSecurityIncludesCatalogRequirementSet(t, context, operation.Security, expectedSets)
+					}
+				}
 			}
 		})
 	}
@@ -332,4 +385,50 @@ func assertCopperRequiredHeaders(t *testing.T, context string, requirements []ma
 			t.Fatalf("%s %s scopes = %#v, want none", context, scheme, scopes)
 		}
 	}
+}
+
+func assertSecurityRequirementsUseDeclaredSchemes(t *testing.T, context string, requirements []map[string][]string, declared map[string]json.RawMessage) {
+	t.Helper()
+	for _, requirement := range requirements {
+		if len(requirement) == 0 {
+			t.Fatalf("%s has empty security requirement", context)
+		}
+		for scheme := range requirement {
+			if _, ok := declared[scheme]; !ok {
+				t.Fatalf("%s references undeclared security scheme %q", context, scheme)
+			}
+		}
+	}
+}
+
+func catalogRootSecuritySetsForProvider(providerID string) [][]string {
+	var out [][]string
+	for _, overlay := range catalog.SecurityOverlaysForProvider(providerID) {
+		for _, set := range overlay.RootSecuritySets {
+			var schemes []string
+			for _, requirement := range set.Requirements {
+				schemes = append(schemes, requirement.Scheme)
+			}
+			sort.Strings(schemes)
+			out = append(out, schemes)
+		}
+	}
+	return out
+}
+
+func assertOperationSecurityIncludesCatalogRequirementSet(t *testing.T, context string, requirements []map[string][]string, expectedSets [][]string) {
+	t.Helper()
+	for _, requirement := range requirements {
+		var got []string
+		for scheme := range requirement {
+			got = append(got, scheme)
+		}
+		sort.Strings(got)
+		for _, want := range expectedSets {
+			if reflect.DeepEqual(got, want) {
+				return
+			}
+		}
+	}
+	t.Fatalf("%s security = %#v, want one requirement matching catalog root security sets %#v", context, requirements, expectedSets)
 }

@@ -76,6 +76,26 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 			metadata: complete,
 			want:     AuthStatusComplete,
 		},
+		{
+			name: "complete with combined requirement set",
+			metadata: SecurityMetadata{
+				SecuritySchemes: []SecurityScheme{bearerScheme("tokenAuth"), bearerScheme("userAuth")},
+				RootSecuritySets: []SecurityRequirementSet{{
+					Requirements: []SecurityRequirement{{Scheme: "tokenAuth"}, {Scheme: "userAuth"}},
+				}},
+			},
+			want: AuthStatusComplete,
+		},
+		{
+			name: "present incomplete combined requirement set unknown scheme",
+			metadata: SecurityMetadata{
+				SecuritySchemes: []SecurityScheme{bearerScheme("tokenAuth")},
+				RootSecuritySets: []SecurityRequirementSet{{
+					Requirements: []SecurityRequirement{{Scheme: "tokenAuth"}, {Scheme: "userAuth"}},
+				}},
+			},
+			want: AuthStatusPresentIncomplete,
+		},
 	}
 	for _, test := range tests {
 		if got := ClassifyAuthCompleteness(test.metadata); got != test.want {
@@ -136,6 +156,15 @@ func TestSecurityOverlayValidationRejectsBadRecords(t *testing.T) {
 			name: "unknown security requirement",
 			mutate: func(overlay SecurityOverlay) SecurityOverlay {
 				overlay.RootSecurity = []SecurityRequirement{{Scheme: "missingAuth"}}
+				return overlay
+			},
+		},
+		{
+			name: "duplicate requirement in set",
+			mutate: func(overlay SecurityOverlay) SecurityOverlay {
+				overlay.RootSecuritySets = []SecurityRequirementSet{{
+					Requirements: []SecurityRequirement{{Scheme: "exampleAuth"}, {Scheme: "exampleAuth"}},
+				}}
 				return overlay
 			},
 		},

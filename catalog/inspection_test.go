@@ -45,6 +45,28 @@ func TestBuiltInSecurityInspectionViewPreservesProvenance(t *testing.T) {
 	}
 }
 
+func TestBuiltInSecurityInspectionViewPreservesCombinedRequirementSets(t *testing.T) {
+	view, err := BuiltInSecurityInspectionView("copper")
+	if err != nil {
+		t.Fatalf("BuiltInSecurityInspectionView() error = %v", err)
+	}
+	if len(view.RootSecuritySets) != 1 {
+		t.Fatalf("RootSecuritySets len = %d, want 1: %#v", len(view.RootSecuritySets), view.RootSecuritySets)
+	}
+	set := view.RootSecuritySets[0]
+	if set.Provenance != SecurityProvenanceOverlay || set.OverlayID != "copper-api-auth-overlay" {
+		t.Fatalf("RootSecuritySets provenance = %q overlay = %q", set.Provenance, set.OverlayID)
+	}
+	got := make([]string, 0, len(set.Requirements))
+	for _, requirement := range set.Requirements {
+		got = append(got, requirement.Requirement.Scheme)
+	}
+	want := []string{"copperAccessToken", "copperApplication", "copperUserEmail"}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("Copper combined requirement set = %#v, want %#v", got, want)
+	}
+}
+
 func TestSecurityInspectionReportsConflicts(t *testing.T) {
 	provider := inspectionTestProvider()
 	catalog := Catalog{
@@ -174,6 +196,18 @@ func TestSecurityInspectionViewReturnsCopies(t *testing.T) {
 	}
 	if fresh.RootSecurity[0].Requirement.Scheme == "mutated" {
 		t.Fatalf("RootSecurity leaked requirement copy")
+	}
+	copper, err := BuiltInSecurityInspectionView("copper")
+	if err != nil {
+		t.Fatal(err)
+	}
+	copper.RootSecuritySets[0].Requirements[0].Requirement.Scheme = "mutated"
+	freshCopper, err := BuiltInSecurityInspectionView("copper")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if freshCopper.RootSecuritySets[0].Requirements[0].Requirement.Scheme == "mutated" {
+		t.Fatalf("RootSecuritySets leaked requirement copy")
 	}
 	if fresh.Classification.SourceRefs[0] == "https://example.com/mutated" {
 		t.Fatalf("Classification leaked source refs copy")

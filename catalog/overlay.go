@@ -10,15 +10,16 @@ import (
 // upstream provider specs. Overlays are advisory catalog metadata, not provider
 // truth, and never contain credential values.
 type SecurityOverlay struct {
-	ID                string                 `json:"id"`
-	ProviderID        string                 `json:"provider_id"`
-	SpecRefID         string                 `json:"spec_ref_id,omitempty"`
-	Status            AuthCompletenessStatus `json:"status"`
-	SecuritySchemes   []SecurityScheme       `json:"security_schemes,omitempty"`
-	RootSecurity      []SecurityRequirement  `json:"root_security,omitempty"`
-	OperationSecurity []OperationSecurity    `json:"operation_security,omitempty"`
-	SourceRefs        []string               `json:"source_refs,omitempty"`
-	SourceNote        string                 `json:"source_note"`
+	ID                string                   `json:"id"`
+	ProviderID        string                   `json:"provider_id"`
+	SpecRefID         string                   `json:"spec_ref_id,omitempty"`
+	Status            AuthCompletenessStatus   `json:"status"`
+	SecuritySchemes   []SecurityScheme         `json:"security_schemes,omitempty"`
+	RootSecurity      []SecurityRequirement    `json:"root_security,omitempty"`
+	RootSecuritySets  []SecurityRequirementSet `json:"root_security_sets,omitempty"`
+	OperationSecurity []OperationSecurity      `json:"operation_security,omitempty"`
+	SourceRefs        []string                 `json:"source_refs,omitempty"`
+	SourceNote        string                   `json:"source_note"`
 }
 
 // BuiltInSecurityOverlays returns built-in security overlays in deterministic
@@ -118,6 +119,11 @@ func validateSecurityOverlay(overlay SecurityOverlay, providers map[string]Provi
 	for i, requirement := range overlay.RootSecurity {
 		if err := validateSecurityRequirement(requirement, schemes); err != nil {
 			return fmt.Errorf("overlay %q root security[%d]: %w", overlay.ID, i, err)
+		}
+	}
+	for i, set := range overlay.RootSecuritySets {
+		if err := validateSecurityRequirementSet(set, schemes); err != nil {
+			return fmt.Errorf("overlay %q root security sets[%d]: %w", overlay.ID, i, err)
 		}
 	}
 	for i, operation := range overlay.OperationSecurity {
@@ -293,6 +299,9 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			},
 		},
 		RootSecurity: []SecurityRequirement{{Scheme: "copperAccessToken"}, {Scheme: "copperUserEmail"}, {Scheme: "copperApplication"}},
+		RootSecuritySets: []SecurityRequirementSet{{
+			Requirements: []SecurityRequirement{{Scheme: "copperAccessToken"}, {Scheme: "copperUserEmail"}, {Scheme: "copperApplication"}},
+		}},
 		SourceRefs: []string{
 			"https://developer.copper.com/introduction/authentication.html",
 			"https://developer.copper.com/",
@@ -633,6 +642,9 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			},
 		},
 		RootSecurity: []SecurityRequirement{{Scheme: "discourseAPIKey"}, {Scheme: "discourseAPIUsername"}},
+		RootSecuritySets: []SecurityRequirementSet{{
+			Requirements: []SecurityRequirement{{Scheme: "discourseAPIKey"}, {Scheme: "discourseAPIUsername"}},
+		}},
 		SourceRefs: []string{
 			"https://docs.discourse.org/openapi.json",
 			"https://docs.discourse.org/",
@@ -1959,6 +1971,7 @@ func cloneSecurityOverlays(in []SecurityOverlay) []SecurityOverlay {
 func cloneSecurityOverlay(overlay SecurityOverlay) SecurityOverlay {
 	overlay.SecuritySchemes = cloneSecuritySchemes(overlay.SecuritySchemes)
 	overlay.RootSecurity = cloneSecurityRequirements(overlay.RootSecurity)
+	overlay.RootSecuritySets = cloneSecurityRequirementSets(overlay.RootSecuritySets)
 	overlay.OperationSecurity = cloneOperationSecurity(overlay.OperationSecurity)
 	overlay.SourceRefs = append([]string(nil), overlay.SourceRefs...)
 	return overlay

@@ -1204,7 +1204,7 @@ func writeCatalogOverlayView(out io.Writer, view catalogpkg.SecurityInspectionVi
 		}
 	}
 	if len(view.RootSecurity) > 0 {
-		fmt.Fprintln(out, "Root security:")
+		fmt.Fprintln(out, "Root security alternatives:")
 		for _, requirement := range view.RootSecurity {
 			fmt.Fprintf(out, "- %s [%s]", requirement.Requirement.Scheme, requirement.Provenance)
 			if len(requirement.Requirement.Scopes) > 0 {
@@ -1212,6 +1212,20 @@ func writeCatalogOverlayView(out io.Writer, view catalogpkg.SecurityInspectionVi
 			}
 			if requirement.OverlayID != "" {
 				fmt.Fprintf(out, " overlay=%s", requirement.OverlayID)
+			}
+			fmt.Fprintln(out)
+		}
+	}
+	if len(view.RootSecuritySets) > 0 {
+		fmt.Fprintln(out, "Root security requirement sets:")
+		for _, set := range view.RootSecuritySets {
+			var schemes []string
+			for _, requirement := range set.Requirements {
+				schemes = append(schemes, requirement.Requirement.Scheme)
+			}
+			fmt.Fprintf(out, "- %s [%s]", strings.Join(schemes, " + "), set.Provenance)
+			if set.OverlayID != "" {
+				fmt.Fprintf(out, " overlay=%s", set.OverlayID)
 			}
 			fmt.Fprintln(out)
 		}
@@ -1226,6 +1240,13 @@ func writeCatalogOverlayView(out io.Writer, view catalogpkg.SecurityInspectionVi
 			fmt.Fprintln(out)
 			for _, requirement := range operation.Security {
 				fmt.Fprintf(out, "  - %s [%s]\n", requirement.Requirement.Scheme, requirement.Provenance)
+			}
+			for _, set := range operation.SecuritySets {
+				var schemes []string
+				for _, requirement := range set.Requirements {
+					schemes = append(schemes, requirement.Requirement.Scheme)
+				}
+				fmt.Fprintf(out, "  - %s [%s]\n", strings.Join(schemes, " + "), set.Provenance)
 			}
 		}
 	}

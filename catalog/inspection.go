@@ -45,6 +45,7 @@ type SecurityInspectionView struct {
 	SpecReferences    []SpecReference                   `json:"spec_references,omitempty"`
 	SecuritySchemes   []EffectiveSecurityScheme         `json:"security_schemes,omitempty"`
 	RootSecurity      []EffectiveSecurityRequirement    `json:"root_security,omitempty"`
+	RootSecuritySets  []EffectiveSecurityRequirementSet `json:"root_security_sets,omitempty"`
 	OperationSecurity []EffectiveOperationSecurity      `json:"operation_security,omitempty"`
 	Conflicts         []SecurityInspectionConflict      `json:"conflicts,omitempty"`
 	SourceNotes       []SecurityInspectionSourceNote    `json:"source_notes,omitempty"`
@@ -82,14 +83,26 @@ type EffectiveSecurityRequirement struct {
 	SourceNote  string              `json:"source_note,omitempty"`
 }
 
+// EffectiveSecurityRequirementSet is one provenance-labeled OpenAPI-style
+// security requirement object. Requirements in the same set are ANDed.
+type EffectiveSecurityRequirementSet struct {
+	Requirements []EffectiveSecurityRequirement `json:"requirements,omitempty"`
+	Provenance   SecurityProvenance             `json:"provenance"`
+	OverlayID    string                         `json:"overlay_id,omitempty"`
+	SpecRefID    string                         `json:"spec_ref_id,omitempty"`
+	SourceRefs   []string                       `json:"source_refs,omitempty"`
+	SourceNote   string                         `json:"source_note,omitempty"`
+}
+
 // EffectiveOperationSecurity is operation-level security metadata plus
 // provenance-labeled security requirements.
 type EffectiveOperationSecurity struct {
-	Match      OperationMatch                 `json:"match"`
-	Provenance SecurityProvenance             `json:"provenance"`
-	OverlayID  string                         `json:"overlay_id,omitempty"`
-	SpecRefID  string                         `json:"spec_ref_id,omitempty"`
-	Security   []EffectiveSecurityRequirement `json:"security,omitempty"`
+	Match        OperationMatch                    `json:"match"`
+	Provenance   SecurityProvenance                `json:"provenance"`
+	OverlayID    string                            `json:"overlay_id,omitempty"`
+	SpecRefID    string                            `json:"spec_ref_id,omitempty"`
+	Security     []EffectiveSecurityRequirement    `json:"security,omitempty"`
+	SecuritySets []EffectiveSecurityRequirementSet `json:"security_sets,omitempty"`
 }
 
 // SecurityInspectionConflict records an advisory issue or review point. These
@@ -218,11 +231,22 @@ func BuildSecurityInspectionView(options SecurityInspectionOptions) (SecurityIns
 				Message:    fmt.Sprintf("overlay adds advisory security scheme %q", scheme.Name),
 			})
 		}
-		for _, requirement := range overlay.RootSecurity {
-			effective := effectiveRequirement(requirement, overlay)
-			view.RootSecurity = append(view.RootSecurity, effective)
-			if _, exists := schemeByName[requirement.Scheme]; !exists {
-				view.Conflicts = append(view.Conflicts, missingSchemeConflict(provider.ID, overlay, requirement.Scheme, OperationMatch{}))
+		if len(overlay.RootSecuritySets) == 0 {
+			for _, requirement := range overlay.RootSecurity {
+				effective := effectiveRequirement(requirement, overlay)
+				view.RootSecurity = append(view.RootSecurity, effective)
+				if _, exists := schemeByName[requirement.Scheme]; !exists {
+					view.Conflicts = append(view.Conflicts, missingSchemeConflict(provider.ID, overlay, requirement.Scheme, OperationMatch{}))
+				}
+			}
+		}
+		for _, set := range overlay.RootSecuritySets {
+			effective := effectiveRequirementSet(set, overlay)
+			view.RootSecuritySets = append(view.RootSecuritySets, effective)
+			for _, requirement := range set.Requirements {
+				if _, exists := schemeByName[requirement.Scheme]; !exists {
+					view.Conflicts = append(view.Conflicts, missingSchemeConflict(provider.ID, overlay, requirement.Scheme, OperationMatch{}))
+				}
 			}
 		}
 		for _, operation := range overlay.OperationSecurity {
@@ -237,10 +261,20 @@ func BuildSecurityInspectionView(options SecurityInspectionOptions) (SecurityIns
 				OverlayID:  overlay.ID,
 				SpecRefID:  overlay.SpecRefID,
 			}
-			for _, requirement := range operation.Security {
-				effective.Security = append(effective.Security, effectiveRequirement(requirement, overlay))
-				if _, exists := schemeByName[requirement.Scheme]; !exists {
-					view.Conflicts = append(view.Conflicts, missingSchemeConflict(provider.ID, overlay, requirement.Scheme, operation.Match))
+			if len(operation.SecuritySets) == 0 {
+				for _, requirement := range operation.Security {
+					effective.Security = append(effective.Security, effectiveRequirement(requirement, overlay))
+					if _, exists := schemeByName[requirement.Scheme]; !exists {
+						view.Conflicts = append(view.Conflicts, missingSchemeConflict(provider.ID, overlay, requirement.Scheme, operation.Match))
+					}
+				}
+			}
+			for _, set := range operation.SecuritySets {
+				effective.SecuritySets = append(effective.SecuritySets, effectiveRequirementSet(set, overlay))
+				for _, requirement := range set.Requirements {
+					if _, exists := schemeByName[requirement.Scheme]; !exists {
+						view.Conflicts = append(view.Conflicts, missingSchemeConflict(provider.ID, overlay, requirement.Scheme, operation.Match))
+					}
 				}
 			}
 			if !resolvedOperation {
@@ -348,6 +382,11 @@ func validateInspectionOverlayEnvelope(overlay SecurityOverlay, providers map[st
 			return fmt.Errorf("overlay %q root security[%d]: %w", overlay.ID, i, err)
 		}
 	}
+	for i, set := range overlay.RootSecuritySets {
+		if err := validateSecurityRequirementSetShape(set); err != nil {
+			return fmt.Errorf("overlay %q root security sets[%d]: %w", overlay.ID, i, err)
+		}
+	}
 	for i, operation := range overlay.OperationSecurity {
 		if err := validateOperationMatch(operation.Match); err != nil {
 			return fmt.Errorf("overlay %q operation security[%d]: %w", overlay.ID, i, err)
@@ -355,6 +394,11 @@ func validateInspectionOverlayEnvelope(overlay SecurityOverlay, providers map[st
 		for j, requirement := range operation.Security {
 			if err := validateSecurityRequirementShape(requirement); err != nil {
 				return fmt.Errorf("overlay %q operation security[%d].security[%d]: %w", overlay.ID, i, j, err)
+			}
+		}
+		for j, set := range operation.SecuritySets {
+			if err := validateSecurityRequirementSetShape(set); err != nil {
+				return fmt.Errorf("overlay %q operation security[%d].security_sets[%d]: %w", overlay.ID, i, j, err)
 			}
 		}
 	}
@@ -368,6 +412,23 @@ func validateSecurityRequirementShape(requirement SecurityRequirement) error {
 	return validateUniqueStrings("scope", requirement.Scopes)
 }
 
+func validateSecurityRequirementSetShape(set SecurityRequirementSet) error {
+	if len(set.Requirements) == 0 {
+		return fmt.Errorf("security requirement set must include at least one requirement")
+	}
+	seen := map[string]struct{}{}
+	for i, requirement := range set.Requirements {
+		if err := validateSecurityRequirementShape(requirement); err != nil {
+			return fmt.Errorf("requirements[%d]: %w", i, err)
+		}
+		if _, exists := seen[requirement.Scheme]; exists {
+			return fmt.Errorf("duplicate security requirement scheme %q", requirement.Scheme)
+		}
+		seen[requirement.Scheme] = struct{}{}
+	}
+	return nil
+}
+
 func effectiveRequirement(requirement SecurityRequirement, overlay SecurityOverlay) EffectiveSecurityRequirement {
 	return EffectiveSecurityRequirement{
 		Requirement: cloneSecurityRequirement(requirement),
@@ -377,6 +438,20 @@ func effectiveRequirement(requirement SecurityRequirement, overlay SecurityOverl
 		SourceRefs:  append([]string(nil), overlay.SourceRefs...),
 		SourceNote:  overlay.SourceNote,
 	}
+}
+
+func effectiveRequirementSet(set SecurityRequirementSet, overlay SecurityOverlay) EffectiveSecurityRequirementSet {
+	out := EffectiveSecurityRequirementSet{
+		Provenance: SecurityProvenanceOverlay,
+		OverlayID:  overlay.ID,
+		SpecRefID:  overlay.SpecRefID,
+		SourceRefs: append([]string(nil), overlay.SourceRefs...),
+		SourceNote: overlay.SourceNote,
+	}
+	for _, requirement := range set.Requirements {
+		out.Requirements = append(out.Requirements, effectiveRequirement(requirement, overlay))
+	}
+	return out
 }
 
 func missingSchemeConflict(providerID string, overlay SecurityOverlay, scheme string, match OperationMatch) SecurityInspectionConflict {
@@ -440,6 +515,7 @@ func sortSecurityInspectionView(view *SecurityInspectionView) {
 		}
 		return view.RootSecurity[i].Requirement.Scheme < view.RootSecurity[j].Requirement.Scheme
 	})
+	sortEffectiveSecurityRequirementSets(view.RootSecuritySets)
 	sort.SliceStable(view.OperationSecurity, func(i, j int) bool {
 		left := operationMatchSortKey(view.OperationSecurity[i].Match)
 		right := operationMatchSortKey(view.OperationSecurity[j].Match)
@@ -448,6 +524,9 @@ func sortSecurityInspectionView(view *SecurityInspectionView) {
 		}
 		return left < right
 	})
+	for i := range view.OperationSecurity {
+		sortEffectiveSecurityRequirementSets(view.OperationSecurity[i].SecuritySets)
+	}
 	sort.SliceStable(view.Conflicts, func(i, j int) bool {
 		left := conflictSortKey(view.Conflicts[i])
 		right := conflictSortKey(view.Conflicts[j])
@@ -456,6 +535,19 @@ func sortSecurityInspectionView(view *SecurityInspectionView) {
 	sort.SliceStable(view.SourceNotes, func(i, j int) bool {
 		left := sourceNoteSortKey(view.SourceNotes[i])
 		right := sourceNoteSortKey(view.SourceNotes[j])
+		return left < right
+	})
+}
+
+func sortEffectiveSecurityRequirementSets(sets []EffectiveSecurityRequirementSet) {
+	for i := range sets {
+		sort.SliceStable(sets[i].Requirements, func(j, k int) bool {
+			return sets[i].Requirements[j].Requirement.Scheme < sets[i].Requirements[k].Requirement.Scheme
+		})
+	}
+	sort.SliceStable(sets, func(i, j int) bool {
+		left := effectiveSecurityRequirementSetSortKey(sets[i])
+		right := effectiveSecurityRequirementSetSortKey(sets[j])
 		return left < right
 	})
 }
@@ -490,6 +582,15 @@ func sourceNoteSortKey(note SecurityInspectionSourceNote) string {
 	}, "\x00")
 }
 
+func effectiveSecurityRequirementSetSortKey(set EffectiveSecurityRequirementSet) string {
+	parts := make([]string, 0, len(set.Requirements)+2)
+	parts = append(parts, set.OverlayID, set.SpecRefID)
+	for _, requirement := range set.Requirements {
+		parts = append(parts, requirement.Requirement.Scheme)
+	}
+	return strings.Join(parts, "\x00")
+}
+
 func cloneSecurityInspectionView(view SecurityInspectionView) SecurityInspectionView {
 	out := view
 	if view.Classification != nil {
@@ -500,6 +601,7 @@ func cloneSecurityInspectionView(view SecurityInspectionView) SecurityInspection
 	out.SpecReferences = append([]SpecReference(nil), view.SpecReferences...)
 	out.SecuritySchemes = cloneEffectiveSecuritySchemes(view.SecuritySchemes)
 	out.RootSecurity = cloneEffectiveSecurityRequirements(view.RootSecurity)
+	out.RootSecuritySets = cloneEffectiveSecurityRequirementSets(view.RootSecuritySets)
 	out.OperationSecurity = cloneEffectiveOperationSecurity(view.OperationSecurity)
 	out.Conflicts = cloneSecurityInspectionConflicts(view.Conflicts)
 	out.SourceNotes = cloneSecurityInspectionSourceNotes(view.SourceNotes)
@@ -526,12 +628,23 @@ func cloneEffectiveSecurityRequirements(in []EffectiveSecurityRequirement) []Eff
 	return out
 }
 
+func cloneEffectiveSecurityRequirementSets(in []EffectiveSecurityRequirementSet) []EffectiveSecurityRequirementSet {
+	out := make([]EffectiveSecurityRequirementSet, len(in))
+	for i, set := range in {
+		out[i] = set
+		out[i].Requirements = cloneEffectiveSecurityRequirements(set.Requirements)
+		out[i].SourceRefs = append([]string(nil), set.SourceRefs...)
+	}
+	return out
+}
+
 func cloneEffectiveOperationSecurity(in []EffectiveOperationSecurity) []EffectiveOperationSecurity {
 	out := make([]EffectiveOperationSecurity, len(in))
 	for i, operation := range in {
 		out[i] = operation
 		out[i].Match = cloneOperationMatch(operation.Match)
 		out[i].Security = cloneEffectiveSecurityRequirements(operation.Security)
+		out[i].SecuritySets = cloneEffectiveSecurityRequirementSets(operation.SecuritySets)
 	}
 	return out
 }

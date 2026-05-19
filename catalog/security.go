@@ -73,10 +73,17 @@ type OAuthFlow struct {
 	Scopes           []string      `json:"scopes,omitempty"`
 }
 
-// SecurityRequirement records an OpenAPI-style security requirement.
+// SecurityRequirement records one scheme entry inside an OpenAPI-style
+// security requirement object.
 type SecurityRequirement struct {
 	Scheme string   `json:"scheme"`
 	Scopes []string `json:"scopes,omitempty"`
+}
+
+// SecurityRequirementSet records one OpenAPI-style security requirement
+// object. Requirements in the same set are ANDed. Multiple sets are ORed.
+type SecurityRequirementSet struct {
+	Requirements []SecurityRequirement `json:"requirements,omitempty"`
 }
 
 // OperationMatch identifies operation-level overlay targets without binding to
@@ -91,25 +98,29 @@ type OperationMatch struct {
 // OperationSecurity records operation-level security metadata for matched
 // operations.
 type OperationSecurity struct {
-	Match    OperationMatch        `json:"match"`
-	Security []SecurityRequirement `json:"security,omitempty"`
+	Match OperationMatch `json:"match"`
+	// Security is the legacy singleton-set representation. Each entry is a
+	// separate alternative unless SecuritySets is populated.
+	Security     []SecurityRequirement    `json:"security,omitempty"`
+	SecuritySets []SecurityRequirementSet `json:"security_sets,omitempty"`
 }
 
 // SecurityMetadata is the normalized input accepted by the auth classifier.
 type SecurityMetadata struct {
-	SecuritySchemes        []SecurityScheme      `json:"security_schemes,omitempty"`
-	RootSecurity           []SecurityRequirement `json:"root_security,omitempty"`
-	OperationSecurity      []OperationSecurity   `json:"operation_security,omitempty"`
-	IntentionallyAnonymous bool                  `json:"intentionally_anonymous,omitempty"`
+	SecuritySchemes        []SecurityScheme         `json:"security_schemes,omitempty"`
+	RootSecurity           []SecurityRequirement    `json:"root_security,omitempty"`
+	RootSecuritySets       []SecurityRequirementSet `json:"root_security_sets,omitempty"`
+	OperationSecurity      []OperationSecurity      `json:"operation_security,omitempty"`
+	IntentionallyAnonymous bool                     `json:"intentionally_anonymous,omitempty"`
 }
 
 // ClassifyAuthCompleteness classifies OpenAPI-style security metadata without
 // resolving credentials, choosing accounts, or calling provider APIs.
 func ClassifyAuthCompleteness(metadata SecurityMetadata) AuthCompletenessStatus {
 	hasSchemes := len(metadata.SecuritySchemes) > 0
-	hasRequirements := len(metadata.RootSecurity) > 0
+	hasRequirements := len(metadata.RootSecurity) > 0 || len(metadata.RootSecuritySets) > 0
 	for _, operation := range metadata.OperationSecurity {
-		if len(operation.Security) > 0 {
+		if len(operation.Security) > 0 || len(operation.SecuritySets) > 0 {
 			hasRequirements = true
 			break
 		}
@@ -140,8 +151,13 @@ func ClassifyAuthCompleteness(metadata SecurityMetadata) AuthCompletenessStatus 
 			return AuthStatusPresentIncomplete
 		}
 	}
+	for _, set := range metadata.RootSecuritySets {
+		if err := validateSecurityRequirementSet(set, schemes); err != nil {
+			return AuthStatusPresentIncomplete
+		}
+	}
 	for _, operation := range metadata.OperationSecurity {
-		if len(operation.Security) == 0 {
+		if len(operation.Security) == 0 && len(operation.SecuritySets) == 0 {
 			continue
 		}
 		if err := validateOperationSecurity(operation, schemes); err != nil {
@@ -234,6 +250,23 @@ func validateSecurityRequirement(requirement SecurityRequirement, schemes map[st
 	return validateUniqueStrings("scope", requirement.Scopes)
 }
 
+func validateSecurityRequirementSet(set SecurityRequirementSet, schemes map[string]struct{}) error {
+	if len(set.Requirements) == 0 {
+		return fmt.Errorf("security requirement set must include at least one requirement")
+	}
+	seen := map[string]struct{}{}
+	for i, requirement := range set.Requirements {
+		if err := validateSecurityRequirement(requirement, schemes); err != nil {
+			return fmt.Errorf("requirements[%d]: %w", i, err)
+		}
+		if _, exists := seen[requirement.Scheme]; exists {
+			return fmt.Errorf("duplicate security requirement scheme %q", requirement.Scheme)
+		}
+		seen[requirement.Scheme] = struct{}{}
+	}
+	return nil
+}
+
 func validateOperationSecurity(operation OperationSecurity, schemes map[string]struct{}) error {
 	if err := validateOperationMatch(operation.Match); err != nil {
 		return err
@@ -241,6 +274,11 @@ func validateOperationSecurity(operation OperationSecurity, schemes map[string]s
 	for i, requirement := range operation.Security {
 		if err := validateSecurityRequirement(requirement, schemes); err != nil {
 			return fmt.Errorf("security[%d]: %w", i, err)
+		}
+	}
+	for i, set := range operation.SecuritySets {
+		if err := validateSecurityRequirementSet(set, schemes); err != nil {
+			return fmt.Errorf("security_sets[%d]: %w", i, err)
 		}
 	}
 	return nil
@@ -350,12 +388,21 @@ func cloneSecurityRequirements(in []SecurityRequirement) []SecurityRequirement {
 	return out
 }
 
+func cloneSecurityRequirementSets(in []SecurityRequirementSet) []SecurityRequirementSet {
+	out := make([]SecurityRequirementSet, len(in))
+	for i, set := range in {
+		out[i].Requirements = cloneSecurityRequirements(set.Requirements)
+	}
+	return out
+}
+
 func cloneOperationSecurity(in []OperationSecurity) []OperationSecurity {
 	out := make([]OperationSecurity, len(in))
 	for i, operation := range in {
 		out[i] = operation
 		out[i].Match.Tags = append([]string(nil), operation.Match.Tags...)
 		out[i].Security = cloneSecurityRequirements(operation.Security)
+		out[i].SecuritySets = cloneSecurityRequirementSets(operation.SecuritySets)
 	}
 	return out
 }
