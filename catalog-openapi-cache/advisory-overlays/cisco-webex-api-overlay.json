@@ -1,0 +1,671 @@
+{
+  "components": {
+    "schemas": {
+      "WebexCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WebexError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WebexObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "webexOAuth2": {
+        "bearerFormat": "Cisco Webex OAuth 2.0 access token",
+        "description": "Cisco Webex OAuth access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Cisco Webex API human documentation. This is not an official Cisco OpenAPI document.",
+    "title": "Cisco Webex API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v1/attachment/actions/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWebexAttachmentAction",
+        "parameters": [
+          {
+            "description": "Attachment action ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Get attachment action"
+      }
+    },
+    "/v1/memberships": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWebexMemberships",
+        "parameters": [
+          {
+            "description": "Room ID.",
+            "in": "query",
+            "name": "roomId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "List memberships"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWebexMembership",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebexObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Create membership"
+      }
+    },
+    "/v1/messages": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWebexMessages",
+        "parameters": [
+          {
+            "description": "Room ID.",
+            "in": "query",
+            "name": "roomId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "List messages"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWebexMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebexObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Create message"
+      }
+    },
+    "/v1/messages/{messageId}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteWebexMessage",
+        "parameters": [
+          {
+            "description": "Message ID.",
+            "in": "path",
+            "name": "messageId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Delete message"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWebexMessage",
+        "parameters": [
+          {
+            "description": "Message ID.",
+            "in": "path",
+            "name": "messageId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Get message"
+      }
+    },
+    "/v1/people/me": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWebexMe",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Get current user"
+      }
+    },
+    "/v1/recordings": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWebexRecordings",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "List recordings"
+      }
+    },
+    "/v1/rooms": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWebexRooms",
+        "parameters": [
+          {
+            "description": "Room type filter.",
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "List rooms"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWebexRoom",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebexObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Create room"
+      }
+    },
+    "/v1/rooms/{roomId}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteWebexRoom",
+        "parameters": [
+          {
+            "description": "Room ID.",
+            "in": "path",
+            "name": "roomId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Delete room"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWebexRoom",
+        "parameters": [
+          {
+            "description": "Room ID.",
+            "in": "path",
+            "name": "roomId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Get room"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateWebexRoom",
+        "parameters": [
+          {
+            "description": "Room ID.",
+            "in": "path",
+            "name": "roomId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebexObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Update room"
+      }
+    },
+    "/v1/webhooks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWebexWebhooks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "List webhooks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWebexWebhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebexObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Create webhook"
+      }
+    },
+    "/v1/webhooks/{webhookId}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteWebexWebhook",
+        "parameters": [
+          {
+            "description": "Webhook ID.",
+            "in": "path",
+            "name": "webhookId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Delete webhook"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWebexWebhook",
+        "parameters": [
+          {
+            "description": "Webhook ID.",
+            "in": "path",
+            "name": "webhookId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webexOAuth2": []
+          }
+        ],
+        "summary": "Get webhook"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://webexapis.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "cisco-webex",
+    "source_note": "Cisco Webex publishes human API documentation but no recorded stable public downloadable OpenAPI document; this overlay covers selected rooms, messages, memberships, people, and webhooks endpoints.",
+    "source_refs": [
+      "https://developer.webex.com/docs/api/v1/rooms",
+      "https://developer.webex.com/docs/api/v1/roomsrooms",
+      "https://developer.webex.com/docs/api/v1/roomsmessages",
+      "https://developer.webex.com/docs/integrations"
+    ]
+  }
+}

@@ -1,0 +1,427 @@
+{
+  "components": {
+    "schemas": {
+      "BitwardenCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "BitwardenError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "BitwardenObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bitwardenBearer": {
+        "bearerFormat": "Bitwarden Public API access token",
+        "description": "Bitwarden Public API access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Bitwarden Public API human documentation. This is not an official Bitwarden OpenAPI document.",
+    "title": "Bitwarden Public API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/public/collections": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBitwardenCollections",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BitwardenCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bitwardenBearer": []
+          }
+        ],
+        "summary": "List collections"
+      }
+    },
+    "/public/collections/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBitwardenCollection",
+        "parameters": [
+          {
+            "description": "Collection ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BitwardenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bitwardenBearer": []
+          }
+        ],
+        "summary": "Get collection"
+      }
+    },
+    "/public/events": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBitwardenEvents",
+        "parameters": [
+          {
+            "description": "Start timestamp.",
+            "in": "query",
+            "name": "start",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "End timestamp.",
+            "in": "query",
+            "name": "end",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BitwardenCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bitwardenBearer": []
+          }
+        ],
+        "summary": "List events"
+      }
+    },
+    "/public/groups": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBitwardenGroups",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BitwardenCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bitwardenBearer": []
+          }
+        ],
+        "summary": "List groups"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBitwardenGroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BitwardenObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BitwardenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bitwardenBearer": []
+          }
+        ],
+        "summary": "Create group"
+      }
+    },
+    "/public/groups/{id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteBitwardenGroup",
+        "parameters": [
+          {
+            "description": "Group ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bitwardenBearer": []
+          }
+        ],
+        "summary": "Delete group"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBitwardenGroup",
+        "parameters": [
+          {
+            "description": "Group ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BitwardenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bitwardenBearer": []
+          }
+        ],
+        "summary": "Get group"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateBitwardenGroup",
+        "parameters": [
+          {
+            "description": "Group ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BitwardenObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BitwardenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bitwardenBearer": []
+          }
+        ],
+        "summary": "Update group"
+      }
+    },
+    "/public/members": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBitwardenMembers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BitwardenCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bitwardenBearer": []
+          }
+        ],
+        "summary": "List members"
+      }
+    },
+    "/public/members/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBitwardenMember",
+        "parameters": [
+          {
+            "description": "Member ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BitwardenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bitwardenBearer": []
+          }
+        ],
+        "summary": "Get member"
+      }
+    },
+    "/public/organization/info": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBitwardenOrganizationInfo",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BitwardenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bitwardenBearer": []
+          }
+        ],
+        "summary": "Get organization information"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.bitwarden.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "bitwarden",
+    "source_note": "Bitwarden publishes Swagger-rendered Public API documentation but no recorded stable public downloadable OpenAPI document; this overlay covers selected organization groups, collections, members, and events endpoints.",
+    "source_refs": [
+      "https://bitwarden.com/help/api/"
+    ]
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "components": {
+    "schemas": {
+      "CortexCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CortexError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CortexObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "cortexBearer": {
+        "bearerFormat": "Cortex API key",
+        "description": "Cortex API key carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official StrangeBee Cortex API human documentation. This is not an official Cortex OpenAPI document.",
+    "title": "Cortex API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/analyzer": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCortexAnalyzers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CortexCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cortexBearer": []
+          }
+        ],
+        "summary": "List analyzers"
+      }
+    },
+    "/analyzer/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCortexAnalyzer",
+        "parameters": [
+          {
+            "description": "Analyzer ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CortexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cortexBearer": []
+          }
+        ],
+        "summary": "Get analyzer"
+      }
+    },
+    "/job": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCortexJobs",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CortexCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cortexBearer": []
+          }
+        ],
+        "summary": "List jobs"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createCortexJob",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CortexObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CortexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cortexBearer": []
+          }
+        ],
+        "summary": "Create job"
+      }
+    },
+    "/job/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCortexJob",
+        "parameters": [
+          {
+            "description": "Job ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CortexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cortexBearer": []
+          }
+        ],
+        "summary": "Get job"
+      }
+    },
+    "/job/{id}/report": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCortexJobReport",
+        "parameters": [
+          {
+            "description": "Job ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CortexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cortexBearer": []
+          }
+        ],
+        "summary": "Get job report"
+      }
+    },
+    "/organization": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCortexOrganizations",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CortexCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cortexBearer": []
+          }
+        ],
+        "summary": "List organizations"
+      }
+    },
+    "/responder": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCortexResponders",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CortexCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cortexBearer": []
+          }
+        ],
+        "summary": "List responders"
+      }
+    },
+    "/responder/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCortexResponder",
+        "parameters": [
+          {
+            "description": "Responder ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CortexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cortexBearer": []
+          }
+        ],
+        "summary": "Get responder"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{cortex_host}/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "cortex",
+    "source_note": "Cortex publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected analyzer, responder, job, report, and organization endpoints.",
+    "source_refs": [
+      "https://docs.strangebee.com/cortex/api/api-guide/"
+    ]
+  }
+}

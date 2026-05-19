@@ -1,0 +1,501 @@
+{
+  "components": {
+    "schemas": {
+      "ZammadCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ZammadError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ZammadObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "zammadBasic": {
+        "description": "Zammad username and password supplied with HTTP Basic authentication.",
+        "scheme": "basic",
+        "type": "http"
+      },
+      "zammadToken": {
+        "description": "Zammad access token carried in the Authorization header using Token token=... syntax.",
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Zammad API human documentation. This is not an official Zammad OpenAPI document.",
+    "title": "Zammad API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/v1/groups": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listZammadGroups",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "List groups"
+      }
+    },
+    "/api/v1/object_manager_attributes": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listZammadObjectManagerAttributes",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "List object attributes"
+      }
+    },
+    "/api/v1/organizations": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listZammadOrganizations",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "List organizations"
+      }
+    },
+    "/api/v1/search": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchZammad",
+        "parameters": [
+          {
+            "description": "Search query.",
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "Search Zammad"
+      }
+    },
+    "/api/v1/ticket_articles": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listZammadTicketArticles",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "List ticket articles"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createZammadTicketArticle",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZammadObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "Create ticket article"
+      }
+    },
+    "/api/v1/tickets": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listZammadTickets",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "List tickets"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createZammadTicket",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZammadObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "Create ticket"
+      }
+    },
+    "/api/v1/tickets/{ticket_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getZammadTicket",
+        "parameters": [
+          {
+            "description": "Ticket ID.",
+            "in": "path",
+            "name": "ticket_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "Get ticket"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateZammadTicket",
+        "parameters": [
+          {
+            "description": "Ticket ID.",
+            "in": "path",
+            "name": "ticket_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZammadObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "Update ticket"
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listZammadUsers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "List users"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createZammadUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZammadObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "Create user"
+      }
+    },
+    "/api/v1/users/{user_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getZammadUser",
+        "parameters": [
+          {
+            "description": "User ID.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZammadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "zammadToken": []
+          }
+        ],
+        "summary": "Get user"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{zammad_host}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "zammad",
+    "source_note": "Zammad publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected tickets, users, groups, organizations, articles, attributes, and search endpoints.",
+    "source_refs": [
+      "https://docs.zammad.org/en/latest/api/intro.html",
+      "https://docs.zammad.org/en/latest/api/ticket.html"
+    ]
+  }
+}

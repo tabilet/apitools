@@ -1,0 +1,458 @@
+{
+  "components": {
+    "schemas": {
+      "HomeAssistantCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HomeAssistantError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HomeAssistantObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "homeAssistantBearer": {
+        "bearerFormat": "Home Assistant long-lived access token",
+        "description": "Home Assistant long-lived access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Home Assistant REST API human documentation. This is not an official Home Assistant OpenAPI document.",
+    "title": "Home Assistant REST API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHomeAssistantAPIStatus",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "homeAssistantBearer": []
+          }
+        ],
+        "summary": "Get API status"
+      }
+    },
+    "/camera_proxy/{entity_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHomeAssistantCameraProxy",
+        "parameters": [
+          {
+            "description": "Camera entity ID.",
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "homeAssistantBearer": []
+          }
+        ],
+        "summary": "Get camera proxy image"
+      }
+    },
+    "/config": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHomeAssistantConfig",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "homeAssistantBearer": []
+          }
+        ],
+        "summary": "Get configuration"
+      }
+    },
+    "/events/{event_type}": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "fireHomeAssistantEvent",
+        "parameters": [
+          {
+            "description": "Event type.",
+            "in": "path",
+            "name": "event_type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HomeAssistantObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "homeAssistantBearer": []
+          }
+        ],
+        "summary": "Fire event"
+      }
+    },
+    "/history/period": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHomeAssistantHistory",
+        "parameters": [
+          {
+            "description": "Entity filter.",
+            "in": "query",
+            "name": "filter_entity_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "homeAssistantBearer": []
+          }
+        ],
+        "summary": "Get history"
+      }
+    },
+    "/services": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHomeAssistantServices",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "homeAssistantBearer": []
+          }
+        ],
+        "summary": "List services"
+      }
+    },
+    "/services/{domain}/{service}": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "callHomeAssistantService",
+        "parameters": [
+          {
+            "description": "Service domain.",
+            "in": "path",
+            "name": "domain",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Service name.",
+            "in": "path",
+            "name": "service",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HomeAssistantObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "homeAssistantBearer": []
+          }
+        ],
+        "summary": "Call service"
+      }
+    },
+    "/states": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHomeAssistantStates",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "homeAssistantBearer": []
+          }
+        ],
+        "summary": "List states"
+      }
+    },
+    "/states/{entity_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHomeAssistantState",
+        "parameters": [
+          {
+            "description": "Entity ID.",
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "homeAssistantBearer": []
+          }
+        ],
+        "summary": "Get entity state"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "setHomeAssistantState",
+        "parameters": [
+          {
+            "description": "Entity ID.",
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HomeAssistantObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "homeAssistantBearer": []
+          }
+        ],
+        "summary": "Set entity state"
+      }
+    },
+    "/template": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "renderHomeAssistantTemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HomeAssistantObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "homeAssistantBearer": []
+          }
+        ],
+        "summary": "Render template"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{home_assistant_host}/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "home-assistant",
+    "source_note": "Home Assistant publishes human REST API documentation but no recorded stable public official OpenAPI document; this overlay covers selected config, state, service, event, history, template, and camera endpoints.",
+    "source_refs": [
+      "https://developers.home-assistant.io/docs/api/rest/"
+    ]
+  }
+}

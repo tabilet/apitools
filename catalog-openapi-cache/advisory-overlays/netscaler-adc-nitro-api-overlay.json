@@ -1,0 +1,250 @@
+{
+  "components": {
+    "schemas": {
+      "NetScalerCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "NetScalerError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "NetScalerObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "netscalerNitroAuthToken": {
+        "description": "NetScaler ADC NITRO session cookie carrying NITRO_AUTH_TOKEN after login.",
+        "in": "header",
+        "name": "Cookie",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official NetScaler ADC NITRO API human documentation. This is not an official NetScaler OpenAPI document.",
+    "title": "NetScaler ADC NITRO API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/nitro/v1/config/csvserver": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listNetScalerCSVServers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetScalerCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "netscalerNitroAuthToken": []
+          }
+        ],
+        "summary": "List content switching virtual servers"
+      }
+    },
+    "/nitro/v1/config/lbvserver": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listNetScalerLBVServers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetScalerCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "netscalerNitroAuthToken": []
+          }
+        ],
+        "summary": "List load-balancing virtual servers"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createNetScalerLBVServer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NetScalerObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetScalerObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "netscalerNitroAuthToken": []
+          }
+        ],
+        "summary": "Create load-balancing virtual server"
+      }
+    },
+    "/nitro/v1/config/login": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "loginNetScalerNitro",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NetScalerObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetScalerObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Create NITRO session"
+      }
+    },
+    "/nitro/v1/config/server": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listNetScalerServers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetScalerCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "netscalerNitroAuthToken": []
+          }
+        ],
+        "summary": "List servers"
+      }
+    },
+    "/nitro/v1/config/service": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listNetScalerServices",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetScalerCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "netscalerNitroAuthToken": []
+          }
+        ],
+        "summary": "List services"
+      }
+    },
+    "/nitro/v1/stat/lbvserver": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listNetScalerLBVServerStats",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetScalerCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "netscalerNitroAuthToken": []
+          }
+        ],
+        "summary": "List load-balancing virtual server statistics"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{netscaler_host}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "netscaler",
+    "source_note": "NetScaler ADC publishes human NITRO API reference documentation but no recorded stable public official OpenAPI document; this overlay covers selected configuration, statistics, and login endpoints.",
+    "source_refs": [
+      "https://developer-docs.netscaler.com/en-us/adc-nitro-api/current-release/api-reference.html"
+    ]
+  }
+}

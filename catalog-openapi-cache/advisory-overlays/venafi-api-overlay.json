@@ -1,0 +1,304 @@
+{
+  "components": {
+    "schemas": {
+      "VenafiCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "VenafiError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "VenafiObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "venafiCloudAPIKey": {
+        "description": "Venafi TLS Protect Cloud API key carried in the tppl-api-key header.",
+        "in": "header",
+        "name": "tppl-api-key",
+        "type": "apiKey"
+      },
+      "venafiDatacenterBearer": {
+        "bearerFormat": "Venafi Datacenter WebSDK access token",
+        "description": "Venafi TLS Protect Datacenter access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Venafi TLS Protect Cloud and Datacenter human documentation. This is not an official Venafi OpenAPI document.",
+    "title": "Venafi API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v1/applications": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listVenafiCloudApplications",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VenafiCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "venafiCloudAPIKey": []
+          }
+        ],
+        "summary": "List TLS Protect Cloud applications"
+      }
+    },
+    "/v1/certificaterequests": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listVenafiCloudCertificateRequests",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VenafiCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "venafiCloudAPIKey": []
+          }
+        ],
+        "summary": "List TLS Protect Cloud certificate requests"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createVenafiCloudCertificateRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VenafiObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VenafiObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "venafiCloudAPIKey": []
+          }
+        ],
+        "summary": "Create TLS Protect Cloud certificate request"
+      }
+    },
+    "/v1/certificates": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listVenafiCloudCertificates",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VenafiCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "venafiCloudAPIKey": []
+          }
+        ],
+        "summary": "List TLS Protect Cloud certificates"
+      }
+    },
+    "/v1/preferences": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getVenafiCloudPreferences",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VenafiObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "venafiCloudAPIKey": []
+          }
+        ],
+        "summary": "Get TLS Protect Cloud preferences"
+      }
+    },
+    "/vedauth/authorize/oauth": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "authorizeVenafiDatacenter",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VenafiObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VenafiObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Create Datacenter WebSDK access token"
+      }
+    },
+    "/vedsdk/certificates/request": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "requestVenafiDatacenterCertificate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VenafiObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VenafiObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "venafiDatacenterBearer": []
+          }
+        ],
+        "summary": "Request Datacenter certificate"
+      }
+    },
+    "/vedsdk/certificates/retrieve": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "retrieveVenafiDatacenterCertificate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VenafiObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VenafiObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "venafiDatacenterBearer": []
+          }
+        ],
+        "summary": "Retrieve Datacenter certificate"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{venafi_host}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "venafi",
+    "source_note": "Venafi publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected TLS Protect Cloud certificate/application endpoints and Datacenter WebSDK certificate/token endpoints.",
+    "source_refs": [
+      "https://developer.venafi.com/tlsprotectcloud/reference",
+      "https://developer.venafi.com/tlsprotectdatacenter/reference"
+    ]
+  }
+}

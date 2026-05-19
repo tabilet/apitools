@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 153; got != want {
+	if got, want := len(candidates), 165; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -37,6 +37,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"beeminder",
 		"bitbucket",
 		"bitly",
+		"bitwarden",
 		"box",
 		"brandfetch",
 		"brevo",
@@ -45,6 +46,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"calendly",
 		"chargebee",
 		"circleci",
+		"cisco-webex",
 		"clearbit",
 		"clickup",
 		"clockify",
@@ -55,6 +57,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"contentful",
 		"convertkit",
 		"copper",
+		"cortex",
 		"customer-io",
 		"databricks",
 		"deepl",
@@ -91,6 +94,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"harvest",
 		"help-scout",
 		"highlevel",
+		"home-assistant",
 		"hubspot",
 		"intercom",
 		"invoice-ninja",
@@ -114,10 +118,12 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"mautic",
 		"messagebird",
 		"microsoft-graph",
+		"misp",
 		"monday-com",
 		"monica-crm",
 		"nasa",
 		"netlify",
+		"netscaler",
 		"nocodb",
 		"notion",
 		"odoo",
@@ -136,9 +142,11 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"quickchart",
 		"reddit",
 		"rocket-chat",
+		"rundeck",
 		"salesforce",
 		"salesmate",
 		"seatable",
+		"securityscorecard",
 		"sendgrid",
 		"sendy",
 		"sentry",
@@ -162,13 +170,17 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"typeform",
 		"unleashed-software",
 		"uptimerobot",
+		"urlscan",
+		"venafi",
 		"vero",
 		"webflow",
+		"wekan",
 		"whatsapp",
 		"wise",
 		"woocommerce",
 		"workable",
 		"xero",
+		"zammad",
 		"zendesk",
 		"zoom",
 	}

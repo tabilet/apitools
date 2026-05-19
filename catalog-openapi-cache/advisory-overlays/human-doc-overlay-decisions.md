@@ -91,6 +91,14 @@ documents and must not be treated as provider truth.
 | Wise | `wise-platform-api-overlay.json` | Platform API docs support a focused profiles, quotes, recipients, transfers, balances, statements, rates, and webhook subscriptions subset. |
 | WooCommerce | `woocommerce-rest-api-overlay.json` | REST API docs support a focused products, orders, customers, coupons, refunds, reports, and webhooks subset; WordPress site host remains operator supplied. |
 | Workable | `workable-api-overlay.json` | API docs support a focused jobs, candidates, members, recruiters, stages, scheduled events, and requisitions subset; account subdomain remains operator supplied. |
+| Bitwarden | `bitwarden-public-api-overlay.json` | Public API docs support a focused organization groups, collections, members, events, and organization info subset; OAuth token exchange remains security metadata only. |
+| Cisco Webex | `cisco-webex-api-overlay.json` | API docs support a focused rooms, messages, memberships, people, webhooks, attachment actions, and recordings subset. |
+| Cortex | `cortex-api-overlay.json` | API guide docs support a focused analyzer, responder, job, report, and organization subset; instance host remains operator supplied. |
+| Home Assistant | `home-assistant-rest-api-overlay.json` | REST API docs support a focused status, config, states, services, history, template, events, and camera proxy subset; local entity schemas remain instance-specific. |
+| NetScaler ADC | `netscaler-adc-nitro-api-overlay.json` | NITRO API docs support a focused login, load-balancing, service, server, content-switching, and statistics subset; appliance host remains operator supplied. |
+| Venafi | `venafi-api-overlay.json` | TLS Protect Cloud and Datacenter docs support a focused certificate, certificate request, application, preference, OAuth, request, and retrieve subset. |
+| Wekan | `wekan-rest-api-overlay.json` | REST API wiki docs and OpenAPI generator docs support a focused login, user, board, list, card, and checklist subset; host and board schemas remain operator supplied. |
+| Zammad | `zammad-api-overlay.json` | API docs support a focused ticket, user, group, organization, article, object attribute, and search subset; instance host remains operator supplied. |
 
 ## No Endpoint Overlay
 

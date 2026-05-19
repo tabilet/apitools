@@ -1,0 +1,535 @@
+{
+  "components": {
+    "schemas": {
+      "WekanCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WekanError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WekanObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "wekanBearer": {
+        "bearerFormat": "Wekan session token",
+        "description": "Wekan session token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Wekan REST API wiki documentation. This is not an official Wekan OpenAPI document.",
+    "title": "Wekan REST API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/boards": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWekanBoards",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wekanBearer": []
+          }
+        ],
+        "summary": "List boards"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWekanBoard",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WekanObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wekanBearer": []
+          }
+        ],
+        "summary": "Create board"
+      }
+    },
+    "/api/boards/{board_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWekanBoard",
+        "parameters": [
+          {
+            "description": "Board ID.",
+            "in": "path",
+            "name": "board_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wekanBearer": []
+          }
+        ],
+        "summary": "Get board"
+      }
+    },
+    "/api/boards/{board_id}/cards/{card_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWekanCard",
+        "parameters": [
+          {
+            "description": "Board ID.",
+            "in": "path",
+            "name": "board_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Card ID.",
+            "in": "path",
+            "name": "card_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wekanBearer": []
+          }
+        ],
+        "summary": "Get card"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateWekanCard",
+        "parameters": [
+          {
+            "description": "Board ID.",
+            "in": "path",
+            "name": "board_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Card ID.",
+            "in": "path",
+            "name": "card_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WekanObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wekanBearer": []
+          }
+        ],
+        "summary": "Update card"
+      }
+    },
+    "/api/boards/{board_id}/lists": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWekanLists",
+        "parameters": [
+          {
+            "description": "Board ID.",
+            "in": "path",
+            "name": "board_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wekanBearer": []
+          }
+        ],
+        "summary": "List board lists"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWekanList",
+        "parameters": [
+          {
+            "description": "Board ID.",
+            "in": "path",
+            "name": "board_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WekanObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wekanBearer": []
+          }
+        ],
+        "summary": "Create list"
+      }
+    },
+    "/api/boards/{board_id}/lists/{list_id}/cards": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWekanCards",
+        "parameters": [
+          {
+            "description": "Board ID.",
+            "in": "path",
+            "name": "board_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "List ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wekanBearer": []
+          }
+        ],
+        "summary": "List cards"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWekanCard",
+        "parameters": [
+          {
+            "description": "Board ID.",
+            "in": "path",
+            "name": "board_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "List ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WekanObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wekanBearer": []
+          }
+        ],
+        "summary": "Create card"
+      }
+    },
+    "/api/checklists/{checklist_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWekanChecklist",
+        "parameters": [
+          {
+            "description": "Checklist ID.",
+            "in": "path",
+            "name": "checklist_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wekanBearer": []
+          }
+        ],
+        "summary": "Get checklist"
+      }
+    },
+    "/api/user": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWekanCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wekanBearer": []
+          }
+        ],
+        "summary": "Get current user"
+      }
+    },
+    "/users/login": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "loginWekan",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WekanObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WekanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Create Wekan session"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{wekan_host}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "wekan",
+    "source_note": "Wekan publishes REST API wiki documentation and OpenAPI generation tooling but no recorded stable public generated OpenAPI artifact; this overlay covers selected login, user, board, list, card, and checklist endpoints.",
+    "source_refs": [
+      "https://github.com/wekan/wekan/wiki/REST-API",
+      "https://github.com/wekan/wekan/wiki/REST-API-Authentication",
+      "https://github.com/wekan/wekan/tree/main/openapi"
+    ]
+  }
+}
