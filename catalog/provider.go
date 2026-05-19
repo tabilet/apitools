@@ -26,8 +26,8 @@ const (
 	ProviderCandidateOnly        ProviderReviewState = "candidate-only"
 )
 
-// SpecKind identifies the machine-readable or documentation format of a spec
-// reference.
+// SpecKind identifies the catalog source reference kind. SpecProtocol records
+// the API description protocol or model family represented by the reference.
 type SpecKind string
 
 const (

@@ -40,20 +40,22 @@ type CatalogSpecRefreshReport struct {
 
 // CatalogSpecRefreshResult records one downloaded catalog review artifact.
 type CatalogSpecRefreshResult struct {
-	ProviderID       string           `json:"provider_id"`
-	SpecRefID        string           `json:"spec_ref_id"`
-	Kind             catalog.SpecKind `json:"kind"`
-	URL              string           `json:"url"`
-	FinalURL         string           `json:"final_url,omitempty"`
-	DownloadStatus   string           `json:"download_status"`
-	ValidationStatus string           `json:"validation_status"`
-	ValidationError  string           `json:"validation_error,omitempty"`
-	ArtifactPath     string           `json:"artifact_path,omitempty"`
-	SavedPath        string           `json:"saved_path,omitempty"`
-	SHA256           string           `json:"sha256,omitempty"`
-	Bytes            int64            `json:"bytes,omitempty"`
-	Metadata         SpecMetadata     `json:"metadata,omitempty"`
-	ManualFollowUps  []string         `json:"manual_follow_ups,omitempty"`
+	ProviderID       string               `json:"provider_id"`
+	SpecRefID        string               `json:"spec_ref_id"`
+	Kind             catalog.SpecKind     `json:"kind"`
+	Protocol         catalog.SpecProtocol `json:"protocol"`
+	ProtocolVersion  string               `json:"protocol_version,omitempty"`
+	URL              string               `json:"url"`
+	FinalURL         string               `json:"final_url,omitempty"`
+	DownloadStatus   string               `json:"download_status"`
+	ValidationStatus string               `json:"validation_status"`
+	ValidationError  string               `json:"validation_error,omitempty"`
+	ArtifactPath     string               `json:"artifact_path,omitempty"`
+	SavedPath        string               `json:"saved_path,omitempty"`
+	SHA256           string               `json:"sha256,omitempty"`
+	Bytes            int64                `json:"bytes,omitempty"`
+	Metadata         SpecMetadata         `json:"metadata,omitempty"`
+	ManualFollowUps  []string             `json:"manual_follow_ups,omitempty"`
 }
 
 // RefreshCatalogSpecReferences downloads selected catalog spec references into
@@ -106,10 +108,13 @@ func (c *Client) refreshCatalogSpecReference(ctx context.Context, ref catalog.Re
 	if catalogRefreshStatusNeedsStrictReview(validationStatus) {
 		manualFollowUps = append(manualFollowUps, "Review strict validation errors before treating this artifact as import-ready metadata.")
 	}
+	protocol := catalogRefreshProtocolClassification(ref, metadata)
 	return CatalogSpecRefreshResult{
 		ProviderID:       ref.ProviderID,
 		SpecRefID:        ref.SpecRefID,
 		Kind:             ref.Kind,
+		Protocol:         protocol.Protocol,
+		ProtocolVersion:  protocol.Version,
 		URL:              ref.URL,
 		FinalURL:         finalURL.String(),
 		DownloadStatus:   CatalogRefreshDownloaded,
@@ -122,6 +127,16 @@ func (c *Client) refreshCatalogSpecReference(ctx context.Context, ref catalog.Re
 		Metadata:         metadata,
 		ManualFollowUps:  manualFollowUps,
 	}, nil
+}
+
+func catalogRefreshProtocolClassification(ref catalog.RefreshableSpecReference, metadata SpecMetadata) catalog.SpecProtocolClassification {
+	if metadata.Swagger != "" {
+		return catalog.SpecProtocolClassification{Protocol: catalog.SpecProtocolSwagger, Version: metadata.Swagger}
+	}
+	if metadata.OpenAPI != "" {
+		return catalog.SpecProtocolClassification{Protocol: catalog.SpecProtocolOpenAPI, Version: metadata.OpenAPI}
+	}
+	return ref.ProtocolClassification()
 }
 
 func validateCatalogRefreshContent(ctx context.Context, ref catalog.RefreshableSpecReference, content []byte, sourceURL string) (string, SpecMetadata, error) {

@@ -21,6 +21,9 @@ func TestCatalogSpecRefreshReviewReportsMissingRegistration(t *testing.T) {
 	if result.ValidationStatus != CatalogRefreshMissingRegistration {
 		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshMissingRegistration)
 	}
+	if result.Protocol != catalog.SpecProtocolOpenAPI {
+		t.Fatalf("protocol = %q, want openapi", result.Protocol)
+	}
 	if result.Exists {
 		t.Fatalf("exists = true, want false")
 	}
@@ -60,6 +63,9 @@ func TestCatalogSpecRefreshReviewValidOpenAPI(t *testing.T) {
 	result := singleRefreshReviewResult(t, report)
 	if result.ValidationStatus != CatalogRefreshValidOpenAPI {
 		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshValidOpenAPI)
+	}
+	if result.Protocol != catalog.SpecProtocolOpenAPI || result.ProtocolVersion != "3.0.0" {
+		t.Fatalf("protocol = %q %q, want openapi 3.0.0", result.Protocol, result.ProtocolVersion)
 	}
 	if result.Bytes == 0 || result.SHA256 == "" || !result.Exists {
 		t.Fatalf("missing file evidence: %#v", result)
@@ -118,6 +124,9 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 			if result.ValidationStatus != CatalogRefreshValidStructured {
 				t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshValidStructured)
 			}
+			if result.Protocol != refreshReviewTestProtocol(tc.kind) {
+				t.Fatalf("protocol = %q, want %q", result.Protocol, refreshReviewTestProtocol(tc.kind))
+			}
 		})
 	}
 }
@@ -135,6 +144,9 @@ func TestCatalogSpecRefreshReviewNonOpenAPIMachineSpec(t *testing.T) {
 	result := singleRefreshReviewResult(t, report)
 	if result.ValidationStatus != CatalogRefreshSkippedValidation {
 		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshSkippedValidation)
+	}
+	if result.Protocol != catalog.SpecProtocolDropboxStone {
+		t.Fatalf("protocol = %q, want dropbox-stone", result.Protocol)
 	}
 }
 
@@ -318,4 +330,17 @@ func hasRefreshReviewFollowUp(result CatalogSpecRefreshReviewResult, text string
 		}
 	}
 	return false
+}
+
+func refreshReviewTestProtocol(kind catalog.SpecKind) catalog.SpecProtocol {
+	switch kind {
+	case catalog.SpecKindGoogleDiscovery:
+		return catalog.SpecProtocolGoogleDiscovery
+	case catalog.SpecKindOpenAPIIndex:
+		return catalog.SpecProtocolOpenAPIIndex
+	case catalog.SpecKindSmithyJSON:
+		return catalog.SpecProtocolSmithy
+	default:
+		return catalog.SpecProtocolUnknown
+	}
 }

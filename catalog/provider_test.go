@@ -244,6 +244,34 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 	}
 }
 
+func TestSpecReferenceProtocolClassification(t *testing.T) {
+	tests := []struct {
+		name    string
+		ref     SpecReference
+		want    SpecProtocol
+		version string
+	}{
+		{name: "openapi31", ref: SpecReference{Kind: SpecKindOpenAPI, Version: "3.1.0"}, want: SpecProtocolOpenAPI, version: "3.1"},
+		{name: "openapi30", ref: SpecReference{Kind: SpecKindOpenAPI, SourceNote: "Official API OpenAPI v3.0 document."}, want: SpecProtocolOpenAPI, version: "3.0"},
+		{name: "openapi3 family", ref: SpecReference{Kind: SpecKindOpenAPI, SourceNote: "Official API OpenAPI v3 specification."}, want: SpecProtocolOpenAPI, version: "3"},
+		{name: "swagger", ref: SpecReference{ID: "gitlab-openapi-v2", Kind: SpecKindOpenAPI, Version: "Swagger 2.0 / GitLab API v4"}, want: SpecProtocolSwagger, version: "2.0"},
+		{name: "product version not openapi version", ref: SpecReference{Kind: SpecKindOpenAPI, Version: "10.3.0"}, want: SpecProtocolOpenAPI},
+		{name: "openapi id with product v2", ref: SpecReference{ID: "clickup-api-v2-openapi", Kind: SpecKindOpenAPI, Version: "2.0"}, want: SpecProtocolOpenAPI},
+		{name: "smithy", ref: SpecReference{Kind: SpecKindSmithyJSON}, want: SpecProtocolSmithy},
+		{name: "discovery", ref: SpecReference{Kind: SpecKindGoogleDiscovery}, want: SpecProtocolGoogleDiscovery},
+		{name: "stone", ref: SpecReference{Kind: SpecKindDropboxStone}, want: SpecProtocolDropboxStone},
+		{name: "human docs", ref: SpecReference{Kind: SpecKindHumanDocs}, want: SpecProtocolHumanDocs},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got := test.ref.ProtocolClassification()
+			if got.Protocol != test.want || got.Version != test.version {
+				t.Fatalf("ProtocolClassification() = %#v, want protocol=%q version=%q", got, test.want, test.version)
+			}
+		})
+	}
+}
+
 func TestBuiltInRefreshableSpecReferences(t *testing.T) {
 	rows := BuiltInRefreshableSpecReferences([]CatalogSpecArtifact{
 		{ProviderID: "slack", SpecRefID: "slack-web-openapi-v2", Path: "openapi/slack-web-openapi-v2.json"},
@@ -252,6 +280,9 @@ func TestBuiltInRefreshableSpecReferences(t *testing.T) {
 		t.Fatal("BuiltInRefreshableSpecReferences() returned no rows")
 	}
 	var foundSlack bool
+	var foundAWSS3 bool
+	var foundDropbox bool
+	var foundGmail bool
 	var foundHumanDocs bool
 	for _, row := range rows {
 		if row.Kind == SpecKindHumanDocs {
@@ -262,6 +293,27 @@ func TestBuiltInRefreshableSpecReferences(t *testing.T) {
 			if row.RegisteredArtifactPath != "openapi/slack-web-openapi-v2.json" {
 				t.Fatalf("slack registered path = %q", row.RegisteredArtifactPath)
 			}
+			if row.Protocol != SpecProtocolSwagger || row.ProtocolVersion != "2.0" {
+				t.Fatalf("slack protocol = %q %q, want swagger 2.0", row.Protocol, row.ProtocolVersion)
+			}
+		}
+		if row.ProviderID == "aws-s3" && row.SpecRefID == "aws-s3-smithy-model" {
+			foundAWSS3 = true
+			if row.Protocol != SpecProtocolSmithy {
+				t.Fatalf("aws-s3 protocol = %q, want smithy", row.Protocol)
+			}
+		}
+		if row.ProviderID == "dropbox" {
+			foundDropbox = true
+			if row.Protocol != SpecProtocolDropboxStone {
+				t.Fatalf("dropbox protocol = %q, want dropbox-stone", row.Protocol)
+			}
+		}
+		if row.ProviderID == "gmail" {
+			foundGmail = true
+			if row.Protocol != SpecProtocolGoogleDiscovery {
+				t.Fatalf("gmail protocol = %q, want google-discovery", row.Protocol)
+			}
 		}
 	}
 	if foundHumanDocs {
@@ -269,6 +321,9 @@ func TestBuiltInRefreshableSpecReferences(t *testing.T) {
 	}
 	if !foundSlack {
 		t.Fatal("refreshable rows missing slack OpenAPI reference")
+	}
+	if !foundAWSS3 || !foundDropbox || !foundGmail {
+		t.Fatalf("refreshable rows missing protocol examples: aws=%t dropbox=%t gmail=%t", foundAWSS3, foundDropbox, foundGmail)
 	}
 	for i := 1; i < len(rows); i++ {
 		if rows[i-1].ProviderID > rows[i].ProviderID || rows[i-1].ProviderID == rows[i].ProviderID && rows[i-1].SpecRefID > rows[i].SpecRefID {

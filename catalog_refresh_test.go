@@ -36,6 +36,9 @@ func TestRefreshCatalogSpecReferencesDownloadsValidOpenAPI(t *testing.T) {
 	if result.ValidationStatus != CatalogRefreshValidOpenAPI {
 		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
 	}
+	if result.Protocol != catalog.SpecProtocolOpenAPI || result.ProtocolVersion != "3.0.0" {
+		t.Fatalf("protocol = %q %q, want openapi 3.0.0", result.Protocol, result.ProtocolVersion)
+	}
 	if result.Metadata.Title != "Refresh Test" || result.Metadata.OperationCount != 1 {
 		t.Fatalf("metadata = %#v", result.Metadata)
 	}
@@ -107,6 +110,9 @@ func TestRefreshCatalogSpecReferencesSavesParseableInvalidSwagger(t *testing.T) 
 	result := report.Results[0]
 	if result.ValidationStatus != CatalogRefreshParseableSwaggerInvalid {
 		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	}
+	if result.Protocol != catalog.SpecProtocolSwagger || result.ProtocolVersion != "2.0" {
+		t.Fatalf("protocol = %q %q, want swagger 2.0", result.Protocol, result.ProtocolVersion)
 	}
 	if result.ValidationError == "" {
 		t.Fatalf("ValidationError is empty")
@@ -183,6 +189,9 @@ func TestRefreshCatalogSpecReferencesValidatesStructuredNonOpenAPI(t *testing.T)
 	result := report.Results[0]
 	if result.ValidationStatus != CatalogRefreshValidStructured {
 		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	}
+	if result.Protocol != catalog.SpecProtocolGoogleDiscovery {
+		t.Fatalf("protocol = %q, want google-discovery", result.Protocol)
 	}
 	if result.ArtifactPath != "google-discovery/google-test-discovery.json" {
 		t.Fatalf("ArtifactPath = %q", result.ArtifactPath)

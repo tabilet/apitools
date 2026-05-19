@@ -161,7 +161,7 @@ func TestCatalogSpecsOutputAndJSON(t *testing.T) {
 		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"PROVIDER", "slack-web-openapi-v2", "openapi", "official-github"} {
+	for _, expected := range []string{"PROVIDER", "PROTOCOL", "slack-web-openapi-v2", "openapi", "swagger 2.0", "smithy", "google-discovery", "dropbox-stone", "official-github"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("catalog specs output missing %q:\n%s", expected, text)
 		}
@@ -176,8 +176,10 @@ func TestCatalogSpecsOutputAndJSON(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
-	if !strings.Contains(out.String(), `"spec_ref_id": "slack-web-openapi-v2"`) {
-		t.Fatalf("catalog specs json missing slack row:\n%s", out.String())
+	for _, expected := range []string{`"spec_ref_id": "slack-web-openapi-v2"`, `"protocol": "swagger"`, `"protocol_version": "2.0"`} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("catalog specs json missing %q:\n%s", expected, out.String())
+		}
 	}
 }
 
@@ -240,6 +242,8 @@ func TestCatalogRefreshCommandRegistersSelectedSpec(t *testing.T) {
 			ProviderID:       rows[0].ProviderID,
 			SpecRefID:        rows[0].SpecRefID,
 			Kind:             rows[0].Kind,
+			Protocol:         catalog.SpecProtocolSwagger,
+			ProtocolVersion:  "2.0",
 			URL:              rows[0].URL,
 			FinalURL:         rows[0].URL,
 			DownloadStatus:   apitools.CatalogRefreshDownloaded,
@@ -293,8 +297,10 @@ func TestCatalogRefreshCommandRegistersSelectedSpec(t *testing.T) {
 	if selected[0].RegisteredArtifactPath != "openapi/registered-slack.json" {
 		t.Fatalf("selected registered artifact path = %q", selected[0].RegisteredArtifactPath)
 	}
-	if !strings.Contains(out.String(), "Manual follow-ups") {
-		t.Fatalf("refresh output missing follow-ups:\n%s", out.String())
+	for _, expected := range []string{"PROTOCOL", "swagger 2.0", "Manual follow-ups"} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("refresh output missing %q:\n%s", expected, out.String())
+		}
 	}
 	cache, err := sqlitecache.Open(cachePath)
 	if err != nil {
@@ -379,7 +385,7 @@ func TestCatalogRefreshReportOutputAndJSON(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
-	for _, expected := range []string{"slack-web-openapi-v2", "valid-openapi", artifactPath, "Manual follow-ups"} {
+	for _, expected := range []string{"slack-web-openapi-v2", "openapi 3.0.0", "valid-openapi", artifactPath, "Manual follow-ups"} {
 		if !strings.Contains(out.String(), expected) {
 			t.Fatalf("refresh report output missing %q:\n%s", expected, out.String())
 		}
@@ -391,7 +397,7 @@ func TestCatalogRefreshReportOutputAndJSON(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
-	for _, expected := range []string{`"provider_id": "slack"`, `"spec_ref_id": "slack-web-openapi-v2"`, `"validation_status": "valid-openapi"`} {
+	for _, expected := range []string{`"provider_id": "slack"`, `"spec_ref_id": "slack-web-openapi-v2"`, `"protocol": "openapi"`, `"protocol_version": "3.0.0"`, `"validation_status": "valid-openapi"`} {
 		if !strings.Contains(out.String(), expected) {
 			t.Fatalf("refresh report json missing %q:\n%s", expected, out.String())
 		}
@@ -513,7 +519,7 @@ func TestCatalogInspectShowsResolutionAndNotes(t *testing.T) {
 		"Resolved OpenAPI: built-in-spec-reference",
 		"Resolved security: built-in-security-overlay",
 		"Auth status: present-incomplete",
-		"slack-web-openapi-v2",
+		"slack-web-openapi-v2 [openapi/swagger 2.0]",
 		"slack-web-api-auth-review",
 	} {
 		if !strings.Contains(text, expected) {

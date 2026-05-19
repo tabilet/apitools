@@ -48,6 +48,8 @@ type ProviderAdvisory struct {
 type AdvisorySpecReference struct {
 	ID                     string          `json:"id"`
 	Kind                   SpecKind        `json:"kind"`
+	Protocol               SpecProtocol    `json:"protocol"`
+	ProtocolVersion        string          `json:"protocol_version,omitempty"`
 	URL                    string          `json:"url"`
 	SourceAuthority        SourceAuthority `json:"source_authority"`
 	Version                string          `json:"version,omitempty"`
@@ -144,9 +146,12 @@ func BuildProviderAdvisoryReport(options ProviderAdvisoryOptions) (ProviderAdvis
 		}
 		for _, ref := range provider.SpecReferences {
 			artifactPath := artifactPathByKey[provider.ID+"/"+ref.ID]
+			protocol := ref.ProtocolClassification()
 			advisory.SpecReferences = append(advisory.SpecReferences, AdvisorySpecReference{
 				ID:                     ref.ID,
 				Kind:                   ref.Kind,
+				Protocol:               protocol.Protocol,
+				ProtocolVersion:        protocol.Version,
 				URL:                    ref.URL,
 				SourceAuthority:        ref.SourceAuthority,
 				Version:                ref.Version,

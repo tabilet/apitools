@@ -21,10 +21,22 @@ type RefreshableSpecReference struct {
 	ProviderName           string          `json:"provider_name"`
 	SpecRefID              string          `json:"spec_ref_id"`
 	Kind                   SpecKind        `json:"kind"`
+	Protocol               SpecProtocol    `json:"protocol"`
+	ProtocolVersion        string          `json:"protocol_version,omitempty"`
 	URL                    string          `json:"url"`
 	SourceAuthority        SourceAuthority `json:"source_authority"`
 	VerifiedAt             string          `json:"verified_at,omitempty"`
 	RegisteredArtifactPath string          `json:"registered_artifact_path,omitempty"`
+}
+
+// ProtocolClassification returns the protocol/model family for a refreshable
+// row. Built-in rows carry this explicitly; caller-constructed rows fall back
+// to their source kind.
+func (ref RefreshableSpecReference) ProtocolClassification() SpecProtocolClassification {
+	if ref.Protocol != "" {
+		return SpecProtocolClassification{Protocol: ref.Protocol, Version: ref.ProtocolVersion}
+	}
+	return specProtocolClassificationForKind(ref.Kind)
 }
 
 // BuiltInRefreshableSpecReferences returns refreshable built-in provider spec
@@ -54,11 +66,14 @@ func RefreshableSpecReferences(providers []Provider, artifacts []CatalogSpecArti
 			if !refreshableSpecKind(ref.Kind) {
 				continue
 			}
+			protocol := ref.ProtocolClassification()
 			rows = append(rows, RefreshableSpecReference{
 				ProviderID:             provider.ID,
 				ProviderName:           provider.DisplayName,
 				SpecRefID:              ref.ID,
 				Kind:                   ref.Kind,
+				Protocol:               protocol.Protocol,
+				ProtocolVersion:        protocol.Version,
 				URL:                    ref.URL,
 				SourceAuthority:        ref.SourceAuthority,
 				VerifiedAt:             ref.VerifiedAt,

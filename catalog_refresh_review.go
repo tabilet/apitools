@@ -44,6 +44,8 @@ type CatalogSpecRefreshReviewResult struct {
 	ProviderName           string                  `json:"provider_name,omitempty"`
 	SpecRefID              string                  `json:"spec_ref_id"`
 	Kind                   catalog.SpecKind        `json:"kind"`
+	Protocol               catalog.SpecProtocol    `json:"protocol"`
+	ProtocolVersion        string                  `json:"protocol_version,omitempty"`
 	URL                    string                  `json:"url"`
 	SourceAuthority        catalog.SourceAuthority `json:"source_authority,omitempty"`
 	VerifiedAt             string                  `json:"verified_at,omitempty"`
@@ -107,11 +109,14 @@ func normalizeCatalogSpecRefreshReviewOptions(opts CatalogSpecRefreshReviewOptio
 }
 
 func reviewCatalogRefreshArtifact(ref catalog.RefreshableSpecReference, opts CatalogSpecRefreshReviewOptions) (CatalogSpecRefreshReviewResult, error) {
+	protocol := ref.ProtocolClassification()
 	result := CatalogSpecRefreshReviewResult{
 		ProviderID:             ref.ProviderID,
 		ProviderName:           ref.ProviderName,
 		SpecRefID:              ref.SpecRefID,
 		Kind:                   ref.Kind,
+		Protocol:               protocol.Protocol,
+		ProtocolVersion:        protocol.Version,
 		URL:                    ref.URL,
 		SourceAuthority:        ref.SourceAuthority,
 		VerifiedAt:             ref.VerifiedAt,
@@ -163,6 +168,9 @@ func reviewCatalogRefreshArtifact(ref catalog.RefreshableSpecReference, opts Cat
 	status, metadata, err := validateCatalogRefreshContent(context.Background(), ref, content, ref.URL)
 	result.ValidationStatus = status
 	result.Metadata = metadata
+	protocol = catalogRefreshProtocolClassification(ref, metadata)
+	result.Protocol = protocol.Protocol
+	result.ProtocolVersion = protocol.Version
 	if err != nil {
 		result.ValidationError = err.Error()
 		if !catalogRefreshStatusAllowsSave(status) {

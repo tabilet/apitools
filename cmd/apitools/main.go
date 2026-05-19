@@ -323,9 +323,9 @@ func runCatalogSpecs(args []string, out, errOut io.Writer) int {
 		}
 		return 0
 	}
-	fmt.Fprintf(out, "%-18s %-34s %-16s %-18s %-12s %s\n", "PROVIDER", "SPEC_REF", "KIND", "SOURCE", "VERIFIED", "ARTIFACT")
+	fmt.Fprintf(out, "%-18s %-34s %-16s %-16s %-18s %-12s %s\n", "PROVIDER", "SPEC_REF", "KIND", "PROTOCOL", "SOURCE", "VERIFIED", "ARTIFACT")
 	for _, row := range rows {
-		fmt.Fprintf(out, "%-18s %-34s %-16s %-18s %-12s %s\n", row.ProviderID, row.SpecRefID, row.Kind, row.SourceAuthority, row.VerifiedAt, row.RegisteredArtifactPath)
+		fmt.Fprintf(out, "%-18s %-34s %-16s %-16s %-18s %-12s %s\n", row.ProviderID, row.SpecRefID, row.Kind, protocolLabel(row.Protocol, row.ProtocolVersion), row.SourceAuthority, row.VerifiedAt, row.RegisteredArtifactPath)
 	}
 	return 0
 }
@@ -775,7 +775,7 @@ func writeCatalogAdvisoryReport(out io.Writer, report catalogpkg.ProviderAdvisor
 		if len(provider.SpecReferences) > 0 {
 			fmt.Fprintln(out, "Spec references:")
 			for _, ref := range provider.SpecReferences {
-				fmt.Fprintf(out, "- %s [%s] %s\n", ref.ID, ref.Kind, ref.URL)
+				fmt.Fprintf(out, "- %s [%s/%s] %s\n", ref.ID, ref.Kind, protocolLabel(ref.Protocol, ref.ProtocolVersion), ref.URL)
 				if ref.RegisteredArtifactPath != "" {
 					fmt.Fprintf(out, "  artifact: %s\n", ref.RegisteredArtifactPath)
 				}
@@ -817,7 +817,8 @@ func writeCatalogInspect(out io.Writer, resolved catalogpkg.ResolvedProvider) {
 	if len(provider.SpecReferences) > 0 {
 		fmt.Fprintln(out, "Spec references:")
 		for _, ref := range provider.SpecReferences {
-			fmt.Fprintf(out, "- %s [%s] %s\n", ref.ID, ref.Kind, ref.URL)
+			protocol := ref.ProtocolClassification()
+			fmt.Fprintf(out, "- %s [%s/%s] %s\n", ref.ID, ref.Kind, protocolLabel(protocol.Protocol, protocol.Version), ref.URL)
 			if ref.SourceNote != "" {
 				fmt.Fprintf(out, "  note: %s\n", ref.SourceNote)
 			}
@@ -925,9 +926,9 @@ func writeCatalogRefreshReport(out io.Writer, report apitools.CatalogSpecRefresh
 		fmt.Fprintln(out, "No catalog specs refreshed.")
 		return
 	}
-	fmt.Fprintf(out, "%-18s %-34s %-20s %-12s %s\n", "PROVIDER", "SPEC_REF", "VALIDATION", "BYTES", "ARTIFACT")
+	fmt.Fprintf(out, "%-18s %-34s %-16s %-20s %-12s %s\n", "PROVIDER", "SPEC_REF", "PROTOCOL", "VALIDATION", "BYTES", "ARTIFACT")
 	for _, result := range report.Results {
-		fmt.Fprintf(out, "%-18s %-34s %-20s %-12d %s\n", result.ProviderID, result.SpecRefID, result.ValidationStatus, result.Bytes, result.ArtifactPath)
+		fmt.Fprintf(out, "%-18s %-34s %-16s %-20s %-12d %s\n", result.ProviderID, result.SpecRefID, protocolLabel(result.Protocol, result.ProtocolVersion), result.ValidationStatus, result.Bytes, result.ArtifactPath)
 	}
 	fmt.Fprintln(out, "Manual follow-ups:")
 	for _, result := range report.Results {
@@ -942,13 +943,13 @@ func writeCatalogRefreshReviewReport(out io.Writer, report apitools.CatalogSpecR
 		fmt.Fprintln(out, "No catalog refresh artifacts found.")
 		return
 	}
-	fmt.Fprintf(out, "%-18s %-34s %-24s %-12s %-64s %s\n", "PROVIDER", "SPEC_REF", "VALIDATION", "BYTES", "SHA256", "ARTIFACT")
+	fmt.Fprintf(out, "%-18s %-34s %-16s %-24s %-12s %-64s %s\n", "PROVIDER", "SPEC_REF", "PROTOCOL", "VALIDATION", "BYTES", "SHA256", "ARTIFACT")
 	for _, result := range report.Results {
 		artifact := result.RegisteredArtifactPath
 		if artifact == "" {
 			artifact = result.SavedPath
 		}
-		fmt.Fprintf(out, "%-18s %-34s %-24s %-12d %-64s %s\n", result.ProviderID, result.SpecRefID, result.ValidationStatus, result.Bytes, result.SHA256, artifact)
+		fmt.Fprintf(out, "%-18s %-34s %-16s %-24s %-12d %-64s %s\n", result.ProviderID, result.SpecRefID, protocolLabel(result.Protocol, result.ProtocolVersion), result.ValidationStatus, result.Bytes, result.SHA256, artifact)
 	}
 	fmt.Fprintln(out, "Manual follow-ups:")
 	for _, result := range report.Results {
@@ -1223,6 +1224,17 @@ func singleLine(value string) string {
 		return text[:157] + "..."
 	}
 	return text
+}
+
+func protocolLabel(protocol catalogpkg.SpecProtocol, version string) string {
+	value := strings.TrimSpace(string(protocol))
+	if value == "" {
+		value = string(catalogpkg.SpecProtocolUnknown)
+	}
+	if version = strings.TrimSpace(version); version != "" {
+		return value + " " + version
+	}
+	return value
 }
 
 func hasHelpFlag(args []string) bool {

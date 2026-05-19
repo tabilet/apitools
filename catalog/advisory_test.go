@@ -38,6 +38,15 @@ func TestBuiltInProviderAdvisoryReportSelectsProviderByAlias(t *testing.T) {
 	if row.ResolvedOpenAPI.SpecRefID != "grafana-http-api-openapi-v3" {
 		t.Fatalf("resolved spec = %q, want grafana-http-api-openapi-v3", row.ResolvedOpenAPI.SpecRefID)
 	}
+	for _, ref := range row.SpecReferences {
+		if ref.ID == "grafana-http-api-openapi-v3" {
+			if ref.Protocol != SpecProtocolOpenAPI || ref.ProtocolVersion != "3" {
+				t.Fatalf("grafana protocol = %q %q, want openapi 3", ref.Protocol, ref.ProtocolVersion)
+			}
+			return
+		}
+	}
+	t.Fatal("missing grafana spec reference")
 }
 
 func TestBuiltInProviderAdvisoryReportJoinsArtifactPath(t *testing.T) {
@@ -64,6 +73,9 @@ func TestBuiltInProviderAdvisoryReportJoinsArtifactPath(t *testing.T) {
 			found = true
 			if ref.RegisteredArtifactPath != "openapi/slack-web-openapi-v2.json" {
 				t.Fatalf("spec registered path = %q", ref.RegisteredArtifactPath)
+			}
+			if ref.Protocol != SpecProtocolSwagger || ref.ProtocolVersion != "2.0" {
+				t.Fatalf("slack protocol = %q %q, want swagger 2.0", ref.Protocol, ref.ProtocolVersion)
 			}
 		}
 	}
