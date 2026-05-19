@@ -154,6 +154,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.1.0",
 	},
 	{
+		providerID: "grafana",
+		artifactID: "grafana-http-api-openapi-v3",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/grafana/grafana/main/public/openapi3.json",
+		path:       "openapi/grafana-http-api-openapi-v3.json",
+		title:      "Grafana HTTP API.",
+		openapi:    "3.0.3",
+	},
+	{
 		providerID: "dropbox",
 		artifactID: "dropbox-api-stone-spec",
 		kind:       "dropbox-stone",
@@ -299,6 +308,15 @@ var specArtifacts = []specArtifact{
 		kind:       "swagger",
 		url:        "https://raw.githubusercontent.com/slackapi/slack-api-specs/master/web-api/slack_web_openapi_v2_without_examples.json",
 		path:       "openapi/slack-web-openapi-v2.json",
+	},
+	{
+		providerID: "snowflake",
+		artifactID: "snowflake-sql-api-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/main/specifications/sqlapi.yaml",
+		path:       "openapi/snowflake-sql-api-openapi.yaml",
+		title:      "Snowflake SQL API",
+		openapi:    "3.0.0",
 	},
 	{
 		providerID: "stripe",

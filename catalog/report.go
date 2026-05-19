@@ -236,10 +236,10 @@ var builtInSecurityClassifications = []SecurityClassification{
 	},
 	{
 		ProviderID: "grafana",
-		SpecRefID:  "grafana-api-docs",
-		Status:     AuthStatusOverlayRequired,
-		SourceRefs: []string{"https://grafana.com/docs/grafana/latest/developer-resources/api-reference/", "https://grafana.com/docs/grafana/latest/developers/http_api/auth/"},
-		SourceNote: "Grafana has no recorded stable public OpenAPI document in this catalog entry; auth metadata comes from advisory service-account bearer/basic overlay notes.",
+		SpecRefID:  "grafana-http-api-openapi-v3",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/grafana/grafana/main/public/openapi3.json", "https://grafana.com/docs/grafana/latest/developer-resources/api-reference/"},
+		SourceNote: "Grafana's official HTTP API OpenAPI v3 document includes API-key Authorization header and basic auth security schemes with root security requirements.",
 	},
 	{
 		ProviderID: "gitlab",
@@ -425,10 +425,10 @@ var builtInSecurityClassifications = []SecurityClassification{
 	},
 	{
 		ProviderID: "snowflake",
-		SpecRefID:  "snowflake-api-docs",
-		Status:     AuthStatusOverlayRequired,
-		SourceRefs: []string{"https://docs.snowflake.com/en/developer-guide/sql-api/index", "https://docs.snowflake.com/en/developer-guide/sql-api/authenticating"},
-		SourceNote: "Snowflake has no recorded stable public downloadable OpenAPI document in this catalog entry; auth metadata comes from advisory bearer-token overlay notes.",
+		SpecRefID:  "snowflake-sql-api-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/main/specifications/sqlapi.yaml", "https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/snowflake-rest-api"},
+		SourceNote: "Snowflake's official SQL API OpenAPI document includes key-pair JWT, external OAuth, Snowflake OAuth, and programmatic access token security schemes with root and operation security requirements.",
 	},
 	{
 		ProviderID: "splunk",

@@ -310,33 +310,6 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "GitHub's official OpenAPI description has no security schemes or security requirements; official REST docs describe Authorization bearer tokens for most requests and basic authentication for some app-management endpoints.",
 	},
 	{
-		ID:         "grafana-http-api-auth-overlay",
-		ProviderID: "grafana",
-		SpecRefID:  "grafana-api-docs",
-		Status:     AuthStatusOverlayRequired,
-		SecuritySchemes: []SecurityScheme{
-			{
-				Name:        "grafanaServiceAccountBearer",
-				Type:        SecuritySchemeHTTP,
-				Scheme:      "bearer",
-				Description: "Grafana service account token carried in the Authorization header.",
-			},
-			{
-				Name:        "grafanaBasic",
-				Type:        SecuritySchemeHTTP,
-				Scheme:      "basic",
-				Description: "Grafana basic authentication for OSS/on-prem endpoints when enabled; some admin endpoints require basic auth.",
-			},
-		},
-		RootSecurity: []SecurityRequirement{{Scheme: "grafanaServiceAccountBearer"}, {Scheme: "grafanaBasic"}},
-		SourceRefs: []string{
-			"https://grafana.com/docs/grafana/latest/developers/http_api/auth/",
-			"https://grafana.com/docs/grafana/latest/administration/service-accounts/",
-			"https://grafana.com/docs/grafana/latest/developers/http_api/apis/",
-		},
-		SourceNote: "Grafana has human HTTP API docs in this catalog entry but no recorded stable public OpenAPI document; docs describe service account bearer tokens and basic authentication, so OpenAPI imports need an advisory auth overlay.",
-	},
-	{
 		ID:         "gitlab-openapi-v2-auth-review",
 		ProviderID: "gitlab",
 		SpecRefID:  "gitlab-openapi-v2",
@@ -752,26 +725,6 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			"https://api.slack.com/authentication/token-types",
 		},
 		SourceNote: "Slack's official OpenAPI document includes OAuth metadata and operation security, but the repository is archived and lacks root security; keep this as a present-incomplete review overlay rather than treating it as current provider truth.",
-	},
-	{
-		ID:         "snowflake-api-auth-overlay",
-		ProviderID: "snowflake",
-		SpecRefID:  "snowflake-api-docs",
-		Status:     AuthStatusOverlayRequired,
-		SecuritySchemes: []SecurityScheme{
-			{
-				Name:        "snowflakeBearer",
-				Type:        SecuritySchemeHTTP,
-				Scheme:      "bearer",
-				Description: "Snowflake OAuth, key-pair JWT, or programmatic access token carried as a bearer token.",
-			},
-		},
-		RootSecurity: []SecurityRequirement{{Scheme: "snowflakeBearer"}},
-		SourceRefs: []string{
-			"https://docs.snowflake.com/en/developer-guide/sql-api/authenticating",
-			"https://docs.snowflake.com/en/developer-guide/sql-api/index",
-		},
-		SourceNote: "Snowflake has human SQL/REST API docs in this catalog entry but no recorded public OpenAPI document; docs describe bearer-token authentication from OAuth, key-pair JWT, and programmatic access tokens, so OpenAPI imports need an advisory bearer-token overlay.",
 	},
 	{
 		ID:         "splunk-rest-api-auth-overlay",

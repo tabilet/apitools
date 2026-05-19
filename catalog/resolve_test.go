@@ -24,6 +24,19 @@ func TestResolveProviderUsesBuiltInMetadata(t *testing.T) {
 	}
 }
 
+func TestResolveProviderPrefersSmithyBeforeHumanDocs(t *testing.T) {
+	resolved, err := ResolveProvider(ResolveProviderOptions{ProviderKey: "aws-s3"})
+	if err != nil {
+		t.Fatalf("ResolveProvider() error = %v", err)
+	}
+	if resolved.OpenAPI.Source != ResolutionSourceBuiltInSpecReference {
+		t.Fatalf("OpenAPI source = %q, want %q", resolved.OpenAPI.Source, ResolutionSourceBuiltInSpecReference)
+	}
+	if resolved.OpenAPI.SpecRefID != "aws-s3-smithy-model" {
+		t.Fatalf("OpenAPI spec ref = %q, want aws-s3-smithy-model", resolved.OpenAPI.SpecRefID)
+	}
+}
+
 func TestResolveProviderPrecedence(t *testing.T) {
 	tests := []struct {
 		name         string
