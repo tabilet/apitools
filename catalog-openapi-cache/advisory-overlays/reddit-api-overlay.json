@@ -1,0 +1,366 @@
+{
+  "components": {
+    "schemas": {
+      "RedditError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "RedditListing": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "RedditObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "redditBearer": {
+        "bearerFormat": "OAuth 2.0 access token",
+        "description": "Reddit OAuth access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Reddit API human documentation. This is not an official Reddit OpenAPI document.",
+    "title": "Reddit API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/submit": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "submitRedditPost",
+        "parameters": [
+          {
+            "description": "Response API type.",
+            "in": "query",
+            "name": "api_type",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Target subreddit.",
+            "in": "query",
+            "name": "sr",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Post kind.",
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Post title.",
+            "in": "query",
+            "name": "title",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Link URL.",
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Self-post text.",
+            "in": "query",
+            "name": "text",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "redditBearer": []
+          }
+        ],
+        "summary": "Submit a post"
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getRedditAuthenticatedUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "redditBearer": []
+          }
+        ],
+        "summary": "Get authenticated user"
+      }
+    },
+    "/r/{subreddit}/about": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getRedditSubredditAbout",
+        "parameters": [
+          {
+            "description": "Subreddit name.",
+            "in": "path",
+            "name": "subreddit",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "redditBearer": []
+          }
+        ],
+        "summary": "Get subreddit about data"
+      }
+    },
+    "/r/{subreddit}/hot": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listRedditSubredditHot",
+        "parameters": [
+          {
+            "description": "Subreddit name.",
+            "in": "path",
+            "name": "subreddit",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination fullname after anchor.",
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination fullname before anchor.",
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum items to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditListing"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "redditBearer": []
+          }
+        ],
+        "summary": "List hot subreddit posts"
+      }
+    },
+    "/r/{subreddit}/new": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listRedditSubredditNew",
+        "parameters": [
+          {
+            "description": "Subreddit name.",
+            "in": "path",
+            "name": "subreddit",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination fullname after anchor.",
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination fullname before anchor.",
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum items to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditListing"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "redditBearer": []
+          }
+        ],
+        "summary": "List new subreddit posts"
+      }
+    },
+    "/user/{username}/about": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getRedditUserAbout",
+        "parameters": [
+          {
+            "description": "Reddit username.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "redditBearer": []
+          }
+        ],
+        "summary": "Get user about data"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://oauth.reddit.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "reddit",
+    "source_note": "Reddit publishes generated API docs and Developer Platform server API docs but no recorded official OpenAPI document; this overlay covers selected OAuth API endpoints.",
+    "source_refs": [
+      "https://www.reddit.com/dev/api/",
+      "https://www.reddit.com/dev/api/oauth",
+      "https://developers.reddit.com/docs/capabilities/server/reddit-api"
+    ]
+  }
+}

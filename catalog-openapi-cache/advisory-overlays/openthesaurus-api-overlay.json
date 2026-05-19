@@ -1,0 +1,97 @@
+{
+  "components": {
+    "schemas": {
+      "OpenThesaurusError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "OpenThesaurusObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {}
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official OpenThesaurus API human documentation. This is not an official OpenThesaurus OpenAPI document.",
+    "title": "OpenThesaurus API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/synonyme/search": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchOpenThesaurusSynonyms",
+        "parameters": [
+          {
+            "description": "Search term.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Response media type such as application/json or text/xml.",
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Whether to return similarly spelled words.",
+            "in": "query",
+            "name": "similar",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Whether to return substring matches.",
+            "in": "query",
+            "name": "substring",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenThesaurusObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Search synonyms"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://www.openthesaurus.de"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "openthesaurus",
+    "source_note": "OpenThesaurus publishes human webservice docs for anonymous synonym search with JSON and XML response formats.",
+    "source_refs": [
+      "https://www.openthesaurus.de/about/api"
+    ]
+  }
+}

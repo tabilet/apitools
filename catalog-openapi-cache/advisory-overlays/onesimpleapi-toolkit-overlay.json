@@ -1,0 +1,298 @@
+{
+  "components": {
+    "schemas": {
+      "OneSimpleAPIError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "OneSimpleAPIObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "oneSimpleAPIToken": {
+        "description": "OneSimpleApi access token carried in the token query parameter.",
+        "in": "query",
+        "name": "token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official OneSimpleApi human documentation. This is not an official OneSimpleApi OpenAPI document.",
+    "title": "OneSimpleApi Toolkit Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/page_info": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getOneSimpleAPIPageInfo",
+        "parameters": [
+          {
+            "description": "URL to analyze.",
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Response output format.",
+            "in": "query",
+            "name": "output",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Whether to include response headers.",
+            "in": "query",
+            "name": "headers",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OneSimpleAPIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "oneSimpleAPIToken": []
+          }
+        ],
+        "summary": "Get web page metadata"
+      }
+    },
+    "/api/page_status": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getOneSimpleAPIPageStatus",
+        "parameters": [
+          {
+            "description": "URL to analyze.",
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Response output format.",
+            "in": "query",
+            "name": "output",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OneSimpleAPIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "oneSimpleAPIToken": []
+          }
+        ],
+        "summary": "Get web page status and certificate info"
+      }
+    },
+    "/api/pdf": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createOneSimpleAPIPDF",
+        "parameters": [
+          {
+            "description": "URL to render.",
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Response output format.",
+            "in": "query",
+            "name": "output",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OneSimpleAPIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "oneSimpleAPIToken": []
+          }
+        ],
+        "summary": "Create a PDF from a URL"
+      }
+    },
+    "/api/qr-code": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createOneSimpleAPIQRCode",
+        "parameters": [
+          {
+            "description": "QR code payload.",
+            "in": "query",
+            "name": "data",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Response output format.",
+            "in": "query",
+            "name": "output",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OneSimpleAPIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "oneSimpleAPIToken": []
+          }
+        ],
+        "summary": "Create a QR code"
+      }
+    },
+    "/api/screenshot": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createOneSimpleAPIScreenshot",
+        "parameters": [
+          {
+            "description": "URL to capture.",
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Response output format.",
+            "in": "query",
+            "name": "output",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Viewport size.",
+            "in": "query",
+            "name": "screen",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OneSimpleAPIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "oneSimpleAPIToken": []
+          }
+        ],
+        "summary": "Create a page screenshot"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://onesimpleapi.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "onesimpleapi",
+    "source_note": "OneSimpleApi publishes human docs with token query examples but no recorded official OpenAPI document; this overlay covers selected utility endpoints visible in the official docs.",
+    "source_refs": [
+      "https://onesimpleapi.com/docs",
+      "https://onesimpleapi.com/user/api-tokens"
+    ]
+  }
+}

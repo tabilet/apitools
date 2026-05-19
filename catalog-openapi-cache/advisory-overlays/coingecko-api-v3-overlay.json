@@ -1,0 +1,359 @@
+{
+  "components": {
+    "schemas": {
+      "CoinGeckoCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CoinGeckoError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CoinGeckoObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "coingeckoDemoAPIKeyHeader": {
+        "description": "CoinGecko Public/Demo API key carried in the x-cg-demo-api-key header.",
+        "in": "header",
+        "name": "x-cg-demo-api-key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official CoinGecko API human documentation. This is not an official CoinGecko OpenAPI document.",
+    "title": "CoinGecko API v3 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/coins/list": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCoinGeckoCoins",
+        "parameters": [
+          {
+            "description": "Whether to include platform contract addresses.",
+            "in": "query",
+            "name": "include_platform",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoinGeckoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "coingeckoDemoAPIKeyHeader": []
+          }
+        ],
+        "summary": "List coin ID map"
+      }
+    },
+    "/coins/markets": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCoinGeckoCoinMarkets",
+        "parameters": [
+          {
+            "description": "Target currency.",
+            "in": "query",
+            "name": "vs_currency",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated coin IDs.",
+            "in": "query",
+            "name": "ids",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Coin category filter.",
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoinGeckoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "coingeckoDemoAPIKeyHeader": []
+          }
+        ],
+        "summary": "List coin markets"
+      }
+    },
+    "/coins/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCoinGeckoCoin",
+        "parameters": [
+          {
+            "description": "CoinGecko coin ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Whether to include localized names.",
+            "in": "query",
+            "name": "localization",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Whether to include tickers.",
+            "in": "query",
+            "name": "tickers",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Whether to include market data.",
+            "in": "query",
+            "name": "market_data",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoinGeckoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "coingeckoDemoAPIKeyHeader": []
+          }
+        ],
+        "summary": "Get coin data by ID"
+      }
+    },
+    "/exchanges": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCoinGeckoExchanges",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoinGeckoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "coingeckoDemoAPIKeyHeader": []
+          }
+        ],
+        "summary": "List exchanges"
+      }
+    },
+    "/ping": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "pingCoinGecko",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoinGeckoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "coingeckoDemoAPIKeyHeader": []
+          }
+        ],
+        "summary": "Check API server status"
+      }
+    },
+    "/simple/price": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCoinGeckoSimplePrice",
+        "parameters": [
+          {
+            "description": "Comma-separated CoinGecko coin IDs.",
+            "in": "query",
+            "name": "ids",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated target currencies.",
+            "in": "query",
+            "name": "vs_currencies",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Whether to include market capitalization.",
+            "in": "query",
+            "name": "include_market_cap",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoinGeckoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "coingeckoDemoAPIKeyHeader": []
+          }
+        ],
+        "summary": "Get coin price by IDs, symbols, or names"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.coingecko.com/api/v3"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "coingecko",
+    "source_note": "CoinGecko publishes API reference docs with Public/Demo and Pro API-key metadata but no recorded official OpenAPI document; this overlay covers selected public v3 market-data endpoints using the Demo header form.",
+    "source_refs": [
+      "https://docs.coingecko.com/reference/introduction",
+      "https://docs.coingecko.com/reference/authentication",
+      "https://docs.coingecko.com/v3.0.1/reference/authentication",
+      "https://docs.coingecko.com/reference/endpoint-overview",
+      "https://docs.coingecko.com/reference/simple-price"
+    ]
+  }
+}

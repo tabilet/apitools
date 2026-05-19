@@ -1,0 +1,328 @@
+{
+  "components": {
+    "schemas": {
+      "NASACollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "NASAError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "NASAObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "nasaAPIKey": {
+        "description": "NASA Open APIs key carried in the api_key query parameter.",
+        "in": "query",
+        "name": "api_key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official NASA Open APIs human documentation. This is not an official NASA OpenAPI document.",
+    "title": "NASA Open APIs Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/DONKI/notifications": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listNASADONKINotifications",
+        "parameters": [
+          {
+            "description": "Start date.",
+            "in": "query",
+            "name": "startDate",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "End date.",
+            "in": "query",
+            "name": "endDate",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Notification type.",
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NASACollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "nasaAPIKey": []
+          }
+        ],
+        "summary": "List DONKI notifications"
+      }
+    },
+    "/EPIC/api/natural": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listNASAEarthPolychromaticImages",
+        "parameters": [
+          {
+            "description": "Optional EPIC date.",
+            "in": "query",
+            "name": "date",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NASACollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "nasaAPIKey": []
+          }
+        ],
+        "summary": "List EPIC natural images"
+      }
+    },
+    "/mars-photos/api/v1/rovers/{rover}/photos": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listNASAMarsRoverPhotos",
+        "parameters": [
+          {
+            "description": "Mars rover name.",
+            "in": "path",
+            "name": "rover",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Martian sol.",
+            "in": "query",
+            "name": "sol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Earth date in YYYY-MM-DD format.",
+            "in": "query",
+            "name": "earth_date",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Camera filter.",
+            "in": "query",
+            "name": "camera",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NASACollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "nasaAPIKey": []
+          }
+        ],
+        "summary": "List Mars rover photos"
+      }
+    },
+    "/neo/rest/v1/feed": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getNASANearEarthObjectFeed",
+        "parameters": [
+          {
+            "description": "Feed start date.",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Feed end date.",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NASAObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "nasaAPIKey": []
+          }
+        ],
+        "summary": "Get near-earth object feed"
+      }
+    },
+    "/planetary/apod": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getNASAAstronomyPictureOfTheDay",
+        "parameters": [
+          {
+            "description": "APOD date in YYYY-MM-DD format.",
+            "in": "query",
+            "name": "date",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Start date for a date range.",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "End date for a date range.",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Whether to return video thumbnails.",
+            "in": "query",
+            "name": "thumbs",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NASAObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "nasaAPIKey": []
+          }
+        ],
+        "summary": "Get astronomy picture of the day"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.nasa.gov"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "nasa",
+    "source_note": "NASA publishes Open APIs human docs and api_key signup metadata but no recorded official OpenAPI document; this overlay covers APOD, Mars Rover Photos, NeoWs, EPIC, and DONKI examples.",
+    "source_refs": [
+      "https://api.nasa.gov/"
+    ]
+  }
+}

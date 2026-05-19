@@ -1,0 +1,207 @@
+{
+  "components": {
+    "schemas": {
+      "QuickChartError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "QuickChartObject": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "QuickChartRequest": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {}
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official QuickChart human documentation. This is not an official QuickChart OpenAPI document.",
+    "title": "QuickChart API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/chart": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getQuickChartChart",
+        "parameters": [
+          {
+            "description": "Chart.js configuration.",
+            "in": "query",
+            "name": "c",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Chart.js configuration.",
+            "in": "query",
+            "name": "chart",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Image width in pixels.",
+            "in": "query",
+            "name": "width",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Image height in pixels.",
+            "in": "query",
+            "name": "height",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Output format.",
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Render a chart by URL"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createQuickChartChart",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickChartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Render a chart by POST"
+      }
+    },
+    "/graphviz": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getQuickChartGraphviz",
+        "parameters": [
+          {
+            "description": "Graphviz DOT source.",
+            "in": "query",
+            "name": "graph",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Output format.",
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Render a Graphviz diagram"
+      }
+    },
+    "/qr": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getQuickChartQRCode",
+        "parameters": [
+          {
+            "description": "Text or URL to encode.",
+            "in": "query",
+            "name": "text",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "QR image size.",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Output format.",
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Render a QR code"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://quickchart.io"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "quickchart",
+    "source_note": "QuickChart publishes human API docs for anonymous chart rendering and QR-code endpoints but no recorded official OpenAPI document.",
+    "source_refs": [
+      "https://quickchart.io/documentation/",
+      "https://quickchart.io/documentation/usage/post-endpoint/",
+      "https://quickchart.io/documentation/qr-codes/"
+    ]
+  }
+}

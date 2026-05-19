@@ -227,8 +227,7 @@ func parseableInvalidOpenAPI3Metadata(root map[string]any) (SpecMetadata, bool) 
 		return SpecMetadata{}, false
 	}
 	title := catalogRefreshStringValue(info, "title")
-	version := catalogRefreshStringValue(info, "version")
-	if title == "" || version == "" {
+	if title == "" {
 		return SpecMetadata{}, false
 	}
 	paths, ok := root["paths"].(map[string]any)

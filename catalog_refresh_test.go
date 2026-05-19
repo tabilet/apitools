@@ -91,6 +91,32 @@ func TestRefreshCatalogSpecReferencesSavesParseableInvalidOpenAPI(t *testing.T) 
 	}
 }
 
+func TestRefreshCatalogSpecReferencesSavesParseableInvalidOpenAPIWithoutInfoVersion(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"openapi":"3.1.0","info":{"title":"Missing Info Version"},"paths":{"/items":{"get":{"responses":{"200":{}}}}}}`))
+	}))
+	defer server.Close()
+
+	cacheDir := t.TempDir()
+	report, err := (&Client{HTTPClient: server.Client(), AllowUnsafeHosts: true}).RefreshCatalogSpecReferences(context.Background(), []catalog.RefreshableSpecReference{{
+		ProviderID: "test",
+		SpecRefID:  "test-missing-info-version-openapi",
+		Kind:       catalog.SpecKindOpenAPI,
+		URL:        server.URL + "/openapi.json",
+	}}, CatalogSpecRefreshOptions{CacheDir: cacheDir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := report.Results[0]
+	if result.ValidationStatus != CatalogRefreshParseableOpenAPIInvalid {
+		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	}
+	if result.Metadata.Title != "Missing Info Version" || result.Metadata.OpenAPI != "3.1.0" || result.Metadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", result.Metadata)
+	}
+}
+
 func TestRefreshCatalogSpecReferencesSavesParseableInvalidSwagger(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

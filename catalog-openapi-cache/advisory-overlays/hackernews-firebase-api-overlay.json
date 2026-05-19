@@ -1,0 +1,195 @@
+{
+  "components": {
+    "schemas": {
+      "HackerNewsCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HackerNewsError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HackerNewsObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {}
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Hacker News API human documentation. This is not an official Hacker News OpenAPI document.",
+    "title": "Hacker News Firebase API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/beststories.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHackerNewsBestStories",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HackerNewsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "List best story IDs"
+      }
+    },
+    "/item/{item_id}.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHackerNewsItem",
+        "parameters": [
+          {
+            "description": "Hacker News item ID.",
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HackerNewsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Get item"
+      }
+    },
+    "/newstories.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHackerNewsNewStories",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HackerNewsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "List new story IDs"
+      }
+    },
+    "/topstories.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHackerNewsTopStories",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HackerNewsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "List top story IDs"
+      }
+    },
+    "/updates.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHackerNewsUpdates",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HackerNewsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Get changed items and profiles"
+      }
+    },
+    "/user/{username}.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHackerNewsUser",
+        "parameters": [
+          {
+            "description": "Hacker News username.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HackerNewsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Get user"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://hacker-news.firebaseio.com/v0"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "hackernews",
+    "source_note": "Hacker News publishes public Firebase API docs for items, users, story lists, max item, and updates without authentication.",
+    "source_refs": [
+      "https://github.com/HackerNews/API"
+    ]
+  }
+}
