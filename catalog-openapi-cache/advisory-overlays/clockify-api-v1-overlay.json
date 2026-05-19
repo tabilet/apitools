@@ -58,6 +58,9 @@
         "security": [
           {
             "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
           }
         ],
         "summary": "Get current user"
@@ -85,6 +88,9 @@
         "security": [
           {
             "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
           }
         ],
         "summary": "List workspaces"
@@ -123,6 +129,9 @@
         "security": [
           {
             "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
           }
         ],
         "summary": "List clients"
@@ -170,6 +179,9 @@
         "security": [
           {
             "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
           }
         ],
         "summary": "List projects"
@@ -216,6 +228,9 @@
         "security": [
           {
             "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
           }
         ],
         "summary": "Create a project"
@@ -254,6 +269,9 @@
         "security": [
           {
             "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
           }
         ],
         "summary": "List tags"
@@ -310,6 +328,9 @@
         "security": [
           {
             "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
           }
         ],
         "summary": "List time entries"
@@ -356,6 +377,9 @@
         "security": [
           {
             "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
           }
         ],
         "summary": "Create a time entry"
@@ -403,6 +427,9 @@
         "security": [
           {
             "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
           }
         ],
         "summary": "Delete a time entry"
@@ -448,6 +475,9 @@
         "security": [
           {
             "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
           }
         ],
         "summary": "Get a time entry"
@@ -456,7 +486,9 @@
   },
   "security": [
     {
-      "clockifyAPIKey": [],
+      "clockifyAPIKey": []
+    },
+    {
       "clockifyAddonToken": []
     }
   ],

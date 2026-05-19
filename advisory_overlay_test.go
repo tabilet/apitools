@@ -129,6 +129,39 @@ func TestHumanDocsEndpointOverlayDecisionsHaveTrackedArtifacts(t *testing.T) {
 	}
 }
 
+func TestClockifyAdvisoryOverlayAuthAlternatives(t *testing.T) {
+	content, err := os.ReadFile("catalog-openapi-cache/advisory-overlays/clockify-api-v1-overlay.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var doc struct {
+		Security []map[string][]string `json:"security"`
+		Paths    map[string]map[string]struct {
+			OperationID string                `json:"operationId"`
+			Security    []map[string][]string `json:"security"`
+		} `json:"paths"`
+	}
+	if err := json.Unmarshal(content, &doc); err != nil {
+		t.Fatalf("Clockify overlay JSON parse error: %v", err)
+	}
+
+	assertClockifyAuthAlternatives(t, "root security", doc.Security)
+	operationCount := 0
+	for path, pathItem := range doc.Paths {
+		for method, operation := range pathItem {
+			if operation.OperationID == "" {
+				continue
+			}
+			operationCount++
+			assertClockifyAuthAlternatives(t, method+" "+path, operation.Security)
+		}
+	}
+	if operationCount == 0 {
+		t.Fatal("Clockify overlay has no operations")
+	}
+}
+
 type endpointOverlayDecisions struct {
 	built     map[string]string
 	noOverlay map[string]struct{}
@@ -221,4 +254,30 @@ func overlayDecisionKey(value string) string {
 		}
 	}
 	return b.String()
+}
+
+func assertClockifyAuthAlternatives(t *testing.T, context string, requirements []map[string][]string) {
+	t.Helper()
+	if len(requirements) != 2 {
+		t.Fatalf("%s requirement count = %d, want 2", context, len(requirements))
+	}
+	seenAPIKey := false
+	seenAddonToken := false
+	for _, req := range requirements {
+		if _, hasAPIKey := req["clockifyAPIKey"]; hasAPIKey {
+			seenAPIKey = true
+			if _, hasAddonToken := req["clockifyAddonToken"]; hasAddonToken {
+				t.Fatalf("%s combines clockifyAPIKey and clockifyAddonToken in one requirement: %#v", context, req)
+			}
+		}
+		if _, hasAddonToken := req["clockifyAddonToken"]; hasAddonToken {
+			seenAddonToken = true
+		}
+		if len(req) != 1 {
+			t.Fatalf("%s requirement object = %#v, want exactly one Clockify auth scheme", context, req)
+		}
+	}
+	if !seenAPIKey || !seenAddonToken {
+		t.Fatalf("%s requirements = %#v, want clockifyAPIKey and clockifyAddonToken alternatives", context, requirements)
+	}
 }

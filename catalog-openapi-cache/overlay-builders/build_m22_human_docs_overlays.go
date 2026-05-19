@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"os"
+	"sort"
 )
 
 type overlaySpec struct {
@@ -84,22 +85,22 @@ func clockifyOverlay() overlaySpec {
 		Schemas:     []string{"ClockifyObject", "ClockifyCollection", "ClockifyError"},
 		OutputPath:  "catalog-openapi-cache/advisory-overlays/clockify-api-v1-overlay.json",
 		Paths: map[string]map[string]any{
-			"/v1/user":       {"get": op("getClockifyCurrentUser", "Get current user", nil, "", "#/components/schemas/ClockifyObject", "clockifyAPIKey")},
-			"/v1/workspaces": {"get": op("listClockifyWorkspaces", "List workspaces", nil, "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey")},
+			"/v1/user":       {"get": op("getClockifyCurrentUser", "Get current user", nil, "", "#/components/schemas/ClockifyObject", "clockifyAPIKey", "clockifyAddonToken")},
+			"/v1/workspaces": {"get": op("listClockifyWorkspaces", "List workspaces", nil, "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey", "clockifyAddonToken")},
 			"/v1/workspaces/{workspace_id}/projects": {
-				"get":  op("listClockifyProjects", "List projects", params(path("workspace_id", "Clockify workspace ID."), query("name", "Project name filter.")), "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey"),
-				"post": op("createClockifyProject", "Create a project", params(path("workspace_id", "Clockify workspace ID.")), "#/components/schemas/ClockifyObject", "#/components/schemas/ClockifyObject", "clockifyAPIKey"),
+				"get":  op("listClockifyProjects", "List projects", params(path("workspace_id", "Clockify workspace ID."), query("name", "Project name filter.")), "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey", "clockifyAddonToken"),
+				"post": op("createClockifyProject", "Create a project", params(path("workspace_id", "Clockify workspace ID.")), "#/components/schemas/ClockifyObject", "#/components/schemas/ClockifyObject", "clockifyAPIKey", "clockifyAddonToken"),
 			},
 			"/v1/workspaces/{workspace_id}/time-entries": {
-				"get":  op("listClockifyTimeEntries", "List time entries", params(path("workspace_id", "Clockify workspace ID."), query("start", "Start date-time filter."), query("end", "End date-time filter.")), "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey"),
-				"post": op("createClockifyTimeEntry", "Create a time entry", params(path("workspace_id", "Clockify workspace ID.")), "#/components/schemas/ClockifyObject", "#/components/schemas/ClockifyObject", "clockifyAPIKey"),
+				"get":  op("listClockifyTimeEntries", "List time entries", params(path("workspace_id", "Clockify workspace ID."), query("start", "Start date-time filter."), query("end", "End date-time filter.")), "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey", "clockifyAddonToken"),
+				"post": op("createClockifyTimeEntry", "Create a time entry", params(path("workspace_id", "Clockify workspace ID.")), "#/components/schemas/ClockifyObject", "#/components/schemas/ClockifyObject", "clockifyAPIKey", "clockifyAddonToken"),
 			},
 			"/v1/workspaces/{workspace_id}/time-entries/{time_entry_id}": {
-				"get":    op("getClockifyTimeEntry", "Get a time entry", params(path("workspace_id", "Clockify workspace ID."), path("time_entry_id", "Clockify time entry ID.")), "", "#/components/schemas/ClockifyObject", "clockifyAPIKey"),
-				"delete": op("deleteClockifyTimeEntry", "Delete a time entry", params(path("workspace_id", "Clockify workspace ID."), path("time_entry_id", "Clockify time entry ID.")), "", "#/components/schemas/ClockifyObject", "clockifyAPIKey"),
+				"get":    op("getClockifyTimeEntry", "Get a time entry", params(path("workspace_id", "Clockify workspace ID."), path("time_entry_id", "Clockify time entry ID.")), "", "#/components/schemas/ClockifyObject", "clockifyAPIKey", "clockifyAddonToken"),
+				"delete": op("deleteClockifyTimeEntry", "Delete a time entry", params(path("workspace_id", "Clockify workspace ID."), path("time_entry_id", "Clockify time entry ID.")), "", "#/components/schemas/ClockifyObject", "clockifyAPIKey", "clockifyAddonToken"),
 			},
-			"/v1/workspaces/{workspace_id}/clients": {"get": op("listClockifyClients", "List clients", params(path("workspace_id", "Clockify workspace ID.")), "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey")},
-			"/v1/workspaces/{workspace_id}/tags":    {"get": op("listClockifyTags", "List tags", params(path("workspace_id", "Clockify workspace ID.")), "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey")},
+			"/v1/workspaces/{workspace_id}/clients": {"get": op("listClockifyClients", "List clients", params(path("workspace_id", "Clockify workspace ID.")), "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey", "clockifyAddonToken")},
+			"/v1/workspaces/{workspace_id}/tags":    {"get": op("listClockifyTags", "List tags", params(path("workspace_id", "Clockify workspace ID.")), "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey", "clockifyAddonToken")},
 		},
 	}
 }
@@ -287,14 +288,12 @@ func server(url string, variables map[string]map[string]any) map[string]any {
 }
 
 func rootSecurity(schemes map[string]map[string]any) []map[string]any {
-	req := map[string]any{}
+	names := make([]string, 0, len(schemes))
 	for name := range schemes {
-		req[name] = []string{}
+		names = append(names, name)
 	}
-	if len(req) == 0 {
-		return nil
-	}
-	return []map[string]any{req}
+	sort.Strings(names)
+	return security(names...)
 }
 
 func schemas(names []string) map[string]any {
@@ -328,14 +327,14 @@ func op(operationID, summary string, parameters []map[string]any, requestSchema,
 }
 
 func security(names ...string) []map[string]any {
-	req := map[string]any{}
+	out := make([]map[string]any, 0, len(names))
 	for _, name := range names {
-		req[name] = []string{}
+		out = append(out, map[string]any{name: []string{}})
 	}
-	if len(req) == 0 {
+	if len(out) == 0 {
 		return nil
 	}
-	return []map[string]any{req}
+	return out
 }
 
 func response(description, schema string) map[string]any {
