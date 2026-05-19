@@ -162,6 +162,10 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		"https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html",
 		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
 	}),
+	awsSigV4Overlay("aws-lambda-sigv4-auth-overlay", "aws-lambda", "aws-lambda-smithy-model", "AWS Lambda", []string{
+		"https://docs.aws.amazon.com/lambda/latest/api/welcome.html",
+		"https://docs.aws.amazon.com/lambda/latest/api/CommonParameters.html",
+	}),
 	{
 		ID:         "calendly-public-api-auth-overlay",
 		ProviderID: "calendly",

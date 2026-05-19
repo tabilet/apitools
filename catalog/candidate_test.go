@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 40; got != want {
+	if got, want := len(candidates), 41; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -20,6 +20,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 	want := []string{
 		"airtable",
 		"asana",
+		"aws-lambda",
 		"aws-s3",
 		"box",
 		"calendly",
@@ -74,6 +75,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "Open Weather Map", id: "openweathermap"},
 		{key: "office 365", id: "microsoft-graph"},
 		{key: "click up", id: "clickup"},
+		{key: "lambda", id: "aws-lambda"},
 		{key: "s3", id: "aws-s3"},
 	}
 	for _, test := range tests {
@@ -111,6 +113,7 @@ func TestBuiltInCandidatesCaptureFixtureAndPriorityEvidence(t *testing.T) {
 func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 	for _, id := range []string{
 		"asana",
+		"aws-lambda",
 		"aws-s3",
 		"box",
 		"calendly",
@@ -162,7 +165,7 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 			t.Fatalf("%s auth review = %q, want %q", candidate.ID, candidate.AuthSecurityReview, AuthSecurityNotReviewed)
 		}
 	}
-	for _, id := range []string{"aws-s3", "gmail", "google-calendar", "google-drive", "google-sheets"} {
+	for _, id := range []string{"aws-lambda", "aws-s3", "gmail", "google-calendar", "google-drive", "google-sheets"} {
 		candidate, ok := FindBuiltInCandidate(id)
 		if !ok {
 			t.Fatalf("missing %s", id)
@@ -171,7 +174,7 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 			t.Fatalf("%s machine spec status = %q, want %q", id, candidate.OfficialMachineSpecStatus, SpecStatusNeedsVerification)
 		}
 		wantKind := "google-discovery"
-		if id == "aws-s3" {
+		if id == "aws-lambda" || id == "aws-s3" {
 			wantKind = string(SpecKindSmithyJSON)
 		}
 		if candidate.OfficialMachineSpecKind != wantKind {

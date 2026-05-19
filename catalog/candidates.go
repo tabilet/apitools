@@ -26,6 +26,17 @@ var builtInCandidates = []Candidate{
 		userNeed:        UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{
+		id:              "aws-lambda",
+		displayName:     "AWS Lambda",
+		aliases:         []string{"amazon lambda", "aws lambda api", "lambda"},
+		category:        "serverless-compute",
+		n8nNode:         "Aws/AwsLambda",
+		relevance:       "Popular infrastructure service for functions, invocations, event source mappings, aliases, and serverless automation.",
+		machineSpecKind: string(SpecKindSmithyJSON),
+		machineStatus:   SpecStatusNeedsVerification,
+		userNeed:        UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "airtable",
 		displayName: "Airtable",
 		aliases:     []string{"airtable api"},
