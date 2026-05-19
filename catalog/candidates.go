@@ -700,6 +700,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular email API platform for transactional sending, contacts, lists, campaigns, templates, and message statistics automation.",
 		userNeed:    UserOpenAPINeedLikely,
 	}),
+	workflowCandidate(candidateSeed{
+		id:          "convertkit",
+		displayName: "Kit (ConvertKit)",
+		aliases:     []string{"convertkit api", "kit api", "kit email api"},
+		category:    "email-marketing",
+		n8nNode:     "ConvertKit",
+		relevance:   "Popular creator marketing platform for subscribers, tags, forms, broadcasts, sequences, purchases, and webhook automation.",
+		userNeed:    UserOpenAPINeedNotExpected,
+	}),
 }
 
 type candidateSeed struct {

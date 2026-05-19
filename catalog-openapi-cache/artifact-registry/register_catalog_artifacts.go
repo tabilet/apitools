@@ -244,6 +244,16 @@ var specArtifacts = []specArtifact{
 		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
+		providerID: "convertkit",
+		artifactID: "kit-api-v4-openapi",
+		kind:       "openapi",
+		url:        "https://developers.kit.com/api-reference/v4.json",
+		path:       "openapi/kit-api-v4-openapi.json",
+		title:      "Kit API",
+		openapi:    "3.0.3",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
+	},
+	{
 		providerID: "customer-io",
 		artifactID: "customer-io-journeys-app-openapi",
 		kind:       "openapi",

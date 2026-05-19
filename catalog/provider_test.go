@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 78; got != want {
+	if got, want := len(catalog.ListProviders()), 79; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -38,6 +38,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"cloudflare",
 		"coda",
 		"contentful",
+		"convertkit",
 		"customer-io",
 		"databricks",
 		"deepl",
@@ -130,6 +131,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "clockify api", id: "clockify"},
 		{key: "coda docs", id: "coda"},
 		{key: "contentful api", id: "contentful"},
+		{key: "convertkit api", id: "convertkit"},
 		{key: "customer.io api", id: "customer-io"},
 		{key: "databricks api", id: "databricks"},
 		{key: "deepl translate", id: "deepl"},
@@ -237,6 +239,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "clockify", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "coda", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "contentful", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "convertkit", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "customer-io", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "databricks", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "deepl", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},

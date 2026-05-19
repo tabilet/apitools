@@ -585,6 +585,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Iterable has official API docs but no recorded official OpenAPI document; Api-Key header metadata comes from advisory overlay notes.",
 	},
 	{
+		ProviderID: "convertkit",
+		SpecRefID:  "kit-api-v4-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://developers.kit.com/api-reference/v4.json", "https://developers.kit.com/api-reference/authentication"},
+		SourceNote: "Kit's official API V4 OpenAPI document includes API-key and OAuth2 security schemes with operation security requirements; official auth docs describe the X-Kit-Api-Key header for API-key access.",
+	},
+	{
 		ProviderID: "mailjet",
 		SpecRefID:  "mailjet-api-key-docs",
 		Status:     AuthStatusOverlayRequired,

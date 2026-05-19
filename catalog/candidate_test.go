@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 78; got != want {
+	if got, want := len(candidates), 79; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -38,6 +38,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"cloudflare",
 		"coda",
 		"contentful",
+		"convertkit",
 		"customer-io",
 		"databricks",
 		"deepl",
@@ -125,6 +126,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "clockify api", id: "clockify"},
 		{key: "coda docs", id: "coda"},
 		{key: "contentful management api", id: "contentful"},
+		{key: "kit email api", id: "convertkit"},
 		{key: "customerio", id: "customer-io"},
 		{key: "deepl translate", id: "deepl"},
 		{key: "circleci v2", id: "circleci"},
@@ -201,6 +203,7 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"clockify",
 		"cloudflare",
 		"coda",
+		"convertkit",
 		"databricks",
 		"deepl",
 		"discord",

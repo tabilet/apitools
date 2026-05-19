@@ -1660,6 +1660,23 @@ var builtInProviders = []Provider{
 		},
 		quirks: []string{"M22 review did not find a stable public official OpenAPI document; Mailjet REST API authentication uses API key and secret key credentials similar to HTTP Basic username/password metadata."},
 	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "convertkit",
+		displayName:         "Kit (ConvertKit)",
+		aliases:             []string{"convertkit api", "kit api", "kit email api"},
+		category:            "email-marketing",
+		relevance:           "Popular creator marketing platform for subscribers, tags, forms, broadcasts, sequences, purchases, and webhook automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			officialOpenAPIRef20260519("kit-api-v4-openapi", "https://developers.kit.com/api-reference/v4.json", SourceAuthorityOfficialProvider, "3.0.3", `etag:"ea54012d72129803282767a0b82fc819" last-modified:"2026-05-18T21:22:27Z" sha256:71f1c2258df6e26159d430ac29e4a830446d3416df2210b26b55d03ab6765cce`, "Kit OpenAPI document does not declare license metadata; Kit developer documentation terms apply.", "Official Kit API V4 OpenAPI 3.0 JSON linked from the Kit developer documentation index."),
+			humanDocsRef20260519("kit-api-v4-docs", "https://developers.kit.com/api-reference/overview", "Official Kit API V4 overview documentation."),
+			humanDocsRef20260519("kit-api-auth-docs", "https://developers.kit.com/api-reference/authentication", "Official Kit API V4 authentication documentation."),
+			humanDocsRef20260519("kit-api-docs-index", "https://developers.kit.com/llms.txt", "Official Kit developer documentation index, including the V4 OpenAPI spec link."),
+		},
+		quirks: []string{"Kit API V4 is the current API; API V3 remains available but is deprecated and should not be preferred for new catalog metadata.", "The official V4 OpenAPI endpoint currently serves a combined content type, so saved review artifacts record byte and hash evidence separately from import behavior."},
+	}),
 }
 
 type providerSeed struct {
