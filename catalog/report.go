@@ -291,6 +291,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Atlassian's Jira Cloud OpenAPI document includes OAuth2/basic security schemes and operation-level security metadata.",
 	},
 	{
+		ProviderID: "jenkins",
+		SpecRefID:  "jenkins-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://www.jenkins.io/doc/book/using/remote-access-api/", "https://www.jenkins.io/blog/2018/07/02/new-api-token-system/"},
+		SourceNote: "Jenkins has no recorded official OpenAPI document in this catalog entry; auth metadata comes from advisory basic/API-token and crumb overlay notes.",
+	},
+	{
 		ProviderID: "linear",
 		SpecRefID:  "linear-graphql-docs",
 		Status:     AuthStatusOverlayRequired,

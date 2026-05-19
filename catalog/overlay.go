@@ -470,6 +470,33 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "HubSpot exposes an official split OpenAPI spec index; official docs describe OAuth and private app bearer tokens, so selected specs should be checked with an advisory bearer-token overlay.",
 	},
 	{
+		ID:         "jenkins-remote-api-auth-overlay",
+		ProviderID: "jenkins",
+		SpecRefID:  "jenkins-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "jenkinsBasic",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Jenkins username with API token or password using HTTP Basic authentication.",
+			},
+			{
+				Name:          "jenkinsCrumb",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Jenkins-Crumb",
+				Description:   "Jenkins CSRF crumb header for POST requests when required by the instance.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "jenkinsBasic"}},
+		SourceRefs: []string{
+			"https://www.jenkins.io/doc/book/using/remote-access-api/",
+			"https://www.jenkins.io/blog/2018/07/02/new-api-token-system/",
+		},
+		SourceNote: "Jenkins has human Remote Access API docs in this catalog entry but no recorded official OpenAPI document; docs describe basic authentication with API tokens and instance-dependent CSRF crumbs, so OpenAPI imports need an advisory auth overlay.",
+	},
+	{
 		ID:         "mailchimp-marketing-auth-overlay",
 		ProviderID: "mailchimp",
 		SpecRefID:  "mailchimp-marketing-api-docs",

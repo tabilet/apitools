@@ -218,6 +218,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Common workflow service for CRM records, tickets, contacts, and pipeline automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "jenkins",
+		displayName: "Jenkins",
+		aliases:     []string{"jenkins api", "jenkins remote api"},
+		category:    "ci-cd",
+		n8nNode:     "Jenkins",
+		relevance:   "Popular automation server for jobs, builds, queues, nodes, artifacts, and CI/CD automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "mailchimp",
 		displayName: "Mailchimp",
 		aliases:     []string{"mailchimp api", "mailchimp marketing"},

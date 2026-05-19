@@ -592,6 +592,21 @@ var builtInProviders = []Provider{
 		},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "jenkins",
+		displayName:         "Jenkins",
+		aliases:             []string{"jenkins api", "jenkins remote api"},
+		category:            "ci-cd",
+		relevance:           "Popular automation server for jobs, builds, queues, nodes, artifacts, and CI/CD automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("jenkins-api-docs", "https://www.jenkins.io/doc/book/using/remote-access-api/", "Official Jenkins Remote Access API documentation."),
+			humanDocsRef("jenkins-api-token-blog", "https://www.jenkins.io/blog/2018/07/02/new-api-token-system/", "Official Jenkins API token system documentation."),
+		},
+		quirks: []string{"Jenkins Remote Access API is exposed under each object path's /api/ endpoint and is instance/plugin dependent; M13 review did not find a stable official OpenAPI document.", "CSRF crumb requirements depend on Jenkins version, security configuration, request method, and whether API-token authentication is used."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "linear",
 		displayName:         "Linear",
 		aliases:             []string{"linear api", "linear graphql"},
