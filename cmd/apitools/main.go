@@ -70,6 +70,8 @@ func runCatalog(args []string, out, errOut io.Writer) int {
 		return runCatalogSpecs(args[1:], out, errOut)
 	case "refresh":
 		return runCatalogRefresh(args[1:], out, errOut)
+	case "refresh-report":
+		return runCatalogRefreshReport(args[1:], out, errOut)
 	case "inspect":
 		return runCatalogInspect(args[1:], out, errOut)
 	case "overlay-view":
@@ -95,6 +97,7 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "  list             list built-in provider catalog metadata")
 	fmt.Fprintln(out, "  specs            list refreshable built-in spec references")
 	fmt.Fprintln(out, "  refresh          refresh one selected built-in spec reference")
+	fmt.Fprintln(out, "  refresh-report   review saved refresh artifacts offline")
 	fmt.Fprintln(out, "  inspect          inspect one provider and resolution status")
 	fmt.Fprintln(out, "  overlay-view     inspect advisory security overlay effects")
 	fmt.Fprintln(out, "  security-report  report auth/security status across providers")
@@ -333,6 +336,72 @@ func runCatalogRefresh(args []string, out, errOut io.Writer) int {
 	return runCatalogRefreshWithClient(args, out, errOut, func(client *apitools.Client) catalogRefreshFunc {
 		return client.RefreshCatalogSpecReferences
 	})
+}
+
+func runCatalogRefreshReport(args []string, out, errOut io.Writer) int {
+	fs := flag.NewFlagSet("apitools catalog refresh-report", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory containing saved review artifacts")
+	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
+	asOf := fs.String("as-of", "", "Check refresh verification freshness as of YYYY-MM-DD; defaults to today")
+	staleDays := fs.Int("stale-days", catalogpkg.DefaultStaleVerificationDays, "Warn when spec verification is older than this many days")
+	maxBytes := fs.Int64("max-bytes", apitools.CatalogRefreshReviewDefaultMaxBytes, "Maximum bytes to read from each saved artifact")
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog refresh-report [--cache-dir catalog-openapi-cache] [--cache catalog-openapi-cache/cache.sqlite] [--as-of YYYY-MM-DD] [--stale-days 365] [--max-bytes N] [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if fs.NArg() > 0 {
+		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
+		fs.Usage()
+		return 2
+	}
+	options := apitools.CatalogSpecRefreshReviewOptions{
+		CacheDir:              *cacheDir,
+		StaleVerificationDays: *staleDays,
+		MaxBytes:              *maxBytes,
+	}
+	if strings.TrimSpace(*asOf) != "" {
+		parsed, err := time.Parse("2006-01-02", strings.TrimSpace(*asOf))
+		if err != nil {
+			fmt.Fprintf(errOut, "invalid --as-of %q: expected YYYY-MM-DD\n", *asOf)
+			return 2
+		}
+		options.AsOf = parsed
+	}
+	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	defer closeCache()
+	options.Artifacts = artifacts
+	report, err := apitools.BuiltInCatalogSpecRefreshReviewReport(options)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	if *jsonOut {
+		if err := writeJSON(out, report); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	writeCatalogRefreshReviewReport(out, report)
+	return 0
 }
 
 func runCatalogRefreshWithClient(args []string, out, errOut io.Writer, refresherFor func(*apitools.Client) catalogRefreshFunc) int {
@@ -864,6 +933,30 @@ func writeCatalogRefreshReport(out io.Writer, report apitools.CatalogSpecRefresh
 	for _, result := range report.Results {
 		for _, followUp := range result.ManualFollowUps {
 			fmt.Fprintf(out, "- %s/%s: %s\n", result.ProviderID, result.SpecRefID, followUp)
+		}
+	}
+}
+
+func writeCatalogRefreshReviewReport(out io.Writer, report apitools.CatalogSpecRefreshReviewReport) {
+	if len(report.Results) == 0 {
+		fmt.Fprintln(out, "No catalog refresh artifacts found.")
+		return
+	}
+	fmt.Fprintf(out, "%-18s %-34s %-24s %-12s %-64s %s\n", "PROVIDER", "SPEC_REF", "VALIDATION", "BYTES", "SHA256", "ARTIFACT")
+	for _, result := range report.Results {
+		artifact := result.RegisteredArtifactPath
+		if artifact == "" {
+			artifact = result.SavedPath
+		}
+		fmt.Fprintf(out, "%-18s %-34s %-24s %-12d %-64s %s\n", result.ProviderID, result.SpecRefID, result.ValidationStatus, result.Bytes, result.SHA256, artifact)
+	}
+	fmt.Fprintln(out, "Manual follow-ups:")
+	for _, result := range report.Results {
+		for _, followUp := range result.ManualFollowUps {
+			fmt.Fprintf(out, "- %s/%s: %s\n", result.ProviderID, result.SpecRefID, followUp)
+		}
+		if result.ValidationError != "" {
+			fmt.Fprintf(out, "- %s/%s: validation error: %s\n", result.ProviderID, result.SpecRefID, result.ValidationError)
 		}
 	}
 }

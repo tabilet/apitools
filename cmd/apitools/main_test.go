@@ -51,7 +51,7 @@ func TestCatalogHelpDocumentsSubcommands(t *testing.T) {
 		t.Fatalf("code = %d\n%s", code, out.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"Usage: apitools catalog", "advisory", "check", "list", "specs", "inspect", "overlay-view", "security-report"} {
+	for _, expected := range []string{"Usage: apitools catalog", "advisory", "check", "list", "specs", "refresh-report", "inspect", "overlay-view", "security-report"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
 		}
@@ -343,6 +343,75 @@ func TestCatalogRefreshRejectsProviderWithoutRefreshableSpecs(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(dir, "catalog-openapi-cache", "cache.sqlite")); !os.IsNotExist(err) {
 		t.Fatalf("selection failure created default cache: %v", err)
+	}
+}
+
+func TestCatalogRefreshReportOutputAndJSON(t *testing.T) {
+	dir := t.TempDir()
+	cacheDir := filepath.Join(dir, "catalog-openapi-cache")
+	cachePath := filepath.Join(cacheDir, "cache.sqlite")
+	artifactPath := "openapi/slack-web-openapi-v2.json"
+	if err := os.MkdirAll(filepath.Join(cacheDir, "openapi"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(cacheDir, filepath.FromSlash(artifactPath)), []byte(`{"openapi":"3.0.0","info":{"title":"Slack","version":"1.0.0"},"paths":{}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cache, err := sqlitecache.Open(cachePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.StoreCatalogArtifact(context.Background(), sqlitecache.CatalogArtifact{
+		ProviderID: "slack",
+		ArtifactID: "slack-web-openapi-v2",
+		Kind:       "openapi",
+		Path:       artifactPath,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "refresh-report", "--cache-dir", cacheDir, "--cache", cachePath}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{"slack-web-openapi-v2", "valid-openapi", artifactPath, "Manual follow-ups"} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("refresh report output missing %q:\n%s", expected, out.String())
+		}
+	}
+
+	out.Reset()
+	errOut.Reset()
+	code = run([]string{"catalog", "refresh-report", "--cache-dir", cacheDir, "--cache", cachePath, "--json"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{`"provider_id": "slack"`, `"spec_ref_id": "slack-web-openapi-v2"`, `"validation_status": "valid-openapi"`} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("refresh report json missing %q:\n%s", expected, out.String())
+		}
+	}
+}
+
+func TestCatalogRefreshReportMissingCacheDoesNotCreateFile(t *testing.T) {
+	dir := t.TempDir()
+	cachePath := filepath.Join(dir, "missing.sqlite")
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "refresh-report", "--cache-dir", dir, "--cache", cachePath}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if _, err := os.Stat(cachePath); !os.IsNotExist(err) {
+		t.Fatalf("cache path stat err = %v, want not exist", err)
+	}
+	if !strings.Contains(out.String(), apitools.CatalogRefreshMissingRegistration) {
+		t.Fatalf("refresh report missing unregistered status:\n%s", out.String())
 	}
 }
 

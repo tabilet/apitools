@@ -36,6 +36,10 @@ For each service, use the same four-step review loop.
 
    ```bash
    go run ./cmd/apitools catalog specs --cache catalog-openapi-cache/cache.sqlite
+   go run ./cmd/apitools catalog refresh-report \
+     --cache-dir catalog-openapi-cache \
+     --cache catalog-openapi-cache/cache.sqlite \
+     --as-of 2026-05-19
    go run ./cmd/apitools catalog refresh \
      --provider <provider-id> \
      --spec <spec-ref-id> \
@@ -43,10 +47,16 @@ For each service, use the same four-step review loop.
      --cache catalog-openapi-cache/cache.sqlite
    ```
 
-   `catalog refresh` is opt-in and selected; it must not be wired into
-   `catalog check`. It downloads only the requested known reference, saves the
-   review artifact under ignored cache directories, registers paths in SQLite,
-   and reports manual follow-ups for catalog metadata review.
+   `catalog refresh-report` is read-only and offline. It joins built-in
+   refreshable references with existing SQLite artifact registrations and saved
+   cache files, then reports missing registrations, missing files, SHA-256 and
+   byte evidence, validation status, stale verification dates, and manual
+   follow-ups. It reads saved artifacts with a bounded local file limit and
+   rejects symlinked artifact paths. `catalog refresh` is opt-in and selected;
+   it must not be wired into `catalog check`. It downloads only the requested
+   known reference, saves the review artifact under ignored cache directories,
+   registers paths in SQLite, and reports manual follow-ups for catalog metadata
+   review.
 
 2. Review auth/security completeness.
 

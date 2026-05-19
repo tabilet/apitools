@@ -45,13 +45,12 @@ go run ./cmd/apitools search --query slack --json
 go run ./cmd/apitools search --query slack --cache ~/.cache/apitools/cache.sqlite
 go run ./cmd/apitools import --url https://example.com/openapi.yaml --dir ./openapi --name example
 go run ./cmd/apitools catalog list
-go run ./cmd/apitools catalog advisory slack \
-  --cache catalog-openapi-cache/cache.sqlite
 go run ./cmd/apitools catalog advisory slack
 go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog overlay-view github
 go run ./cmd/apitools catalog security-report
 go run ./cmd/apitools catalog check
+go run ./cmd/apitools catalog refresh-report
 ```
 
 Search uses APIs.guru first and can fall back to public-apis by probing common
@@ -94,7 +93,8 @@ credentials, or claiming runtime compatibility:
 
 ```bash
 go run ./cmd/apitools catalog list
-go run ./cmd/apitools catalog advisory slack
+go run ./cmd/apitools catalog advisory slack \
+  --cache catalog-openapi-cache/cache.sqlite
 go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog inspect slack \
   --openapi ./openapi/slack.yaml \
@@ -103,6 +103,10 @@ go run ./cmd/apitools catalog overlay-view github --json
 go run ./cmd/apitools catalog security-report --json
 go run ./cmd/apitools catalog check --as-of 2026-05-18 --json
 go run ./cmd/apitools catalog specs --cache catalog-openapi-cache/cache.sqlite
+go run ./cmd/apitools catalog refresh-report \
+  --cache-dir catalog-openapi-cache \
+  --cache catalog-openapi-cache/cache.sqlite \
+  --as-of 2026-05-19
 go run ./cmd/apitools catalog refresh \
   --provider slack \
   --cache-dir catalog-openapi-cache \
@@ -152,7 +156,14 @@ reports remain exit code 0 for inspection.
 
 Catalog spec refresh is opt-in and selected. `catalog specs` lists known
 machine-readable built-in spec references without network access, optionally
-joining registered local artifact paths from `cache.sqlite`. `catalog refresh`
+joining registered local artifact paths from `cache.sqlite`. `catalog
+refresh-report` reviews built-in refreshable spec references against existing
+SQLite registrations and saved files under `catalog-openapi-cache/` without
+creating a cache, downloading documents, or promoting metadata. It reports
+missing registrations, missing files, SHA-256 and byte evidence, validation
+status, stale verification dates, and deterministic manual follow-ups. It reads
+saved artifacts with a bounded local file limit and rejects symlinked artifact
+paths. `catalog refresh`
 downloads only the selected provider/spec reference using the same safe HTTP(S)
 download limits as imports, saves the artifact under ignored
 `catalog-openapi-cache/openapi/` or `catalog-openapi-cache/google-discovery/`,
@@ -306,6 +317,7 @@ go run ./cmd/apitools search --help
 go run ./cmd/apitools import --help
 go run ./cmd/apitools catalog check
 go run ./cmd/apitools catalog list
+go run ./cmd/apitools catalog advisory slack
 go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog security-report
 ```
