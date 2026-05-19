@@ -186,6 +186,25 @@ var specArtifacts = []specArtifact{
 		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
+		providerID: "baserow",
+		artifactID: "baserow-api-openapi",
+		kind:       "openapi",
+		url:        "https://api.baserow.io/api/schema.json",
+		path:       "openapi/baserow-api-openapi.json",
+		title:      "Baserow API spec",
+		openapi:    "3.0.3",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
+	},
+	{
+		providerID: "brandfetch",
+		artifactID: "brandfetch-brand-api-openapi",
+		kind:       "openapi",
+		url:        "https://docs.brandfetch.com/openapi.json",
+		path:       "openapi/brandfetch-brand-api-openapi.json",
+		title:      "Brandfetch API",
+		openapi:    "3.0.1",
+	},
+	{
 		providerID: "clickup",
 		artifactID: "clickup-api-v2-openapi",
 		kind:       "openapi",
@@ -599,6 +618,13 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://documentation.bamboohr.com/docs",
 	},
 	{
+		providerID:  "bannerbear",
+		artifactID:  "bannerbear-api-v2-overlay",
+		path:        "advisory-overlays/bannerbear-api-v2-overlay.json",
+		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
+		sourceURL:   "https://developers.bannerbear.com/v2/",
+	},
+	{
 		providerID:  "calendly",
 		artifactID:  "calendly-public-api-overlay",
 		path:        "advisory-overlays/calendly-public-api-overlay.json",
@@ -653,6 +679,13 @@ var overlayArtifacts = []overlayArtifact{
 		path:        "advisory-overlays/ghost-admin-api-overlay.json",
 		builderPath: "overlay-builders/build_m22_human_docs_overlays.go",
 		sourceURL:   "https://docs.ghost.org/admin-api/",
+	},
+	{
+		providerID:  "grist",
+		artifactID:  "grist-rest-api-overlay",
+		path:        "advisory-overlays/grist-rest-api-overlay.json",
+		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
+		sourceURL:   "https://support.getgrist.com/rest-api/",
 	},
 	{
 		providerID:  "harvest",

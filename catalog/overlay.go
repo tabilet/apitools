@@ -1508,6 +1508,24 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Clockify has human API docs in this catalog entry but no recorded official OpenAPI document; docs describe X-Api-Key or X-Addon-Token header authentication.",
 	},
 	{
+		ID:         "bannerbear-api-auth-overlay",
+		ProviderID: "bannerbear",
+		SpecRefID:  "bannerbear-api-v2-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:        "bannerbearBearer",
+			Type:        SecuritySchemeHTTP,
+			Scheme:      "bearer",
+			Description: "Bannerbear Project API Key or Master API Key carried as an Authorization bearer token.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "bannerbearBearer"}},
+		SourceRefs: []string{
+			"https://developers.bannerbear.com/v2/",
+			"https://www.bannerbear.com/help/api/",
+		},
+		SourceNote: "Bannerbear has human API v2 docs in this catalog entry but no recorded official OpenAPI document; docs describe Authorization: Bearer API_KEY authentication.",
+	},
+	{
 		ID:         "ghost-api-auth-overlay",
 		ProviderID: "ghost",
 		SpecRefID:  "ghost-admin-api-docs",
@@ -1551,6 +1569,24 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			"https://help.getharvest.com/api-v2/authentication-api/authentication/authentication/",
 		},
 		SourceNote: "Harvest has human API v2 docs in this catalog entry but no recorded official OpenAPI document; docs describe bearer authorization and a Harvest-Account-ID header.",
+	},
+	{
+		ID:         "grist-api-auth-overlay",
+		ProviderID: "grist",
+		SpecRefID:  "grist-rest-api-usage-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:        "gristBearer",
+			Type:        SecuritySchemeHTTP,
+			Scheme:      "bearer",
+			Description: "Grist API key carried as an Authorization bearer token.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "gristBearer"}},
+		SourceRefs: []string{
+			"https://support.getgrist.com/rest-api/",
+			"https://support.getgrist.com/api/",
+		},
+		SourceNote: "Grist has human REST API docs in this catalog entry but no recorded official OpenAPI document; docs describe API-key bearer authentication.",
 	},
 	{
 		ID:         "help-scout-inbox-api-auth-overlay",

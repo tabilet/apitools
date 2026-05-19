@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 79; got != want {
+	if got, want := len(candidates), 83; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -26,9 +26,12 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"aws-s3",
 		"aws-sns",
 		"bamboohr",
+		"bannerbear",
+		"baserow",
 		"bitbucket",
 		"bitly",
 		"box",
+		"brandfetch",
 		"brevo",
 		"calendly",
 		"chargebee",
@@ -56,6 +59,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"google-drive",
 		"google-sheets",
 		"grafana",
+		"grist",
 		"harvest",
 		"help-scout",
 		"hubspot",
@@ -119,8 +123,11 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "s3", id: "aws-s3"},
 		{key: "sns", id: "aws-sns"},
 		{key: "bamboo hr", id: "bamboohr"},
+		{key: "bannerbear api", id: "bannerbear"},
+		{key: "baserow database api", id: "baserow"},
 		{key: "bitbucket cloud", id: "bitbucket"},
 		{key: "bitly api", id: "bitly"},
+		{key: "brand api", id: "brandfetch"},
 		{key: "sendinblue", id: "brevo"},
 		{key: "chargebee api", id: "chargebee"},
 		{key: "clockify api", id: "clockify"},
@@ -138,6 +145,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "figma rest api", id: "figma"},
 		{key: "ghost admin api", id: "ghost"},
 		{key: "grafana http api", id: "grafana"},
+		{key: "grist rest api", id: "grist"},
 		{key: "harvestapp", id: "harvest"},
 		{key: "helpscout api", id: "help-scout"},
 		{key: "intercom rest api", id: "intercom"},
@@ -196,6 +204,9 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"bitbucket",
 		"bitly",
 		"box",
+		"bannerbear",
+		"baserow",
+		"brandfetch",
 		"brevo",
 		"calendly",
 		"circleci",
@@ -223,6 +234,7 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"google-calendar",
 		"google-sheets",
 		"grafana",
+		"grist",
 		"microsoft-graph",
 		"monday-com",
 		"netlify",

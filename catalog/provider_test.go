@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 79; got != want {
+	if got, want := len(catalog.ListProviders()), 83; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -26,9 +26,12 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"aws-s3",
 		"aws-sns",
 		"bamboohr",
+		"bannerbear",
+		"baserow",
 		"bitbucket",
 		"bitly",
 		"box",
+		"brandfetch",
 		"brevo",
 		"calendly",
 		"chargebee",
@@ -56,6 +59,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"google-drive",
 		"google-sheets",
 		"grafana",
+		"grist",
 		"harvest",
 		"help-scout",
 		"hubspot",
@@ -117,11 +121,14 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "asana api", id: "asana"},
 		{key: "box api", id: "box"},
 		{key: "bamboohr api", id: "bamboohr"},
+		{key: "bannerbear image api", id: "bannerbear"},
+		{key: "baserow database api", id: "baserow"},
 		{key: "amazon lambda", id: "aws-lambda"},
 		{key: "amazon s3", id: "aws-s3"},
 		{key: "amazon sns", id: "aws-sns"},
 		{key: "bitbucket cloud", id: "bitbucket"},
 		{key: "bitly api", id: "bitly"},
+		{key: "brandfetch brand api", id: "brandfetch"},
 		{key: "calendly api", id: "calendly"},
 		{key: "sendinblue", id: "brevo"},
 		{key: "chargebee api", id: "chargebee"},
@@ -147,6 +154,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "google calendar api", id: "google-calendar"},
 		{key: "google sheets api", id: "google-sheets"},
 		{key: "grafana api", id: "grafana"},
+		{key: "getgrist", id: "grist"},
 		{key: "harvestapp", id: "harvest"},
 		{key: "helpscout api", id: "help-scout"},
 		{key: "intercom api", id: "intercom"},
@@ -231,6 +239,9 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "brevo", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "airtable", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "bamboohr", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "bannerbear", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "baserow", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "brandfetch", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "calendly", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "chargebee", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "circleci", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
@@ -257,6 +268,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "google-drive", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-sheets", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "grafana", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "grist", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "harvest", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "help-scout", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "hubspot", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPIIndex},

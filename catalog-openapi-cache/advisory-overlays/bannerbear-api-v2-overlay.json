@@ -1,0 +1,776 @@
+{
+  "components": {
+    "schemas": {
+      "BannerbearCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "BannerbearError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "BannerbearObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bannerbearBearer": {
+        "description": "Bannerbear Project API Key or Master API Key carried as an Authorization bearer token.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Bannerbear API v2 human documentation. This is not an official Bannerbear OpenAPI document.",
+    "title": "Bannerbear API v2 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v2/auth": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBannerbearAuth",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Check authentication"
+      }
+    },
+    "/v2/collections": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBannerbearCollections",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "List collections"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBannerbearCollection",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BannerbearObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Create a collection"
+      }
+    },
+    "/v2/collections/{collection_uid}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBannerbearCollection",
+        "parameters": [
+          {
+            "description": "Bannerbear collection UID.",
+            "in": "path",
+            "name": "collection_uid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Get a collection"
+      }
+    },
+    "/v2/images": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBannerbearImages",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "List images"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBannerbearImage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BannerbearObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Create an image"
+      }
+    },
+    "/v2/images/{image_uid}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBannerbearImage",
+        "parameters": [
+          {
+            "description": "Bannerbear image UID.",
+            "in": "path",
+            "name": "image_uid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Get an image"
+      }
+    },
+    "/v2/projects": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBannerbearProjects",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "List projects"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBannerbearProject",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BannerbearObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Create a project"
+      }
+    },
+    "/v2/projects/{project_uid}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBannerbearProject",
+        "parameters": [
+          {
+            "description": "Bannerbear project UID.",
+            "in": "path",
+            "name": "project_uid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Get a project"
+      }
+    },
+    "/v2/screenshots": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBannerbearScreenshot",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BannerbearObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Create a screenshot"
+      }
+    },
+    "/v2/screenshots/{screenshot_uid}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBannerbearScreenshot",
+        "parameters": [
+          {
+            "description": "Bannerbear screenshot UID.",
+            "in": "path",
+            "name": "screenshot_uid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Get a screenshot"
+      }
+    },
+    "/v2/templates": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBannerbearTemplates",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "List templates"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBannerbearTemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BannerbearObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Create a template"
+      }
+    },
+    "/v2/templates/{template_uid}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteBannerbearTemplate",
+        "parameters": [
+          {
+            "description": "Bannerbear template UID.",
+            "in": "path",
+            "name": "template_uid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Delete a template"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBannerbearTemplate",
+        "parameters": [
+          {
+            "description": "Bannerbear template UID.",
+            "in": "path",
+            "name": "template_uid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Get a template"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateBannerbearTemplate",
+        "parameters": [
+          {
+            "description": "Bannerbear template UID.",
+            "in": "path",
+            "name": "template_uid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BannerbearObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Update a template"
+      }
+    },
+    "/v2/videos": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBannerbearVideos",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "List videos"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBannerbearVideo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BannerbearObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Create a video"
+      }
+    },
+    "/v2/videos/{video_uid}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBannerbearVideo",
+        "parameters": [
+          {
+            "description": "Bannerbear video UID.",
+            "in": "path",
+            "name": "video_uid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannerbearObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bannerbearBearer": []
+          }
+        ],
+        "summary": "Get a video"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.bannerbear.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "bannerbear",
+    "source_note": "Bannerbear publishes REST-shaped API v2 docs with Authorization bearer API-key metadata; this overlay covers authentication, images, collections, videos, screenshots, templates, and projects.",
+    "source_refs": [
+      "https://developers.bannerbear.com/v2/",
+      "https://www.bannerbear.com/help/api/"
+    ]
+  }
+}

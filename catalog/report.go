@@ -137,6 +137,20 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Airtable has no recorded official OpenAPI document in the built-in catalog; security metadata must come from advisory overlay notes when importing a user-provided spec.",
 	},
 	{
+		ProviderID: "bannerbear",
+		SpecRefID:  "bannerbear-api-v2-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://developers.bannerbear.com/v2/"},
+		SourceNote: "Bannerbear has official API v2 docs but no recorded stable public official OpenAPI document; bearer API-key metadata comes from advisory overlay notes.",
+	},
+	{
+		ProviderID: "baserow",
+		SpecRefID:  "baserow-api-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://api.baserow.io/api/schema.json", "https://baserow.io/docs/apis/rest-api", "https://baserow.io/user-docs/database-api"},
+		SourceNote: "Baserow's official OpenAPI document includes database-token, JWT, and user-source JWT bearer security schemes with operation-level security requirements.",
+	},
+	{
 		ProviderID: "aws-s3",
 		SpecRefID:  "aws-s3-smithy-model",
 		Status:     AuthStatusOverlayRequired,
@@ -170,6 +184,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		Status:     AuthStatusComplete,
 		SourceRefs: []string{"https://api.bitbucket.org/swagger.json", "https://developer.atlassian.com/cloud/bitbucket/rest/intro/"},
 		SourceNote: "Bitbucket Cloud's official Swagger/OpenAPI schema includes OAuth2, basic, and API key security definitions with operation security metadata.",
+	},
+	{
+		ProviderID: "brandfetch",
+		SpecRefID:  "brandfetch-brand-api-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://docs.brandfetch.com/openapi.json", "https://docs.brandfetch.com/brand-api/overview"},
+		SourceNote: "Brandfetch's official Brand API OpenAPI document includes bearer HTTP security metadata with operation-level security requirements.",
 	},
 	{
 		ProviderID: "calendly",
@@ -240,6 +261,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		Status:     AuthStatusComplete,
 		SourceRefs: []string{"https://raw.githubusercontent.com/grafana/grafana/main/public/openapi3.json", "https://grafana.com/docs/grafana/latest/developer-resources/api-reference/"},
 		SourceNote: "Grafana's official HTTP API OpenAPI v3 document includes API-key Authorization header and basic auth security schemes with root security requirements.",
+	},
+	{
+		ProviderID: "grist",
+		SpecRefID:  "grist-rest-api-usage-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://support.getgrist.com/rest-api/", "https://support.getgrist.com/api/"},
+		SourceNote: "Grist has official REST API usage and reference docs but no recorded stable public official OpenAPI document; bearer API-key metadata comes from advisory overlay notes.",
 	},
 	{
 		ProviderID: "gitlab",

@@ -86,7 +86,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 64; got != want {
+	if got, want := len(overlays), 66; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -181,9 +181,12 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"aws-s3",
 		"aws-sns",
 		"bamboohr",
+		"bannerbear",
+		"baserow",
 		"bitbucket",
 		"bitly",
 		"box",
+		"brandfetch",
 		"brevo",
 		"calendly",
 		"chargebee",
@@ -211,6 +214,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"google-drive",
 		"google-sheets",
 		"grafana",
+		"grist",
 		"harvest",
 		"help-scout",
 		"hubspot",
@@ -265,9 +269,12 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"aws-s3":            AuthStatusOverlayRequired,
 		"aws-sns":           AuthStatusOverlayRequired,
 		"bamboohr":          AuthStatusOverlayRequired,
+		"bannerbear":        AuthStatusOverlayRequired,
+		"baserow":           AuthStatusComplete,
 		"bitbucket":         AuthStatusPresentIncomplete,
 		"bitly":             AuthStatusComplete,
 		"box":               AuthStatusPresentIncomplete,
+		"brandfetch":        AuthStatusComplete,
 		"brevo":             AuthStatusComplete,
 		"calendly":          AuthStatusOverlayRequired,
 		"chargebee":         AuthStatusPresentIncomplete,
@@ -295,6 +302,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"google-drive":      AuthStatusOverlayRequired,
 		"google-sheets":     AuthStatusOverlayRequired,
 		"grafana":           AuthStatusComplete,
+		"grist":             AuthStatusOverlayRequired,
 		"harvest":           AuthStatusOverlayRequired,
 		"help-scout":        AuthStatusOverlayRequired,
 		"hubspot":           AuthStatusOverlayRequired,
