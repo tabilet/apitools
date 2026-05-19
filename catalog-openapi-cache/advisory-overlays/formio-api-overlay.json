@@ -1,0 +1,403 @@
+{
+  "components": {
+    "schemas": {
+      "FormIOCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FormIOError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FormIOObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "formioJWTToken": {
+        "description": "Form.io JWT token carried in the x-jwt-token header.",
+        "in": "header",
+        "name": "x-jwt-token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Form.io human documentation. This is not an official Form.io OpenAPI document.",
+    "title": "Form.io API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/project": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFormIOProjects",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormIOCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formioJWTToken": []
+          }
+        ],
+        "summary": "List projects"
+      }
+    },
+    "/project/{project_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFormIOProject",
+        "parameters": [
+          {
+            "description": "Project ID.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormIOObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formioJWTToken": []
+          }
+        ],
+        "summary": "Get project"
+      }
+    },
+    "/{project_alias}/form": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFormIOForms",
+        "parameters": [
+          {
+            "description": "Project alias or path.",
+            "in": "path",
+            "name": "project_alias",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormIOCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formioJWTToken": []
+          }
+        ],
+        "summary": "List project forms"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFormIOForm",
+        "parameters": [
+          {
+            "description": "Project alias or path.",
+            "in": "path",
+            "name": "project_alias",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormIOObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormIOObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formioJWTToken": []
+          }
+        ],
+        "summary": "Create form"
+      }
+    },
+    "/{project_alias}/role": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFormIORoles",
+        "parameters": [
+          {
+            "description": "Project alias or path.",
+            "in": "path",
+            "name": "project_alias",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormIOCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formioJWTToken": []
+          }
+        ],
+        "summary": "List project roles"
+      }
+    },
+    "/{project_alias}/{form_path}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFormIOForm",
+        "parameters": [
+          {
+            "description": "Project alias or path.",
+            "in": "path",
+            "name": "project_alias",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Form path.",
+            "in": "path",
+            "name": "form_path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormIOObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formioJWTToken": []
+          }
+        ],
+        "summary": "Get form"
+      }
+    },
+    "/{project_alias}/{form_path}/submission": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFormIOSubmissions",
+        "parameters": [
+          {
+            "description": "Project alias or path.",
+            "in": "path",
+            "name": "project_alias",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Form path.",
+            "in": "path",
+            "name": "form_path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormIOCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formioJWTToken": []
+          }
+        ],
+        "summary": "List form submissions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFormIOSubmission",
+        "parameters": [
+          {
+            "description": "Project alias or path.",
+            "in": "path",
+            "name": "project_alias",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Form path.",
+            "in": "path",
+            "name": "form_path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormIOObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormIOObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formioJWTToken": []
+          }
+        ],
+        "summary": "Create submission"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.form.io"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "formio",
+    "source_note": "Form.io publishes human API documentation for cloud and self-hosted deployments but no stable public official OpenAPI document; this overlay covers selected projects, forms, submissions, and roles endpoints.",
+    "source_refs": [
+      "https://help.form.io/developers/introduction/api-documentation",
+      "https://help.form.io/developers/authentication"
+    ]
+  }
+}

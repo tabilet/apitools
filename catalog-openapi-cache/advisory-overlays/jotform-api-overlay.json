@@ -1,0 +1,367 @@
+{
+  "components": {
+    "schemas": {
+      "JotFormCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "JotFormError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "JotFormObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "jotformAPIKey": {
+        "description": "JotForm API key carried in the APIKEY header.",
+        "in": "header",
+        "name": "APIKEY",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official JotForm human documentation. This is not an official JotForm OpenAPI document.",
+    "title": "JotForm API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/form/{form_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getJotFormForm",
+        "parameters": [
+          {
+            "description": "JotForm form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "Get form"
+      }
+    },
+    "/form/{form_id}/questions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listJotFormFormQuestions",
+        "parameters": [
+          {
+            "description": "JotForm form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "List form questions"
+      }
+    },
+    "/form/{form_id}/submissions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listJotFormFormSubmissions",
+        "parameters": [
+          {
+            "description": "JotForm form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of submissions.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "List form submissions"
+      }
+    },
+    "/form/{form_id}/webhooks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listJotFormFormWebhooks",
+        "parameters": [
+          {
+            "description": "JotForm form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "List form webhooks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createJotFormFormWebhook",
+        "parameters": [
+          {
+            "description": "JotForm form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "Create form webhook"
+      }
+    },
+    "/submission/{submission_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getJotFormSubmission",
+        "parameters": [
+          {
+            "description": "Submission ID.",
+            "in": "path",
+            "name": "submission_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "Get submission"
+      }
+    },
+    "/user": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getJotFormUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "Get user account details"
+      }
+    },
+    "/user/forms": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listJotFormForms",
+        "parameters": [
+          {
+            "description": "Maximum number of forms.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "List user forms"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.jotform.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "jotform",
+    "source_note": "JotForm publishes human API documentation but no recorded official OpenAPI document; this overlay covers selected form, submission, question, report, and folder endpoints.",
+    "source_refs": [
+      "https://api.jotform.com/docs/",
+      "https://api.jotform.com/"
+    ]
+  }
+}

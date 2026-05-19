@@ -1,0 +1,349 @@
+{
+  "components": {
+    "schemas": {
+      "BubbleCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "BubbleError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "BubbleObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bubbleBearer": {
+        "bearerFormat": "Bubble API token",
+        "description": "Bubble API token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Bubble human documentation. This is not an official Bubble OpenAPI document.",
+    "title": "Bubble API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/obj/{type_name}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBubbleObjects",
+        "parameters": [
+          {
+            "description": "Bubble data type API name.",
+            "in": "path",
+            "name": "type_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Stringified Bubble search constraints.",
+            "in": "query",
+            "name": "constraints",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BubbleCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bubbleBearer": []
+          }
+        ],
+        "summary": "List objects of a type"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBubbleObject",
+        "parameters": [
+          {
+            "description": "Bubble data type API name.",
+            "in": "path",
+            "name": "type_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BubbleObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BubbleObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bubbleBearer": []
+          }
+        ],
+        "summary": "Create object"
+      }
+    },
+    "/obj/{type_name}/{object_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteBubbleObject",
+        "parameters": [
+          {
+            "description": "Bubble data type API name.",
+            "in": "path",
+            "name": "type_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Bubble object ID.",
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bubbleBearer": []
+          }
+        ],
+        "summary": "Delete object"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBubbleObject",
+        "parameters": [
+          {
+            "description": "Bubble data type API name.",
+            "in": "path",
+            "name": "type_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Bubble object ID.",
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BubbleObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bubbleBearer": []
+          }
+        ],
+        "summary": "Get object"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateBubbleObject",
+        "parameters": [
+          {
+            "description": "Bubble data type API name.",
+            "in": "path",
+            "name": "type_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Bubble object ID.",
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BubbleObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BubbleObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bubbleBearer": []
+          }
+        ],
+        "summary": "Update object"
+      }
+    },
+    "/wf/{workflow_name}": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "runBubbleWorkflow",
+        "parameters": [
+          {
+            "description": "Bubble backend workflow API name.",
+            "in": "path",
+            "name": "workflow_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BubbleObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BubbleObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bubbleBearer": []
+          }
+        ],
+        "summary": "Run backend workflow"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{bubble_app_host}/api/1.1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "bubble",
+    "source_note": "Bubble publishes human API docs and app-specific Swagger metadata but no stable provider-wide OpenAPI document; this overlay covers generic Data API and Workflow API entry points.",
+    "source_refs": [
+      "https://manual.bubble.io/help-guides/integrations/api/the-bubble-api",
+      "https://manual.bubble.io/core-resources/api/data-api",
+      "https://manual.bubble.io/core-resources/api/workflow-api"
+    ]
+  }
+}

@@ -1,0 +1,482 @@
+{
+  "components": {
+    "schemas": {
+      "FileMakerCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FileMakerError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FileMakerObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "fileMakerBasic": {
+        "description": "FileMaker Data API credentials used to create a database session.",
+        "scheme": "basic",
+        "type": "http"
+      },
+      "fileMakerBearer": {
+        "bearerFormat": "FileMaker Data API session token",
+        "description": "FileMaker Data API session token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Claris FileMaker human documentation. This is not an official FileMaker OpenAPI document.",
+    "title": "FileMaker Data API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/layouts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFileMakerLayouts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileMakerCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "fileMakerBearer": []
+          }
+        ],
+        "summary": "List layouts"
+      }
+    },
+    "/layouts/{layout}/records": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFileMakerRecords",
+        "parameters": [
+          {
+            "description": "Layout name.",
+            "in": "path",
+            "name": "layout",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "_limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "_offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileMakerCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "fileMakerBearer": []
+          }
+        ],
+        "summary": "List records"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFileMakerRecord",
+        "parameters": [
+          {
+            "description": "Layout name.",
+            "in": "path",
+            "name": "layout",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FileMakerObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileMakerObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "fileMakerBearer": []
+          }
+        ],
+        "summary": "Create record"
+      }
+    },
+    "/layouts/{layout}/records/{record_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteFileMakerRecord",
+        "parameters": [
+          {
+            "description": "Layout name.",
+            "in": "path",
+            "name": "layout",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Record ID.",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "fileMakerBearer": []
+          }
+        ],
+        "summary": "Delete record"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFileMakerRecord",
+        "parameters": [
+          {
+            "description": "Layout name.",
+            "in": "path",
+            "name": "layout",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Record ID.",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileMakerObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "fileMakerBearer": []
+          }
+        ],
+        "summary": "Get record"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateFileMakerRecord",
+        "parameters": [
+          {
+            "description": "Layout name.",
+            "in": "path",
+            "name": "layout",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Record ID.",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FileMakerObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileMakerObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "fileMakerBearer": []
+          }
+        ],
+        "summary": "Update record"
+      }
+    },
+    "/layouts/{layout}/records/{record_id}/containers/{field_name}/{repetition}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFileMakerContainerData",
+        "parameters": [
+          {
+            "description": "Layout name.",
+            "in": "path",
+            "name": "layout",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Record ID.",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Container field name.",
+            "in": "path",
+            "name": "field_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Container repetition.",
+            "in": "path",
+            "name": "repetition",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "fileMakerBearer": []
+          }
+        ],
+        "summary": "Get container data"
+      }
+    },
+    "/layouts/{layout}/script/{script_name}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "runFileMakerScript",
+        "parameters": [
+          {
+            "description": "Layout name.",
+            "in": "path",
+            "name": "layout",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Script name.",
+            "in": "path",
+            "name": "script_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Script parameter.",
+            "in": "query",
+            "name": "script.param",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileMakerObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "fileMakerBearer": []
+          }
+        ],
+        "summary": "Run script"
+      }
+    },
+    "/sessions": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteFileMakerSession",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "fileMakerBearer": []
+          }
+        ],
+        "summary": "Delete session"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFileMakerSession",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileMakerObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "fileMakerBasic": []
+          }
+        ],
+        "summary": "Create session"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{filemaker_host}/fmi/data/v1/databases/{database}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "filemaker",
+    "source_note": "Claris publishes human Data API reference docs and host-local reference files but no recorded stable public official OpenAPI document; this overlay covers selected session, layout, record, script, and container endpoints.",
+    "source_refs": [
+      "https://help.claris.com/en/data-api-guide/content/data-api-reference.html",
+      "https://help.claris.com/en/data-api-guide/"
+    ]
+  }
+}

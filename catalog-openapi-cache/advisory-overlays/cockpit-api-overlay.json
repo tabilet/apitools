@@ -1,0 +1,301 @@
+{
+  "components": {
+    "schemas": {
+      "CockpitCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CockpitError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CockpitObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "cockpitToken": {
+        "description": "Cockpit API token carried as the token request parameter.",
+        "in": "query",
+        "name": "token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Cockpit human documentation. This is not an official Cockpit OpenAPI document.",
+    "title": "Cockpit API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/assets": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCockpitAssets",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CockpitCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cockpitToken": []
+          }
+        ],
+        "summary": "List assets"
+      }
+    },
+    "/content/item/{model}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCockpitContentItem",
+        "parameters": [
+          {
+            "description": "Collection model name.",
+            "in": "path",
+            "name": "model",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter expression.",
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CockpitObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cockpitToken": []
+          }
+        ],
+        "summary": "Get one content item"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "saveCockpitContentItem",
+        "parameters": [
+          {
+            "description": "Collection model name.",
+            "in": "path",
+            "name": "model",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CockpitObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CockpitObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cockpitToken": []
+          }
+        ],
+        "summary": "Save content item"
+      }
+    },
+    "/content/items/{model}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCockpitContentItems",
+        "parameters": [
+          {
+            "description": "Collection model name.",
+            "in": "path",
+            "name": "model",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CockpitCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cockpitToken": []
+          }
+        ],
+        "summary": "List content items"
+      }
+    },
+    "/content/tree/{model}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCockpitContentTree",
+        "parameters": [
+          {
+            "description": "Tree model name.",
+            "in": "path",
+            "name": "model",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CockpitCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cockpitToken": []
+          }
+        ],
+        "summary": "Get content tree"
+      }
+    },
+    "/singletons/get/{singleton}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCockpitSingleton",
+        "parameters": [
+          {
+            "description": "Singleton name.",
+            "in": "path",
+            "name": "singleton",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CockpitObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "cockpitToken": []
+          }
+        ],
+        "summary": "Get singleton"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{cockpit_host}/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "cockpit",
+    "source_note": "Cockpit publishes human API docs for self-hosted instances but no recorded official OpenAPI document; this overlay covers selected collections, singletons, assets, and content endpoints.",
+    "source_refs": [
+      "https://getcockpit.com/documentation/core/api",
+      "https://getcockpit.com/documentation/core"
+    ]
+  }
+}

@@ -1,0 +1,337 @@
+{
+  "components": {
+    "schemas": {
+      "SurveyMonkeyCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SurveyMonkeyError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SurveyMonkeyObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "surveyMonkeyBearer": {
+        "bearerFormat": "OAuth 2.0 access token",
+        "description": "SurveyMonkey OAuth access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official SurveyMonkey human documentation. This is not an official SurveyMonkey OpenAPI document.",
+    "title": "SurveyMonkey API v3 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/surveys": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSurveyMonkeySurveys",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyMonkeyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "surveyMonkeyBearer": []
+          }
+        ],
+        "summary": "List surveys"
+      }
+    },
+    "/surveys/{survey_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getSurveyMonkeySurvey",
+        "parameters": [
+          {
+            "description": "Survey ID.",
+            "in": "path",
+            "name": "survey_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyMonkeyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "surveyMonkeyBearer": []
+          }
+        ],
+        "summary": "Get survey"
+      }
+    },
+    "/surveys/{survey_id}/collectors": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSurveyMonkeyCollectors",
+        "parameters": [
+          {
+            "description": "Survey ID.",
+            "in": "path",
+            "name": "survey_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyMonkeyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "surveyMonkeyBearer": []
+          }
+        ],
+        "summary": "List survey collectors"
+      }
+    },
+    "/surveys/{survey_id}/pages/{page_id}/questions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSurveyMonkeyPageQuestions",
+        "parameters": [
+          {
+            "description": "Survey ID.",
+            "in": "path",
+            "name": "survey_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page ID.",
+            "in": "path",
+            "name": "page_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyMonkeyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "surveyMonkeyBearer": []
+          }
+        ],
+        "summary": "List page questions"
+      }
+    },
+    "/surveys/{survey_id}/responses/bulk": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSurveyMonkeyResponsesBulk",
+        "parameters": [
+          {
+            "description": "Survey ID.",
+            "in": "path",
+            "name": "survey_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyMonkeyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "surveyMonkeyBearer": []
+          }
+        ],
+        "summary": "List survey responses in bulk"
+      }
+    },
+    "/webhooks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSurveyMonkeyWebhooks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyMonkeyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "surveyMonkeyBearer": []
+          }
+        ],
+        "summary": "List webhooks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createSurveyMonkeyWebhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SurveyMonkeyObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyMonkeyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "surveyMonkeyBearer": []
+          }
+        ],
+        "summary": "Create webhook"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.surveymonkey.com/v3"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "surveymonkey",
+    "source_note": "SurveyMonkey publishes human API v3 documentation but no recorded official OpenAPI document; this overlay covers selected surveys, collectors, responses, questions, and webhooks endpoints.",
+    "source_refs": [
+      "https://api.surveymonkey.com/v3/docs",
+      "https://help.surveymonkey.com/en/surveymonkey/integrations/surveymonkey-api/"
+    ]
+  }
+}

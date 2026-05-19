@@ -1,0 +1,351 @@
+{
+  "components": {
+    "schemas": {
+      "FormstackCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FormstackError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FormstackObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "formstackBearer": {
+        "bearerFormat": "OAuth 2.0 access token",
+        "description": "Formstack OAuth access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Formstack human documentation. This is not an official Formstack OpenAPI document.",
+    "title": "Formstack API v2 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/form.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFormstackForms",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormstackCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formstackBearer": []
+          }
+        ],
+        "summary": "List forms"
+      }
+    },
+    "/form/{form_id}.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFormstackForm",
+        "parameters": [
+          {
+            "description": "Form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormstackObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formstackBearer": []
+          }
+        ],
+        "summary": "Get form"
+      }
+    },
+    "/form/{form_id}/field.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFormstackFormFields",
+        "parameters": [
+          {
+            "description": "Form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormstackCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formstackBearer": []
+          }
+        ],
+        "summary": "List form fields"
+      }
+    },
+    "/form/{form_id}/submission.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFormstackSubmissions",
+        "parameters": [
+          {
+            "description": "Form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormstackCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formstackBearer": []
+          }
+        ],
+        "summary": "List form submissions"
+      }
+    },
+    "/form/{form_id}/webhook.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFormstackWebhooks",
+        "parameters": [
+          {
+            "description": "Form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormstackCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formstackBearer": []
+          }
+        ],
+        "summary": "List form webhooks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFormstackWebhook",
+        "parameters": [
+          {
+            "description": "Form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormstackObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormstackObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formstackBearer": []
+          }
+        ],
+        "summary": "Create form webhook"
+      }
+    },
+    "/submission/{submission_id}.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFormstackSubmission",
+        "parameters": [
+          {
+            "description": "Submission ID.",
+            "in": "path",
+            "name": "submission_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormstackObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "formstackBearer": []
+          }
+        ],
+        "summary": "Get submission"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://www.formstack.com/api/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "formstack",
+    "source_note": "Formstack publishes human API documentation but no recorded official OpenAPI document; this overlay covers selected forms, fields, submissions, folders, and webhooks endpoints.",
+    "source_refs": [
+      "https://help.formstack.com/hc/en-us/articles/44593115536403",
+      "https://developers.formstack.com/v2.0/reference/api-overview",
+      "https://developers.formstack.com/reference/authorization"
+    ]
+  }
+}

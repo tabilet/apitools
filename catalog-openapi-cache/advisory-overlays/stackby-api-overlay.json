@@ -1,0 +1,307 @@
+{
+  "components": {
+    "schemas": {
+      "StackbyCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "StackbyError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "StackbyObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "stackbyAPIKey": {
+        "description": "Stackby API key carried in the api-key header.",
+        "in": "header",
+        "name": "api-key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Stackby human documentation. This is not an official Stackby OpenAPI document.",
+    "title": "Stackby API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/rowcreate/{record_key}": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createStackbyRow",
+        "parameters": [
+          {
+            "description": "Record key.",
+            "in": "path",
+            "name": "record_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StackbyObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StackbyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "stackbyAPIKey": []
+          }
+        ],
+        "summary": "Create row"
+      }
+    },
+    "/rowdelete/{record_key}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteStackbyRow",
+        "parameters": [
+          {
+            "description": "Record key.",
+            "in": "path",
+            "name": "record_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "stackbyAPIKey": []
+          }
+        ],
+        "summary": "Delete row"
+      }
+    },
+    "/rowlist/{stack_id}/{table_name}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listStackbyRows",
+        "parameters": [
+          {
+            "description": "Stack ID.",
+            "in": "path",
+            "name": "stack_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Table name.",
+            "in": "path",
+            "name": "table_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StackbyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "stackbyAPIKey": []
+          }
+        ],
+        "summary": "List rows"
+      }
+    },
+    "/rowupdate/{record_key}": {
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateStackbyRow",
+        "parameters": [
+          {
+            "description": "Record key.",
+            "in": "path",
+            "name": "record_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StackbyObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StackbyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "stackbyAPIKey": []
+          }
+        ],
+        "summary": "Update row"
+      }
+    },
+    "/stacklist": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listStackbyStacks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StackbyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "stackbyAPIKey": []
+          }
+        ],
+        "summary": "List stacks"
+      }
+    },
+    "/tablelist/{stack_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listStackbyTables",
+        "parameters": [
+          {
+            "description": "Stack ID.",
+            "in": "path",
+            "name": "stack_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StackbyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "stackbyAPIKey": []
+          }
+        ],
+        "summary": "List tables"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://stackby.com/api/betav1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "stackby",
+    "source_note": "Stackby publishes human API documentation and API-key help but no recorded official OpenAPI document; this overlay covers selected stack, table, and row endpoints.",
+    "source_refs": [
+      "https://help.stackby.com/en/articles/29-developer-api",
+      "https://help.stackby.com/en/articles/124-how-to-get-your-api-key-in-stackby",
+      "https://help.stackby.com/en/collections/26-api"
+    ]
+  }
+}
