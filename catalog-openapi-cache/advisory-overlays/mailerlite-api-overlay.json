@@ -1,0 +1,251 @@
+{
+  "components": {
+    "schemas": {
+      "MailerLiteCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MailerLiteError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MailerLiteObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "mailerLiteBearer": {
+        "bearerFormat": "API token",
+        "description": "MailerLite API token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official MailerLite human documentation. This is not an official MailerLite OpenAPI document.",
+    "title": "MailerLite API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/campaigns": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMailerLiteCampaigns",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailerLiteCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailerLiteBearer": []
+          }
+        ],
+        "summary": "List campaigns"
+      }
+    },
+    "/forms": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMailerLiteForms",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailerLiteCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailerLiteBearer": []
+          }
+        ],
+        "summary": "List forms"
+      }
+    },
+    "/groups": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMailerLiteGroups",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailerLiteCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailerLiteBearer": []
+          }
+        ],
+        "summary": "List groups"
+      }
+    },
+    "/subscribers": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMailerLiteSubscribers",
+        "parameters": [
+          {
+            "description": "Subscriber email filter.",
+            "in": "query",
+            "name": "filter[email]",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailerLiteCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailerLiteBearer": []
+          }
+        ],
+        "summary": "List subscribers"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMailerLiteSubscriber",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailerLiteObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailerLiteObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailerLiteBearer": []
+          }
+        ],
+        "summary": "Create subscriber"
+      }
+    },
+    "/subscribers/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMailerLiteSubscriber",
+        "parameters": [
+          {
+            "description": "Subscriber ID or email.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailerLiteObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailerLiteBearer": []
+          }
+        ],
+        "summary": "Get subscriber"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://connect.mailerlite.com/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "mailerlite",
+    "source_note": "MailerLite publishes REST API docs plus Classic auth docs but no recorded official OpenAPI document; this overlay covers selected subscriber, group, campaign, and form endpoints using the current bearer-token API.",
+    "source_refs": [
+      "https://developers.mailerlite.com/docs/",
+      "https://developers-classic.mailerlite.com/docs/authentication",
+      "https://www.mailerlite.com/help/where-to-find-the-mailerlite-api-key-groupid-and-documentation"
+    ]
+  }
+}

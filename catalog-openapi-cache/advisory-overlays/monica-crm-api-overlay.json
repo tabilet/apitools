@@ -1,0 +1,313 @@
+{
+  "components": {
+    "schemas": {
+      "MonicaCRMCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MonicaCRMError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MonicaCRMObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "monicaBearer": {
+        "bearerFormat": "Personal access token",
+        "description": "Monica API token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Monica human documentation. This is not an official Monica OpenAPI document.",
+    "title": "Monica CRM API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/activities": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMonicaCRMActivities",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonicaCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "monicaBearer": []
+          }
+        ],
+        "summary": "List activities"
+      }
+    },
+    "/calls": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMonicaCRMCalls",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonicaCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "monicaBearer": []
+          }
+        ],
+        "summary": "List calls"
+      }
+    },
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMonicaCRMContacts",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonicaCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "monicaBearer": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMonicaCRMContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonicaCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonicaCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "monicaBearer": []
+          }
+        ],
+        "summary": "Create contact"
+      }
+    },
+    "/contacts/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMonicaCRMContact",
+        "parameters": [
+          {
+            "description": "Contact ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonicaCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "monicaBearer": []
+          }
+        ],
+        "summary": "Get contact"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateMonicaCRMContact",
+        "parameters": [
+          {
+            "description": "Contact ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonicaCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonicaCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "monicaBearer": []
+          }
+        ],
+        "summary": "Update contact"
+      }
+    },
+    "/reminders": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMonicaCRMReminders",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonicaCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "monicaBearer": []
+          }
+        ],
+        "summary": "List reminders"
+      }
+    },
+    "/tags": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMonicaCRMTags",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonicaCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "monicaBearer": []
+          }
+        ],
+        "summary": "List tags"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://app.monicahq.com/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "monica-crm",
+    "source_note": "Monica publishes REST API docs with bearer token guidance but no recorded official OpenAPI document; this overlay covers selected contacts, activities, calls, reminders, and tags endpoints.",
+    "source_refs": [
+      "https://www.monicahq.com/api"
+    ]
+  }
+}

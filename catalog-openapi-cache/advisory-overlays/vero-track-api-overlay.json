@@ -1,0 +1,194 @@
+{
+  "components": {
+    "schemas": {
+      "VeroError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "VeroObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "veroAuthToken": {
+        "description": "Vero auth token carried in documented request parameters.",
+        "in": "query",
+        "name": "auth_token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Vero human documentation. This is not an official Vero OpenAPI document.",
+    "title": "Vero Track API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/events/track": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "trackVeroEvent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VeroObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VeroObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "veroAuthToken": []
+          }
+        ],
+        "summary": "Track event"
+      }
+    },
+    "/users/tags/edit": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "editVeroUserTags",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VeroObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VeroObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "veroAuthToken": []
+          }
+        ],
+        "summary": "Edit user tags"
+      }
+    },
+    "/users/track": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "trackVeroUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VeroObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VeroObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "veroAuthToken": []
+          }
+        ],
+        "summary": "Track or update user"
+      }
+    },
+    "/users/unsubscribe": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "unsubscribeVeroUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VeroObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VeroObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "veroAuthToken": []
+          }
+        ],
+        "summary": "Unsubscribe user"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.getvero.com/api/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "vero",
+    "source_note": "Vero publishes Track API reference docs with auth_token request parameters but no recorded official OpenAPI document; this overlay covers selected users, events, tags, and unsubscribe endpoints.",
+    "source_refs": [
+      "https://help.getvero.com/developer-docs/overview",
+      "https://help.getvero.com/api-reference/track/overview",
+      "https://help.getvero.com/api-reference/events/track"
+    ]
+  }
+}

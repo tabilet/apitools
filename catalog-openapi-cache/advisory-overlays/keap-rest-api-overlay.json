@@ -1,0 +1,295 @@
+{
+  "components": {
+    "schemas": {
+      "KeapCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "KeapError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "KeapObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "keapBearer": {
+        "bearerFormat": "OAuth 2.0 access token",
+        "description": "Keap OAuth access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Keap human documentation. This is not an official Keap OpenAPI document.",
+    "title": "Keap REST API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/companies": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listKeapCompanies",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeapCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "keapBearer": []
+          }
+        ],
+        "summary": "List companies"
+      }
+    },
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listKeapContacts",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Offset.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeapCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "keapBearer": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createKeapContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeapObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeapObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "keapBearer": []
+          }
+        ],
+        "summary": "Create contact"
+      }
+    },
+    "/contacts/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getKeapContact",
+        "parameters": [
+          {
+            "description": "Contact ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeapObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "keapBearer": []
+          }
+        ],
+        "summary": "Get contact"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateKeapContact",
+        "parameters": [
+          {
+            "description": "Contact ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeapObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeapObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "keapBearer": []
+          }
+        ],
+        "summary": "Update contact"
+      }
+    },
+    "/orders": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listKeapOrders",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeapCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "keapBearer": []
+          }
+        ],
+        "summary": "List orders"
+      }
+    },
+    "/tags": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listKeapTags",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeapCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "keapBearer": []
+          }
+        ],
+        "summary": "List tags"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.infusionsoft.com/crm/rest/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "keap",
+    "source_note": "Keap publishes REST docs with OAuth authentication guidance but no recorded official OpenAPI document; this overlay covers selected contacts, companies, orders, and tags endpoints.",
+    "source_refs": [
+      "https://developer.keap.com/docs/rest/1000/"
+    ]
+  }
+}

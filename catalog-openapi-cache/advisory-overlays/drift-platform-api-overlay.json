@@ -1,0 +1,245 @@
+{
+  "components": {
+    "schemas": {
+      "DriftCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DriftError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DriftObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "driftBearer": {
+        "bearerFormat": "OAuth 2.0 access token",
+        "description": "Drift OAuth access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Drift human documentation. This is not an official Drift OpenAPI document.",
+    "title": "Drift Platform API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listDriftContacts",
+        "parameters": [
+          {
+            "description": "Contact email filter.",
+            "in": "query",
+            "name": "email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriftCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "driftBearer": []
+          }
+        ],
+        "summary": "List contacts"
+      }
+    },
+    "/contacts/{contact_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getDriftContact",
+        "parameters": [
+          {
+            "description": "Drift contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriftObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "driftBearer": []
+          }
+        ],
+        "summary": "Get contact"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateDriftContact",
+        "parameters": [
+          {
+            "description": "Drift contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DriftObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriftObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "driftBearer": []
+          }
+        ],
+        "summary": "Update contact"
+      }
+    },
+    "/conversations/{conversation_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getDriftConversation",
+        "parameters": [
+          {
+            "description": "Drift conversation ID.",
+            "in": "path",
+            "name": "conversation_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriftObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "driftBearer": []
+          }
+        ],
+        "summary": "Get conversation"
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listDriftUsers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriftCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "driftBearer": []
+          }
+        ],
+        "summary": "List users"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://driftapi.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "drift",
+    "source_note": "Drift publishes REST-shaped platform API docs and OAuth scope guidance but no recorded official OpenAPI document; this overlay covers selected contacts, conversations, and users endpoints.",
+    "source_refs": [
+      "https://devdocs.drift.com/docs/platform-apis",
+      "https://devdocs.drift.com/docs/authentication-and-scopes"
+    ]
+  }
+}

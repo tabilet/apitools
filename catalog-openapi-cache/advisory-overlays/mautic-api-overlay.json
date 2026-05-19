@@ -1,0 +1,332 @@
+{
+  "components": {
+    "schemas": {
+      "MauticCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MauticError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MauticObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "mauticBearer": {
+        "bearerFormat": "OAuth 2.0 access token",
+        "description": "Mautic OAuth access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Mautic human documentation. This is not an official Mautic OpenAPI document.",
+    "title": "Mautic API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/campaigns": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMauticCampaigns",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MauticCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mauticBearer": []
+          }
+        ],
+        "summary": "List campaigns"
+      }
+    },
+    "/companies": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMauticCompanies",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MauticCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mauticBearer": []
+          }
+        ],
+        "summary": "List companies"
+      }
+    },
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMauticContacts",
+        "parameters": [
+          {
+            "description": "Search query.",
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Offset.",
+            "in": "query",
+            "name": "start",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MauticCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mauticBearer": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMauticContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MauticObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MauticObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mauticBearer": []
+          }
+        ],
+        "summary": "Create contact"
+      }
+    },
+    "/contacts/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMauticContact",
+        "parameters": [
+          {
+            "description": "Contact ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MauticObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mauticBearer": []
+          }
+        ],
+        "summary": "Get contact"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateMauticContact",
+        "parameters": [
+          {
+            "description": "Contact ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MauticObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MauticObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mauticBearer": []
+          }
+        ],
+        "summary": "Update contact"
+      }
+    },
+    "/emails": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMauticEmails",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MauticCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mauticBearer": []
+          }
+        ],
+        "summary": "List emails"
+      }
+    },
+    "/segments": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMauticSegments",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MauticCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mauticBearer": []
+          }
+        ],
+        "summary": "List segments"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{mautic_host}/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "mautic",
+    "source_note": "Mautic publishes API docs for instance-hosted REST endpoints with OAuth and Basic authentication options but no recorded official OpenAPI document; this overlay covers selected contacts, companies, segments, campaigns, and emails endpoints.",
+    "source_refs": [
+      "https://developer.mautic.org/",
+      "https://kb.mautic.org/article/what-is-mautic-039%3Bs-api.html"
+    ]
+  }
+}

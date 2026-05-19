@@ -1,0 +1,288 @@
+{
+  "components": {
+    "schemas": {
+      "GetResponseCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "GetResponseError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "GetResponseObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "getResponseAPIKey": {
+        "description": "GetResponse API key carried in the X-Auth-Token header.",
+        "in": "header",
+        "name": "X-Auth-Token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official GetResponse human documentation. This is not an official GetResponse OpenAPI document.",
+    "title": "GetResponse API v3 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/campaigns": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGetResponseCampaigns",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetResponseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "getResponseAPIKey": []
+          }
+        ],
+        "summary": "List campaigns"
+      }
+    },
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGetResponseContacts",
+        "parameters": [
+          {
+            "description": "Contact email filter.",
+            "in": "query",
+            "name": "query[email]",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "perPage",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetResponseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "getResponseAPIKey": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createGetResponseContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetResponseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetResponseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "getResponseAPIKey": []
+          }
+        ],
+        "summary": "Create contact"
+      }
+    },
+    "/contacts/{id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteGetResponseContact",
+        "parameters": [
+          {
+            "description": "Contact ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "getResponseAPIKey": []
+          }
+        ],
+        "summary": "Delete contact"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getGetResponseContact",
+        "parameters": [
+          {
+            "description": "Contact ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetResponseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "getResponseAPIKey": []
+          }
+        ],
+        "summary": "Get contact"
+      }
+    },
+    "/newsletters": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGetResponseNewsletters",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetResponseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "getResponseAPIKey": []
+          }
+        ],
+        "summary": "List newsletters"
+      }
+    },
+    "/tags": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGetResponseTags",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetResponseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "getResponseAPIKey": []
+          }
+        ],
+        "summary": "List tags"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.getresponse.com/v3"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "getresponse",
+    "source_note": "GetResponse publishes REST API v3 docs with API key and OAuth authentication guidance but no recorded official OpenAPI document; this overlay covers selected campaigns, contacts, newsletters, and tags endpoints.",
+    "source_refs": [
+      "https://apidocs.getresponse.com/v3",
+      "https://apidocs.getresponse.com/v3/authentication"
+    ]
+  }
+}

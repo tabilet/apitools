@@ -1,0 +1,291 @@
+{
+  "components": {
+    "schemas": {
+      "SalesmateCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SalesmateError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SalesmateObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "salesmateLinkName": {
+        "description": "Salesmate account link name carried in the x-linkname header.",
+        "in": "header",
+        "name": "x-linkname",
+        "type": "apiKey"
+      },
+      "salesmateSessionToken": {
+        "description": "Salesmate session token carried in the sessionToken header.",
+        "in": "header",
+        "name": "sessionToken",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Salesmate human documentation. This is not an official Salesmate OpenAPI document.",
+    "title": "Salesmate API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/activity": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSalesmateActivities",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesmateCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "salesmateLinkName": [],
+            "salesmateSessionToken": []
+          }
+        ],
+        "summary": "List activities"
+      }
+    },
+    "/company": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSalesmateCompanies",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesmateCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "salesmateLinkName": [],
+            "salesmateSessionToken": []
+          }
+        ],
+        "summary": "List companies"
+      }
+    },
+    "/contact": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSalesmateContacts",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "rows",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Offset.",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesmateCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "salesmateLinkName": [],
+            "salesmateSessionToken": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createSalesmateContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SalesmateObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesmateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "salesmateLinkName": [],
+            "salesmateSessionToken": []
+          }
+        ],
+        "summary": "Create contact"
+      }
+    },
+    "/contact/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getSalesmateContact",
+        "parameters": [
+          {
+            "description": "Contact ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesmateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "salesmateLinkName": [],
+            "salesmateSessionToken": []
+          }
+        ],
+        "summary": "Get contact"
+      }
+    },
+    "/deal": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSalesmateDeals",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesmateCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "salesmateLinkName": [],
+            "salesmateSessionToken": []
+          }
+        ],
+        "summary": "List deals"
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSalesmateUsers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesmateCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "salesmateLinkName": [],
+            "salesmateSessionToken": []
+          }
+        ],
+        "summary": "List users"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://apis.salesmate.io/v4"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "salesmate",
+    "source_note": "Salesmate publishes API usage/support docs and API docs requiring sessionToken plus x-linkname headers but no recorded official OpenAPI document; this overlay covers selected contacts, companies, deals, activities, and users endpoints.",
+    "source_refs": [
+      "https://support.salesmate.io/hc/en-us/articles/12864176787609-What-Are-API-s-Usage-and-Working",
+      "https://support.salesmate.io/hc/en-us/articles/360043653751-Auto-enroll-Contacts-to-sequence-whenever-a-Deal-stage-is-updated-via-Webhooks",
+      "https://apidocs.salesmate.io/"
+    ]
+  }
+}

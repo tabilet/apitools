@@ -1,0 +1,273 @@
+{
+  "components": {
+    "schemas": {
+      "AutopilotCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AutopilotContact": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AutopilotError": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "autopilotAPIKey": {
+        "description": "Autopilot API key carried in the autopilotapikey header.",
+        "in": "header",
+        "name": "autopilotapikey",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Autopilot human documentation. This is not an official Autopilot OpenAPI document.",
+    "title": "Autopilot API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/contact/{contact_id}/list": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "addAutopilotContactToList",
+        "parameters": [
+          {
+            "description": "Autopilot contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutopilotContact"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopilotContact"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "autopilotAPIKey": []
+          }
+        ],
+        "summary": "Add contact to list"
+      }
+    },
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAutopilotContacts",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopilotCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "autopilotAPIKey": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAutopilotContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutopilotContact"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopilotContact"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "autopilotAPIKey": []
+          }
+        ],
+        "summary": "Create or add a contact"
+      }
+    },
+    "/contacts/{contact_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteAutopilotContact",
+        "parameters": [
+          {
+            "description": "Autopilot contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "autopilotAPIKey": []
+          }
+        ],
+        "summary": "Delete contact"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAutopilotContact",
+        "parameters": [
+          {
+            "description": "Autopilot contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopilotContact"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "autopilotAPIKey": []
+          }
+        ],
+        "summary": "Get contact"
+      }
+    },
+    "/lists": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAutopilotLists",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopilotCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "autopilotAPIKey": []
+          }
+        ],
+        "summary": "List lists"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api2.autopilothq.com/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "autopilot",
+    "source_note": "Autopilot publishes API Blueprint-style and help documentation with an autopilotapikey header but no recorded official OpenAPI document; this overlay covers selected contact and list endpoints.",
+    "source_refs": [
+      "https://autopilot.docs.apiary.io/",
+      "https://help.ortto.com/a-376-autopilot-how-to-use-autopilots-api"
+    ]
+  }
+}

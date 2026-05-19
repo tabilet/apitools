@@ -1,0 +1,255 @@
+{
+  "components": {
+    "schemas": {
+      "SendyCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SendyError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SendyObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "sendyAPIKey": {
+        "description": "Sendy API key carried in documented request parameters.",
+        "in": "query",
+        "name": "api_key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Sendy human documentation. This is not an official Sendy OpenAPI document.",
+    "title": "Sendy API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/campaigns/create.php": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createSendyCampaign",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendyObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sendyAPIKey": []
+          }
+        ],
+        "summary": "Create campaign"
+      }
+    },
+    "/api/lists/get-lists.php": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSendyLists",
+        "parameters": [
+          {
+            "description": "Brand ID.",
+            "in": "query",
+            "name": "brand_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sendyAPIKey": []
+          }
+        ],
+        "summary": "List lists"
+      }
+    },
+    "/api/subscribers/active-subscriber-count.php": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getSendyActiveSubscriberCount",
+        "parameters": [
+          {
+            "description": "List ID.",
+            "in": "query",
+            "name": "list_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sendyAPIKey": []
+          }
+        ],
+        "summary": "Get active subscriber count"
+      }
+    },
+    "/subscribe": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "subscribeSendySubscriber",
+        "parameters": [
+          {
+            "description": "List ID.",
+            "in": "query",
+            "name": "list",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Email address.",
+            "in": "query",
+            "name": "email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sendyAPIKey": []
+          }
+        ],
+        "summary": "Subscribe user"
+      }
+    },
+    "/unsubscribe": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "unsubscribeSendySubscriber",
+        "parameters": [
+          {
+            "description": "List ID.",
+            "in": "query",
+            "name": "list",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Email address.",
+            "in": "query",
+            "name": "email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sendyAPIKey": []
+          }
+        ],
+        "summary": "Unsubscribe user"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{sendy_host}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "sendy",
+    "source_note": "Sendy publishes API docs for installation-hosted endpoints with api_key request parameters but no recorded official OpenAPI document; this overlay covers selected subscriber, list, campaign, and brand endpoints.",
+    "source_refs": [
+      "https://sendy.co/api"
+    ]
+  }
+}

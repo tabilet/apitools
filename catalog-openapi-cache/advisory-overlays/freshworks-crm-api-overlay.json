@@ -1,0 +1,295 @@
+{
+  "components": {
+    "schemas": {
+      "FreshworksCRMCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FreshworksCRMError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FreshworksCRMObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "freshworksCRMToken": {
+        "description": "Freshworks CRM token carried in the Authorization header using documented token syntax.",
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Freshworks CRM human documentation. This is not an official Freshworks CRM OpenAPI document.",
+    "title": "Freshworks CRM API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshworksCRMContacts",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshworksCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshworksCRMToken": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshworksCRMContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshworksCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshworksCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshworksCRMToken": []
+          }
+        ],
+        "summary": "Create contact"
+      }
+    },
+    "/contacts/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFreshworksCRMContact",
+        "parameters": [
+          {
+            "description": "Contact ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshworksCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshworksCRMToken": []
+          }
+        ],
+        "summary": "Get contact"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateFreshworksCRMContact",
+        "parameters": [
+          {
+            "description": "Contact ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshworksCRMObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshworksCRMObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshworksCRMToken": []
+          }
+        ],
+        "summary": "Update contact"
+      }
+    },
+    "/deals": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshworksCRMDeals",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshworksCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshworksCRMToken": []
+          }
+        ],
+        "summary": "List deals"
+      }
+    },
+    "/sales_accounts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshworksCRMAccounts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshworksCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshworksCRMToken": []
+          }
+        ],
+        "summary": "List sales accounts"
+      }
+    },
+    "/tasks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshworksCRMTasks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshworksCRMCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshworksCRMToken": []
+          }
+        ],
+        "summary": "List tasks"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{domain}.myfreshworks.com/crm/sales/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "freshworks-crm",
+    "source_note": "Freshworks CRM publishes REST API docs with account-domain URLs and token authorization but no recorded official OpenAPI document; this overlay covers selected contacts, accounts, deals, and tasks endpoints.",
+    "source_refs": [
+      "https://developers.freshworks.com/crm/api/"
+    ]
+  }
+}
