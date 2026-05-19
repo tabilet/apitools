@@ -26,6 +26,17 @@ var builtInCandidates = []Candidate{
 		userNeed:        UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{
+		id:              "aws-sns",
+		displayName:     "AWS SNS",
+		aliases:         []string{"amazon sns", "aws sns api", "sns"},
+		category:        "messaging",
+		n8nNode:         "Aws/AwsSns",
+		relevance:       "Popular infrastructure service for topics, subscriptions, publish operations, SMS, and notification automation.",
+		machineSpecKind: string(SpecKindSmithyJSON),
+		machineStatus:   SpecStatusNeedsVerification,
+		userNeed:        UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:              "aws-lambda",
 		displayName:     "AWS Lambda",
 		aliases:         []string{"amazon lambda", "aws lambda api", "lambda"},

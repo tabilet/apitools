@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 41; got != want {
+	if got, want := len(candidates), 42; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -22,6 +22,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"asana",
 		"aws-lambda",
 		"aws-s3",
+		"aws-sns",
 		"box",
 		"calendly",
 		"clickup",
@@ -77,6 +78,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "click up", id: "clickup"},
 		{key: "lambda", id: "aws-lambda"},
 		{key: "s3", id: "aws-s3"},
+		{key: "sns", id: "aws-sns"},
 	}
 	for _, test := range tests {
 		candidate, ok := FindBuiltInCandidate(test.key)
@@ -115,6 +117,7 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"asana",
 		"aws-lambda",
 		"aws-s3",
+		"aws-sns",
 		"box",
 		"calendly",
 		"clickup",
@@ -165,7 +168,7 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 			t.Fatalf("%s auth review = %q, want %q", candidate.ID, candidate.AuthSecurityReview, AuthSecurityNotReviewed)
 		}
 	}
-	for _, id := range []string{"aws-lambda", "aws-s3", "gmail", "google-calendar", "google-drive", "google-sheets"} {
+	for _, id := range []string{"aws-lambda", "aws-s3", "aws-sns", "gmail", "google-calendar", "google-drive", "google-sheets"} {
 		candidate, ok := FindBuiltInCandidate(id)
 		if !ok {
 			t.Fatalf("missing %s", id)
@@ -174,7 +177,7 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 			t.Fatalf("%s machine spec status = %q, want %q", id, candidate.OfficialMachineSpecStatus, SpecStatusNeedsVerification)
 		}
 		wantKind := "google-discovery"
-		if id == "aws-lambda" || id == "aws-s3" {
+		if id == "aws-lambda" || id == "aws-s3" || id == "aws-sns" {
 			wantKind = string(SpecKindSmithyJSON)
 		}
 		if candidate.OfficialMachineSpecKind != wantKind {

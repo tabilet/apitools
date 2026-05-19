@@ -166,6 +166,10 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		"https://docs.aws.amazon.com/lambda/latest/api/welcome.html",
 		"https://docs.aws.amazon.com/lambda/latest/api/CommonParameters.html",
 	}),
+	awsSigV4Overlay("aws-sns-sigv4-auth-overlay", "aws-sns", "aws-sns-smithy-model", "Amazon SNS", []string{
+		"https://docs.aws.amazon.com/sns/latest/api/welcome.html",
+		"https://docs.aws.amazon.com/sns/latest/api/CommonParameters.html",
+	}),
 	{
 		ID:         "calendly-public-api-auth-overlay",
 		ProviderID: "calendly",

@@ -86,7 +86,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 27; got != want {
+	if got, want := len(overlays), 28; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -177,6 +177,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"asana",
 		"aws-lambda",
 		"aws-s3",
+		"aws-sns",
 		"box",
 		"calendly",
 		"clickup",
@@ -223,6 +224,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"asana":           AuthStatusComplete,
 		"aws-lambda":      AuthStatusOverlayRequired,
 		"aws-s3":          AuthStatusOverlayRequired,
+		"aws-sns":         AuthStatusOverlayRequired,
 		"box":             AuthStatusComplete,
 		"calendly":        AuthStatusOverlayRequired,
 		"clickup":         AuthStatusPresentIncomplete,

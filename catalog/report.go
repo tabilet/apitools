@@ -151,6 +151,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "AWS Lambda has an official Smithy JSON service model rather than OpenAPI; SigV4 signing requirements must be represented as advisory metadata only.",
 	},
 	{
+		ProviderID: "aws-sns",
+		SpecRefID:  "aws-sns-smithy-model",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://raw.githubusercontent.com/aws/api-models-aws/main/models/sns/service/2010-03-31/sns-2010-03-31.json", "https://docs.aws.amazon.com/sns/latest/api/welcome.html"},
+		SourceNote: "AWS SNS has an official Smithy JSON service model rather than OpenAPI; SigV4 signing requirements must be represented as advisory metadata only.",
+	},
+	{
 		ProviderID: "box",
 		SpecRefID:  "box-platform-openapi-v3",
 		Status:     AuthStatusComplete,
