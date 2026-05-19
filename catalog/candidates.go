@@ -89,6 +89,14 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for pipelines, workflows, jobs, artifacts, contexts, and CI/CD automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "cloudflare",
+		displayName: "Cloudflare",
+		aliases:     []string{"cloudflare api"},
+		category:    "edge-platform",
+		n8nNode:     "Cloudflare",
+		relevance:   "Popular infrastructure platform for DNS, zones, caching, security rules, workers, and edge automation.",
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "clickup",
 		displayName: "ClickUp",
 		aliases:     []string{"clickup api", "click up"},

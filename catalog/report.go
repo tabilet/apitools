@@ -186,6 +186,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "CircleCI's official API v2 OpenAPI document includes Circle-Token header, basic-auth, and deprecated query-token security schemes with root security requirements.",
 	},
 	{
+		ProviderID: "cloudflare",
+		SpecRefID:  "cloudflare-api-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://raw.githubusercontent.com/cloudflare/api-schemas/main/openapi.yaml", "https://developers.cloudflare.com/api/"},
+		SourceNote: "Cloudflare's official OpenAPI document includes API token, API key/email, and user service key security schemes with root and operation security requirements.",
+	},
+	{
 		ProviderID: "clickup",
 		SpecRefID:  "clickup-api-v2-openapi",
 		Status:     AuthStatusPresentIncomplete,
