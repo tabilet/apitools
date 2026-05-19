@@ -326,6 +326,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Monday.com's official API is GraphQL and no OpenAPI document is recorded in this catalog entry; Authorization-header token metadata must come from advisory overlay notes.",
 	},
 	{
+		ProviderID: "netlify",
+		SpecRefID:  "netlify-api-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://open-api.netlify.com/openapi.json", "https://docs.netlify.com/api/get-started/"},
+		SourceNote: "Netlify's official OpenAPI document includes OAuth2 security metadata and root security requirements; official API docs describe bearer personal access tokens for manual requests.",
+	},
+	{
 		ProviderID: "notion",
 		SpecRefID:  "notion-api-openapi",
 		Status:     AuthStatusComplete,

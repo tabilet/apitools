@@ -233,6 +233,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.0.4",
 	},
 	{
+		providerID: "netlify",
+		artifactID: "netlify-api-openapi",
+		kind:       "openapi",
+		url:        "https://open-api.netlify.com/openapi.json",
+		path:       "openapi/netlify-api-openapi.json",
+		title:      "Netlify's API documentation",
+		openapi:    "3.0.0",
+	},
+	{
 		providerID: "notion",
 		artifactID: "notion-api-openapi",
 		kind:       "openapi",

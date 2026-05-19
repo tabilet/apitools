@@ -271,6 +271,14 @@ var builtInCandidates = []Candidate{
 		userNeed:    UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "netlify",
+		displayName: "Netlify",
+		aliases:     []string{"netlify api"},
+		category:    "hosting",
+		n8nNode:     "Netlify",
+		relevance:   "Popular web hosting platform for sites, deploys, forms, DNS, hooks, and build automation.",
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "notion",
 		displayName: "Notion",
 		aliases:     []string{"notion api"},
