@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 55; got != want {
+	if got, want := len(candidates), 66; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -18,21 +18,28 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 	got := CandidateIDs(BuiltInCandidates())
 	want := []string{
+		"activecampaign",
 		"airtable",
 		"asana",
 		"aws-lambda",
 		"aws-s3",
 		"aws-sns",
+		"bamboohr",
 		"bitbucket",
 		"box",
 		"calendly",
+		"chargebee",
 		"circleci",
 		"clickup",
 		"cloudflare",
+		"contentful",
+		"customer-io",
 		"databricks",
 		"discord",
 		"dropbox",
 		"elastic",
+		"eventbrite",
+		"freshdesk",
 		"github",
 		"gitlab",
 		"gmail",
@@ -46,6 +53,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"jira-cloud",
 		"linear",
 		"mailchimp",
+		"mailgun",
 		"microsoft-graph",
 		"monday-com",
 		"netlify",
@@ -55,6 +63,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"pagerduty",
 		"paypal",
 		"pipedrive",
+		"postmark",
 		"quickbooks",
 		"salesforce",
 		"sendgrid",
@@ -67,9 +76,11 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"stripe",
 		"supabase",
 		"telegram",
+		"todoist",
 		"trello",
 		"twilio",
 		"typeform",
+		"webflow",
 		"xero",
 		"zendesk",
 		"zoom",
@@ -89,22 +100,33 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "Open Weather Map", id: "openweathermap"},
 		{key: "office 365", id: "microsoft-graph"},
 		{key: "click up", id: "clickup"},
+		{key: "active campaign", id: "activecampaign"},
 		{key: "lambda", id: "aws-lambda"},
 		{key: "s3", id: "aws-s3"},
 		{key: "sns", id: "aws-sns"},
+		{key: "bamboo hr", id: "bamboohr"},
 		{key: "bitbucket cloud", id: "bitbucket"},
+		{key: "chargebee api", id: "chargebee"},
+		{key: "contentful management api", id: "contentful"},
+		{key: "customerio", id: "customer-io"},
 		{key: "circleci v2", id: "circleci"},
 		{key: "cloudflare api", id: "cloudflare"},
 		{key: "databricks rest api", id: "databricks"},
 		{key: "elasticsearch api", id: "elastic"},
+		{key: "eventbrite api", id: "eventbrite"},
+		{key: "freshdesk api", id: "freshdesk"},
 		{key: "grafana http api", id: "grafana"},
 		{key: "intercom rest api", id: "intercom"},
 		{key: "jenkins remote api", id: "jenkins"},
+		{key: "mailgun api", id: "mailgun"},
 		{key: "netlify api", id: "netlify"},
+		{key: "postmark api", id: "postmark"},
 		{key: "sentry.io", id: "sentry"},
 		{key: "snowflake sql api", id: "snowflake"},
 		{key: "splunk rest api", id: "splunk"},
 		{key: "supabase management api", id: "supabase"},
+		{key: "todoist api", id: "todoist"},
+		{key: "webflow data api", id: "webflow"},
 	}
 	for _, test := range tests {
 		candidate, ok := FindBuiltInCandidate(test.key)

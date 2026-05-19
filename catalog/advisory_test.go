@@ -15,8 +15,8 @@ func TestBuiltInProviderAdvisoryReportDeterministic(t *testing.T) {
 			t.Fatalf("providers not sorted at %d: %s before %s", i, report.Providers[i-1].ProviderID, report.Providers[i].ProviderID)
 		}
 	}
-	if report.Providers[0].ProviderID != "airtable" {
-		t.Fatalf("first provider = %q, want airtable", report.Providers[0].ProviderID)
+	if report.Providers[0].ProviderID != "activecampaign" {
+		t.Fatalf("first provider = %q, want activecampaign", report.Providers[0].ProviderID)
 	}
 }
 
