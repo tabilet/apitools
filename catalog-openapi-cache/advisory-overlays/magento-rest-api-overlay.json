@@ -1,0 +1,451 @@
+{
+  "components": {
+    "schemas": {
+      "MagentoCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MagentoError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MagentoObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "magentoBearer": {
+        "bearerFormat": "Adobe Commerce admin, customer, or integration token",
+        "description": "Adobe Commerce REST API token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Adobe Commerce REST API human documentation. This is not an official Adobe OpenAPI document.",
+    "title": "Magento Adobe Commerce REST API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/V1/categories": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMagentoCategories",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagentoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "magentoBearer": []
+          }
+        ],
+        "summary": "Get category tree"
+      }
+    },
+    "/V1/customers/search": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchMagentoCustomers",
+        "parameters": [
+          {
+            "description": "Adobe Commerce search criteria query parameters.",
+            "in": "query",
+            "name": "searchCriteria",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagentoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "magentoBearer": []
+          }
+        ],
+        "summary": "Search customers"
+      }
+    },
+    "/V1/integration/admin/token": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMagentoAdminToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MagentoObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagentoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Create admin access token"
+      }
+    },
+    "/V1/integration/customer/token": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMagentoCustomerToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MagentoObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagentoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Create customer access token"
+      }
+    },
+    "/V1/invoices": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMagentoInvoices",
+        "parameters": [
+          {
+            "description": "Adobe Commerce search criteria query parameters.",
+            "in": "query",
+            "name": "searchCriteria",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagentoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "magentoBearer": []
+          }
+        ],
+        "summary": "Search invoices"
+      }
+    },
+    "/V1/orders": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMagentoOrders",
+        "parameters": [
+          {
+            "description": "Adobe Commerce search criteria query parameters.",
+            "in": "query",
+            "name": "searchCriteria",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagentoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "magentoBearer": []
+          }
+        ],
+        "summary": "Search orders"
+      }
+    },
+    "/V1/products": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMagentoProducts",
+        "parameters": [
+          {
+            "description": "Adobe Commerce search criteria query parameters.",
+            "in": "query",
+            "name": "searchCriteria",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagentoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "magentoBearer": []
+          }
+        ],
+        "summary": "Search products"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMagentoProduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MagentoObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagentoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "magentoBearer": []
+          }
+        ],
+        "summary": "Create product"
+      }
+    },
+    "/V1/products/{sku}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMagentoProduct",
+        "parameters": [
+          {
+            "description": "Product SKU.",
+            "in": "path",
+            "name": "sku",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagentoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "magentoBearer": []
+          }
+        ],
+        "summary": "Get product"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateMagentoProduct",
+        "parameters": [
+          {
+            "description": "Product SKU.",
+            "in": "path",
+            "name": "sku",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MagentoObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagentoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "magentoBearer": []
+          }
+        ],
+        "summary": "Update product"
+      }
+    },
+    "/V1/shipment": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMagentoShipments",
+        "parameters": [
+          {
+            "description": "Adobe Commerce search criteria query parameters.",
+            "in": "query",
+            "name": "searchCriteria",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagentoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "magentoBearer": []
+          }
+        ],
+        "summary": "Search shipments"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{commerce_host}/rest/{store_code}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "magento",
+    "source_note": "Adobe Commerce publishes human REST documentation and instance-local Swagger generation guidance, but no recorded stable public official OpenAPI document; this overlay covers selected catalog, customer, order, invoice, and shipment endpoints.",
+    "source_refs": [
+      "https://developer.adobe.com/commerce/webapi/rest/reference/",
+      "https://developer.adobe.com/commerce/webapi/",
+      "https://developer.adobe.com/commerce/webapi/rest/quick-reference/generate-local/",
+      "https://developer.adobe.com/commerce/webapi/get-started/authentication/"
+    ]
+  }
+}

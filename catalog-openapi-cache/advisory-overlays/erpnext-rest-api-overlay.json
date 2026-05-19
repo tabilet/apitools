@@ -1,0 +1,475 @@
+{
+  "components": {
+    "schemas": {
+      "ERPNextCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ERPNextError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ERPNextObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "frappeToken": {
+        "description": "Frappe/ERPNext API key and secret carried in the Authorization header using the token scheme.",
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official ERPNext and Frappe REST API human documentation. This is not an official ERPNext OpenAPI document.",
+    "title": "ERPNext Frappe REST API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/method/{method}": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "callERPNextMethod",
+        "parameters": [
+          {
+            "description": "Frappe whitelisted method path.",
+            "in": "path",
+            "name": "method",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ERPNextObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ERPNextObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "frappeToken": []
+          }
+        ],
+        "summary": "Call whitelisted method"
+      }
+    },
+    "/api/resource/Customer": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listERPNextCustomers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ERPNextCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "frappeToken": []
+          }
+        ],
+        "summary": "List customers"
+      }
+    },
+    "/api/resource/Item": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listERPNextItems",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ERPNextCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "frappeToken": []
+          }
+        ],
+        "summary": "List items"
+      }
+    },
+    "/api/resource/Sales Invoice": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listERPNextSalesInvoices",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ERPNextCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "frappeToken": []
+          }
+        ],
+        "summary": "List sales invoices"
+      }
+    },
+    "/api/resource/Sales Order": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listERPNextSalesOrders",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ERPNextCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "frappeToken": []
+          }
+        ],
+        "summary": "List sales orders"
+      }
+    },
+    "/api/resource/Supplier": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listERPNextSuppliers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ERPNextCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "frappeToken": []
+          }
+        ],
+        "summary": "List suppliers"
+      }
+    },
+    "/api/resource/{doctype}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listERPNextResources",
+        "parameters": [
+          {
+            "description": "ERPNext DocType name.",
+            "in": "path",
+            "name": "doctype",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "JSON field list.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "JSON filters.",
+            "in": "query",
+            "name": "filters",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ERPNextCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "frappeToken": []
+          }
+        ],
+        "summary": "List DocType records"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createERPNextResource",
+        "parameters": [
+          {
+            "description": "ERPNext DocType name.",
+            "in": "path",
+            "name": "doctype",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ERPNextObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ERPNextObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "frappeToken": []
+          }
+        ],
+        "summary": "Create DocType record"
+      }
+    },
+    "/api/resource/{doctype}/{name}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteERPNextResource",
+        "parameters": [
+          {
+            "description": "ERPNext DocType name.",
+            "in": "path",
+            "name": "doctype",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Record name.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "frappeToken": []
+          }
+        ],
+        "summary": "Delete DocType record"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getERPNextResource",
+        "parameters": [
+          {
+            "description": "ERPNext DocType name.",
+            "in": "path",
+            "name": "doctype",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Record name.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ERPNextObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "frappeToken": []
+          }
+        ],
+        "summary": "Get DocType record"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateERPNextResource",
+        "parameters": [
+          {
+            "description": "ERPNext DocType name.",
+            "in": "path",
+            "name": "doctype",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Record name.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ERPNextObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ERPNextObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "frappeToken": []
+          }
+        ],
+        "summary": "Update DocType record"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{site}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "erpnext",
+    "source_note": "ERPNext uses Frappe REST API human documentation but no recorded stable public official OpenAPI document; this overlay covers selected generic resource and common ERP DocType endpoints.",
+    "source_refs": [
+      "https://docs.frappe.io/erpnext/rest-api",
+      "https://docs.frappe.io/framework/user/en/api/rest",
+      "https://docs.frappe.io/framework/user/en/api/rest#1-token-based-authentication"
+    ]
+  }
+}

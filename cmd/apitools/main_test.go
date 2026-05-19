@@ -320,7 +320,7 @@ func TestCatalogStatsOutputAndJSON(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
-	for _, expected := range []string{"Provider protocols: 141 provider(s)", "OpenAPI", "52", "Swagger", "4", "Human docs", "76", "Artifact registry", "openapi", "Refresh artifacts", "valid-swagger"} {
+	for _, expected := range []string{"Provider protocols: 153 provider(s)", "OpenAPI", "53", "Swagger", "4", "Human docs", "87", "Artifact registry", "openapi", "Refresh artifacts", "valid-swagger"} {
 		if !strings.Contains(out.String(), expected) {
 			t.Fatalf("catalog stats output missing %q:\n%s", expected, out.String())
 		}
@@ -332,7 +332,7 @@ func TestCatalogStatsOutputAndJSON(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
-	for _, expected := range []string{`"provider_count": 141`, `"protocol": "openapi"`, `"count": 52`, `"artifact_registry"`, `"kind": "openapi"`, `"status": "valid-swagger"`} {
+	for _, expected := range []string{`"provider_count": 153`, `"protocol": "openapi"`, `"count": 53`, `"artifact_registry"`, `"kind": "openapi"`, `"status": "valid-swagger"`} {
 		if !strings.Contains(out.String(), expected) {
 			t.Fatalf("catalog stats json missing %q:\n%s", expected, out.String())
 		}

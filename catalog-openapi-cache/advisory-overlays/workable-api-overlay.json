@@ -1,0 +1,420 @@
+{
+  "components": {
+    "schemas": {
+      "WorkableCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WorkableError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WorkableObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "workableBearer": {
+        "bearerFormat": "Workable access token",
+        "description": "Workable API access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Workable API human documentation. This is not an official Workable OpenAPI document.",
+    "title": "Workable API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/candidates": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWorkableCandidates",
+        "parameters": [
+          {
+            "description": "Updated-after filter.",
+            "in": "query",
+            "name": "updated_after",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkableCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "workableBearer": []
+          }
+        ],
+        "summary": "List candidates"
+      }
+    },
+    "/candidates/{candidate_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWorkableCandidate",
+        "parameters": [
+          {
+            "description": "Candidate ID.",
+            "in": "path",
+            "name": "candidate_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkableObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "workableBearer": []
+          }
+        ],
+        "summary": "Get candidate"
+      }
+    },
+    "/jobs": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWorkableJobs",
+        "parameters": [
+          {
+            "description": "Job state filter.",
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkableCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "workableBearer": []
+          }
+        ],
+        "summary": "List jobs"
+      }
+    },
+    "/jobs/{shortcode}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWorkableJob",
+        "parameters": [
+          {
+            "description": "Job shortcode.",
+            "in": "path",
+            "name": "shortcode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkableObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "workableBearer": []
+          }
+        ],
+        "summary": "Get job"
+      }
+    },
+    "/jobs/{shortcode}/candidates": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWorkableJobCandidates",
+        "parameters": [
+          {
+            "description": "Job shortcode.",
+            "in": "path",
+            "name": "shortcode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkableCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "workableBearer": []
+          }
+        ],
+        "summary": "List job candidates"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWorkableCandidate",
+        "parameters": [
+          {
+            "description": "Job shortcode.",
+            "in": "path",
+            "name": "shortcode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkableObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkableObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "workableBearer": []
+          }
+        ],
+        "summary": "Create candidate"
+      }
+    },
+    "/members": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWorkableMembers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkableCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "workableBearer": []
+          }
+        ],
+        "summary": "List members"
+      }
+    },
+    "/recruiters": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWorkableRecruiters",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkableCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "workableBearer": []
+          }
+        ],
+        "summary": "List recruiters"
+      }
+    },
+    "/requisitions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWorkableRequisitions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkableCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "workableBearer": []
+          }
+        ],
+        "summary": "List requisitions"
+      }
+    },
+    "/scheduled_events": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWorkableScheduledEvents",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkableCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "workableBearer": []
+          }
+        ],
+        "summary": "List scheduled events"
+      }
+    },
+    "/stages": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWorkableStages",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkableCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "workableBearer": []
+          }
+        ],
+        "summary": "List pipeline stages"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{subdomain}.workable.com/spi/v3"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "workable",
+    "source_note": "Workable publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected jobs, candidates, members, recruiters, stages, scheduled events, and requisitions.",
+    "source_refs": [
+      "https://workable.readme.io/reference",
+      "https://help.workable.com/hc/en-us/articles/115013356548-Workable-API-Documentation"
+    ]
+  }
+}

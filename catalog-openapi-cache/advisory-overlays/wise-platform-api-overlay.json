@@ -1,0 +1,551 @@
+{
+  "components": {
+    "schemas": {
+      "WiseCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WiseError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WiseObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "wiseBearer": {
+        "bearerFormat": "Wise OAuth 2.0 access token",
+        "description": "Wise Platform API access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Wise Platform API human documentation. This is not an official Wise OpenAPI document.",
+    "title": "Wise Platform API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v1/accounts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWiseRecipients",
+        "parameters": [
+          {
+            "description": "Profile ID.",
+            "in": "query",
+            "name": "profileId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "List recipients"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWiseRecipient",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WiseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "Create recipient"
+      }
+    },
+    "/v1/profiles": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWiseProfiles",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "List profiles"
+      }
+    },
+    "/v1/profiles/{profile_id}/balance-statements/{balance_id}/statement.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWiseBalanceStatement",
+        "parameters": [
+          {
+            "description": "Profile ID.",
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Balance ID.",
+            "in": "path",
+            "name": "balance_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Statement start.",
+            "in": "query",
+            "name": "intervalStart",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Statement end.",
+            "in": "query",
+            "name": "intervalEnd",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "Get balance statement"
+      }
+    },
+    "/v1/rates": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWiseRates",
+        "parameters": [
+          {
+            "description": "Source currency.",
+            "in": "query",
+            "name": "source",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Target currency.",
+            "in": "query",
+            "name": "target",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "List exchange rates"
+      }
+    },
+    "/v1/transfers": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWiseTransfers",
+        "parameters": [
+          {
+            "description": "Profile ID.",
+            "in": "query",
+            "name": "profile",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "List transfers"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWiseTransfer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WiseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "Create transfer"
+      }
+    },
+    "/v3/profiles/{profile_id}/quotes": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWiseQuote",
+        "parameters": [
+          {
+            "description": "Profile ID.",
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WiseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "Create quote"
+      }
+    },
+    "/v3/profiles/{profile_id}/subscriptions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWiseSubscriptions",
+        "parameters": [
+          {
+            "description": "Profile ID.",
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "List webhook subscriptions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWiseSubscription",
+        "parameters": [
+          {
+            "description": "Profile ID.",
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WiseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "Create webhook subscription"
+      }
+    },
+    "/v4/profiles/{profile_id}/balances": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWiseBalances",
+        "parameters": [
+          {
+            "description": "Profile ID.",
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "List balances"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWiseBalance",
+        "parameters": [
+          {
+            "description": "Profile ID.",
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WiseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WiseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wiseBearer": []
+          }
+        ],
+        "summary": "Create balance"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.wise.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "wise",
+    "source_note": "Wise publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected profiles, quotes, recipients, transfers, balances, statements, rates, and webhooks.",
+    "source_refs": [
+      "https://docs.wise.com/api-reference",
+      "https://docs.wise.com/api-docs/features",
+      "https://wise.com/us/business/api"
+    ]
+  }
+}

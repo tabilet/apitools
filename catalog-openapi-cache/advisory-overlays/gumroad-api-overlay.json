@@ -1,0 +1,401 @@
+{
+  "components": {
+    "schemas": {
+      "GumroadCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "GumroadError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "GumroadObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "gumroadBearer": {
+        "bearerFormat": "Gumroad access token",
+        "description": "Gumroad OAuth access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Gumroad API human documentation. This is not an official Gumroad OpenAPI document.",
+    "title": "Gumroad API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v2/licenses/verify": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "verifyGumroadLicense",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GumroadObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GumroadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gumroadBearer": []
+          }
+        ],
+        "summary": "Verify license"
+      }
+    },
+    "/v2/offers": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGumroadOffers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GumroadCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gumroadBearer": []
+          }
+        ],
+        "summary": "List offers"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createGumroadOffer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GumroadObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GumroadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gumroadBearer": []
+          }
+        ],
+        "summary": "Create offer"
+      }
+    },
+    "/v2/products": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGumroadProducts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GumroadCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gumroadBearer": []
+          }
+        ],
+        "summary": "List products"
+      }
+    },
+    "/v2/products/{product_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getGumroadProduct",
+        "parameters": [
+          {
+            "description": "Gumroad product ID.",
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GumroadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gumroadBearer": []
+          }
+        ],
+        "summary": "Get product"
+      }
+    },
+    "/v2/resource_subscriptions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGumroadResourceSubscriptions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GumroadCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gumroadBearer": []
+          }
+        ],
+        "summary": "List resource subscriptions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createGumroadResourceSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GumroadObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GumroadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gumroadBearer": []
+          }
+        ],
+        "summary": "Create resource subscription"
+      }
+    },
+    "/v2/resource_subscriptions/{sub_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteGumroadResourceSubscription",
+        "parameters": [
+          {
+            "description": "Resource subscription ID.",
+            "in": "path",
+            "name": "sub_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gumroadBearer": []
+          }
+        ],
+        "summary": "Delete resource subscription"
+      }
+    },
+    "/v2/sales": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGumroadSales",
+        "parameters": [
+          {
+            "description": "Return sales after this date.",
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Return sales before this date.",
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by product ID.",
+            "in": "query",
+            "name": "product_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GumroadCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gumroadBearer": []
+          }
+        ],
+        "summary": "List sales"
+      }
+    },
+    "/v2/sales/{sale_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getGumroadSale",
+        "parameters": [
+          {
+            "description": "Gumroad sale ID.",
+            "in": "path",
+            "name": "sale_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GumroadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gumroadBearer": []
+          }
+        ],
+        "summary": "Get sale"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.gumroad.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "gumroad",
+    "source_note": "Gumroad publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected products, sales, offers, subscribers, licenses, and resource subscriptions.",
+    "source_refs": [
+      "https://gumroad.com/api",
+      "https://gumroad.com/oauth/applications",
+      "https://help.gumroad.com/article/280-create-application-api"
+    ]
+  }
+}

@@ -1,0 +1,389 @@
+{
+  "components": {
+    "schemas": {
+      "UnleashedCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "UnleashedError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "UnleashedObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "unleashedAPIID": {
+        "description": "Unleashed API ID carried in the api-auth-id header.",
+        "in": "header",
+        "name": "api-auth-id",
+        "type": "apiKey"
+      },
+      "unleashedClientType": {
+        "description": "Unleashed client-type header identifying the integration for API support and usage stats.",
+        "in": "header",
+        "name": "client-type",
+        "type": "apiKey"
+      },
+      "unleashedSignature": {
+        "description": "Unleashed request signature carried in the api-auth-signature header.",
+        "in": "header",
+        "name": "api-auth-signature",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Unleashed API human documentation. This is not an official Unleashed OpenAPI document.",
+    "title": "Unleashed Software API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/Customers": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listUnleashedCustomers",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnleashedCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "unleashedAPIID": [],
+            "unleashedClientType": [],
+            "unleashedSignature": []
+          }
+        ],
+        "summary": "List customers"
+      }
+    },
+    "/Products": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listUnleashedProducts",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnleashedCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "unleashedAPIID": [],
+            "unleashedClientType": [],
+            "unleashedSignature": []
+          }
+        ],
+        "summary": "List products"
+      }
+    },
+    "/PurchaseOrders": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listUnleashedPurchaseOrders",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnleashedCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "unleashedAPIID": [],
+            "unleashedClientType": [],
+            "unleashedSignature": []
+          }
+        ],
+        "summary": "List purchase orders"
+      }
+    },
+    "/SalesOrders": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listUnleashedSalesOrders",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Modified-since filter.",
+            "in": "query",
+            "name": "modifiedSince",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnleashedCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "unleashedAPIID": [],
+            "unleashedClientType": [],
+            "unleashedSignature": []
+          }
+        ],
+        "summary": "List sales orders"
+      }
+    },
+    "/SalesOrders/{guid}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getUnleashedSalesOrder",
+        "parameters": [
+          {
+            "description": "Sales order GUID.",
+            "in": "path",
+            "name": "guid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnleashedObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "unleashedAPIID": [],
+            "unleashedClientType": [],
+            "unleashedSignature": []
+          }
+        ],
+        "summary": "Get sales order"
+      }
+    },
+    "/StockOnHand": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listUnleashedStockOnHand",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Modified-since filter.",
+            "in": "query",
+            "name": "modifiedSince",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnleashedCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "unleashedAPIID": [],
+            "unleashedClientType": [],
+            "unleashedSignature": []
+          }
+        ],
+        "summary": "List stock on hand"
+      }
+    },
+    "/Suppliers": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listUnleashedSuppliers",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnleashedCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "unleashedAPIID": [],
+            "unleashedClientType": [],
+            "unleashedSignature": []
+          }
+        ],
+        "summary": "List suppliers"
+      }
+    },
+    "/Warehouses": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listUnleashedWarehouses",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnleashedCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "unleashedAPIID": [],
+            "unleashedClientType": [],
+            "unleashedSignature": []
+          }
+        ],
+        "summary": "List warehouses"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.unleashedsoftware.com/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "unleashed-software",
+    "source_note": "Unleashed publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected sales orders, stock, products, customers, suppliers, purchase orders, and warehouses.",
+    "source_refs": [
+      "https://apidocs.unleashedsoftware.com/",
+      "https://support.unleashedsoftware.com/hc/en-us/articles/4402393233689",
+      "https://apidocs.unleashedsoftware.com/Authentication"
+    ]
+  }
+}

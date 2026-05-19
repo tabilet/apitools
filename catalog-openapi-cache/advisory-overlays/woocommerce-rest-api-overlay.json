@@ -1,0 +1,730 @@
+{
+  "components": {
+    "schemas": {
+      "WooCommerceCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WooCommerceError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WooCommerceObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "wooCommerceBasic": {
+        "description": "WooCommerce REST API consumer key and consumer secret carried using HTTP Basic authentication over HTTPS.",
+        "scheme": "basic",
+        "type": "http"
+      },
+      "wooCommerceConsumerKey": {
+        "description": "WooCommerce REST API consumer key query parameter for environments where Basic auth is unavailable.",
+        "in": "query",
+        "name": "consumer_key",
+        "type": "apiKey"
+      },
+      "wooCommerceConsumerSecret": {
+        "description": "WooCommerce REST API consumer secret query parameter for environments where Basic auth is unavailable.",
+        "in": "query",
+        "name": "consumer_secret",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official WooCommerce REST API human documentation. This is not an official WooCommerce OpenAPI document.",
+    "title": "WooCommerce REST API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/wp-json/wc/v3/coupons": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWooCommerceCoupons",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "List coupons"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWooCommerceCoupon",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WooCommerceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "Create coupon"
+      }
+    },
+    "/wp-json/wc/v3/customers": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWooCommerceCustomers",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "List customers"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWooCommerceCustomer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WooCommerceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "Create customer"
+      }
+    },
+    "/wp-json/wc/v3/orders": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWooCommerceOrders",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "List orders"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWooCommerceOrder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WooCommerceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "Create order"
+      }
+    },
+    "/wp-json/wc/v3/orders/{order_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWooCommerceOrder",
+        "parameters": [
+          {
+            "description": "Order ID.",
+            "in": "path",
+            "name": "order_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "Get order"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateWooCommerceOrder",
+        "parameters": [
+          {
+            "description": "Order ID.",
+            "in": "path",
+            "name": "order_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WooCommerceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "Update order"
+      }
+    },
+    "/wp-json/wc/v3/orders/{order_id}/refunds": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWooCommerceRefunds",
+        "parameters": [
+          {
+            "description": "Order ID.",
+            "in": "path",
+            "name": "order_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "List order refunds"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWooCommerceRefund",
+        "parameters": [
+          {
+            "description": "Order ID.",
+            "in": "path",
+            "name": "order_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WooCommerceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "Create order refund"
+      }
+    },
+    "/wp-json/wc/v3/products": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWooCommerceProducts",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "List products"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWooCommerceProduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WooCommerceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "Create product"
+      }
+    },
+    "/wp-json/wc/v3/products/{product_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWooCommerceProduct",
+        "parameters": [
+          {
+            "description": "Product ID.",
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "Get product"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateWooCommerceProduct",
+        "parameters": [
+          {
+            "description": "Product ID.",
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WooCommerceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "Update product"
+      }
+    },
+    "/wp-json/wc/v3/reports/sales": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWooCommerceSalesReport",
+        "parameters": [
+          {
+            "description": "Start date.",
+            "in": "query",
+            "name": "date_min",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "End date.",
+            "in": "query",
+            "name": "date_max",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "Get sales report"
+      }
+    },
+    "/wp-json/wc/v3/webhooks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWooCommerceWebhooks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "List webhooks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWooCommerceWebhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WooCommerceObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WooCommerceObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wooCommerceBasic": []
+          }
+        ],
+        "summary": "Create webhook"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{site}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "woocommerce",
+    "source_note": "WooCommerce publishes human REST API documentation but no recorded stable public official OpenAPI document; this overlay covers selected products, orders, customers, coupons, reports, refunds, and webhooks.",
+    "source_refs": [
+      "https://developer.woocommerce.com/docs/apis/rest-api/v3/",
+      "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+      "https://woocommerce.github.io/woocommerce-rest-api-docs/#authentication"
+    ]
+  }
+}

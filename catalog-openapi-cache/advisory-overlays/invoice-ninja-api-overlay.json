@@ -1,0 +1,648 @@
+{
+  "components": {
+    "schemas": {
+      "InvoiceNinjaCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "InvoiceNinjaError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "InvoiceNinjaObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "invoiceNinjaAPIToken": {
+        "description": "Invoice Ninja v5 API token carried in the X-API-TOKEN header.",
+        "in": "header",
+        "name": "X-API-TOKEN",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Invoice Ninja API human documentation. This is not an official Invoice Ninja OpenAPI document.",
+    "title": "Invoice Ninja API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/v1/clients": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listInvoiceNinjaClients",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "List clients"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createInvoiceNinjaClient",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceNinjaObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "Create client"
+      }
+    },
+    "/api/v1/clients/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getInvoiceNinjaClient",
+        "parameters": [
+          {
+            "description": "Client ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "Get client"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateInvoiceNinjaClient",
+        "parameters": [
+          {
+            "description": "Client ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceNinjaObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "Update client"
+      }
+    },
+    "/api/v1/invoices": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listInvoiceNinjaInvoices",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "List invoices"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createInvoiceNinjaInvoice",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceNinjaObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "Create invoice"
+      }
+    },
+    "/api/v1/payments": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listInvoiceNinjaPayments",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "List payments"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createInvoiceNinjaPayment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceNinjaObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "Create payment"
+      }
+    },
+    "/api/v1/products": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listInvoiceNinjaProducts",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "List products"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createInvoiceNinjaProduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceNinjaObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "Create product"
+      }
+    },
+    "/api/v1/projects": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listInvoiceNinjaProjects",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "List projects"
+      }
+    },
+    "/api/v1/quotes": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listInvoiceNinjaQuotes",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "List quotes"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createInvoiceNinjaQuote",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceNinjaObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "Create quote"
+      }
+    },
+    "/api/v1/vendors": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listInvoiceNinjaVendors",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "List vendors"
+      }
+    },
+    "/api/v1/webhook_endpoints": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listInvoiceNinjaWebhooks",
+        "parameters": [
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "List webhook endpoints"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createInvoiceNinjaWebhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceNinjaObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceNinjaObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "invoiceNinjaAPIToken": []
+          }
+        ],
+        "summary": "Create webhook endpoint"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{invoice_ninja_host}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "invoice-ninja",
+    "source_note": "Invoice Ninja publishes OpenAPI-rendered human API documentation but no recorded stable standalone downloadable OpenAPI document; this overlay covers selected clients, invoices, quotes, payments, products, projects, vendors, and webhooks.",
+    "source_refs": [
+      "https://api-docs.invoicing.co/",
+      "https://invoiceninja.github.io/docs/developer-guide",
+      "https://invoiceninja.github.io/docs/api-reference/invoice-ninja-api-reference"
+    ]
+  }
+}

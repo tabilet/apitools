@@ -1,0 +1,96 @@
+{
+  "components": {
+    "schemas": {
+      "DHLTrackingCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DHLTrackingError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DHLTrackingObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "dhlAPIKey": {
+        "description": "DHL Shipment Tracking API subscription key carried in the DHL-API-Key header.",
+        "in": "header",
+        "name": "DHL-API-Key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official DHL Shipment Tracking API human documentation. This is not an official DHL OpenAPI document.",
+    "title": "DHL Shipment Tracking API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/track/shipments": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getDHLShipmentTracking",
+        "parameters": [
+          {
+            "description": "DHL tracking number.",
+            "in": "query",
+            "name": "trackingNumber",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Recipient postal code for additional verification.",
+            "in": "query",
+            "name": "recipientPostalCode",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DHLTrackingCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "dhlAPIKey": []
+          }
+        ],
+        "summary": "Get shipment tracking details"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api-eu.dhl.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "dhl",
+    "source_note": "DHL publishes Shipment Tracking - Unified human API documentation but no recorded stable public downloadable official OpenAPI document; this overlay covers the documented tracking endpoint.",
+    "source_refs": [
+      "https://developer.dhl.com/api-reference/shipment-tracking?language_content_entity=en",
+      "https://developer.dhl.com/getting-started/find-the-right-api?language_content_entity=en"
+    ]
+  }
+}

@@ -1,0 +1,500 @@
+{
+  "components": {
+    "schemas": {
+      "OnfleetCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "OnfleetError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "OnfleetObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "onfleetBasic": {
+        "description": "Onfleet API key carried as the HTTP Basic username with an empty password.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Onfleet API human documentation. This is not an official Onfleet OpenAPI document.",
+    "title": "Onfleet API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/admins": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listOnfleetAdmins",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "List administrators"
+      }
+    },
+    "/auth/test": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "testOnfleetAuth",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "Test authentication"
+      }
+    },
+    "/destinations": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createOnfleetDestination",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnfleetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "Create destination"
+      }
+    },
+    "/hubs": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listOnfleetHubs",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "List hubs"
+      }
+    },
+    "/recipients": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createOnfleetRecipient",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnfleetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "Create recipient"
+      }
+    },
+    "/tasks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listOnfleetTasks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "List tasks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createOnfleetTask",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnfleetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "Create task"
+      }
+    },
+    "/tasks/{task_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getOnfleetTask",
+        "parameters": [
+          {
+            "description": "Task ID.",
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "Get task"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateOnfleetTask",
+        "parameters": [
+          {
+            "description": "Task ID.",
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnfleetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "Update task"
+      }
+    },
+    "/teams": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listOnfleetTeams",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "List teams"
+      }
+    },
+    "/webhooks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listOnfleetWebhooks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "List webhooks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createOnfleetWebhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnfleetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "Create webhook"
+      }
+    },
+    "/workers": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listOnfleetWorkers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "List workers"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createOnfleetWorker",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnfleetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnfleetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "onfleetBasic": []
+          }
+        ],
+        "summary": "Create worker"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://onfleet.com/api/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "onfleet",
+    "source_note": "Onfleet publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected auth, task, worker, team, hub, destination, recipient, admin, and webhook endpoints.",
+    "source_refs": [
+      "https://docs.onfleet.com/reference",
+      "https://support.onfleet.com/hc/en-us/articles/360045763292-API"
+    ]
+  }
+}
