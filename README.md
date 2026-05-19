@@ -45,6 +45,9 @@ go run ./cmd/apitools search --query slack --json
 go run ./cmd/apitools search --query slack --cache ~/.cache/apitools/cache.sqlite
 go run ./cmd/apitools import --url https://example.com/openapi.yaml --dir ./openapi --name example
 go run ./cmd/apitools catalog list
+go run ./cmd/apitools catalog advisory slack \
+  --cache catalog-openapi-cache/cache.sqlite
+go run ./cmd/apitools catalog advisory slack
 go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog overlay-view github
 go run ./cmd/apitools catalog security-report
@@ -91,6 +94,7 @@ credentials, or claiming runtime compatibility:
 
 ```bash
 go run ./cmd/apitools catalog list
+go run ./cmd/apitools catalog advisory slack
 go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog inspect slack \
   --openapi ./openapi/slack.yaml \
@@ -110,6 +114,14 @@ and user security overlays take precedence over project-local documents, and
 project-local documents take precedence over built-in spec references and
 built-in advisory security overlays. Built-in catalog metadata is a discovery
 baseline only; it does not override a team's local API contract.
+
+Provider advisory output is a read-only summary for operators and downstream
+authoring integrations. `catalog advisory [provider]` combines provider
+metadata, spec references, user OpenAPI need, auth/security status, overlay IDs,
+source notes, manual follow-ups, and optional registered artifact paths from an
+existing `cache.sqlite`. It does not create a cache when the file is missing,
+fetch remote documents, apply overlays, execute API operations, or resolve
+credentials.
 
 Catalog curation follows a fixed per-service workflow: try official
 OpenAPI/Swagger/Discovery sources first, review auth/security completeness, add
@@ -228,6 +240,11 @@ _, _ = securityReport, err
 
 view, err := catalog.BuiltInSecurityInspectionView("github")
 _, _ = view, err
+
+advisory, err := catalog.BuiltInProviderAdvisoryReport(catalog.ProviderAdvisoryOptions{
+	ProviderKey: "slack",
+})
+_, _ = advisory, err
 
 quality := catalog.BuiltInCatalogQualityReport(catalog.CatalogQualityOptions{})
 _ = quality

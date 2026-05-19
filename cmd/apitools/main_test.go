@@ -51,10 +51,105 @@ func TestCatalogHelpDocumentsSubcommands(t *testing.T) {
 		t.Fatalf("code = %d\n%s", code, out.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"Usage: apitools catalog", "check", "list", "specs", "inspect", "overlay-view", "security-report"} {
+	for _, expected := range []string{"Usage: apitools catalog", "advisory", "check", "list", "specs", "inspect", "overlay-view", "security-report"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
 		}
+	}
+}
+
+func TestCatalogAdvisoryOutputAndJSON(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "advisory", "grafana"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	text := out.String()
+	for _, expected := range []string{
+		"Provider: Grafana (grafana)",
+		"OpenAPI availability: known",
+		"Auth status: complete",
+		"Resolved OpenAPI: built-in-spec-reference",
+		"grafana-http-api-openapi-v3",
+	} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("catalog advisory output missing %q:\n%s", expected, text)
+		}
+	}
+
+	out.Reset()
+	errOut.Reset()
+	code = run([]string{"catalog", "advisory", "--json", "grafana"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{`"provider_id": "grafana"`, `"auth_status": "complete"`, `"spec_ref_id": "grafana-http-api-openapi-v3"`} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("catalog advisory json missing %q:\n%s", expected, out.String())
+		}
+	}
+}
+
+func TestCatalogAdvisoryShowsRegisteredArtifactPath(t *testing.T) {
+	dir := t.TempDir()
+	cachePath := filepath.Join(dir, "cache.sqlite")
+	artifactPath := filepath.Join("openapi", "slack-web-openapi-v2.json")
+	if err := os.MkdirAll(filepath.Join(dir, "openapi"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, filepath.FromSlash(artifactPath)), []byte(`{"openapi":"3.0.0"}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cache, err := sqlitecache.Open(cachePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.StoreCatalogArtifact(context.Background(), sqlitecache.CatalogArtifact{
+		ProviderID: "slack",
+		ArtifactID: "slack-web-openapi-v2",
+		Kind:       "openapi",
+		Path:       artifactPath,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "advisory", "slack", "--cache", cachePath}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if !strings.Contains(out.String(), "artifact: "+artifactPath) {
+		t.Fatalf("catalog advisory output missing registered artifact path:\n%s", out.String())
+	}
+}
+
+func TestCatalogAdvisoryMissingCacheDoesNotCreateFile(t *testing.T) {
+	cachePath := filepath.Join(t.TempDir(), "missing.sqlite")
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "advisory", "slack", "--cache", cachePath}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if _, err := os.Stat(cachePath); !os.IsNotExist(err) {
+		t.Fatalf("cache path stat err = %v, want not exist", err)
+	}
+}
+
+func TestCatalogAdvisoryUnknownProvider(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "advisory", "missing"}, &out, &errOut)
+	if code != 1 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if !strings.Contains(errOut.String(), `unknown provider "missing"`) {
+		t.Fatalf("stderr missing unknown provider error:\n%s", errOut.String())
 	}
 }
 

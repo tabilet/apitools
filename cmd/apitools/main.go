@@ -60,6 +60,8 @@ func runCatalog(args []string, out, errOut io.Writer) int {
 		return 2
 	}
 	switch args[0] {
+	case "advisory":
+		return runCatalogAdvisory(args[1:], out, errOut)
 	case "check":
 		return runCatalogCheck(args[1:], out, errOut)
 	case "list":
@@ -88,6 +90,7 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "Usage: apitools catalog <command>")
 	fmt.Fprintln(out)
 	fmt.Fprintln(out, "Commands:")
+	fmt.Fprintln(out, "  advisory         render provider advisory summaries")
 	fmt.Fprintln(out, "  check            run offline catalog quality checks")
 	fmt.Fprintln(out, "  list             list built-in provider catalog metadata")
 	fmt.Fprintln(out, "  specs            list refreshable built-in spec references")
@@ -95,6 +98,72 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "  inspect          inspect one provider and resolution status")
 	fmt.Fprintln(out, "  overlay-view     inspect advisory security overlay effects")
 	fmt.Fprintln(out, "  security-report  report auth/security status across providers")
+}
+
+func runCatalogAdvisory(args []string, out, errOut io.Writer) int {
+	var provider string
+	parseArgs := args
+	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
+		provider = args[0]
+		parseArgs = args[1:]
+	}
+	fs := flag.NewFlagSet("apitools catalog advisory", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	cachePath := fs.String("cache", "", "Existing SQLite cache path used to show registered artifact paths")
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog advisory [provider] [--cache catalog-openapi-cache/cache.sqlite] [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(parseArgs); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if provider == "" {
+		if fs.NArg() > 0 {
+			provider = fs.Arg(0)
+		}
+		if fs.NArg() > 1 {
+			fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(1))
+			fs.Usage()
+			return 2
+		}
+	} else if fs.NArg() > 0 {
+		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
+		fs.Usage()
+		return 2
+	}
+	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	defer closeCache()
+	report, err := catalogpkg.BuiltInProviderAdvisoryReport(catalogpkg.ProviderAdvisoryOptions{
+		ProviderKey: provider,
+		Artifacts:   artifacts,
+	})
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	if *jsonOut {
+		if err := writeJSON(out, report); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	writeCatalogAdvisoryReport(out, report)
+	return 0
 }
 
 func runCatalogCheck(args []string, out, errOut io.Writer) int {
@@ -611,6 +680,51 @@ type catalogListRow struct {
 	MachineAvailability catalogpkg.SpecAvailability       `json:"machine_availability"`
 	UserOpenAPINeed     catalogpkg.UserOpenAPINeed        `json:"user_openapi_need"`
 	AuthStatus          catalogpkg.AuthCompletenessStatus `json:"auth_status"`
+}
+
+func writeCatalogAdvisoryReport(out io.Writer, report catalogpkg.ProviderAdvisoryReport) {
+	if len(report.Providers) == 0 {
+		fmt.Fprintln(out, "No provider advisory rows.")
+		return
+	}
+	for i, provider := range report.Providers {
+		if i > 0 {
+			fmt.Fprintln(out)
+		}
+		fmt.Fprintf(out, "Provider: %s (%s)\n", provider.DisplayName, provider.ProviderID)
+		if provider.Category != "" {
+			fmt.Fprintf(out, "Category: %s\n", provider.Category)
+		}
+		fmt.Fprintf(out, "OpenAPI availability: %s\n", provider.OpenAPIAvailability)
+		fmt.Fprintf(out, "Machine spec availability: %s\n", provider.MachineSpecAvailability)
+		fmt.Fprintf(out, "User OpenAPI need: %s\n", provider.UserOpenAPINeed)
+		fmt.Fprintf(out, "Auth status: %s\n", provider.AuthStatus)
+		fmt.Fprintf(out, "Resolved OpenAPI: %s", provider.ResolvedOpenAPI.Source)
+		writeResolvedReferenceDetails(out, provider.ResolvedOpenAPI)
+		fmt.Fprintf(out, "Resolved security: %s", provider.ResolvedSecurity.Source)
+		writeResolvedReferenceDetails(out, provider.ResolvedSecurity)
+		if len(provider.SpecReferences) > 0 {
+			fmt.Fprintln(out, "Spec references:")
+			for _, ref := range provider.SpecReferences {
+				fmt.Fprintf(out, "- %s [%s] %s\n", ref.ID, ref.Kind, ref.URL)
+				if ref.RegisteredArtifactPath != "" {
+					fmt.Fprintf(out, "  artifact: %s\n", ref.RegisteredArtifactPath)
+				}
+				if ref.SourceNote != "" {
+					fmt.Fprintf(out, "  note: %s\n", ref.SourceNote)
+				}
+			}
+		}
+		if len(provider.SecurityOverlayIDs) > 0 {
+			fmt.Fprintf(out, "Security overlays: %s\n", strings.Join(provider.SecurityOverlayIDs, ", "))
+		}
+		if len(provider.ManualFollowUps) > 0 {
+			fmt.Fprintln(out, "Manual follow-ups:")
+			for _, followUp := range provider.ManualFollowUps {
+				fmt.Fprintf(out, "- %s\n", followUp)
+			}
+		}
+	}
 }
 
 func writeCatalogInspect(out io.Writer, resolved catalogpkg.ResolvedProvider) {
