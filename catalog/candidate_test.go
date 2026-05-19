@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 42; got != want {
+	if got, want := len(candidates), 43; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -23,6 +23,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"aws-lambda",
 		"aws-s3",
 		"aws-sns",
+		"bitbucket",
 		"box",
 		"calendly",
 		"clickup",
@@ -79,6 +80,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "lambda", id: "aws-lambda"},
 		{key: "s3", id: "aws-s3"},
 		{key: "sns", id: "aws-sns"},
+		{key: "bitbucket cloud", id: "bitbucket"},
 	}
 	for _, test := range tests {
 		candidate, ok := FindBuiltInCandidate(test.key)
@@ -118,6 +120,7 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"aws-lambda",
 		"aws-s3",
 		"aws-sns",
+		"bitbucket",
 		"box",
 		"calendly",
 		"clickup",

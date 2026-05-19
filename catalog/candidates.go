@@ -65,6 +65,14 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for file storage, sharing, and content-management automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "bitbucket",
+		displayName: "Bitbucket",
+		aliases:     []string{"bitbucket api", "bitbucket cloud"},
+		category:    "developer-tools",
+		n8nNode:     "Bitbucket",
+		relevance:   "Popular developer platform for repositories, pull requests, pipelines, workspaces, and source automation.",
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "calendly",
 		displayName: "Calendly",
 		aliases:     []string{"calendly api"},

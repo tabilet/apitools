@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 42; got != want {
+	if got, want := len(catalog.ListProviders()), 43; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -23,6 +23,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"aws-lambda",
 		"aws-s3",
 		"aws-sns",
+		"bitbucket",
 		"box",
 		"calendly",
 		"clickup",
@@ -80,6 +81,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "amazon lambda", id: "aws-lambda"},
 		{key: "amazon s3", id: "aws-s3"},
 		{key: "amazon sns", id: "aws-sns"},
+		{key: "bitbucket cloud", id: "bitbucket"},
 		{key: "calendly api", id: "calendly"},
 		{key: "clickup api", id: "clickup"},
 		{key: "discord api", id: "discord"},
@@ -149,6 +151,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "aws-lambda", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindSmithyJSON},
 		{id: "aws-s3", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindSmithyJSON},
 		{id: "aws-sns", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindSmithyJSON},
+		{id: "bitbucket", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "box", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "airtable", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "calendly", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},

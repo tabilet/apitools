@@ -165,6 +165,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Box's official OpenAPI document includes an OAuth2 authorization code security scheme and root security requirement.",
 	},
 	{
+		ProviderID: "bitbucket",
+		SpecRefID:  "bitbucket-cloud-swagger-v2",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://api.bitbucket.org/swagger.json", "https://developer.atlassian.com/cloud/bitbucket/rest/intro/"},
+		SourceNote: "Bitbucket Cloud's official Swagger/OpenAPI schema includes OAuth2, basic, and API key security definitions with operation security metadata.",
+	},
+	{
 		ProviderID: "calendly",
 		SpecRefID:  "calendly-public-api-docs",
 		Status:     AuthStatusOverlayRequired,
