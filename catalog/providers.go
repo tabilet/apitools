@@ -502,12 +502,15 @@ var builtInProviders = []Provider{
 		aliases:             []string{"open weather map", "openweathermap api"},
 		category:            "weather",
 		relevance:           "Common workflow data source for current weather and forecast enrichment.",
-		openAPIAvailability: SpecAvailabilityUnknown,
+		openAPIAvailability: SpecAvailabilityUnavailable,
 		machineAvailability: SpecAvailabilityUnknown,
 		userNeed:            UserOpenAPINeedLikely,
 		specs: []SpecReference{
-			humanDocsRef("openweathermap-api-docs", "https://openweathermap.org/api", "Official OpenWeather API documentation. No official OpenAPI document is recorded in this catalog entry yet."),
+			humanDocsRef("openweathermap-api-docs", "https://openweathermap.org/api", "Official OpenWeather API documentation. M12 review records no stable public official OpenAPI document."),
+			humanDocsRef("openweathermap-one-call-3-docs", "https://openweathermap.org/api/one-call-3?collection=one_call_api_3.0", "Official OpenWeather One Call API 3.0 documentation used for the docs-derived advisory endpoint overlay."),
+			humanDocsRef("openweathermap-api-key-docs", "https://openweathermap.org/appid", "Official OpenWeather API key documentation for appid query authentication."),
 		},
+		quirks: []string{"OpenWeather documents endpoint examples in human docs; OpenAPI-only workflows need a user-provided or generated OpenAPI document for broader API coverage beyond the reviewed advisory overlay."},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "pagerduty",
