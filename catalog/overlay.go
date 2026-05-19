@@ -612,6 +612,24 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "HubSpot exposes an official split OpenAPI spec index; official docs describe OAuth and private app bearer tokens, so selected specs should be checked with an advisory bearer-token overlay.",
 	},
 	parseableSpecAuthReviewOverlay(
+		"intercom-api-v2-15-auth-review",
+		"intercom",
+		"intercom-api-v2-15-openapi",
+		[]SecurityScheme{{
+			Name:        "bearerAuth",
+			Type:        SecuritySchemeHTTP,
+			Scheme:      "bearer",
+			Description: "Intercom access token carried as an Authorization bearer token.",
+		}},
+		[]SecurityRequirement{{Scheme: "bearerAuth"}},
+		[]string{
+			"https://developers.intercom.com/_bundle/docs/references/%402.15/rest-api/api.intercom.io.json?download=",
+			"https://developers.intercom.com/docs/references/rest-api/api.intercom.io",
+			"https://developers.intercom.com/docs/build-an-integration/learn-more/authentication",
+		},
+		"Intercom's official v2.15 OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation, so bearer-token security metadata is carried as review-only overlay guidance.",
+	),
+	parseableSpecAuthReviewOverlay(
 		"jira-cloud-platform-openapi-v3-auth-review",
 		"jira-cloud",
 		"jira-cloud-platform-openapi-v3",

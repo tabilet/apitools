@@ -284,6 +284,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "HubSpot publishes split official OpenAPI specs through an index; selected specs should be reviewed with auth overlay metadata before downstream use.",
 	},
 	{
+		ProviderID: "intercom",
+		SpecRefID:  "intercom-api-v2-15-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://developers.intercom.com/_bundle/docs/references/%402.15/rest-api/api.intercom.io.json?download=", "https://developers.intercom.com/docs/references/rest-api/api.intercom.io"},
+		SourceNote: "Intercom's official API v2.15 OpenAPI document includes bearer-token security schemes and root security requirements.",
+	},
+	{
 		ProviderID: "jira-cloud",
 		SpecRefID:  "jira-cloud-platform-openapi-v3",
 		Status:     AuthStatusComplete,

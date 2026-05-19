@@ -218,6 +218,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Common workflow service for CRM records, tickets, contacts, and pipeline automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "intercom",
+		displayName: "Intercom",
+		aliases:     []string{"intercom api", "intercom rest api"},
+		category:    "customer-support",
+		n8nNode:     "Intercom",
+		relevance:   "Popular customer messaging and support platform for contacts, conversations, articles, tickets, and help-center automation.",
+		userNeed:    UserOpenAPINeedNotExpected,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "jenkins",
 		displayName: "Jenkins",
 		aliases:     []string{"jenkins api", "jenkins remote api"},

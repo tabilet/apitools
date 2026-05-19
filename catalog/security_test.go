@@ -86,7 +86,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 45; got != want {
+	if got, want := len(overlays), 46; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -196,6 +196,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"google-sheets",
 		"grafana",
 		"hubspot",
+		"intercom",
 		"jenkins",
 		"jira-cloud",
 		"linear",
@@ -255,6 +256,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"google-sheets":   AuthStatusOverlayRequired,
 		"grafana":         AuthStatusComplete,
 		"hubspot":         AuthStatusOverlayRequired,
+		"intercom":        AuthStatusPresentIncomplete,
 		"jenkins":         AuthStatusOverlayRequired,
 		"jira-cloud":      AuthStatusPresentIncomplete,
 		"linear":          AuthStatusOverlayRequired,
@@ -305,6 +307,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"box":        "box-platform-openapi-v3-auth-review",
 		"circleci":   "circleci-api-v2-auth-review",
 		"cloudflare": "cloudflare-api-auth-review",
+		"intercom":   "intercom-api-v2-15-auth-review",
 		"jira-cloud": "jira-cloud-platform-openapi-v3-auth-review",
 		"notion":     "notion-api-openapi-auth-review",
 		"okta":       "okta-management-minimal-openapi-auth-review",

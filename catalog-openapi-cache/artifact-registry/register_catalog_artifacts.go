@@ -289,6 +289,16 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/hubspot-public-api-spec-index.json",
 	},
 	{
+		providerID: "intercom",
+		artifactID: "intercom-api-v2-15-openapi",
+		kind:       "openapi",
+		url:        "https://developers.intercom.com/_bundle/docs/references/%402.15/rest-api/api.intercom.io.json?download=",
+		path:       "openapi/intercom-api-v2-15-openapi.json",
+		title:      "Intercom API",
+		openapi:    "3.0.1",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
+	},
+	{
 		providerID: "jira-cloud",
 		artifactID: "jira-cloud-platform-openapi-v3",
 		kind:       "openapi",

@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 54; got != want {
+	if got, want := len(candidates), 55; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -41,6 +41,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"google-sheets",
 		"grafana",
 		"hubspot",
+		"intercom",
 		"jenkins",
 		"jira-cloud",
 		"linear",
@@ -97,6 +98,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "databricks rest api", id: "databricks"},
 		{key: "elasticsearch api", id: "elastic"},
 		{key: "grafana http api", id: "grafana"},
+		{key: "intercom rest api", id: "intercom"},
 		{key: "jenkins remote api", id: "jenkins"},
 		{key: "netlify api", id: "netlify"},
 		{key: "sentry.io", id: "sentry"},
