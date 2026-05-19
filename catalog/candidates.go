@@ -416,6 +416,14 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular payment platform for customers, charges, invoices, subscriptions, and billing automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "supabase",
+		displayName: "Supabase",
+		aliases:     []string{"supabase api", "supabase management api"},
+		category:    "backend-platform",
+		n8nNode:     "Supabase",
+		relevance:   "Popular backend platform for projects, databases, auth, storage, edge functions, and PostgREST data APIs.",
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "telegram",
 		displayName: "Telegram",
 		aliases:     []string{"telegram api", "telegram bot api"},

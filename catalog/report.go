@@ -445,6 +445,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Stripe's official latest OpenAPI document includes basic and bearer HTTP security schemes plus root security requirements.",
 	},
 	{
+		ProviderID: "supabase",
+		SpecRefID:  "supabase-management-api-openapi",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://api.supabase.com/api/v1-json", "https://supabase.com/docs/reference/api/introduction"},
+		SourceNote: "Supabase's official Management API OpenAPI document includes a bearer security scheme but no root security requirement; official docs state bearer authorization is required for API requests.",
+	},
+	{
 		ProviderID: "telegram",
 		SpecRefID:  "telegram-bot-api-docs",
 		Status:     AuthStatusOverlayRequired,

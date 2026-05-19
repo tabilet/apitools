@@ -800,6 +800,27 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Splunk has human REST API docs in this catalog entry but no recorded stable public OpenAPI document for the general Enterprise API; docs describe authentication tokens, session keys, and credentials, so OpenAPI imports need an advisory auth overlay.",
 	},
 	{
+		ID:         "supabase-management-api-auth-review",
+		ProviderID: "supabase",
+		SpecRefID:  "supabase-management-api-openapi",
+		Status:     AuthStatusPresentIncomplete,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:         "bearer",
+				Type:         SecuritySchemeHTTP,
+				Scheme:       "bearer",
+				BearerFormat: "JWT",
+				Description:  "Supabase Management API personal access token or OAuth access token carried in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "bearer"}},
+		SourceRefs: []string{
+			"https://api.supabase.com/api/v1-json",
+			"https://supabase.com/docs/reference/api/introduction",
+		},
+		SourceNote: "Supabase's official Management API OpenAPI document declares a bearer scheme but no root security requirement; official API docs state that all API requests require an Authorization bearer token.",
+	},
+	{
 		ID:         "telegram-bot-token-auth-overlay",
 		ProviderID: "telegram",
 		SpecRefID:  "telegram-bot-api-docs",

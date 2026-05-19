@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 53; got != want {
+	if got, want := len(catalog.ListProviders()), 54; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -64,6 +64,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"snowflake",
 		"splunk",
 		"stripe",
+		"supabase",
 		"telegram",
 		"trello",
 		"twilio",
@@ -123,6 +124,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "stripe api", id: "stripe"},
 		{key: "snowflake api", id: "snowflake"},
 		{key: "splunk api", id: "splunk"},
+		{key: "supabase api", id: "supabase"},
 		{key: "telegram bot api", id: "telegram"},
 		{key: "twilio sms", id: "twilio"},
 		{key: "typeform api", id: "typeform"},
@@ -213,6 +215,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "snowflake", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "splunk", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "stripe", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "supabase", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "telegram", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "trello", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "twilio", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
