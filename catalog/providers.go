@@ -529,6 +529,22 @@ var builtInProviders = []Provider{
 		quirks: []string{"Google Discovery documents are not OpenAPI and need conversion or a user-supplied OpenAPI document for OpenAPI-only workflows."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "grafana",
+		displayName:         "Grafana",
+		aliases:             []string{"grafana api", "grafana http api"},
+		category:            "observability",
+		relevance:           "Popular observability platform for dashboards, folders, data sources, alerting, service accounts, and monitoring automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("grafana-api-docs", "https://grafana.com/docs/grafana/latest/developer-resources/api-reference/", "Official Grafana API reference documentation."),
+			humanDocsRef("grafana-http-api-auth-docs", "https://grafana.com/docs/grafana/latest/developers/http_api/auth/", "Official Grafana HTTP API authentication documentation."),
+			humanDocsRef("grafana-new-api-structure-docs", "https://grafana.com/docs/grafana/latest/developers/http_api/apis/", "Official Grafana documentation for the newer API structure and instance /swagger page."),
+		},
+		quirks: []string{"Grafana instances can expose an instance-specific /swagger page, but M13 review did not find a stable public downloadable official OpenAPI document for the general Grafana HTTP API.", "Grafana has legacy /api routes and newer /apis/<group>/<version> routes; endpoint availability depends on Grafana version and feature flags."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "hubspot",
 		displayName:         "HubSpot",
 		aliases:             []string{"hubspot crm", "hubspot api"},

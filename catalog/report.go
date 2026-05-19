@@ -235,6 +235,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "GitHub's official OpenAPI document omits security schemes and requirements; official REST authentication docs need advisory bearer/basic overlay mapping.",
 	},
 	{
+		ProviderID: "grafana",
+		SpecRefID:  "grafana-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://grafana.com/docs/grafana/latest/developer-resources/api-reference/", "https://grafana.com/docs/grafana/latest/developers/http_api/auth/"},
+		SourceNote: "Grafana has no recorded stable public OpenAPI document in this catalog entry; auth metadata comes from advisory service-account bearer/basic overlay notes.",
+	},
+	{
 		ProviderID: "gitlab",
 		SpecRefID:  "gitlab-openapi-v2",
 		Status:     AuthStatusPresentIncomplete,

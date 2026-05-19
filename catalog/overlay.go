@@ -310,6 +310,33 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "GitHub's official OpenAPI description has no security schemes or security requirements; official REST docs describe Authorization bearer tokens for most requests and basic authentication for some app-management endpoints.",
 	},
 	{
+		ID:         "grafana-http-api-auth-overlay",
+		ProviderID: "grafana",
+		SpecRefID:  "grafana-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "grafanaServiceAccountBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Grafana service account token carried in the Authorization header.",
+			},
+			{
+				Name:        "grafanaBasic",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Grafana basic authentication for OSS/on-prem endpoints when enabled; some admin endpoints require basic auth.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "grafanaServiceAccountBearer"}, {Scheme: "grafanaBasic"}},
+		SourceRefs: []string{
+			"https://grafana.com/docs/grafana/latest/developers/http_api/auth/",
+			"https://grafana.com/docs/grafana/latest/administration/service-accounts/",
+			"https://grafana.com/docs/grafana/latest/developers/http_api/apis/",
+		},
+		SourceNote: "Grafana has human HTTP API docs in this catalog entry but no recorded stable public OpenAPI document; docs describe service account bearer tokens and basic authentication, so OpenAPI imports need an advisory auth overlay.",
+	},
+	{
 		ID:         "gitlab-openapi-v2-auth-review",
 		ProviderID: "gitlab",
 		SpecRefID:  "gitlab-openapi-v2",

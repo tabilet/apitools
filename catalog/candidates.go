@@ -184,6 +184,15 @@ var builtInCandidates = []Candidate{
 		userNeed:        UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "grafana",
+		displayName: "Grafana",
+		aliases:     []string{"grafana api", "grafana http api"},
+		category:    "observability",
+		n8nNode:     "Grafana",
+		relevance:   "Popular observability platform for dashboards, folders, data sources, alerting, service accounts, and monitoring automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "github",
 		displayName: "GitHub",
 		aliases:     []string{"github api"},
