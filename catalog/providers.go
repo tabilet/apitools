@@ -33,13 +33,15 @@ var builtInProviders = []Provider{
 		aliases:             []string{"airtable api"},
 		category:            "database",
 		relevance:           "Common workflow source and destination for records in bases and tables.",
-		openAPIAvailability: SpecAvailabilityUnknown,
+		openAPIAvailability: SpecAvailabilityUnavailable,
 		machineAvailability: SpecAvailabilityUnknown,
 		userNeed:            UserOpenAPINeedLikely,
 		specs: []SpecReference{
-			humanDocsRef("airtable-web-api-docs", "https://airtable.com/developers/web/api/introduction", "Official Airtable Web API documentation. No official OpenAPI document is recorded in this catalog entry yet."),
+			humanDocsRef("airtable-web-api-docs", "https://airtable.com/developers/web/api/introduction", "Official Airtable Web API documentation. M12 review records no stable public official OpenAPI document; base-specific schemas still require user-provided or generated OpenAPI for precise field shapes."),
+			humanDocsRef("airtable-web-api-support-docs", "https://support.airtable.com/docs/getting-started-with-airtables-web-api", "Official Airtable support guide for Web API usage, pagination, rate limits, and PAT/OAuth migration notes."),
+			humanDocsRef("airtable-personal-access-token-docs", "https://support.airtable.com/v1/docs/fr/creating-and-using-api-keys-and-access-tokens", "Official Airtable support guide for personal access tokens, scopes, resources, and legacy API key deprecation."),
 		},
-		quirks: []string{"Base-specific Airtable schemas can vary by workspace and base; user-provided OpenAPI may be needed for precise field shapes."},
+		quirks: []string{"Base-specific Airtable schemas can vary by workspace and base; user-provided or generated OpenAPI is needed for precise field shapes."},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "box",
