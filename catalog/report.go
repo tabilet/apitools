@@ -221,6 +221,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Dropbox's official machine-readable source is a Stone spec, not OpenAPI; OAuth security metadata needs advisory OpenAPI overlay mapping for OpenAPI-only consumers.",
 	},
 	{
+		ProviderID: "elastic",
+		SpecRefID:  "elastic-elasticsearch-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://www.elastic.co/docs/api/doc/elasticsearch.json", "https://www.elastic.co/docs/api/doc/elasticsearch/authentication"},
+		SourceNote: "Elastic's official Elasticsearch OpenAPI document includes API key, basic, and bearer security schemes with root security requirements.",
+	},
+	{
 		ProviderID: "github",
 		SpecRefID:  "github-rest-api-openapi",
 		Status:     AuthStatusOverlayRequired,

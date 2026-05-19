@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 46; got != want {
+	if got, want := len(catalog.ListProviders()), 47; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -32,6 +32,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"databricks",
 		"discord",
 		"dropbox",
+		"elastic",
 		"github",
 		"gitlab",
 		"gmail",
@@ -92,6 +93,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "databricks api", id: "databricks"},
 		{key: "discord api", id: "discord"},
 		{key: "dropbox api", id: "dropbox"},
+		{key: "elasticsearch", id: "elastic"},
 		{key: "github rest api", id: "github"},
 		{key: "gitlab rest api", id: "gitlab"},
 		{key: "google calendar api", id: "google-calendar"},
@@ -167,6 +169,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "databricks", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "discord", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "dropbox", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindDropboxStone},
+		{id: "elastic", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "github", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "gitlab", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "gmail", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},

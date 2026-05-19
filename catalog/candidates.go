@@ -130,6 +130,14 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for file storage, transfer, and sharing automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "elastic",
+		displayName: "Elastic",
+		aliases:     []string{"elastic api", "elasticsearch", "elasticsearch api"},
+		category:    "search",
+		n8nNode:     "Elastic/Elasticsearch",
+		relevance:   "Popular search and analytics platform for indices, documents, search, ingest, and security automation.",
+	}),
+	workflowCandidate(candidateSeed{
 		id:              "gmail",
 		displayName:     "Gmail",
 		aliases:         []string{"google mail", "gmail api"},
