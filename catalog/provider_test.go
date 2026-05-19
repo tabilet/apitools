@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 45; got != want {
+	if got, want := len(catalog.ListProviders()), 46; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -29,6 +29,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"circleci",
 		"clickup",
 		"cloudflare",
+		"databricks",
 		"discord",
 		"dropbox",
 		"github",
@@ -88,6 +89,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "circleci api", id: "circleci"},
 		{key: "cloudflare api", id: "cloudflare"},
 		{key: "clickup api", id: "clickup"},
+		{key: "databricks api", id: "databricks"},
 		{key: "discord api", id: "discord"},
 		{key: "dropbox api", id: "dropbox"},
 		{key: "github rest api", id: "github"},
@@ -162,6 +164,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "circleci", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "cloudflare", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "clickup", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "databricks", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "discord", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "dropbox", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindDropboxStone},
 		{id: "github", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},

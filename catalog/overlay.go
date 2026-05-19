@@ -226,6 +226,27 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "ClickUp's official OpenAPI document includes an Authorization header API key scheme and root security; OAuth authorization-code endpoints are documented separately, so keep this as a present-incomplete auth review overlay.",
 	},
 	{
+		ID:         "databricks-rest-api-auth-overlay",
+		ProviderID: "databricks",
+		SpecRefID:  "databricks-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "databricksBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Databricks OAuth access token or legacy personal access token carried in the Authorization header.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "databricksBearer"}},
+		SourceRefs: []string{
+			"https://docs.databricks.com/aws/en/dev-tools/auth",
+			"https://docs.databricks.com/aws/en/dev-tools/auth/pat",
+			"https://docs.databricks.com/api/workspace/introduction",
+		},
+		SourceNote: "Databricks has human REST API docs in this catalog entry but no recorded downloadable official OpenAPI document; official auth docs describe OAuth access tokens and legacy PATs, so OpenAPI imports need an advisory bearer-token overlay.",
+	},
+	{
 		ID:         "dropbox-api-auth-overlay",
 		ProviderID: "dropbox",
 		SpecRefID:  "dropbox-api-stone-spec",

@@ -248,6 +248,23 @@ var builtInProviders = []Provider{
 		quirks: []string{"Cloudflare's official OpenAPI YAML is larger than the default catalog refresh size limit; refresh requires an increased max-bytes value.", "The spec includes legacy global API key/email security alongside preferred scoped API token security."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "databricks",
+		displayName:         "Databricks",
+		aliases:             []string{"databricks api", "databricks rest api"},
+		category:            "data-platform",
+		relevance:           "Popular data platform for SQL warehouses, jobs, model serving, Unity Catalog, vector search, and lakehouse automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("databricks-api-docs", "https://docs.databricks.com/api/workspace/introduction", "Official Databricks REST API reference documentation."),
+			humanDocsRef("databricks-reference-api-docs", "https://docs.databricks.com/aws/en/reference/api", "Official Databricks reference page linking REST API, MLflow, SCIM, Jobs, SDK, and CLI references."),
+			humanDocsRef("databricks-auth-docs", "https://docs.databricks.com/aws/en/dev-tools/auth", "Official Databricks authorization documentation for CLI and REST APIs."),
+			humanDocsRef("databricks-pat-docs", "https://docs.databricks.com/aws/en/dev-tools/auth/pat", "Official Databricks personal access token documentation."),
+		},
+		quirks: []string{"Databricks REST APIs are split across account-level and workspace-level hosts; imports should preserve the operator-supplied host rather than choosing an account or workspace.", "Databricks SDKs are generated from platform specifications, but M13 review did not find a stable public downloadable official OpenAPI document for the full REST API.", "Model Serving endpoints can expose endpoint-specific OpenAPI schemas, but those schemas describe deployed user endpoints rather than the Databricks platform REST API."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "clickup",
 		displayName:         "ClickUp",
 		aliases:             []string{"clickup api"},

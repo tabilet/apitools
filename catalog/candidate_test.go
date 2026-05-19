@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 45; got != want {
+	if got, want := len(candidates), 46; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -29,6 +29,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"circleci",
 		"clickup",
 		"cloudflare",
+		"databricks",
 		"discord",
 		"dropbox",
 		"github",
@@ -85,6 +86,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "bitbucket cloud", id: "bitbucket"},
 		{key: "circleci v2", id: "circleci"},
 		{key: "cloudflare api", id: "cloudflare"},
+		{key: "databricks rest api", id: "databricks"},
 	}
 	for _, test := range tests {
 		candidate, ok := FindBuiltInCandidate(test.key)
@@ -130,6 +132,7 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"circleci",
 		"clickup",
 		"cloudflare",
+		"databricks",
 		"discord",
 		"dropbox",
 		"github",

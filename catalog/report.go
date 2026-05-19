@@ -193,6 +193,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Cloudflare's official OpenAPI document includes API token, API key/email, and user service key security schemes with root and operation security requirements.",
 	},
 	{
+		ProviderID: "databricks",
+		SpecRefID:  "databricks-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://docs.databricks.com/api/workspace/introduction", "https://docs.databricks.com/aws/en/dev-tools/auth"},
+		SourceNote: "Databricks has no recorded public official OpenAPI document for the full REST API in this catalog entry; auth metadata comes from advisory bearer-token overlay notes.",
+	},
+	{
 		ProviderID: "clickup",
 		SpecRefID:  "clickup-api-v2-openapi",
 		Status:     AuthStatusPresentIncomplete,

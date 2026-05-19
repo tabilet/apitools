@@ -97,6 +97,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular infrastructure platform for DNS, zones, caching, security rules, workers, and edge automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "databricks",
+		displayName: "Databricks",
+		aliases:     []string{"databricks api", "databricks rest api"},
+		category:    "data-platform",
+		n8nNode:     "Databricks",
+		relevance:   "Popular data platform for SQL warehouses, jobs, model serving, Unity Catalog, vector search, and lakehouse automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "clickup",
 		displayName: "ClickUp",
 		aliases:     []string{"clickup api", "click up"},
