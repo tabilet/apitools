@@ -607,7 +607,7 @@ var builtInProviders = []Provider{
 		aliases:             []string{"salesforce api", "salesforce rest api"},
 		category:            "crm",
 		relevance:           "Popular workflow service for CRM records, SOQL queries, search, and automation around accounts, contacts, leads, and opportunities.",
-		openAPIAvailability: SpecAvailabilityNeedsVerification,
+		openAPIAvailability: SpecAvailabilityUnavailable,
 		machineAvailability: SpecAvailabilityUnknown,
 		userNeed:            UserOpenAPINeedLikely,
 		specs: []SpecReference{
@@ -615,7 +615,7 @@ var builtInProviders = []Provider{
 			humanDocsRef("salesforce-rest-auth-docs", "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm", "Official Salesforce REST API OAuth quick start documentation."),
 			humanDocsRef("salesforce-openapi-generation-notes", "https://help.salesforce.com/s/articleView?id=release-notes.rn_api_rest.htm&language=en_US&release=236&type=5", "Official Salesforce release note describing beta OpenAPI 3.0 spec generation for Salesforce Platform REST API."),
 		},
-		quirks: []string{"Salesforce REST API OpenAPI generation is org/configuration dependent in current official docs; no stable public downloadable core REST OpenAPI document is recorded in this catalog entry."},
+		quirks: []string{"Salesforce REST API OpenAPI generation is org/configuration dependent in current official docs; M12 review records no stable public downloadable core REST OpenAPI document, so OpenAPI-only workflows need an org-generated or user-provided document."},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "sendgrid",
