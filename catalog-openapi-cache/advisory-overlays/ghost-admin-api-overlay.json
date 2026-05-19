@@ -1,0 +1,370 @@
+{
+  "components": {
+    "schemas": {
+      "GhostCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "GhostError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "GhostObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "ghostAdminToken": {
+        "description": "Ghost Admin API token carried in the Authorization header after operator-side JWT generation.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Ghost Admin API human documentation. This is not an official Ghost OpenAPI document.",
+    "title": "Ghost Admin API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/members/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGhostMembers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GhostCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "ghostAdminToken": []
+          }
+        ],
+        "summary": "List members"
+      }
+    },
+    "/pages/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGhostPages",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GhostCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "ghostAdminToken": []
+          }
+        ],
+        "summary": "List pages"
+      }
+    },
+    "/posts/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGhostPosts",
+        "parameters": [
+          {
+            "description": "Maximum number of posts to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Ghost filter expression.",
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GhostCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "ghostAdminToken": []
+          }
+        ],
+        "summary": "List posts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createGhostPost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GhostObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GhostObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "ghostAdminToken": []
+          }
+        ],
+        "summary": "Create a post"
+      }
+    },
+    "/posts/{post_id}/": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteGhostPost",
+        "parameters": [
+          {
+            "description": "Ghost post ID.",
+            "in": "path",
+            "name": "post_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GhostObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "ghostAdminToken": []
+          }
+        ],
+        "summary": "Delete a post"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getGhostPost",
+        "parameters": [
+          {
+            "description": "Ghost post ID.",
+            "in": "path",
+            "name": "post_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GhostObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "ghostAdminToken": []
+          }
+        ],
+        "summary": "Get a post"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateGhostPost",
+        "parameters": [
+          {
+            "description": "Ghost post ID.",
+            "in": "path",
+            "name": "post_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GhostObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GhostObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "ghostAdminToken": []
+          }
+        ],
+        "summary": "Update a post"
+      }
+    },
+    "/tags/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGhostTags",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GhostCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "ghostAdminToken": []
+          }
+        ],
+        "summary": "List tags"
+      }
+    },
+    "/users/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGhostUsers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GhostCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "ghostAdminToken": []
+          }
+        ],
+        "summary": "List users"
+      }
+    }
+  },
+  "security": [
+    {
+      "ghostAdminToken": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://{admin_domain}/ghost/api/admin",
+      "variables": {
+        "admin_domain": {
+          "default": "example.com",
+          "description": "Operator-supplied Ghost Admin domain."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "ghost-admin-api-advisory-overlay",
+    "provider_id": "ghost",
+    "source_note": "Ghost publishes REST-shaped Admin API docs with JWT bearer authorization; this overlay covers posts, pages, tags, users, and members.",
+    "source_refs": [
+      "https://docs.ghost.org/admin-api/",
+      "https://docs.ghost.org/content-api/"
+    ]
+  }
+}

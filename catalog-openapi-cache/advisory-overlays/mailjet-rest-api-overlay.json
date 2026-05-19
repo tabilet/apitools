@@ -1,0 +1,294 @@
+{
+  "components": {
+    "schemas": {
+      "MailjetCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MailjetError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MailjetObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "mailjetBasic": {
+        "description": "Mailjet API key and secret key carried as HTTP Basic username and password credentials.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Mailjet API human documentation. This is not an official Mailjet OpenAPI document.",
+    "title": "Mailjet REST API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v3.1/send": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendMailjetEmail",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailjetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Send email"
+      }
+    },
+    "/v3/REST/campaign": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMailjetCampaigns",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "List campaigns"
+      }
+    },
+    "/v3/REST/contact": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMailjetContacts",
+        "parameters": [
+          {
+            "description": "Maximum number of contacts to return.",
+            "in": "query",
+            "name": "Limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Offset for pagination.",
+            "in": "query",
+            "name": "Offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMailjetContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailjetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Create a contact"
+      }
+    },
+    "/v3/REST/contact/{contact_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMailjetContact",
+        "parameters": [
+          {
+            "description": "Mailjet contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Get a contact"
+      }
+    },
+    "/v3/REST/listrecipient": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMailjetListRecipients",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "List recipients"
+      }
+    },
+    "/v3/REST/message": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMailjetMessages",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "List messages"
+      }
+    }
+  },
+  "security": [
+    {
+      "mailjetBasic": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.mailjet.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "mailjet-rest-api-advisory-overlay",
+    "provider_id": "mailjet",
+    "source_note": "Mailjet publishes REST API docs and official documentation sources; this overlay covers contacts, list recipients, campaigns, messages, templates, and send API review endpoints.",
+    "source_refs": [
+      "https://documentation.mailjet.com/hc/en-us/articles/360044088173-REST-API",
+      "https://documentation.mailjet.com/hc/en-us/articles/360043225693-What-is-an-API-key",
+      "https://documentation.mailjet.com/hc/en-us/articles/360043230093-What-are-the-endpoints-available-for-the-API",
+      "https://github.com/mailjet/api-documentation"
+    ]
+  }
+}

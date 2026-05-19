@@ -1,0 +1,286 @@
+{
+  "components": {
+    "schemas": {
+      "IterableCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "IterableError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "IterableObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "iterableAPIKey": {
+        "description": "Iterable API key carried in the Api-Key header.",
+        "in": "header",
+        "name": "Api-Key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Iterable API human documentation. This is not an official Iterable OpenAPI document.",
+    "title": "Iterable API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/campaigns": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listIterableCampaigns",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IterableCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "iterableAPIKey": []
+          }
+        ],
+        "summary": "List campaigns"
+      }
+    },
+    "/events/commerce": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "trackIterableCommerceEvent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IterableObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IterableObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "iterableAPIKey": []
+          }
+        ],
+        "summary": "Track a commerce event"
+      }
+    },
+    "/events/track": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "trackIterableEvent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IterableObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IterableObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "iterableAPIKey": []
+          }
+        ],
+        "summary": "Track an event"
+      }
+    },
+    "/lists": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listIterableLists",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IterableCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "iterableAPIKey": []
+          }
+        ],
+        "summary": "List lists"
+      }
+    },
+    "/templates/email": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listIterableEmailTemplates",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IterableCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "iterableAPIKey": []
+          }
+        ],
+        "summary": "List email templates"
+      }
+    },
+    "/users/update": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateIterableUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IterableObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IterableObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "iterableAPIKey": []
+          }
+        ],
+        "summary": "Update a user"
+      }
+    },
+    "/users/{email}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getIterableUserByEmail",
+        "parameters": [
+          {
+            "description": "Iterable user email.",
+            "in": "path",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IterableObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "iterableAPIKey": []
+          }
+        ],
+        "summary": "Get a user by email"
+      }
+    }
+  },
+  "security": [
+    {
+      "iterableAPIKey": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.iterable.com/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "iterable-api-advisory-overlay",
+    "provider_id": "iterable",
+    "source_note": "Iterable publishes REST-shaped API docs with Api-Key header authentication; this overlay covers users, events, campaigns, lists, and templates.",
+    "source_refs": [
+      "https://api.iterable.com/api/docs",
+      "https://support.iterable.com/hc/en-us/articles/41044692130196-Getting-Started-with-Iterable-s-API",
+      "https://support.iterable.com/hc/en-us/articles/360043464871-API-Keys"
+    ]
+  }
+}

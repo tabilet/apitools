@@ -1,0 +1,425 @@
+{
+  "components": {
+    "schemas": {
+      "AcuityCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AcuityError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AcuityObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "acuityBasic": {
+        "description": "Acuity Scheduling numeric user ID and API key carried with HTTP Basic authentication.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Acuity Scheduling API human documentation. This is not an official Acuity Scheduling OpenAPI document.",
+    "title": "Acuity Scheduling API v1 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/appointment-types": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAcuityAppointmentTypes",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcuityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "acuityBasic": []
+          }
+        ],
+        "summary": "List appointment types"
+      }
+    },
+    "/appointments": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAcuityAppointments",
+        "parameters": [
+          {
+            "description": "Maximum number of appointments to return.",
+            "in": "query",
+            "name": "max",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Minimum appointment date.",
+            "in": "query",
+            "name": "minDate",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum appointment date.",
+            "in": "query",
+            "name": "maxDate",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Calendar ID filter.",
+            "in": "query",
+            "name": "calendarID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Appointment type ID filter.",
+            "in": "query",
+            "name": "appointmentTypeID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcuityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "acuityBasic": []
+          }
+        ],
+        "summary": "List appointments"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAcuityAppointment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcuityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcuityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "acuityBasic": []
+          }
+        ],
+        "summary": "Create an appointment"
+      }
+    },
+    "/appointments/{appointment_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteAcuityAppointment",
+        "parameters": [
+          {
+            "description": "Acuity appointment ID.",
+            "in": "path",
+            "name": "appointment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcuityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "acuityBasic": []
+          }
+        ],
+        "summary": "Delete an appointment"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAcuityAppointment",
+        "parameters": [
+          {
+            "description": "Acuity appointment ID.",
+            "in": "path",
+            "name": "appointment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcuityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "acuityBasic": []
+          }
+        ],
+        "summary": "Get an appointment"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateAcuityAppointment",
+        "parameters": [
+          {
+            "description": "Acuity appointment ID.",
+            "in": "path",
+            "name": "appointment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcuityObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcuityObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "acuityBasic": []
+          }
+        ],
+        "summary": "Update an appointment"
+      }
+    },
+    "/availability/times": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAcuityAvailabilityTimes",
+        "parameters": [
+          {
+            "description": "Appointment type ID.",
+            "in": "query",
+            "name": "appointmentTypeID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Availability date.",
+            "in": "query",
+            "name": "date",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcuityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "acuityBasic": []
+          }
+        ],
+        "summary": "List availability times"
+      }
+    },
+    "/calendars": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAcuityCalendars",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcuityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "acuityBasic": []
+          }
+        ],
+        "summary": "List calendars"
+      }
+    },
+    "/clients": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAcuityClients",
+        "parameters": [
+          {
+            "description": "Client search term.",
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcuityCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "acuityBasic": []
+          }
+        ],
+        "summary": "List clients"
+      }
+    }
+  },
+  "security": [
+    {
+      "acuityBasic": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://acuityscheduling.com/api/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "acuity-scheduling-api-v1-advisory-overlay",
+    "provider_id": "acuity-scheduling",
+    "source_note": "Acuity Scheduling publishes REST-shaped API docs with Basic auth; this overlay covers appointments, availability, appointment types, calendars, and clients.",
+    "source_refs": [
+      "https://developers.acuityscheduling.com/reference",
+      "https://developers.acuityscheduling.com/docs/quick-start",
+      "https://developers.acuityscheduling.com/reference/get-appointments",
+      "https://developers.acuityscheduling.com/reference/post-appointments",
+      "https://developers.acuityscheduling.com/reference/get-appointments-id"
+    ]
+  }
+}

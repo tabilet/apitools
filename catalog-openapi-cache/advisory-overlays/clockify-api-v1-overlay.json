@@ -1,0 +1,479 @@
+{
+  "components": {
+    "schemas": {
+      "ClockifyCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ClockifyError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ClockifyObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "clockifyAPIKey": {
+        "description": "Clockify API key carried in the X-Api-Key header.",
+        "in": "header",
+        "name": "X-Api-Key",
+        "type": "apiKey"
+      },
+      "clockifyAddonToken": {
+        "description": "Clockify addon token carried in the X-Addon-Token header.",
+        "in": "header",
+        "name": "X-Addon-Token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Clockify API human documentation. This is not an official Clockify OpenAPI document.",
+    "title": "Clockify API v1 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v1/user": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getClockifyCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          }
+        ],
+        "summary": "Get current user"
+      }
+    },
+    "/v1/workspaces": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listClockifyWorkspaces",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          }
+        ],
+        "summary": "List workspaces"
+      }
+    },
+    "/v1/workspaces/{workspace_id}/clients": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listClockifyClients",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          }
+        ],
+        "summary": "List clients"
+      }
+    },
+    "/v1/workspaces/{workspace_id}/projects": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listClockifyProjects",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Project name filter.",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          }
+        ],
+        "summary": "List projects"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createClockifyProject",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClockifyObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          }
+        ],
+        "summary": "Create a project"
+      }
+    },
+    "/v1/workspaces/{workspace_id}/tags": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listClockifyTags",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          }
+        ],
+        "summary": "List tags"
+      }
+    },
+    "/v1/workspaces/{workspace_id}/time-entries": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listClockifyTimeEntries",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Start date-time filter.",
+            "in": "query",
+            "name": "start",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "End date-time filter.",
+            "in": "query",
+            "name": "end",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          }
+        ],
+        "summary": "List time entries"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createClockifyTimeEntry",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClockifyObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          }
+        ],
+        "summary": "Create a time entry"
+      }
+    },
+    "/v1/workspaces/{workspace_id}/time-entries/{time_entry_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteClockifyTimeEntry",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Clockify time entry ID.",
+            "in": "path",
+            "name": "time_entry_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          }
+        ],
+        "summary": "Delete a time entry"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getClockifyTimeEntry",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Clockify time entry ID.",
+            "in": "path",
+            "name": "time_entry_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          }
+        ],
+        "summary": "Get a time entry"
+      }
+    }
+  },
+  "security": [
+    {
+      "clockifyAPIKey": [],
+      "clockifyAddonToken": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.clockify.me/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "clockify-api-v1-advisory-overlay",
+    "provider_id": "clockify",
+    "source_note": "Clockify publishes REST-shaped API v1 docs with X-Api-Key or X-Addon-Token authentication; this overlay covers users, workspaces, projects, clients, tags, and time entries.",
+    "source_refs": [
+      "https://docs.clockify.me/",
+      "https://clockify.me/help/getting-started/clockify-api-overview"
+    ]
+  }
+}

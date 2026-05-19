@@ -1,0 +1,326 @@
+{
+  "components": {
+    "schemas": {
+      "HelpScoutCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HelpScoutError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HelpScoutObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "helpScoutOAuth": {
+        "description": "Help Scout Inbox API OAuth 2 access token carried as an Authorization bearer token.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Help Scout Inbox API human documentation. This is not an official Help Scout OpenAPI document.",
+    "title": "Help Scout Inbox API v2 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/conversations": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHelpScoutConversations",
+        "parameters": [
+          {
+            "description": "Mailbox ID filter.",
+            "in": "query",
+            "name": "mailbox",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Conversation status filter.",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutOAuth": []
+          }
+        ],
+        "summary": "List conversations"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createHelpScoutConversation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HelpScoutObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutOAuth": []
+          }
+        ],
+        "summary": "Create a conversation"
+      }
+    },
+    "/conversations/{conversation_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHelpScoutConversation",
+        "parameters": [
+          {
+            "description": "Help Scout conversation ID.",
+            "in": "path",
+            "name": "conversation_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutOAuth": []
+          }
+        ],
+        "summary": "Get a conversation"
+      }
+    },
+    "/conversations/{conversation_id}/threads": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createHelpScoutThread",
+        "parameters": [
+          {
+            "description": "Help Scout conversation ID.",
+            "in": "path",
+            "name": "conversation_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HelpScoutObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutOAuth": []
+          }
+        ],
+        "summary": "Create a conversation thread"
+      }
+    },
+    "/customers": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHelpScoutCustomers",
+        "parameters": [
+          {
+            "description": "Customer search query.",
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutOAuth": []
+          }
+        ],
+        "summary": "List customers"
+      }
+    },
+    "/customers/{customer_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHelpScoutCustomer",
+        "parameters": [
+          {
+            "description": "Help Scout customer ID.",
+            "in": "path",
+            "name": "customer_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutOAuth": []
+          }
+        ],
+        "summary": "Get a customer"
+      }
+    },
+    "/mailboxes": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHelpScoutMailboxes",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutOAuth": []
+          }
+        ],
+        "summary": "List mailboxes"
+      }
+    }
+  },
+  "security": [
+    {
+      "helpScoutOAuth": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.helpscout.net/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "help-scout-inbox-api-v2-advisory-overlay",
+    "provider_id": "help-scout",
+    "source_note": "Help Scout publishes REST-shaped Inbox API v2 docs with OAuth bearer authentication; this overlay covers conversations, customers, mailboxes, and threads.",
+    "source_refs": [
+      "https://developer.helpscout.com/",
+      "https://developer.helpscout.com/mailbox-api/",
+      "https://developer.helpscout.com/docs-api/"
+    ]
+  }
+}

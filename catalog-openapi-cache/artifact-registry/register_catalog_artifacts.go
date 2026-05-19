@@ -167,6 +167,15 @@ var specArtifacts = []specArtifact{
 		status:     apitools.CatalogRefreshParseableSwaggerInvalid,
 	},
 	{
+		providerID: "bitly",
+		artifactID: "bitly-api-v4-openapi",
+		kind:       "openapi",
+		url:        "https://dev.bitly.com/v4/v4.json",
+		path:       "openapi/bitly-api-v4-openapi.json",
+		title:      "Bitly API",
+		openapi:    "3.0.0",
+	},
+	{
 		providerID: "box",
 		artifactID: "box-platform-openapi-v3",
 		kind:       "openapi",
@@ -216,6 +225,25 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.1.0",
 	},
 	{
+		providerID: "brevo",
+		artifactID: "brevo-api-v3-openapi",
+		kind:       "openapi",
+		url:        "https://api.brevo.com/v3/swagger_definition_v3.yml",
+		path:       "openapi/brevo-api-v3-openapi.yml",
+		title:      "Brevo API",
+		openapi:    "3.0.1",
+	},
+	{
+		providerID: "coda",
+		artifactID: "coda-api-v1-openapi",
+		kind:       "openapi",
+		url:        "https://coda.io/apis/v1/openapi.json",
+		path:       "openapi/coda-api-v1-openapi.json",
+		title:      "Coda API",
+		openapi:    "3.0.0",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
+	},
+	{
 		providerID: "customer-io",
 		artifactID: "customer-io-journeys-app-openapi",
 		kind:       "openapi",
@@ -246,6 +274,16 @@ var specArtifacts = []specArtifact{
 		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
+		providerID: "deepl",
+		artifactID: "deepl-api-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/DeepLcom/openapi/main/openapi.yaml",
+		path:       "openapi/deepl-api-openapi.yaml",
+		title:      "DeepL API Documentation",
+		openapi:    "3.0.3",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
+	},
+	{
 		providerID: "discord",
 		artifactID: "discord-api-v10-openapi",
 		kind:       "openapi",
@@ -253,6 +291,16 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/discord-api-v10-openapi.json",
 		title:      "Discord HTTP API (Preview)",
 		openapi:    "3.1.0",
+	},
+	{
+		providerID: "figma",
+		artifactID: "figma-rest-api-openapi",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/figma/rest-api-spec/main/openapi/openapi.yaml",
+		path:       "openapi/figma-rest-api-openapi.yaml",
+		title:      "Figma API",
+		openapi:    "3.1.0",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "grafana",
@@ -513,6 +561,13 @@ var specArtifacts = []specArtifact{
 
 var overlayArtifacts = []overlayArtifact{
 	{
+		providerID:  "acuity-scheduling",
+		artifactID:  "acuity-scheduling-api-v1-overlay",
+		path:        "advisory-overlays/acuity-scheduling-api-v1-overlay.json",
+		builderPath: "overlay-builders/build_m22_human_docs_overlays.go",
+		sourceURL:   "https://developers.acuityscheduling.com/reference",
+	},
+	{
 		providerID:  "activecampaign",
 		artifactID:  "activecampaign-api-v3-overlay",
 		path:        "advisory-overlays/activecampaign-api-v3-overlay.json",
@@ -539,6 +594,13 @@ var overlayArtifacts = []overlayArtifact{
 		path:        "advisory-overlays/calendly-public-api-overlay.json",
 		builderPath: "overlay-builders/build_calendly_overlay.go",
 		sourceURL:   "https://developer.calendly.com/api-docs",
+	},
+	{
+		providerID:  "clockify",
+		artifactID:  "clockify-api-v1-overlay",
+		path:        "advisory-overlays/clockify-api-v1-overlay.json",
+		builderPath: "overlay-builders/build_m22_human_docs_overlays.go",
+		sourceURL:   "https://docs.clockify.me/",
 	},
 	{
 		providerID:  "contentful",
@@ -576,6 +638,27 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://developers.freshdesk.com/api",
 	},
 	{
+		providerID:  "ghost",
+		artifactID:  "ghost-admin-api-overlay",
+		path:        "advisory-overlays/ghost-admin-api-overlay.json",
+		builderPath: "overlay-builders/build_m22_human_docs_overlays.go",
+		sourceURL:   "https://docs.ghost.org/admin-api/",
+	},
+	{
+		providerID:  "harvest",
+		artifactID:  "harvest-api-v2-overlay",
+		path:        "advisory-overlays/harvest-api-v2-overlay.json",
+		builderPath: "overlay-builders/build_m22_human_docs_overlays.go",
+		sourceURL:   "https://help.getharvest.com/api-v2/",
+	},
+	{
+		providerID:  "help-scout",
+		artifactID:  "help-scout-inbox-api-v2-overlay",
+		path:        "advisory-overlays/help-scout-inbox-api-v2-overlay.json",
+		builderPath: "overlay-builders/build_m22_human_docs_overlays.go",
+		sourceURL:   "https://developer.helpscout.com/mailbox-api/",
+	},
+	{
 		providerID:  "google-calendar",
 		artifactID:  "google-calendar-v3-overlay",
 		path:        "advisory-overlays/google-calendar-v3-overlay.json",
@@ -602,6 +685,20 @@ var overlayArtifacts = []overlayArtifact{
 		path:        "advisory-overlays/mailchimp-marketing-api-overlay.json",
 		builderPath: "overlay-builders/build_mailchimp_overlay.go",
 		sourceURL:   "https://mailchimp.com/developer/marketing/api/",
+	},
+	{
+		providerID:  "iterable",
+		artifactID:  "iterable-api-overlay",
+		path:        "advisory-overlays/iterable-api-overlay.json",
+		builderPath: "overlay-builders/build_m22_human_docs_overlays.go",
+		sourceURL:   "https://api.iterable.com/api/docs",
+	},
+	{
+		providerID:  "mailjet",
+		artifactID:  "mailjet-rest-api-overlay",
+		path:        "advisory-overlays/mailjet-rest-api-overlay.json",
+		builderPath: "overlay-builders/build_m22_human_docs_overlays.go",
+		sourceURL:   "https://documentation.mailjet.com/hc/en-us/articles/360044088173-REST-API",
 	},
 	{
 		providerID:  "openweathermap",

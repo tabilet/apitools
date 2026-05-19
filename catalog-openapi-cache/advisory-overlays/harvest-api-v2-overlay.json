@@ -1,0 +1,465 @@
+{
+  "components": {
+    "schemas": {
+      "HarvestCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HarvestError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HarvestObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "harvestBearer": {
+        "description": "Harvest OAuth or personal access token carried as an Authorization bearer token.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Harvest API v2 human documentation. This is not an official Harvest OpenAPI document.",
+    "title": "Harvest API v2 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/clients": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHarvestClients",
+        "parameters": [
+          {
+            "description": "Operator-supplied Harvest account ID.",
+            "in": "header",
+            "name": "Harvest-Account-ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HarvestCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "harvestBearer": []
+          }
+        ],
+        "summary": "List clients"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createHarvestClient",
+        "parameters": [
+          {
+            "description": "Operator-supplied Harvest account ID.",
+            "in": "header",
+            "name": "Harvest-Account-ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HarvestObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HarvestObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "harvestBearer": []
+          }
+        ],
+        "summary": "Create a client"
+      }
+    },
+    "/company": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHarvestCompany",
+        "parameters": [
+          {
+            "description": "Operator-supplied Harvest account ID.",
+            "in": "header",
+            "name": "Harvest-Account-ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HarvestObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "harvestBearer": []
+          }
+        ],
+        "summary": "Get company"
+      }
+    },
+    "/invoices": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHarvestInvoices",
+        "parameters": [
+          {
+            "description": "Operator-supplied Harvest account ID.",
+            "in": "header",
+            "name": "Harvest-Account-ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Client ID filter.",
+            "in": "query",
+            "name": "client_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HarvestCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "harvestBearer": []
+          }
+        ],
+        "summary": "List invoices"
+      }
+    },
+    "/projects": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHarvestProjects",
+        "parameters": [
+          {
+            "description": "Operator-supplied Harvest account ID.",
+            "in": "header",
+            "name": "Harvest-Account-ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Client ID filter.",
+            "in": "query",
+            "name": "client_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HarvestCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "harvestBearer": []
+          }
+        ],
+        "summary": "List projects"
+      }
+    },
+    "/time_entries": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHarvestTimeEntries",
+        "parameters": [
+          {
+            "description": "Operator-supplied Harvest account ID.",
+            "in": "header",
+            "name": "Harvest-Account-ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Start date filter.",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "End date filter.",
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HarvestCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "harvestBearer": []
+          }
+        ],
+        "summary": "List time entries"
+      }
+    },
+    "/time_entries/{time_entry_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteHarvestTimeEntry",
+        "parameters": [
+          {
+            "description": "Operator-supplied Harvest account ID.",
+            "in": "header",
+            "name": "Harvest-Account-ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Harvest time entry ID.",
+            "in": "path",
+            "name": "time_entry_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HarvestObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "harvestBearer": []
+          }
+        ],
+        "summary": "Delete a time entry"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHarvestTimeEntry",
+        "parameters": [
+          {
+            "description": "Operator-supplied Harvest account ID.",
+            "in": "header",
+            "name": "Harvest-Account-ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Harvest time entry ID.",
+            "in": "path",
+            "name": "time_entry_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HarvestObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "harvestBearer": []
+          }
+        ],
+        "summary": "Get a time entry"
+      }
+    },
+    "/users/me": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHarvestCurrentUser",
+        "parameters": [
+          {
+            "description": "Operator-supplied Harvest account ID.",
+            "in": "header",
+            "name": "Harvest-Account-ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HarvestObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "harvestBearer": []
+          }
+        ],
+        "summary": "Get current user"
+      }
+    }
+  },
+  "security": [
+    {
+      "harvestBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.harvestapp.com/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "harvest-api-v2-advisory-overlay",
+    "provider_id": "harvest",
+    "source_note": "Harvest publishes REST-shaped API v2 docs with bearer authorization and Harvest-Account-ID header metadata; this overlay covers users, company, clients, projects, time entries, and invoices.",
+    "source_refs": [
+      "https://help.getharvest.com/api-v2/",
+      "https://help.getharvest.com/api-v2/authentication-api/authentication/authentication/"
+    ]
+  }
+}
