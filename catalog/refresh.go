@@ -77,7 +77,7 @@ func RefreshableSpecReferences(providers []Provider, artifacts []CatalogSpecArti
 
 func refreshableSpecKind(kind SpecKind) bool {
 	switch kind {
-	case SpecKindOpenAPI, SpecKindOpenAPIIndex, SpecKindDropboxStone, SpecKindGoogleDiscovery:
+	case SpecKindOpenAPI, SpecKindOpenAPIIndex, SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindSmithyJSON:
 		return true
 	default:
 		return false

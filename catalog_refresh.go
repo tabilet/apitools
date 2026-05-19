@@ -123,7 +123,7 @@ func validateCatalogRefreshContent(ctx context.Context, ref catalog.RefreshableS
 			return CatalogRefreshValidSwagger, metadata, nil
 		}
 		return CatalogRefreshValidOpenAPI, metadata, nil
-	case catalog.SpecKindGoogleDiscovery, catalog.SpecKindOpenAPIIndex:
+	case catalog.SpecKindGoogleDiscovery, catalog.SpecKindOpenAPIIndex, catalog.SpecKindSmithyJSON:
 		if !validStructuredCatalogArtifact(content) {
 			return CatalogRefreshInvalid, SpecMetadata{}, fmt.Errorf("%s/%s: downloaded document is not structured JSON or YAML", ref.ProviderID, ref.SpecRefID)
 		}

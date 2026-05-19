@@ -15,6 +15,17 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for task, project, and work-management automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:              "aws-s3",
+		displayName:     "AWS S3",
+		aliases:         []string{"amazon s3", "aws s3 api", "s3"},
+		category:        "cloud-storage",
+		n8nNode:         "Aws/S3",
+		relevance:       "Popular infrastructure service for object storage, buckets, object metadata, and file automation.",
+		machineSpecKind: string(SpecKindSmithyJSON),
+		machineStatus:   SpecStatusNeedsVerification,
+		userNeed:        UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "airtable",
 		displayName: "Airtable",
 		aliases:     []string{"airtable api"},

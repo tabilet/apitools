@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 39; got != want {
+	if got, want := len(catalog.ListProviders()), 40; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -20,6 +20,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 	want := []string{
 		"airtable",
 		"asana",
+		"aws-s3",
 		"box",
 		"calendly",
 		"clickup",
@@ -74,6 +75,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "ms graph", id: "microsoft-graph"},
 		{key: "asana api", id: "asana"},
 		{key: "box api", id: "box"},
+		{key: "amazon s3", id: "aws-s3"},
 		{key: "calendly api", id: "calendly"},
 		{key: "clickup api", id: "clickup"},
 		{key: "discord api", id: "discord"},
@@ -140,6 +142,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		specKind        SpecKind
 	}{
 		{id: "asana", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "aws-s3", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindSmithyJSON},
 		{id: "box", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "airtable", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "calendly", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},

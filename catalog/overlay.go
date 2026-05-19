@@ -158,6 +158,10 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Airtable has human Web API docs in this catalog entry but no recorded official OpenAPI document; Airtable docs describe PAT or OAuth token authentication, so OpenAPI imports need an advisory bearer-token overlay.",
 	},
+	awsSigV4Overlay("aws-s3-sigv4-auth-overlay", "aws-s3", "aws-s3-smithy-model", "Amazon S3", []string{
+		"https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
 	{
 		ID:         "calendly-public-api-auth-overlay",
 		ProviderID: "calendly",
@@ -727,6 +731,27 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Zoom's saved official Swagger 2.0 artifact uses older access_token query security, while current docs list OAuth scopes and bearer access-token usage; keep this as present-incomplete advisory auth review metadata.",
 	},
+}
+
+func awsSigV4Overlay(id, providerID, specRefID, serviceName string, sourceRefs []string) SecurityOverlay {
+	return SecurityOverlay{
+		ID:         id,
+		ProviderID: providerID,
+		SpecRefID:  specRefID,
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "awsSigV4",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Authorization",
+				Description:   serviceName + " requests use AWS Signature Version 4. The Authorization header carries the computed signature; signed requests also require date metadata and may require an x-amz-security-token for temporary credentials.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "awsSigV4"}},
+		SourceRefs:   sourceRefs,
+		SourceNote:   serviceName + " uses AWS Signature Version 4. This overlay records signing requirements as metadata only; apitools must not calculate signatures, resolve credentials, or choose AWS accounts.",
+	}
 }
 
 func googleOAuthScheme(name string, scopes []string) SecurityScheme {

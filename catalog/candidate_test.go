@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 39; got != want {
+	if got, want := len(candidates), 40; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -20,6 +20,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 	want := []string{
 		"airtable",
 		"asana",
+		"aws-s3",
 		"box",
 		"calendly",
 		"clickup",
@@ -73,6 +74,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "Open Weather Map", id: "openweathermap"},
 		{key: "office 365", id: "microsoft-graph"},
 		{key: "click up", id: "clickup"},
+		{key: "s3", id: "aws-s3"},
 	}
 	for _, test := range tests {
 		candidate, ok := FindBuiltInCandidate(test.key)
@@ -109,6 +111,7 @@ func TestBuiltInCandidatesCaptureFixtureAndPriorityEvidence(t *testing.T) {
 func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 	for _, id := range []string{
 		"asana",
+		"aws-s3",
 		"box",
 		"calendly",
 		"clickup",
@@ -159,7 +162,7 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 			t.Fatalf("%s auth review = %q, want %q", candidate.ID, candidate.AuthSecurityReview, AuthSecurityNotReviewed)
 		}
 	}
-	for _, id := range []string{"gmail", "google-calendar", "google-drive", "google-sheets"} {
+	for _, id := range []string{"aws-s3", "gmail", "google-calendar", "google-drive", "google-sheets"} {
 		candidate, ok := FindBuiltInCandidate(id)
 		if !ok {
 			t.Fatalf("missing %s", id)
@@ -167,8 +170,12 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 		if candidate.OfficialMachineSpecStatus != SpecStatusNeedsVerification {
 			t.Fatalf("%s machine spec status = %q, want %q", id, candidate.OfficialMachineSpecStatus, SpecStatusNeedsVerification)
 		}
-		if candidate.OfficialMachineSpecKind != "google-discovery" {
-			t.Fatalf("%s machine spec kind = %q, want google-discovery", id, candidate.OfficialMachineSpecKind)
+		wantKind := "google-discovery"
+		if id == "aws-s3" {
+			wantKind = string(SpecKindSmithyJSON)
+		}
+		if candidate.OfficialMachineSpecKind != wantKind {
+			t.Fatalf("%s machine spec kind = %q, want %q", id, candidate.OfficialMachineSpecKind, wantKind)
 		}
 		if candidate.UserOpenAPINeed != UserOpenAPINeedLikely {
 			t.Fatalf("%s user OpenAPI need = %q, want %q", id, candidate.UserOpenAPINeed, UserOpenAPINeedLikely)

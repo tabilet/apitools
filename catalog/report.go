@@ -137,6 +137,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Airtable has no recorded official OpenAPI document in the built-in catalog; security metadata must come from advisory overlay notes when importing a user-provided spec.",
 	},
 	{
+		ProviderID: "aws-s3",
+		SpecRefID:  "aws-s3-smithy-model",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://raw.githubusercontent.com/aws/api-models-aws/main/models/s3/service/2006-03-01/s3-2006-03-01.json", "https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html"},
+		SourceNote: "AWS S3 has an official Smithy JSON service model rather than OpenAPI; SigV4 signing requirements must be represented as advisory metadata only.",
+	},
+	{
 		ProviderID: "box",
 		SpecRefID:  "box-platform-openapi-v3",
 		Status:     AuthStatusComplete,
