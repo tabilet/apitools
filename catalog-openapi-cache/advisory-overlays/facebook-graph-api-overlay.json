@@ -1,0 +1,676 @@
+{
+  "components": {
+    "schemas": {
+      "FacebookCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FacebookError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FacebookObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "facebookBearer": {
+        "bearerFormat": "Meta Graph API access token",
+        "description": "Meta Graph API access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Meta Graph API human documentation. This is not an official Meta OpenAPI document.",
+    "title": "Facebook Graph API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/me": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFacebookMe",
+        "parameters": [
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "Get current Graph API user or page object"
+      }
+    },
+    "/{app_id}/subscriptions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookAppSubscriptions",
+        "parameters": [
+          {
+            "description": "Meta app ID.",
+            "in": "path",
+            "name": "app_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "List app webhook subscriptions"
+      }
+    },
+    "/{conversation_id}/messages": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookConversationMessages",
+        "parameters": [
+          {
+            "description": "Conversation ID.",
+            "in": "path",
+            "name": "conversation_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "List conversation messages"
+      }
+    },
+    "/{object_id}/comments": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookObjectComments",
+        "parameters": [
+          {
+            "description": "Graph API object ID.",
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "List comments for an object"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFacebookObjectComment",
+        "parameters": [
+          {
+            "description": "Graph API object ID.",
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacebookObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "Create comment on an object"
+      }
+    },
+    "/{object_id}/likes": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookObjectLikes",
+        "parameters": [
+          {
+            "description": "Graph API object ID.",
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "List likes for an object"
+      }
+    },
+    "/{page_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFacebookPage",
+        "parameters": [
+          {
+            "description": "Facebook page ID.",
+            "in": "path",
+            "name": "page_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "Get page"
+      }
+    },
+    "/{page_id}/conversations": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookPageConversations",
+        "parameters": [
+          {
+            "description": "Facebook page ID.",
+            "in": "path",
+            "name": "page_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "List page conversations"
+      }
+    },
+    "/{page_id}/feed": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookPageFeed",
+        "parameters": [
+          {
+            "description": "Facebook page ID.",
+            "in": "path",
+            "name": "page_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "List page feed posts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFacebookPageFeedPost",
+        "parameters": [
+          {
+            "description": "Facebook page ID.",
+            "in": "path",
+            "name": "page_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacebookObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "Create page feed post"
+      }
+    },
+    "/{page_id}/photos": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookPagePhotos",
+        "parameters": [
+          {
+            "description": "Facebook page ID.",
+            "in": "path",
+            "name": "page_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "List page photos"
+      }
+    },
+    "/{page_id}/subscribed_apps": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookPageSubscribedApps",
+        "parameters": [
+          {
+            "description": "Facebook page ID.",
+            "in": "path",
+            "name": "page_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "List page webhook subscriptions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "subscribeFacebookPageApp",
+        "parameters": [
+          {
+            "description": "Facebook page ID.",
+            "in": "path",
+            "name": "page_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacebookObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookBearer": []
+          }
+        ],
+        "summary": "Subscribe app to page webhooks"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://graph.facebook.com/{graph_api_version}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "facebook",
+    "source_note": "Facebook publishes human Graph API and Pages API documentation but no recorded stable public official OpenAPI document; this overlay covers selected profile, page, feed, comment, and webhook-management entry points.",
+    "source_refs": [
+      "https://developers.facebook.com/docs/graph-api/",
+      "https://developers.facebook.com/docs/pages-api/",
+      "https://developers.facebook.com/docs/graph-api/webhooks/"
+    ]
+  }
+}

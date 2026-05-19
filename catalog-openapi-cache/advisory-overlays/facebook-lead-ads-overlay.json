@@ -1,0 +1,434 @@
+{
+  "components": {
+    "schemas": {
+      "FacebookLeadAdsCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FacebookLeadAdsError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FacebookLeadAdsObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "facebookLeadAdsBearer": {
+        "bearerFormat": "Meta Graph API access token",
+        "description": "Meta access token with Lead Ads permissions carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Meta Lead Ads human documentation. This is not an official Meta OpenAPI document.",
+    "title": "Facebook Lead Ads API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/{ad_account_id}/leadgen_forms": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookAdAccountLeadgenForms",
+        "parameters": [
+          {
+            "description": "Ad account ID.",
+            "in": "path",
+            "name": "ad_account_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookLeadAdsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookLeadAdsBearer": []
+          }
+        ],
+        "summary": "List ad account lead generation forms"
+      }
+    },
+    "/{app_id}/subscriptions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookLeadAdsAppSubscriptions",
+        "parameters": [
+          {
+            "description": "Meta app ID.",
+            "in": "path",
+            "name": "app_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookLeadAdsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookLeadAdsBearer": []
+          }
+        ],
+        "summary": "List app webhook subscriptions"
+      }
+    },
+    "/{form_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFacebookLeadgenForm",
+        "parameters": [
+          {
+            "description": "Lead generation form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookLeadAdsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookLeadAdsBearer": []
+          }
+        ],
+        "summary": "Get lead generation form"
+      }
+    },
+    "/{form_id}/leads": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookLeadgenFormLeads",
+        "parameters": [
+          {
+            "description": "Lead generation form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookLeadAdsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookLeadAdsBearer": []
+          }
+        ],
+        "summary": "List leads for a form"
+      }
+    },
+    "/{leadgen_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFacebookLead",
+        "parameters": [
+          {
+            "description": "Leadgen ID from a webhook or form lead list.",
+            "in": "path",
+            "name": "leadgen_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookLeadAdsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookLeadAdsBearer": []
+          }
+        ],
+        "summary": "Get lead details"
+      }
+    },
+    "/{page_id}/leadgen_forms": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookLeadgenForms",
+        "parameters": [
+          {
+            "description": "Facebook page ID.",
+            "in": "path",
+            "name": "page_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookLeadAdsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookLeadAdsBearer": []
+          }
+        ],
+        "summary": "List lead generation forms for a page"
+      }
+    },
+    "/{page_id}/subscribed_apps": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFacebookLeadAdsPageSubscriptions",
+        "parameters": [
+          {
+            "description": "Facebook page ID.",
+            "in": "path",
+            "name": "page_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookLeadAdsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookLeadAdsBearer": []
+          }
+        ],
+        "summary": "List page app subscriptions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "subscribeFacebookLeadAdsPage",
+        "parameters": [
+          {
+            "description": "Facebook page ID.",
+            "in": "path",
+            "name": "page_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacebookLeadAdsObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacebookLeadAdsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "facebookLeadAdsBearer": []
+          }
+        ],
+        "summary": "Subscribe page to leadgen webhooks"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://graph.facebook.com/{graph_api_version}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "facebook-lead-ads",
+    "source_note": "Facebook Lead Ads uses Meta Graph API human documentation but no recorded stable public official OpenAPI document; this overlay covers selected page form, lead retrieval, and leadgen webhook endpoints.",
+    "source_refs": [
+      "https://developers.facebook.com/docs/marketing-api/guides/lead-ads/retrieving/",
+      "https://developers.facebook.com/docs/marketing-api/guides/lead-ads/webhooks/",
+      "https://developers.facebook.com/docs/marketing-apis/"
+    ]
+  }
+}

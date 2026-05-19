@@ -1,0 +1,124 @@
+{
+  "components": {
+    "schemas": {
+      "TwakeError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TwakeMessageRequest": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TwakeObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "twakeBasic": {
+        "description": "Twake application public_id and private_api_key carried using HTTP Basic authentication.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Twake human documentation. This is not an official Twake OpenAPI document.",
+    "title": "Twake Developers API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/api/v1/messages/remove": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "removeTwakeMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwakeMessageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwakeObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twakeBasic": []
+          }
+        ],
+        "summary": "Delete message from a channel"
+      }
+    },
+    "/api/v1/messages/save": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "saveTwakeMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwakeMessageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwakeObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twakeBasic": []
+          }
+        ],
+        "summary": "Send message to a channel"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.twake.app"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "twake",
+    "source_note": "Twake publishes human Developers API documentation but no recorded stable public official OpenAPI document; this overlay covers the documented application-authenticated message save/remove subset.",
+    "source_refs": [
+      "https://doc.twake.app/developers-api/get-started",
+      "https://doc.twake.app/developers-api/api-reference/auth",
+      "https://doc.twake.app/developers-api/api-reference/message/post-request",
+      "https://doc.twake.app/developers-api/api-reference/message/delete-request"
+    ]
+  }
+}

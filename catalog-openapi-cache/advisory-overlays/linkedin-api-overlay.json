@@ -1,0 +1,347 @@
+{
+  "components": {
+    "schemas": {
+      "LinkedInCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "LinkedInError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "LinkedInObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "linkedinOAuth2": {
+        "bearerFormat": "OAuth 2.0 access token",
+        "description": "LinkedIn OAuth 2.0 access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official LinkedIn human documentation. This is not an official LinkedIn OpenAPI document.",
+    "title": "LinkedIn API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/rest/adAccounts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listLinkedInAdAccounts",
+        "parameters": [
+          {
+            "description": "LinkedIn finder for ad accounts.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Search criteria.",
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedInCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "linkedinOAuth2": []
+          }
+        ],
+        "summary": "Search ad accounts"
+      }
+    },
+    "/rest/leadForms": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listLinkedInLeadForms",
+        "parameters": [
+          {
+            "description": "LinkedIn finder for lead forms.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Owner organization URN.",
+            "in": "query",
+            "name": "owner",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedInCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "linkedinOAuth2": []
+          }
+        ],
+        "summary": "Find lead forms"
+      }
+    },
+    "/rest/organizationAcls": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listLinkedInOrganizationAcls",
+        "parameters": [
+          {
+            "description": "LinkedIn finder such as roleAssignee.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Organization role filter.",
+            "in": "query",
+            "name": "role",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedInCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "linkedinOAuth2": []
+          }
+        ],
+        "summary": "List organization ACLs"
+      }
+    },
+    "/rest/organizations/{org_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getLinkedInOrganization",
+        "parameters": [
+          {
+            "description": "LinkedIn organization ID.",
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedInObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "linkedinOAuth2": []
+          }
+        ],
+        "summary": "Get organization"
+      }
+    },
+    "/rest/posts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listLinkedInPosts",
+        "parameters": [
+          {
+            "description": "LinkedIn finder for posts.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Author URN filter.",
+            "in": "query",
+            "name": "author",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "count",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedInCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "linkedinOAuth2": []
+          }
+        ],
+        "summary": "Find posts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createLinkedInPost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkedInObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedInObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "linkedinOAuth2": []
+          }
+        ],
+        "summary": "Create post"
+      }
+    },
+    "/v2/userinfo": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getLinkedInUserInfo",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedInObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "linkedinOAuth2": []
+          }
+        ],
+        "summary": "Get OpenID Connect user info"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.linkedin.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "linkedin",
+    "source_note": "LinkedIn publishes human REST API documentation but no recorded stable public official OpenAPI document; this overlay covers selected identity, organization, post, ad account, and lead-form endpoints.",
+    "source_refs": [
+      "https://learn.microsoft.com/en-us/linkedin/marketing/",
+      "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+      "https://learn.microsoft.com/en-us/linkedin/shared/api-guide/concepts/versioning"
+    ]
+  }
+}

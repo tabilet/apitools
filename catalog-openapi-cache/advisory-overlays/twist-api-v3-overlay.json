@@ -1,0 +1,439 @@
+{
+  "components": {
+    "schemas": {
+      "TwistCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TwistError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TwistObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "twistBearer": {
+        "bearerFormat": "Twist OAuth 2.0 or test token",
+        "description": "Twist API token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Twist API v3 human documentation. This is not an official Twist OpenAPI document.",
+    "title": "Twist API v3 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/channels/get": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTwistChannel",
+        "parameters": [
+          {
+            "description": "Channel ID.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twistBearer": []
+          }
+        ],
+        "summary": "Get channel"
+      }
+    },
+    "/channels/get_all": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listTwistChannels",
+        "parameters": [
+          {
+            "description": "Workspace ID.",
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwistCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twistBearer": []
+          }
+        ],
+        "summary": "Get all channels"
+      }
+    },
+    "/comments/add": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createTwistComment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwistObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twistBearer": []
+          }
+        ],
+        "summary": "Add comment"
+      }
+    },
+    "/conversation_messages/add": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createTwistConversationMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwistObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twistBearer": []
+          }
+        ],
+        "summary": "Add conversation message"
+      }
+    },
+    "/hooks/subscribe": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "subscribeTwistHook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwistObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twistBearer": []
+          }
+        ],
+        "summary": "Subscribe webhook"
+      }
+    },
+    "/hooks/unsubscribe": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "unsubscribeTwistHook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwistObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twistBearer": []
+          }
+        ],
+        "summary": "Unsubscribe webhook"
+      }
+    },
+    "/threads/add": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createTwistThread",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwistObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twistBearer": []
+          }
+        ],
+        "summary": "Add thread"
+      }
+    },
+    "/threads/get": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTwistThread",
+        "parameters": [
+          {
+            "description": "Thread ID.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twistBearer": []
+          }
+        ],
+        "summary": "Get thread"
+      }
+    },
+    "/users/get_current": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTwistCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twistBearer": []
+          }
+        ],
+        "summary": "Get current user"
+      }
+    },
+    "/workspaces/get": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTwistWorkspace",
+        "parameters": [
+          {
+            "description": "Workspace ID.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twistBearer": []
+          }
+        ],
+        "summary": "Get workspace"
+      }
+    },
+    "/workspaces/get_all": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listTwistWorkspaces",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwistCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "twistBearer": []
+          }
+        ],
+        "summary": "Get all workspaces"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.twist.com/api/v3"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "twist",
+    "source_note": "Twist publishes human API v3 documentation but no recorded stable public official OpenAPI document; this overlay covers selected user, workspace, channel, thread, comment, message, and webhook endpoints.",
+    "source_refs": [
+      "https://developer.twist.com/v3/"
+    ]
+  }
+}

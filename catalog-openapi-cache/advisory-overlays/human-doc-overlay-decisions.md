@@ -30,6 +30,8 @@ documents and must not be treated as provider truth.
 | Databricks | `databricks-workspace-rest-overlay.json` | REST-shaped workspace API docs support a focused jobs, clusters, workspace, and DBFS subset; host remains operator supplied. |
 | Drift | `drift-platform-api-overlay.json` | REST-shaped Platform API docs support a focused contacts, conversations, and users subset with OAuth bearer auth. |
 | Eventbrite | `eventbrite-platform-api-v3-overlay.json` | REST-shaped Platform API docs support a focused users, organizations, events, attendees, venues, and ticket-classes subset. |
+| Facebook | `facebook-graph-api-overlay.json` | Graph API and Pages API docs support a focused profile, page, feed, comments, likes, page subscriptions, photos, conversations, and app subscription subset. |
+| Facebook Lead Ads | `facebook-lead-ads-overlay.json` | Lead Ads retrieval and webhook docs support a focused page form, lead retrieval, leadgen form, and webhook subscription subset. |
 | FileMaker | `filemaker-data-api-overlay.json` | Data API reference docs support a focused sessions, layouts, records, scripts, and containers subset; host, database, layout, and script names remain operator supplied. |
 | Form.io | `formio-api-overlay.json` | API docs support a focused projects, forms, submissions, and roles subset; cloud/self-hosted base URL and project aliases remain operator supplied. |
 | Formstack | `formstack-api-v2-overlay.json` | Forms API v2 docs support a focused forms, fields, submissions, folders, and webhooks subset. |
@@ -47,10 +49,12 @@ documents and must not be treated as provider truth.
 | Jenkins | `jenkins-remote-api-overlay.json` | Official Remote Access API docs support a small generic controller/job/queue subset; instance and plugin coverage remains variable. |
 | JotForm | `jotform-api-overlay.json` | API docs support a focused forms, submissions, questions, reports, folders, and webhooks subset. |
 | Keap | `keap-rest-api-overlay.json` | REST-shaped docs support a focused contacts, companies, orders, and tags subset with OAuth bearer auth. |
+| LinkedIn | `linkedin-api-overlay.json` | Marketing and shared API docs support a focused userinfo, organization, posts, ad accounts, and lead forms subset; Rest.li/version headers and product access remain review-sensitive. |
 | Mailchimp | `mailchimp-marketing-api-overlay.json` | REST-shaped Marketing API docs support a focused lists, campaigns, and reports subset. |
 | MailerLite | `mailerlite-api-overlay.json` | REST-shaped current API docs support a focused subscribers, groups, campaigns, and forms subset; Classic auth remains security metadata. |
 | Mailjet | `mailjet-rest-api-overlay.json` | REST-shaped REST API docs support a focused contacts, list-recipients, campaigns, messages, and send subset. |
 | Mautic | `mautic-api-overlay.json` | Instance-hosted REST API docs support a focused contacts, companies, segments, campaigns, and emails subset; host remains operator supplied. |
+| MessageBird | `messagebird-api-overlay.json` | REST-shaped API docs support a focused balance, messages, contacts, voice calls, and HLR subset with AccessKey auth. |
 | Monica CRM | `monica-crm-api-overlay.json` | REST-shaped API docs support a focused contacts, activities, calls, reminders, and tags subset with bearer auth. |
 | NASA | `nasa-open-apis-overlay.json` | Open APIs docs support a focused APOD, Mars Rover Photos, NeoWs, EPIC, and DONKI subset. |
 | OneSimpleApi | `onesimpleapi-toolkit-overlay.json` | Official docs support a focused web metadata, page status, screenshot, PDF, and QR utility subset. |
@@ -71,9 +75,12 @@ documents and must not be treated as provider truth.
 | Splunk | `splunk-enterprise-rest-overlay.json` | REST API docs support a focused server, search jobs, results, and saved-search subset; product version remains review-sensitive. |
 | Telegram | `telegram-bot-api-overlay.json` | Bot API docs support common bot methods; bot token is modeled as a server variable because OpenAPI security schemes cannot represent Telegram path-token auth exactly. |
 | Todoist | `todoist-rest-api-v2-overlay.json` | REST API v2 docs support a focused projects, sections, tasks, and comments subset; docs now point developers toward newer unified API docs. |
+| Twake | `twake-developers-api-overlay.json` | Developers API docs support the documented application-authenticated message save/remove subset; workspace and channel identifiers remain operator supplied. |
+| Twist | `twist-api-v3-overlay.json` | API v3 docs support a focused users, workspaces, channels, threads, comments, messages, and hooks subset with bearer auth. |
 | Typeform | `typeform-rest-api-overlay.json` | REST-shaped Typeform docs support a focused forms, responses, webhooks, and workspaces subset. |
 | Vero | `vero-track-api-overlay.json` | Track API docs support a focused users, events, tags, and unsubscribe subset with auth_token request parameters. |
 | Webflow | `webflow-data-api-v2-overlay.json` | REST-shaped Data API docs support a focused sites, pages, collections, and CMS items subset. |
+| WhatsApp | `whatsapp-cloud-api-overlay.json` | Cloud API docs support a focused messages, media, message templates, phone-number metadata, and app subscription subset. |
 
 ## No Endpoint Overlay
 

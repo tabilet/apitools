@@ -1,0 +1,391 @@
+{
+  "components": {
+    "schemas": {
+      "WhatsAppCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WhatsAppError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WhatsAppObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "whatsAppBearer": {
+        "bearerFormat": "Meta Graph API access token",
+        "description": "WhatsApp Cloud API access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Meta WhatsApp Cloud API human documentation. This is not an official Meta OpenAPI document.",
+    "title": "WhatsApp Cloud API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/{app_id}/subscriptions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWhatsAppAppSubscriptions",
+        "parameters": [
+          {
+            "description": "Meta app ID.",
+            "in": "path",
+            "name": "app_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatsAppCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "whatsAppBearer": []
+          }
+        ],
+        "summary": "List app webhook subscriptions"
+      }
+    },
+    "/{business_account_id}/message_templates": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWhatsAppMessageTemplates",
+        "parameters": [
+          {
+            "description": "WhatsApp Business Account ID.",
+            "in": "path",
+            "name": "business_account_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatsAppCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "whatsAppBearer": []
+          }
+        ],
+        "summary": "List message templates"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWhatsAppMessageTemplate",
+        "parameters": [
+          {
+            "description": "WhatsApp Business Account ID.",
+            "in": "path",
+            "name": "business_account_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatsAppObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatsAppObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "whatsAppBearer": []
+          }
+        ],
+        "summary": "Create message template"
+      }
+    },
+    "/{media_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteWhatsAppMedia",
+        "parameters": [
+          {
+            "description": "WhatsApp media ID.",
+            "in": "path",
+            "name": "media_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "whatsAppBearer": []
+          }
+        ],
+        "summary": "Delete media"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWhatsAppMedia",
+        "parameters": [
+          {
+            "description": "WhatsApp media ID.",
+            "in": "path",
+            "name": "media_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatsAppObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "whatsAppBearer": []
+          }
+        ],
+        "summary": "Get media metadata"
+      }
+    },
+    "/{phone_number_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWhatsAppPhoneNumber",
+        "parameters": [
+          {
+            "description": "WhatsApp phone number ID.",
+            "in": "path",
+            "name": "phone_number_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated Graph API fields.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatsAppObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "whatsAppBearer": []
+          }
+        ],
+        "summary": "Get phone number metadata"
+      }
+    },
+    "/{phone_number_id}/media": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "uploadWhatsAppMedia",
+        "parameters": [
+          {
+            "description": "WhatsApp phone number ID.",
+            "in": "path",
+            "name": "phone_number_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatsAppObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatsAppObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "whatsAppBearer": []
+          }
+        ],
+        "summary": "Upload media"
+      }
+    },
+    "/{phone_number_id}/messages": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendWhatsAppMessage",
+        "parameters": [
+          {
+            "description": "WhatsApp phone number ID.",
+            "in": "path",
+            "name": "phone_number_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatsAppObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatsAppObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "whatsAppBearer": []
+          }
+        ],
+        "summary": "Send WhatsApp message"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://graph.facebook.com/{graph_api_version}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "whatsapp",
+    "source_note": "WhatsApp Cloud API uses Meta Graph API human documentation but no recorded stable public official OpenAPI document; this overlay covers selected message, media, template, phone-number, and webhook endpoints.",
+    "source_refs": [
+      "https://developers.facebook.com/docs/whatsapp/cloud-api/",
+      "https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages",
+      "https://developers.facebook.com/docs/whatsapp/cloud-api/reference/media"
+    ]
+  }
+}
