@@ -1,0 +1,755 @@
+{
+  "components": {
+    "schemas": {
+      "BeeminderCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "BeeminderError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "BeeminderObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "beeminderAuthToken": {
+        "description": "Beeminder personal authentication token supplied as auth_token in request parameters.",
+        "in": "query",
+        "name": "auth_token",
+        "type": "apiKey"
+      },
+      "beeminderBearer": {
+        "description": "Beeminder OAuth access token supplied as an Authorization bearer token.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Beeminder API human documentation. This is not an official Beeminder OpenAPI document.",
+    "title": "Beeminder API v1 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/charges.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBeeminderCharge",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BeeminderObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "Create a charge"
+      }
+    },
+    "/users/{username}.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBeeminderUser",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Unix timestamp for changed goals and datapoints.",
+            "in": "query",
+            "name": "diff_since",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "Get a user"
+      }
+    },
+    "/users/{username}/goals.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBeeminderGoals",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "List goals"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBeeminderGoal",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BeeminderObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "Create a goal"
+      }
+    },
+    "/users/{username}/goals/archived.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBeeminderArchivedGoals",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "List archived goals"
+      }
+    },
+    "/users/{username}/goals/{goal_slug}.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBeeminderGoal",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Beeminder goal slug.",
+            "in": "path",
+            "name": "goal_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "Get a goal"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateBeeminderGoal",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Beeminder goal slug.",
+            "in": "path",
+            "name": "goal_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BeeminderObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "Update a goal"
+      }
+    },
+    "/users/{username}/goals/{goal_slug}/datapoints.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBeeminderDatapoints",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Beeminder goal slug.",
+            "in": "path",
+            "name": "goal_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of datapoints.",
+            "in": "query",
+            "name": "count",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "List datapoints"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBeeminderDatapoint",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Beeminder goal slug.",
+            "in": "path",
+            "name": "goal_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BeeminderObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "Create a datapoint"
+      }
+    },
+    "/users/{username}/goals/{goal_slug}/datapoints/create_all.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBeeminderDatapoints",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Beeminder goal slug.",
+            "in": "path",
+            "name": "goal_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BeeminderCollection"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "Create multiple datapoints"
+      }
+    },
+    "/users/{username}/goals/{goal_slug}/datapoints/{datapoint_id}.json": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteBeeminderDatapoint",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Beeminder goal slug.",
+            "in": "path",
+            "name": "goal_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Beeminder datapoint ID.",
+            "in": "path",
+            "name": "datapoint_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "Delete a datapoint"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateBeeminderDatapoint",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Beeminder goal slug.",
+            "in": "path",
+            "name": "goal_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Beeminder datapoint ID.",
+            "in": "path",
+            "name": "datapoint_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BeeminderObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "Update a datapoint"
+      }
+    },
+    "/users/{username}/goals/{goal_slug}/ratchet.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "ratchetBeeminderGoal",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Beeminder goal slug.",
+            "in": "path",
+            "name": "goal_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BeeminderObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "Ratchet a goal"
+      }
+    },
+    "/users/{username}/goals/{goal_slug}/refresh_graph.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "refreshBeeminderGoalGraph",
+        "parameters": [
+          {
+            "description": "Beeminder username or me.",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Beeminder goal slug.",
+            "in": "path",
+            "name": "goal_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeeminderObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "beeminderBearer": []
+          }
+        ],
+        "summary": "Refresh goal graph"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://www.beeminder.com/api/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "beeminder",
+    "source_note": "Beeminder publishes REST API v1 docs with personal auth_token and OAuth bearer-token metadata; this overlay covers users, goals, datapoints, charges, and selected goal actions.",
+    "source_refs": [
+      "https://api.beeminder.com/",
+      "https://www.beeminder.com/api/v1/auth_token.json",
+      "https://www.beeminder.com/apps/new"
+    ]
+  }
+}

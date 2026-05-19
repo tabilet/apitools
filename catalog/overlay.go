@@ -157,6 +157,34 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Action Network has human REST API v2 docs in this catalog entry but no recorded official OpenAPI document; docs describe OSDI-API-Token header authentication for most endpoints.",
 	},
 	{
+		ID:         "beeminder-api-auth-overlay",
+		ProviderID: "beeminder",
+		SpecRefID:  "beeminder-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "beeminderAuthToken",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInQuery,
+				ParameterName: "auth_token",
+				Description:   "Beeminder personal authentication token supplied as auth_token in request parameters.",
+			},
+			{
+				Name:        "beeminderBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Beeminder OAuth access token supplied as an Authorization bearer token.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "beeminderAuthToken"}, {Scheme: "beeminderBearer"}},
+		SourceRefs: []string{
+			"https://api.beeminder.com/",
+			"https://www.beeminder.com/api/v1/auth_token.json",
+			"https://www.beeminder.com/apps/new",
+		},
+		SourceNote: "Beeminder has human API docs in this catalog entry but no recorded official OpenAPI document; docs describe personal auth_token parameters and OAuth access tokens, including Authorization: Bearer usage.",
+	},
+	{
 		ID:         "adalo-api-auth-overlay",
 		ProviderID: "adalo",
 		SpecRefID:  "adalo-api-docs",
@@ -173,6 +201,24 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			"https://help.adalo.com/integrations/the-adalo-api/push-notifications",
 		},
 		SourceNote: "Adalo has human API docs in this catalog entry but no recorded official OpenAPI document; docs describe app API-key authentication and push notification requests with Authorization: Bearer.",
+	},
+	{
+		ID:         "clearbit-api-auth-overlay",
+		ProviderID: "clearbit",
+		SpecRefID:  "clearbit-prospector-zapier-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:        "clearbitBasic",
+			Type:        SecuritySchemeHTTP,
+			Scheme:      "basic",
+			Description: "Clearbit secret API key supplied with HTTP Basic authentication.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "clearbitBasic"}},
+		SourceRefs: []string{
+			"https://help.clearbit.com/hc/en-us/articles/6480449602967-Integrate-Clearbit-Prospector-with-Google-Sheets-Using-Zapier",
+			"https://help.clearbit.com/hc/en-us/articles/6045527495191-How-Do-I-Access-My-Clearbit-API-Key",
+		},
+		SourceNote: "Clearbit has human API support docs in this catalog entry but no recorded official OpenAPI document; docs show Prospector and Enrichment API examples using a secret API key with HTTP Basic authentication.",
 	},
 	{
 		ID:         "affinity-api-auth-overlay",
@@ -217,6 +263,41 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			"https://github.com/agilecrm/rest-api",
 		},
 		SourceNote: "Agile CRM has official human/GitHub REST API docs in this catalog entry but no recorded official OpenAPI document; docs describe email plus API key using HTTP Basic authentication.",
+	},
+	{
+		ID:         "copper-api-auth-overlay",
+		ProviderID: "copper",
+		SpecRefID:  "copper-developer-api-auth-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "copperAccessToken",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "X-PW-AccessToken",
+				Description:   "Copper Developer API token carried in the X-PW-AccessToken header.",
+			},
+			{
+				Name:          "copperUserEmail",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "X-PW-UserEmail",
+				Description:   "Copper user email for the user who generated the API token.",
+			},
+			{
+				Name:          "copperApplication",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "X-PW-Application",
+				Description:   "Copper Developer API application header, commonly developer_api for the legacy developer API.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "copperAccessToken"}, {Scheme: "copperUserEmail"}, {Scheme: "copperApplication"}},
+		SourceRefs: []string{
+			"https://developer.copper.com/introduction/authentication.html",
+			"https://developer.copper.com/",
+		},
+		SourceNote: "Copper has human Developer API docs in this catalog entry but no recorded official OpenAPI document; docs describe token-based authentication with the token and user email included in request headers.",
 	},
 	{
 		ID:         "airtable-web-api-auth-overlay",
@@ -529,6 +610,35 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			"https://github.com/dropbox/dropbox-api-spec",
 		},
 		SourceNote: "Dropbox publishes an official Stone machine spec rather than OpenAPI; official OAuth docs describe bearer-token scopes, so OpenAPI-only consumers need an advisory OAuth2 overlay.",
+	},
+	{
+		ID:         "discourse-api-auth-overlay",
+		ProviderID: "discourse",
+		SpecRefID:  "discourse-api-openapi",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "discourseAPIKey",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Api-Key",
+				Description:   "Discourse API key generated from the admin panel.",
+			},
+			{
+				Name:          "discourseAPIUsername",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Api-Username",
+				Description:   "Discourse API username associated with the API key.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "discourseAPIKey"}, {Scheme: "discourseAPIUsername"}},
+		SourceRefs: []string{
+			"https://docs.discourse.org/openapi.json",
+			"https://docs.discourse.org/",
+			"https://github.com/discourse/discourse_api_docs",
+		},
+		SourceNote: "Discourse's official OpenAPI document is importable but does not declare OpenAPI securitySchemes; its prose authentication docs describe Api-Key and Api-Username request headers.",
 	},
 	{
 		ID:         "github-rest-api-auth-overlay",

@@ -86,7 +86,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 70; got != want {
+	if got, want := len(overlays), 74; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -187,6 +187,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"bamboohr",
 		"bannerbear",
 		"baserow",
+		"beeminder",
 		"bitbucket",
 		"bitly",
 		"box",
@@ -195,16 +196,19 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"calendly",
 		"chargebee",
 		"circleci",
+		"clearbit",
 		"clickup",
 		"clockify",
 		"cloudflare",
 		"coda",
 		"contentful",
 		"convertkit",
+		"copper",
 		"customer-io",
 		"databricks",
 		"deepl",
 		"discord",
+		"discourse",
 		"dropbox",
 		"elastic",
 		"eventbrite",
@@ -279,6 +283,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"bamboohr":          AuthStatusOverlayRequired,
 		"bannerbear":        AuthStatusOverlayRequired,
 		"baserow":           AuthStatusComplete,
+		"beeminder":         AuthStatusOverlayRequired,
 		"bitbucket":         AuthStatusPresentIncomplete,
 		"bitly":             AuthStatusComplete,
 		"box":               AuthStatusPresentIncomplete,
@@ -287,16 +292,19 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"calendly":          AuthStatusOverlayRequired,
 		"chargebee":         AuthStatusPresentIncomplete,
 		"circleci":          AuthStatusPresentIncomplete,
+		"clearbit":          AuthStatusOverlayRequired,
 		"clickup":           AuthStatusPresentIncomplete,
 		"clockify":          AuthStatusOverlayRequired,
 		"cloudflare":        AuthStatusPresentIncomplete,
 		"coda":              AuthStatusComplete,
 		"contentful":        AuthStatusOverlayRequired,
 		"convertkit":        AuthStatusComplete,
+		"copper":            AuthStatusOverlayRequired,
 		"customer-io":       AuthStatusPresentIncomplete,
 		"databricks":        AuthStatusOverlayRequired,
 		"deepl":             AuthStatusComplete,
 		"discord":           AuthStatusComplete,
+		"discourse":         AuthStatusOverlayRequired,
 		"dropbox":           AuthStatusOverlayRequired,
 		"elastic":           AuthStatusComplete,
 		"eventbrite":        AuthStatusOverlayRequired,

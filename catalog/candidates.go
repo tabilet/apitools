@@ -137,6 +137,15 @@ var builtInCandidates = []Candidate{
 		userNeed:    UserOpenAPINeedNotExpected,
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "beeminder",
+		displayName: "Beeminder",
+		aliases:     []string{"beeminder api"},
+		category:    "productivity",
+		n8nNode:     "Beeminder",
+		relevance:   "Popular goal tracking and commitment platform for users, goals, datapoints, charges, and reminder automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "bitbucket",
 		displayName: "Bitbucket",
 		aliases:     []string{"bitbucket api", "bitbucket cloud"},
@@ -177,6 +186,15 @@ var builtInCandidates = []Candidate{
 		category:    "ci-cd",
 		n8nNode:     "CircleCi",
 		relevance:   "Popular workflow service for pipelines, workflows, jobs, artifacts, contexts, and CI/CD automation.",
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "clearbit",
+		displayName: "Clearbit",
+		aliases:     []string{"clearbit api", "clearbit enrichment api", "clearbit prospector"},
+		category:    "data-enrichment",
+		n8nNode:     "Clearbit",
+		relevance:   "Popular B2B data enrichment platform for person, company, prospecting, reveal, and legacy lookup automation.",
+		userNeed:    UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{
 		id:          "cloudflare",
@@ -228,6 +246,15 @@ var builtInCandidates = []Candidate{
 		category:    "messaging",
 		n8nNode:     "Discord",
 		relevance:   "Popular workflow service for community messaging, channels, and notification automation.",
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "discourse",
+		displayName: "Discourse",
+		aliases:     []string{"discourse api", "discourse forum api"},
+		category:    "community",
+		n8nNode:     "Discourse",
+		relevance:   "Popular community forum platform for topics, posts, categories, users, groups, tags, badges, and moderation automation.",
+		userNeed:    UserOpenAPINeedNotExpected,
 	}),
 	workflowCandidate(candidateSeed{
 		id:          "dropbox",
@@ -780,6 +807,15 @@ var builtInCandidates = []Candidate{
 		n8nNode:     "ConvertKit",
 		relevance:   "Popular creator marketing platform for subscribers, tags, forms, broadcasts, sequences, purchases, and webhook automation.",
 		userNeed:    UserOpenAPINeedNotExpected,
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "copper",
+		displayName: "Copper",
+		aliases:     []string{"copper api", "copper crm", "copper crm api"},
+		category:    "crm",
+		n8nNode:     "Copper",
+		relevance:   "Popular CRM for leads, people, companies, opportunities, projects, tasks, activities, custom fields, and webhooks.",
+		userNeed:    UserOpenAPINeedLikely,
 	}),
 }
 

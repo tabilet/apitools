@@ -322,6 +322,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.1.0",
 	},
 	{
+		providerID: "discourse",
+		artifactID: "discourse-api-openapi",
+		kind:       "openapi",
+		url:        "https://docs.discourse.org/openapi.json",
+		path:       "openapi/discourse-api-openapi.json",
+		title:      "Discourse API Documentation",
+		openapi:    "3.1.0",
+	},
+	{
 		providerID: "figma",
 		artifactID: "figma-rest-api-openapi",
 		kind:       "openapi",
@@ -653,6 +662,13 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://developers.bannerbear.com/v2/",
 	},
 	{
+		providerID:  "beeminder",
+		artifactID:  "beeminder-api-v1-overlay",
+		path:        "advisory-overlays/beeminder-api-v1-overlay.json",
+		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
+		sourceURL:   "https://api.beeminder.com/",
+	},
+	{
 		providerID:  "calendly",
 		artifactID:  "calendly-public-api-overlay",
 		path:        "advisory-overlays/calendly-public-api-overlay.json",
@@ -667,11 +683,25 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://docs.clockify.me/",
 	},
 	{
+		providerID:  "clearbit",
+		artifactID:  "clearbit-api-overlay",
+		path:        "advisory-overlays/clearbit-api-overlay.json",
+		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
+		sourceURL:   "https://help.clearbit.com/hc/en-us/categories/360000913214-APIs",
+	},
+	{
 		providerID:  "contentful",
 		artifactID:  "contentful-management-api-overlay",
 		path:        "advisory-overlays/contentful-management-api-overlay.json",
 		builderPath: "overlay-builders/build_m21_human_docs_overlays.go",
 		sourceURL:   "https://www.contentful.com/developers/docs/references/content-management-api/",
+	},
+	{
+		providerID:  "copper",
+		artifactID:  "copper-developer-api-overlay",
+		path:        "advisory-overlays/copper-developer-api-overlay.json",
+		builderPath: "overlay-builders/build_m23_human_docs_overlays.go",
+		sourceURL:   "https://developer.copper.com/",
 	},
 	{
 		providerID:  "databricks",

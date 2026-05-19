@@ -1,0 +1,825 @@
+{
+  "components": {
+    "schemas": {
+      "CopperCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CopperError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CopperObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "copperAccessToken": {
+        "description": "Copper Developer API token carried in the X-PW-AccessToken header.",
+        "in": "header",
+        "name": "X-PW-AccessToken",
+        "type": "apiKey"
+      },
+      "copperApplication": {
+        "description": "Copper Developer API application header, commonly developer_api for the legacy developer API.",
+        "in": "header",
+        "name": "X-PW-Application",
+        "type": "apiKey"
+      },
+      "copperUserEmail": {
+        "description": "Copper user email for the user who generated the API token.",
+        "in": "header",
+        "name": "X-PW-UserEmail",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Copper Developer API human documentation. This is not an official Copper OpenAPI document.",
+    "title": "Copper Developer API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/activities/search": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchCopperActivities",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Search activities"
+      }
+    },
+    "/companies": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createCopperCompany",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Create a company"
+      }
+    },
+    "/companies/search": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchCopperCompanies",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Search companies"
+      }
+    },
+    "/leads": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createCopperLead",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Create a lead"
+      }
+    },
+    "/leads/search": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchCopperLeads",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Search leads"
+      }
+    },
+    "/leads/{lead_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteCopperLead",
+        "parameters": [
+          {
+            "description": "Copper lead ID.",
+            "in": "path",
+            "name": "lead_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Delete a lead"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCopperLead",
+        "parameters": [
+          {
+            "description": "Copper lead ID.",
+            "in": "path",
+            "name": "lead_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Fetch a lead"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateCopperLead",
+        "parameters": [
+          {
+            "description": "Copper lead ID.",
+            "in": "path",
+            "name": "lead_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Update a lead"
+      }
+    },
+    "/opportunities": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createCopperOpportunity",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Create an opportunity"
+      }
+    },
+    "/opportunities/search": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchCopperOpportunities",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Search opportunities"
+      }
+    },
+    "/people": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createCopperPerson",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Create a person"
+      }
+    },
+    "/people/search": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchCopperPeople",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Search people"
+      }
+    },
+    "/people/{person_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteCopperPerson",
+        "parameters": [
+          {
+            "description": "Copper person ID.",
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Delete a person"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCopperPerson",
+        "parameters": [
+          {
+            "description": "Copper person ID.",
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Fetch a person"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateCopperPerson",
+        "parameters": [
+          {
+            "description": "Copper person ID.",
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Update a person"
+      }
+    },
+    "/projects/search": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchCopperProjects",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Search projects"
+      }
+    },
+    "/tasks/search": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchCopperTasks",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Search tasks"
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCopperUsers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "List users"
+      }
+    },
+    "/users/me": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCopperAPIUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Fetch API user"
+      }
+    },
+    "/webhooks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCopperWebhookSubscriptions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "List webhook subscriptions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createCopperWebhookSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopperObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopperObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "copperAccessToken": []
+          }
+        ],
+        "summary": "Create a webhook subscription"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.copper.com/developer_api/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "copper",
+    "source_note": "Copper publishes Developer API docs with token and user-email header metadata; this overlay covers account/users, leads, people, companies, opportunities, projects, tasks, activities, custom fields, files, and webhooks.",
+    "source_refs": [
+      "https://developer.copper.com/introduction/authentication.html",
+      "https://developer.copper.com/",
+      "https://developer.copper.com/introduction/requests.html"
+    ]
+  }
+}

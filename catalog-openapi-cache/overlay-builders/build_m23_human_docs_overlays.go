@@ -29,6 +29,9 @@ func main() {
 		affinityOverlay(),
 		agileCRMOverlay(),
 		bannerbearOverlay(),
+		beeminderOverlay(),
+		clearbitOverlay(),
+		copperOverlay(),
 		gristOverlay(),
 	} {
 		write(spec.OutputPath, build(spec))
@@ -181,6 +184,109 @@ func agileCRMOverlay() overlaySpec {
 			"/api/tracks":                        {"get": op("listAgileCRMTracks", "List tracks", nil, "", "#/components/schemas/AgileCRMCollection", "agileCRMBasic"), "post": op("createAgileCRMTrack", "Create a track", nil, "#/components/schemas/AgileCRMObject", "#/components/schemas/AgileCRMObject", "agileCRMBasic")},
 			"/api/campaigns":                     {"get": op("listAgileCRMCampaigns", "List campaigns", nil, "", "#/components/schemas/AgileCRMCollection", "agileCRMBasic")},
 			"/api/tickets":                       {"get": op("listAgileCRMHelpDeskTickets", "List help desk tickets", nil, "", "#/components/schemas/AgileCRMCollection", "agileCRMBasic"), "post": op("createAgileCRMHelpDeskTicket", "Create a help desk ticket", nil, "#/components/schemas/AgileCRMObject", "#/components/schemas/AgileCRMObject", "agileCRMBasic")},
+		},
+	}
+}
+
+func beeminderOverlay() overlaySpec {
+	security := map[string]map[string]any{
+		"beeminderAuthToken": {"type": "apiKey", "in": "query", "name": "auth_token", "description": "Beeminder personal authentication token supplied as auth_token in request parameters."},
+		"beeminderBearer":    {"type": "http", "scheme": "bearer", "description": "Beeminder OAuth access token supplied as an Authorization bearer token."},
+	}
+	return overlaySpec{
+		ProviderID:  "beeminder",
+		Title:       "Beeminder API v1 Advisory Overlay",
+		Description: "Advisory OpenAPI overlay derived from official Beeminder API human documentation. This is not an official Beeminder OpenAPI document.",
+		ServerURL:   "https://www.beeminder.com/api/v1",
+		Sources:     []string{"https://api.beeminder.com/", "https://www.beeminder.com/api/v1/auth_token.json", "https://www.beeminder.com/apps/new"},
+		SourceNote:  "Beeminder publishes REST API v1 docs with personal auth_token and OAuth bearer-token metadata; this overlay covers users, goals, datapoints, charges, and selected goal actions.",
+		Security:    security,
+		Schemas:     []string{"BeeminderObject", "BeeminderCollection", "BeeminderError"},
+		OutputPath:  "catalog-openapi-cache/advisory-overlays/beeminder-api-v1-overlay.json",
+		Paths: map[string]map[string]any{
+			"/users/{username}.json": {
+				"get": op("getBeeminderUser", "Get a user", params(path("username", "Beeminder username or me."), query("diff_since", "Unix timestamp for changed goals and datapoints.")), "", "#/components/schemas/BeeminderObject", "beeminderBearer"),
+			},
+			"/users/{username}/goals.json": {
+				"get":  op("listBeeminderGoals", "List goals", params(path("username", "Beeminder username or me.")), "", "#/components/schemas/BeeminderCollection", "beeminderBearer"),
+				"post": op("createBeeminderGoal", "Create a goal", params(path("username", "Beeminder username or me.")), "#/components/schemas/BeeminderObject", "#/components/schemas/BeeminderObject", "beeminderBearer"),
+			},
+			"/users/{username}/goals/archived.json": {"get": op("listBeeminderArchivedGoals", "List archived goals", params(path("username", "Beeminder username or me.")), "", "#/components/schemas/BeeminderCollection", "beeminderBearer")},
+			"/users/{username}/goals/{goal_slug}.json": {
+				"get": op("getBeeminderGoal", "Get a goal", params(path("username", "Beeminder username or me."), path("goal_slug", "Beeminder goal slug.")), "", "#/components/schemas/BeeminderObject", "beeminderBearer"),
+				"put": op("updateBeeminderGoal", "Update a goal", params(path("username", "Beeminder username or me."), path("goal_slug", "Beeminder goal slug.")), "#/components/schemas/BeeminderObject", "#/components/schemas/BeeminderObject", "beeminderBearer"),
+			},
+			"/users/{username}/goals/{goal_slug}/refresh_graph.json": {"get": op("refreshBeeminderGoalGraph", "Refresh goal graph", params(path("username", "Beeminder username or me."), path("goal_slug", "Beeminder goal slug.")), "", "#/components/schemas/BeeminderObject", "beeminderBearer")},
+			"/users/{username}/goals/{goal_slug}/ratchet.json":       {"post": op("ratchetBeeminderGoal", "Ratchet a goal", params(path("username", "Beeminder username or me."), path("goal_slug", "Beeminder goal slug.")), "#/components/schemas/BeeminderObject", "#/components/schemas/BeeminderObject", "beeminderBearer")},
+			"/users/{username}/goals/{goal_slug}/datapoints.json": {
+				"get":  op("listBeeminderDatapoints", "List datapoints", params(path("username", "Beeminder username or me."), path("goal_slug", "Beeminder goal slug."), query("count", "Maximum number of datapoints.")), "", "#/components/schemas/BeeminderCollection", "beeminderBearer"),
+				"post": op("createBeeminderDatapoint", "Create a datapoint", params(path("username", "Beeminder username or me."), path("goal_slug", "Beeminder goal slug.")), "#/components/schemas/BeeminderObject", "#/components/schemas/BeeminderObject", "beeminderBearer"),
+			},
+			"/users/{username}/goals/{goal_slug}/datapoints/create_all.json": {"post": op("createBeeminderDatapoints", "Create multiple datapoints", params(path("username", "Beeminder username or me."), path("goal_slug", "Beeminder goal slug.")), "#/components/schemas/BeeminderCollection", "#/components/schemas/BeeminderCollection", "beeminderBearer")},
+			"/users/{username}/goals/{goal_slug}/datapoints/{datapoint_id}.json": {
+				"put":    op("updateBeeminderDatapoint", "Update a datapoint", params(path("username", "Beeminder username or me."), path("goal_slug", "Beeminder goal slug."), path("datapoint_id", "Beeminder datapoint ID.")), "#/components/schemas/BeeminderObject", "#/components/schemas/BeeminderObject", "beeminderBearer"),
+				"delete": op("deleteBeeminderDatapoint", "Delete a datapoint", params(path("username", "Beeminder username or me."), path("goal_slug", "Beeminder goal slug."), path("datapoint_id", "Beeminder datapoint ID.")), "", "#/components/schemas/BeeminderObject", "beeminderBearer"),
+			},
+			"/charges.json": {"post": op("createBeeminderCharge", "Create a charge", nil, "#/components/schemas/BeeminderObject", "#/components/schemas/BeeminderObject", "beeminderBearer")},
+		},
+	}
+}
+
+func clearbitOverlay() overlaySpec {
+	security := map[string]map[string]any{
+		"clearbitBasic": {"type": "http", "scheme": "basic", "description": "Clearbit secret API key supplied with HTTP Basic authentication."},
+	}
+	return overlaySpec{
+		ProviderID:  "clearbit",
+		Title:       "Clearbit API Advisory Overlay",
+		Description: "Advisory OpenAPI overlay derived from official Clearbit API support documentation. This is not an official Clearbit OpenAPI document.",
+		ServerURL:   "https://{api}.clearbit.com",
+		ServerVars:  map[string]map[string]any{"api": {"default": "person", "description": "Clearbit API host such as person, prospector, company, reveal, risk, discovery, autocomplete, or logo."}},
+		Sources:     []string{"https://help.clearbit.com/hc/en-us/categories/360000913214-APIs", "https://help.clearbit.com/hc/en-us/articles/6480449602967-Integrate-Clearbit-Prospector-with-Google-Sheets-Using-Zapier", "https://help.clearbit.com/hc/en-us/articles/6045527495191-How-Do-I-Access-My-Clearbit-API-Key", "https://help.clearbit.com/hc/en-us/articles/8502992633111-Autocomplete-Name-to-Domain-and-Risk-API-FAQ"},
+		SourceNote:  "Clearbit publishes API support docs with Prospector and Enrichment examples using secret API-key HTTP Basic authentication; this overlay covers the source-backed Prospector and Person Combined examples plus legacy API notes.",
+		Security:    security,
+		Schemas:     []string{"ClearbitObject", "ClearbitCollection", "ClearbitError"},
+		OutputPath:  "catalog-openapi-cache/advisory-overlays/clearbit-api-overlay.json",
+		Paths: map[string]map[string]any{
+			"/v1/people/search": {"get": op("searchClearbitProspectorPeople", "Search Prospector people", params(query("domain", "Company domain."), query("page_size", "Page size."), query("query", "Prospector query.")), "", "#/components/schemas/ClearbitCollection", "clearbitBasic")},
+			"/v2/combined/find": {"get": op("findClearbitCombinedPerson", "Find combined person profile", params(query("email", "Email address."), query("cached", "Whether to use cached enrichment results.")), "", "#/components/schemas/ClearbitObject", "clearbitBasic")},
+		},
+	}
+}
+
+func copperOverlay() overlaySpec {
+	security := map[string]map[string]any{
+		"copperAccessToken": {"type": "apiKey", "in": "header", "name": "X-PW-AccessToken", "description": "Copper Developer API token carried in the X-PW-AccessToken header."},
+		"copperApplication": {"type": "apiKey", "in": "header", "name": "X-PW-Application", "description": "Copper Developer API application header, commonly developer_api for the legacy developer API."},
+		"copperUserEmail":   {"type": "apiKey", "in": "header", "name": "X-PW-UserEmail", "description": "Copper user email for the user who generated the API token."},
+	}
+	return overlaySpec{
+		ProviderID:  "copper",
+		Title:       "Copper Developer API Advisory Overlay",
+		Description: "Advisory OpenAPI overlay derived from official Copper Developer API human documentation. This is not an official Copper OpenAPI document.",
+		ServerURL:   "https://api.copper.com/developer_api/v1",
+		Sources:     []string{"https://developer.copper.com/introduction/authentication.html", "https://developer.copper.com/", "https://developer.copper.com/introduction/requests.html"},
+		SourceNote:  "Copper publishes Developer API docs with token and user-email header metadata; this overlay covers account/users, leads, people, companies, opportunities, projects, tasks, activities, custom fields, files, and webhooks.",
+		Security:    security,
+		Schemas:     []string{"CopperObject", "CopperCollection", "CopperError"},
+		OutputPath:  "catalog-openapi-cache/advisory-overlays/copper-developer-api-overlay.json",
+		Paths: map[string]map[string]any{
+			"/users/me":             {"get": op("getCopperAPIUser", "Fetch API user", nil, "", "#/components/schemas/CopperObject", "copperAccessToken")},
+			"/users":                {"get": op("listCopperUsers", "List users", nil, "", "#/components/schemas/CopperCollection", "copperAccessToken")},
+			"/leads/search":         {"post": op("searchCopperLeads", "Search leads", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
+			"/leads":                {"post": op("createCopperLead", "Create a lead", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken")},
+			"/leads/{lead_id}":      {"get": op("getCopperLead", "Fetch a lead", params(path("lead_id", "Copper lead ID.")), "", "#/components/schemas/CopperObject", "copperAccessToken"), "put": op("updateCopperLead", "Update a lead", params(path("lead_id", "Copper lead ID.")), "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken"), "delete": op("deleteCopperLead", "Delete a lead", params(path("lead_id", "Copper lead ID.")), "", "#/components/schemas/CopperObject", "copperAccessToken")},
+			"/people/search":        {"post": op("searchCopperPeople", "Search people", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
+			"/people":               {"post": op("createCopperPerson", "Create a person", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken")},
+			"/people/{person_id}":   {"get": op("getCopperPerson", "Fetch a person", params(path("person_id", "Copper person ID.")), "", "#/components/schemas/CopperObject", "copperAccessToken"), "put": op("updateCopperPerson", "Update a person", params(path("person_id", "Copper person ID.")), "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken"), "delete": op("deleteCopperPerson", "Delete a person", params(path("person_id", "Copper person ID.")), "", "#/components/schemas/CopperObject", "copperAccessToken")},
+			"/companies/search":     {"post": op("searchCopperCompanies", "Search companies", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
+			"/companies":            {"post": op("createCopperCompany", "Create a company", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken")},
+			"/opportunities/search": {"post": op("searchCopperOpportunities", "Search opportunities", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
+			"/opportunities":        {"post": op("createCopperOpportunity", "Create an opportunity", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken")},
+			"/projects/search":      {"post": op("searchCopperProjects", "Search projects", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
+			"/tasks/search":         {"post": op("searchCopperTasks", "Search tasks", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
+			"/activities/search":    {"post": op("searchCopperActivities", "Search activities", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperCollection", "copperAccessToken")},
+			"/webhooks":             {"get": op("listCopperWebhookSubscriptions", "List webhook subscriptions", nil, "", "#/components/schemas/CopperCollection", "copperAccessToken"), "post": op("createCopperWebhookSubscription", "Create a webhook subscription", nil, "#/components/schemas/CopperObject", "#/components/schemas/CopperObject", "copperAccessToken")},
 		},
 	}
 }

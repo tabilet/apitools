@@ -179,6 +179,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Baserow's official OpenAPI document includes database-token, JWT, and user-source JWT bearer security schemes with operation-level security requirements.",
 	},
 	{
+		ProviderID: "beeminder",
+		SpecRefID:  "beeminder-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://api.beeminder.com/", "https://www.beeminder.com/api/v1/auth_token.json", "https://www.beeminder.com/apps/new"},
+		SourceNote: "Beeminder has official API human docs but no recorded stable public official OpenAPI document; personal auth_token and OAuth bearer metadata comes from advisory overlay notes.",
+	},
+	{
 		ProviderID: "aws-s3",
 		SpecRefID:  "aws-s3-smithy-model",
 		Status:     AuthStatusOverlayRequired,
@@ -235,6 +242,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "CircleCI's official API v2 OpenAPI document includes Circle-Token header, basic-auth, and deprecated query-token security schemes with root security requirements.",
 	},
 	{
+		ProviderID: "clearbit",
+		SpecRefID:  "clearbit-prospector-zapier-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://help.clearbit.com/hc/en-us/articles/6480449602967-Integrate-Clearbit-Prospector-with-Google-Sheets-Using-Zapier", "https://help.clearbit.com/hc/en-us/articles/6045527495191-How-Do-I-Access-My-Clearbit-API-Key"},
+		SourceNote: "Clearbit has official API support docs but no recorded stable public official OpenAPI document; secret API-key basic-auth metadata comes from advisory overlay notes.",
+	},
+	{
 		ProviderID: "cloudflare",
 		SpecRefID:  "cloudflare-api-openapi",
 		Status:     AuthStatusComplete,
@@ -263,11 +277,25 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Discord's official OpenAPI v10 preview document includes BotToken and OAuth2 security schemes with operation-level security requirements.",
 	},
 	{
+		ProviderID: "discourse",
+		SpecRefID:  "discourse-api-openapi",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://docs.discourse.org/openapi.json", "https://docs.discourse.org/", "https://github.com/discourse/discourse_api_docs"},
+		SourceNote: "Discourse's official OpenAPI document is importable but currently lacks OpenAPI securitySchemes; Api-Key and Api-Username header metadata comes from advisory overlay notes.",
+	},
+	{
 		ProviderID: "dropbox",
 		SpecRefID:  "dropbox-api-stone-spec",
 		Status:     AuthStatusOverlayRequired,
 		SourceRefs: []string{"https://github.com/dropbox/dropbox-api-spec"},
 		SourceNote: "Dropbox's official machine-readable source is a Stone spec, not OpenAPI; OAuth security metadata needs advisory OpenAPI overlay mapping for OpenAPI-only consumers.",
+	},
+	{
+		ProviderID: "copper",
+		SpecRefID:  "copper-developer-api-auth-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://developer.copper.com/introduction/authentication.html", "https://developer.copper.com/"},
+		SourceNote: "Copper has official Developer API human docs but no recorded stable public official OpenAPI document; token and user-email header metadata comes from advisory overlay notes.",
 	},
 	{
 		ProviderID: "elastic",

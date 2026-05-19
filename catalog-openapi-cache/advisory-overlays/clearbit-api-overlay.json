@@ -1,0 +1,159 @@
+{
+  "components": {
+    "schemas": {
+      "ClearbitCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ClearbitError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ClearbitObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "clearbitBasic": {
+        "description": "Clearbit secret API key supplied with HTTP Basic authentication.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Clearbit API support documentation. This is not an official Clearbit OpenAPI document.",
+    "title": "Clearbit API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v1/people/search": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchClearbitProspectorPeople",
+        "parameters": [
+          {
+            "description": "Company domain.",
+            "in": "query",
+            "name": "domain",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Prospector query.",
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClearbitCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clearbitBasic": []
+          }
+        ],
+        "summary": "Search Prospector people"
+      }
+    },
+    "/v2/combined/find": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "findClearbitCombinedPerson",
+        "parameters": [
+          {
+            "description": "Email address.",
+            "in": "query",
+            "name": "email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Whether to use cached enrichment results.",
+            "in": "query",
+            "name": "cached",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClearbitObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clearbitBasic": []
+          }
+        ],
+        "summary": "Find combined person profile"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{api}.clearbit.com",
+      "variables": {
+        "api": {
+          "default": "person",
+          "description": "Clearbit API host such as person, prospector, company, reveal, risk, discovery, autocomplete, or logo."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "clearbit",
+    "source_note": "Clearbit publishes API support docs with Prospector and Enrichment examples using secret API-key HTTP Basic authentication; this overlay covers the source-backed Prospector and Person Combined examples plus legacy API notes.",
+    "source_refs": [
+      "https://help.clearbit.com/hc/en-us/categories/360000913214-APIs",
+      "https://help.clearbit.com/hc/en-us/articles/6480449602967-Integrate-Clearbit-Prospector-with-Google-Sheets-Using-Zapier",
+      "https://help.clearbit.com/hc/en-us/articles/6045527495191-How-Do-I-Access-My-Clearbit-API-Key",
+      "https://help.clearbit.com/hc/en-us/articles/8502992633111-Autocomplete-Name-to-Domain-and-Risk-API-FAQ"
+    ]
+  }
+}
