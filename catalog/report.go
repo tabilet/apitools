@@ -424,6 +424,20 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Slack's archived official OpenAPI document includes OAuth metadata and operation security but needs freshness review against current Slack docs.",
 	},
 	{
+		ProviderID: "snowflake",
+		SpecRefID:  "snowflake-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://docs.snowflake.com/en/developer-guide/sql-api/index", "https://docs.snowflake.com/en/developer-guide/sql-api/authenticating"},
+		SourceNote: "Snowflake has no recorded stable public downloadable OpenAPI document in this catalog entry; auth metadata comes from advisory bearer-token overlay notes.",
+	},
+	{
+		ProviderID: "splunk",
+		SpecRefID:  "splunk-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://docs.splunk.com/Documentation/Splunk/latest/RESTREF", "https://docs.splunk.com/Documentation/Splunk/latest/RESTUM/RESTusing"},
+		SourceNote: "Splunk has no recorded stable public OpenAPI document for the general Enterprise REST API in this catalog entry; auth metadata comes from advisory token/basic overlay notes.",
+	},
+	{
 		ProviderID: "stripe",
 		SpecRefID:  "stripe-latest-openapi-spec3",
 		Status:     AuthStatusComplete,

@@ -754,6 +754,52 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Slack's official OpenAPI document includes OAuth metadata and operation security, but the repository is archived and lacks root security; keep this as a present-incomplete review overlay rather than treating it as current provider truth.",
 	},
 	{
+		ID:         "snowflake-api-auth-overlay",
+		ProviderID: "snowflake",
+		SpecRefID:  "snowflake-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "snowflakeBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Snowflake OAuth, key-pair JWT, or programmatic access token carried as a bearer token.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "snowflakeBearer"}},
+		SourceRefs: []string{
+			"https://docs.snowflake.com/en/developer-guide/sql-api/authenticating",
+			"https://docs.snowflake.com/en/developer-guide/sql-api/index",
+		},
+		SourceNote: "Snowflake has human SQL/REST API docs in this catalog entry but no recorded public OpenAPI document; docs describe bearer-token authentication from OAuth, key-pair JWT, and programmatic access tokens, so OpenAPI imports need an advisory bearer-token overlay.",
+	},
+	{
+		ID:         "splunk-rest-api-auth-overlay",
+		ProviderID: "splunk",
+		SpecRefID:  "splunk-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "splunkBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Splunk authentication token or session key carried in the Authorization header.",
+			},
+			{
+				Name:        "splunkBasic",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Splunk username/password basic authentication for login/session endpoints where enabled.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "splunkBearer"}, {Scheme: "splunkBasic"}},
+		SourceRefs: []string{
+			"https://docs.splunk.com/Documentation/Splunk/latest/RESTUM/RESTusing",
+			"https://docs.splunk.com/Documentation/Splunk/latest/RESTREF",
+		},
+		SourceNote: "Splunk has human REST API docs in this catalog entry but no recorded stable public OpenAPI document for the general Enterprise API; docs describe authentication tokens, session keys, and credentials, so OpenAPI imports need an advisory auth overlay.",
+	},
+	{
 		ID:         "telegram-bot-token-auth-overlay",
 		ProviderID: "telegram",
 		SpecRefID:  "telegram-bot-api-docs",

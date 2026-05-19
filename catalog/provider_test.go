@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 51; got != want {
+	if got, want := len(catalog.ListProviders()), 53; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -61,6 +61,8 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"servicenow",
 		"shopify",
 		"slack",
+		"snowflake",
+		"splunk",
 		"stripe",
 		"telegram",
 		"trello",
@@ -119,6 +121,8 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "servicenow rest", id: "servicenow"},
 		{key: "shopify admin api", id: "shopify"},
 		{key: "stripe api", id: "stripe"},
+		{key: "snowflake api", id: "snowflake"},
+		{key: "splunk api", id: "splunk"},
 		{key: "telegram bot api", id: "telegram"},
 		{key: "twilio sms", id: "twilio"},
 		{key: "typeform api", id: "typeform"},
@@ -206,6 +210,8 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "shopify", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "pagerduty", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "slack", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
+		{id: "snowflake", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "splunk", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "stripe", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "telegram", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "trello", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},

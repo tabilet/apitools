@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 51; got != want {
+	if got, want := len(candidates), 53; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -61,6 +61,8 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"servicenow",
 		"shopify",
 		"slack",
+		"snowflake",
+		"splunk",
 		"stripe",
 		"telegram",
 		"trello",
@@ -97,6 +99,8 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "jenkins remote api", id: "jenkins"},
 		{key: "netlify api", id: "netlify"},
 		{key: "sentry.io", id: "sentry"},
+		{key: "snowflake sql api", id: "snowflake"},
+		{key: "splunk rest api", id: "splunk"},
 	}
 	for _, test := range tests {
 		candidate, ok := FindBuiltInCandidate(test.key)
@@ -166,6 +170,8 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"servicenow",
 		"shopify",
 		"stripe",
+		"snowflake",
+		"splunk",
 		"telegram",
 		"twilio",
 		"typeform",
