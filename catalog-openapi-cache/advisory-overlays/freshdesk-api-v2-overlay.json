@@ -1,0 +1,498 @@
+{
+  "components": {
+    "schemas": {
+      "FreshdeskCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FreshdeskError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FreshdeskObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "freshdeskBasic": {
+        "description": "Freshdesk API key carried with HTTP Basic authentication.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Freshdesk API v2 human documentation. This is not an official Freshdesk OpenAPI document.",
+    "title": "Freshdesk API v2 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/agents": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshdeskAgents",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "List agents"
+      }
+    },
+    "/companies": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshdeskCompanies",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "List companies"
+      }
+    },
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshdeskContacts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshdeskContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshdeskObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "Create a contact"
+      }
+    },
+    "/contacts/{contact_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteFreshdeskContact",
+        "parameters": [
+          {
+            "description": "Freshdesk contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "Delete a contact"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFreshdeskContact",
+        "parameters": [
+          {
+            "description": "Freshdesk contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "Get a contact"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateFreshdeskContact",
+        "parameters": [
+          {
+            "description": "Freshdesk contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshdeskObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "Update a contact"
+      }
+    },
+    "/tickets": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listFreshdeskTickets",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "List tickets"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createFreshdeskTicket",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshdeskObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "Create a ticket"
+      }
+    },
+    "/tickets/{ticket_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteFreshdeskTicket",
+        "parameters": [
+          {
+            "description": "Freshdesk ticket ID.",
+            "in": "path",
+            "name": "ticket_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "Delete a ticket"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getFreshdeskTicket",
+        "parameters": [
+          {
+            "description": "Freshdesk ticket ID.",
+            "in": "path",
+            "name": "ticket_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "Get a ticket"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateFreshdeskTicket",
+        "parameters": [
+          {
+            "description": "Freshdesk ticket ID.",
+            "in": "path",
+            "name": "ticket_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreshdeskObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshdeskObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "freshdeskBasic": []
+          }
+        ],
+        "summary": "Update a ticket"
+      }
+    }
+  },
+  "security": [
+    {
+      "freshdeskBasic": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://{domain}.freshdesk.com/api/v2",
+      "variables": {
+        "domain": {
+          "default": "example",
+          "description": "Operator-supplied Freshdesk account domain."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "freshdesk-api-v2-advisory-overlay",
+    "provider_id": "freshdesk",
+    "source_note": "Freshdesk publishes REST-shaped v2 API documentation with account-domain hosts and API-key Basic authentication; this overlay covers a focused tickets, contacts, companies, and agents subset.",
+    "source_refs": [
+      "https://developers.freshdesk.com/api",
+      "https://support.freshdesk.com/en/support/solutions/articles/225441-is-there-any-documentation-for-the-apis-on-freshdesk-"
+    ]
+  }
+}

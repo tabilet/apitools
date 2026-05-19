@@ -1,0 +1,340 @@
+{
+  "components": {
+    "schemas": {
+      "BambooHRCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "BambooHRError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "BambooHRObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bambooHRBasic": {
+        "description": "BambooHR API key used as the HTTP Basic username with an arbitrary password.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official BambooHR API human documentation. This is not an official BambooHR OpenAPI document.",
+    "title": "BambooHR API v1 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v1/employees": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBambooHREmployees",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page size.",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BambooHRCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bambooHRBasic": []
+          }
+        ],
+        "summary": "List employees"
+      }
+    },
+    "/v1/employees/directory": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBambooHREmployeeDirectory",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BambooHRCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bambooHRBasic": []
+          }
+        ],
+        "summary": "Get employee directory"
+      }
+    },
+    "/v1/employees/{employee_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getBambooHREmployee",
+        "parameters": [
+          {
+            "description": "BambooHR employee ID.",
+            "in": "path",
+            "name": "employee_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated employee fields to return.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BambooHRObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bambooHRBasic": []
+          }
+        ],
+        "summary": "Get an employee"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateBambooHREmployee",
+        "parameters": [
+          {
+            "description": "BambooHR employee ID.",
+            "in": "path",
+            "name": "employee_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BambooHRObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BambooHRObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bambooHRBasic": []
+          }
+        ],
+        "summary": "Update an employee"
+      }
+    },
+    "/v1/meta/fields": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBambooHRFields",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BambooHRCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bambooHRBasic": []
+          }
+        ],
+        "summary": "List employee fields"
+      }
+    },
+    "/v1/reports/custom": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createBambooHRCustomReport",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BambooHRObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BambooHRCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bambooHRBasic": []
+          }
+        ],
+        "summary": "Create a custom report"
+      }
+    },
+    "/v1/time_off/requests": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listBambooHRTimeOffRequests",
+        "parameters": [
+          {
+            "description": "Start date filter.",
+            "in": "query",
+            "name": "start",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "End date filter.",
+            "in": "query",
+            "name": "end",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BambooHRCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "bambooHRBasic": []
+          }
+        ],
+        "summary": "List time off requests"
+      }
+    }
+  },
+  "security": [
+    {
+      "bambooHRBasic": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://{company_domain}.bamboohr.com/api",
+      "variables": {
+        "company_domain": {
+          "default": "example",
+          "description": "Operator-supplied BambooHR company subdomain."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "bamboohr-api-v1-advisory-overlay",
+    "provider_id": "bamboohr",
+    "source_note": "BambooHR publishes REST-shaped API documentation with customer-subdomain hosts and API-key Basic authentication; this overlay covers employee, directory, metadata, report, and time-off review endpoints.",
+    "source_refs": [
+      "https://documentation.bamboohr.com/docs",
+      "https://documentation.bamboohr.com/docs/api-details",
+      "https://documentation.bamboohr.com/reference/get-employees-list",
+      "https://documentation.bamboohr.com/reference/get-employees-directory-1"
+    ]
+  }
+}

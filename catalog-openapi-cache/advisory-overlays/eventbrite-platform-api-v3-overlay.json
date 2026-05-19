@@ -1,0 +1,353 @@
+{
+  "components": {
+    "schemas": {
+      "EventbriteCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "EventbriteError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "EventbriteObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "eventbriteBearer": {
+        "description": "Eventbrite OAuth access token carried in the Authorization header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Eventbrite Platform API human documentation. This is not an official Eventbrite OpenAPI document.",
+    "title": "Eventbrite Platform API v3 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/events/{event_id}/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getEventbriteEvent",
+        "parameters": [
+          {
+            "description": "Eventbrite event ID.",
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventbriteObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "eventbriteBearer": []
+          }
+        ],
+        "summary": "Get an event"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateEventbriteEvent",
+        "parameters": [
+          {
+            "description": "Eventbrite event ID.",
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventbriteObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventbriteObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "eventbriteBearer": []
+          }
+        ],
+        "summary": "Update an event"
+      }
+    },
+    "/events/{event_id}/attendees/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listEventbriteEventAttendees",
+        "parameters": [
+          {
+            "description": "Eventbrite event ID.",
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventbriteCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "eventbriteBearer": []
+          }
+        ],
+        "summary": "List event attendees"
+      }
+    },
+    "/events/{event_id}/ticket_classes/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listEventbriteTicketClasses",
+        "parameters": [
+          {
+            "description": "Eventbrite event ID.",
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventbriteCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "eventbriteBearer": []
+          }
+        ],
+        "summary": "List event ticket classes"
+      }
+    },
+    "/organizations/{organization_id}/events/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listEventbriteOrganizationEvents",
+        "parameters": [
+          {
+            "description": "Eventbrite organization ID.",
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Event status filter.",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventbriteCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "eventbriteBearer": []
+          }
+        ],
+        "summary": "List organization events"
+      }
+    },
+    "/users/me/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getEventbriteCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventbriteObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "eventbriteBearer": []
+          }
+        ],
+        "summary": "Get current user"
+      }
+    },
+    "/users/me/organizations/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listEventbriteCurrentUserOrganizations",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventbriteCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "eventbriteBearer": []
+          }
+        ],
+        "summary": "List current user's organizations"
+      }
+    },
+    "/venues/{venue_id}/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getEventbriteVenue",
+        "parameters": [
+          {
+            "description": "Eventbrite venue ID.",
+            "in": "path",
+            "name": "venue_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventbriteObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "eventbriteBearer": []
+          }
+        ],
+        "summary": "Get a venue"
+      }
+    }
+  },
+  "security": [
+    {
+      "eventbriteBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://www.eventbriteapi.com/v3"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "eventbrite-platform-api-v3-advisory-overlay",
+    "provider_id": "eventbrite",
+    "source_note": "Eventbrite publishes REST-shaped Platform API v3 documentation through an interactive reference; this overlay covers users, organizations, events, attendees, venues, and ticket classes.",
+    "source_refs": [
+      "https://www.eventbrite.com/platform/api",
+      "https://www.eventbrite.com/platform/api#/introduction/authentication"
+    ]
+  }
+}

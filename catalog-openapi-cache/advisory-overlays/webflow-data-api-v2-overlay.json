@@ -1,0 +1,579 @@
+{
+  "components": {
+    "schemas": {
+      "WebflowCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WebflowError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WebflowObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "webflowBearer": {
+        "description": "Webflow API token carried as an Authorization bearer token.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Webflow Data API human documentation. This is not an official Webflow OpenAPI document.",
+    "title": "Webflow Data API v2 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/collections/{collection_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWebflowCollection",
+        "parameters": [
+          {
+            "description": "Webflow collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "Get a collection"
+      }
+    },
+    "/collections/{collection_id}/items": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWebflowCollectionItems",
+        "parameters": [
+          {
+            "description": "Webflow collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of items to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Offset for pagination.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "List collection items"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWebflowCollectionItem",
+        "parameters": [
+          {
+            "description": "Webflow collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebflowObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "Create a collection item"
+      }
+    },
+    "/collections/{collection_id}/items/publish": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "publishWebflowCollectionItems",
+        "parameters": [
+          {
+            "description": "Webflow collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebflowObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "Publish collection items"
+      }
+    },
+    "/collections/{collection_id}/items/{item_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteWebflowCollectionItem",
+        "parameters": [
+          {
+            "description": "Webflow collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webflow collection item ID.",
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "Delete a collection item"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWebflowCollectionItem",
+        "parameters": [
+          {
+            "description": "Webflow collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webflow collection item ID.",
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "Get a collection item"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateWebflowCollectionItem",
+        "parameters": [
+          {
+            "description": "Webflow collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webflow collection item ID.",
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebflowObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "Update a collection item"
+      }
+    },
+    "/sites": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWebflowSites",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "List sites"
+      }
+    },
+    "/sites/{site_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWebflowSite",
+        "parameters": [
+          {
+            "description": "Webflow site ID.",
+            "in": "path",
+            "name": "site_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "Get a site"
+      }
+    },
+    "/sites/{site_id}/collections": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWebflowCollections",
+        "parameters": [
+          {
+            "description": "Webflow site ID.",
+            "in": "path",
+            "name": "site_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "List collections"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWebflowCollection",
+        "parameters": [
+          {
+            "description": "Webflow site ID.",
+            "in": "path",
+            "name": "site_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebflowObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "Create a collection"
+      }
+    },
+    "/sites/{site_id}/pages": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWebflowPages",
+        "parameters": [
+          {
+            "description": "Webflow site ID.",
+            "in": "path",
+            "name": "site_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebflowCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "webflowBearer": []
+          }
+        ],
+        "summary": "List pages"
+      }
+    }
+  },
+  "security": [
+    {
+      "webflowBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.webflow.com/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "webflow-data-api-v2-advisory-overlay",
+    "provider_id": "webflow",
+    "source_note": "Webflow publishes REST-shaped Data API documentation with bearer-token authorization; this overlay covers sites, pages, collections, and CMS item workflows.",
+    "source_refs": [
+      "https://developers.webflow.com/reference",
+      "https://developers.webflow.com/data/reference/rest-introduction",
+      "https://developers.webflow.com/data/reference",
+      "https://developers.webflow.com/data/reference/authorization",
+      "https://developers.webflow.com/data/reference/pages-and-components/pages/list"
+    ]
+  }
+}

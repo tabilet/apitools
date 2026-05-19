@@ -1,0 +1,368 @@
+{
+  "components": {
+    "schemas": {
+      "ActiveCampaignCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ActiveCampaignError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ActiveCampaignObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "activeCampaignAPIToken": {
+        "description": "ActiveCampaign API token carried in the Api-Token header.",
+        "in": "header",
+        "name": "Api-Token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official ActiveCampaign API v3 human documentation. This is not an official ActiveCampaign OpenAPI document.",
+    "title": "ActiveCampaign API v3 Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/campaigns": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listActiveCampaignCampaigns",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActiveCampaignCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "activeCampaignAPIToken": []
+          }
+        ],
+        "summary": "List campaigns"
+      }
+    },
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listActiveCampaignContacts",
+        "parameters": [
+          {
+            "description": "Maximum number of contacts to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Offset for pagination.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActiveCampaignCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "activeCampaignAPIToken": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createActiveCampaignContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActiveCampaignObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActiveCampaignObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "activeCampaignAPIToken": []
+          }
+        ],
+        "summary": "Create a contact"
+      }
+    },
+    "/contacts/{contact_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteActiveCampaignContact",
+        "parameters": [
+          {
+            "description": "ActiveCampaign contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActiveCampaignObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "activeCampaignAPIToken": []
+          }
+        ],
+        "summary": "Delete a contact"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getActiveCampaignContact",
+        "parameters": [
+          {
+            "description": "ActiveCampaign contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActiveCampaignObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "activeCampaignAPIToken": []
+          }
+        ],
+        "summary": "Retrieve a contact"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateActiveCampaignContact",
+        "parameters": [
+          {
+            "description": "ActiveCampaign contact ID.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActiveCampaignObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActiveCampaignObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "activeCampaignAPIToken": []
+          }
+        ],
+        "summary": "Update a contact"
+      }
+    },
+    "/deals": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listActiveCampaignDeals",
+        "parameters": [
+          {
+            "description": "Maximum number of deals to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Offset for pagination.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActiveCampaignCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "activeCampaignAPIToken": []
+          }
+        ],
+        "summary": "List deals"
+      }
+    },
+    "/lists": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listActiveCampaignLists",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActiveCampaignCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "activeCampaignAPIToken": []
+          }
+        ],
+        "summary": "List lists"
+      }
+    }
+  },
+  "security": [
+    {
+      "activeCampaignAPIToken": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://{account}.api-us1.com/api/3",
+      "variables": {
+        "account": {
+          "default": "example",
+          "description": "Operator-supplied ActiveCampaign account name."
+        }
+      }
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "activecampaign-api-v3-advisory-overlay",
+    "provider_id": "activecampaign",
+    "source_note": "ActiveCampaign publishes REST-shaped API v3 human documentation with account-region hosts and Api-Token header authentication; this overlay covers a small contacts, lists, campaigns, and deals subset.",
+    "source_refs": [
+      "https://developers.activecampaign.com/reference/overview",
+      "https://developers.activecampaign.com/reference/authentication",
+      "https://developers.activecampaign.com/reference/contact",
+      "https://developers.activecampaign.com/reference/list-all-contacts",
+      "https://developers.activecampaign.com/reference/get-contact",
+      "https://developers.activecampaign.com/reference/schema"
+    ]
+  }
+}

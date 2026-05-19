@@ -513,6 +513,13 @@ var specArtifacts = []specArtifact{
 
 var overlayArtifacts = []overlayArtifact{
 	{
+		providerID:  "activecampaign",
+		artifactID:  "activecampaign-api-v3-overlay",
+		path:        "advisory-overlays/activecampaign-api-v3-overlay.json",
+		builderPath: "overlay-builders/build_m21_human_docs_overlays.go",
+		sourceURL:   "https://developers.activecampaign.com/reference/overview",
+	},
+	{
 		providerID:  "airtable",
 		artifactID:  "airtable-web-api-overlay",
 		path:        "advisory-overlays/airtable-web-api-overlay.json",
@@ -520,11 +527,25 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://airtable.com/developers/web/api/introduction",
 	},
 	{
+		providerID:  "bamboohr",
+		artifactID:  "bamboohr-api-v1-overlay",
+		path:        "advisory-overlays/bamboohr-api-v1-overlay.json",
+		builderPath: "overlay-builders/build_m21_human_docs_overlays.go",
+		sourceURL:   "https://documentation.bamboohr.com/docs",
+	},
+	{
 		providerID:  "calendly",
 		artifactID:  "calendly-public-api-overlay",
 		path:        "advisory-overlays/calendly-public-api-overlay.json",
 		builderPath: "overlay-builders/build_calendly_overlay.go",
 		sourceURL:   "https://developer.calendly.com/api-docs",
+	},
+	{
+		providerID:  "contentful",
+		artifactID:  "contentful-management-api-overlay",
+		path:        "advisory-overlays/contentful-management-api-overlay.json",
+		builderPath: "overlay-builders/build_m21_human_docs_overlays.go",
+		sourceURL:   "https://www.contentful.com/developers/docs/references/content-management-api/",
 	},
 	{
 		providerID:  "databricks",
@@ -539,6 +560,20 @@ var overlayArtifacts = []overlayArtifact{
 		path:        "advisory-overlays/dropbox-core-api-overlay.json",
 		builderPath: "overlay-builders/build_dropbox_overlay.go",
 		sourceURL:   "https://www.dropbox.com/developers/documentation/http/documentation",
+	},
+	{
+		providerID:  "eventbrite",
+		artifactID:  "eventbrite-platform-api-v3-overlay",
+		path:        "advisory-overlays/eventbrite-platform-api-v3-overlay.json",
+		builderPath: "overlay-builders/build_m21_human_docs_overlays.go",
+		sourceURL:   "https://www.eventbrite.com/platform/api",
+	},
+	{
+		providerID:  "freshdesk",
+		artifactID:  "freshdesk-api-v2-overlay",
+		path:        "advisory-overlays/freshdesk-api-v2-overlay.json",
+		builderPath: "overlay-builders/build_m21_human_docs_overlays.go",
+		sourceURL:   "https://developers.freshdesk.com/api",
 	},
 	{
 		providerID:  "google-calendar",
@@ -574,6 +609,13 @@ var overlayArtifacts = []overlayArtifact{
 		path:        "advisory-overlays/openweathermap-one-call-3-overlay.json",
 		builderPath: "overlay-builders/build_openweathermap_overlay.go",
 		sourceURL:   "https://openweathermap.org/api/one-call-3?collection=one_call_api_3.0",
+	},
+	{
+		providerID:  "postmark",
+		artifactID:  "postmark-api-overlay",
+		path:        "advisory-overlays/postmark-api-overlay.json",
+		builderPath: "overlay-builders/build_m21_human_docs_overlays.go",
+		sourceURL:   "https://postmarkapp.com/developer/api/overview",
 	},
 	{
 		providerID:  "quickbooks",
@@ -625,10 +667,24 @@ var overlayArtifacts = []overlayArtifact{
 		sourceURL:   "https://core.telegram.org/bots/api",
 	},
 	{
+		providerID:  "todoist",
+		artifactID:  "todoist-rest-api-v2-overlay",
+		path:        "advisory-overlays/todoist-rest-api-v2-overlay.json",
+		builderPath: "overlay-builders/build_m21_human_docs_overlays.go",
+		sourceURL:   "https://developer.todoist.com/rest/v2/",
+	},
+	{
 		providerID:  "typeform",
 		artifactID:  "typeform-rest-api-overlay",
 		path:        "advisory-overlays/typeform-rest-api-overlay.json",
 		builderPath: "overlay-builders/build_typeform_overlay.go",
 		sourceURL:   "https://www.typeform.com/developers/get-started/",
+	},
+	{
+		providerID:  "webflow",
+		artifactID:  "webflow-data-api-v2-overlay",
+		path:        "advisory-overlays/webflow-data-api-v2-overlay.json",
+		builderPath: "overlay-builders/build_m21_human_docs_overlays.go",
+		sourceURL:   "https://developers.webflow.com/data/reference",
 	},
 }

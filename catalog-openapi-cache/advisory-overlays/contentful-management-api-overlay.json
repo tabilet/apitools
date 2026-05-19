@@ -1,0 +1,537 @@
+{
+  "components": {
+    "schemas": {
+      "ContentfulCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ContentfulError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ContentfulObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "contentfulBearer": {
+        "description": "Contentful API access token carried in the Authorization header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Contentful Content Management API human documentation. This is not an official Contentful OpenAPI document.",
+    "title": "Contentful Content Management API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/spaces": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listContentfulSpaces",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentfulCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "contentfulBearer": []
+          }
+        ],
+        "summary": "List spaces"
+      }
+    },
+    "/spaces/{space_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getContentfulSpace",
+        "parameters": [
+          {
+            "description": "Contentful space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentfulObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "contentfulBearer": []
+          }
+        ],
+        "summary": "Get a space"
+      }
+    },
+    "/spaces/{space_id}/environments": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listContentfulEnvironments",
+        "parameters": [
+          {
+            "description": "Contentful space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentfulCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "contentfulBearer": []
+          }
+        ],
+        "summary": "List environments"
+      }
+    },
+    "/spaces/{space_id}/environments/{environment_id}/assets": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listContentfulAssets",
+        "parameters": [
+          {
+            "description": "Contentful space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Contentful environment ID.",
+            "in": "path",
+            "name": "environment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentfulCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "contentfulBearer": []
+          }
+        ],
+        "summary": "List assets"
+      }
+    },
+    "/spaces/{space_id}/environments/{environment_id}/content_types": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listContentfulContentTypes",
+        "parameters": [
+          {
+            "description": "Contentful space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Contentful environment ID.",
+            "in": "path",
+            "name": "environment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentfulCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "contentfulBearer": []
+          }
+        ],
+        "summary": "List content types"
+      }
+    },
+    "/spaces/{space_id}/environments/{environment_id}/entries": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listContentfulEntries",
+        "parameters": [
+          {
+            "description": "Contentful space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Contentful environment ID.",
+            "in": "path",
+            "name": "environment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Content type filter.",
+            "in": "query",
+            "name": "content_type",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentfulCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "contentfulBearer": []
+          }
+        ],
+        "summary": "List entries"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createContentfulEntry",
+        "parameters": [
+          {
+            "description": "Contentful space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Contentful environment ID.",
+            "in": "path",
+            "name": "environment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentfulObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentfulObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "contentfulBearer": []
+          }
+        ],
+        "summary": "Create an entry"
+      }
+    },
+    "/spaces/{space_id}/environments/{environment_id}/entries/{entry_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteContentfulEntry",
+        "parameters": [
+          {
+            "description": "Contentful space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Contentful environment ID.",
+            "in": "path",
+            "name": "environment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Contentful entry ID.",
+            "in": "path",
+            "name": "entry_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentfulObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "contentfulBearer": []
+          }
+        ],
+        "summary": "Delete an entry"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getContentfulEntry",
+        "parameters": [
+          {
+            "description": "Contentful space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Contentful environment ID.",
+            "in": "path",
+            "name": "environment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Contentful entry ID.",
+            "in": "path",
+            "name": "entry_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentfulObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "contentfulBearer": []
+          }
+        ],
+        "summary": "Get an entry"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "putContentfulEntry",
+        "parameters": [
+          {
+            "description": "Contentful space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Contentful environment ID.",
+            "in": "path",
+            "name": "environment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Contentful entry ID.",
+            "in": "path",
+            "name": "entry_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentfulObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentfulObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "contentfulBearer": []
+          }
+        ],
+        "summary": "Create or replace an entry"
+      }
+    }
+  },
+  "security": [
+    {
+      "contentfulBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.contentful.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "contentful-management-api-advisory-overlay",
+    "provider_id": "contentful",
+    "source_note": "Contentful publishes multiple REST API surfaces; this overlay focuses on the Content Management API for spaces, environments, entries, assets, and content types.",
+    "source_refs": [
+      "https://www.contentful.com/developers/docs/references/content-management-api/",
+      "https://www.contentful.com/developers/docs/references/authentication/",
+      "https://www.contentful.com/developers/docs/references/content-delivery-api/"
+    ]
+  }
+}

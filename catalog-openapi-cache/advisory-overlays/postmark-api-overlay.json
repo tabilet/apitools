@@ -1,0 +1,428 @@
+{
+  "components": {
+    "schemas": {
+      "PostmarkCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PostmarkError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PostmarkObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "postmarkAccountToken": {
+        "description": "Postmark account token carried in the X-Postmark-Account-Token header for account-level endpoints.",
+        "in": "header",
+        "name": "X-Postmark-Account-Token",
+        "type": "apiKey"
+      },
+      "postmarkServerToken": {
+        "description": "Postmark server token carried in the X-Postmark-Server-Token header.",
+        "in": "header",
+        "name": "X-Postmark-Server-Token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Postmark API human documentation. This is not an official Postmark OpenAPI document.",
+    "title": "Postmark API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/bounces": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPostmarkBounces",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "List bounces"
+      }
+    },
+    "/bounces/{bounce_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getPostmarkBounce",
+        "parameters": [
+          {
+            "description": "Postmark bounce ID.",
+            "in": "path",
+            "name": "bounce_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Get a bounce"
+      }
+    },
+    "/email": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendPostmarkEmail",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostmarkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Send an email"
+      }
+    },
+    "/email/batch": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendPostmarkEmailBatch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostmarkCollection"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Send a batch of emails"
+      }
+    },
+    "/servers": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPostmarkServers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkAccountToken": []
+          }
+        ],
+        "summary": "List servers"
+      }
+    },
+    "/templates": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPostmarkTemplates",
+        "parameters": [
+          {
+            "description": "Maximum number of templates to return.",
+            "in": "query",
+            "name": "Count",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Offset for pagination.",
+            "in": "query",
+            "name": "Offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "List templates"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createPostmarkTemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostmarkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Create a template"
+      }
+    },
+    "/templates/{template_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deletePostmarkTemplate",
+        "parameters": [
+          {
+            "description": "Postmark template ID.",
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Delete a template"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getPostmarkTemplate",
+        "parameters": [
+          {
+            "description": "Postmark template ID.",
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Get a template"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updatePostmarkTemplate",
+        "parameters": [
+          {
+            "description": "Postmark template ID.",
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostmarkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Update a template"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.postmarkapp.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "overlay_id": "postmark-api-advisory-overlay",
+    "provider_id": "postmark",
+    "source_note": "Postmark publishes REST-shaped API docs and an API Explorer; this overlay models server-token email/template/bounce endpoints separately from account-token server endpoints.",
+    "source_refs": [
+      "https://postmarkapp.com/developer/api/overview",
+      "https://postmarkapp.com/api-explorer",
+      "https://postmarkapp.com/developer/api/email-api",
+      "https://postmarkapp.com/developer/api/templates-api",
+      "https://postmarkapp.com/developer/api/bounce-api",
+      "https://postmarkapp.com/developer/api/server-api"
+    ]
+  }
+}

@@ -1,7 +1,9 @@
 package catalog
 
 import (
+	"os"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -278,6 +280,65 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 			t.Fatalf("%s missing spec reference kind %q", test.id, test.specKind)
 		}
 	}
+}
+
+func TestHumanDocsPrimaryProvidersHaveEndpointOverlayDecision(t *testing.T) {
+	content, err := os.ReadFile("../catalog-openapi-cache/advisory-overlays/human-doc-overlay-decisions.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	decisions := map[string]struct{}{}
+	for _, line := range strings.Split(string(content), "\n") {
+		if !strings.HasPrefix(line, "|") {
+			continue
+		}
+		parts := strings.Split(line, "|")
+		if len(parts) < 3 {
+			continue
+		}
+		providerName := strings.TrimSpace(parts[1])
+		if providerName == "" || providerName == "Provider" || strings.HasPrefix(providerName, "---") {
+			continue
+		}
+		decisions[decisionKey(providerName)] = struct{}{}
+	}
+
+	var missing []string
+	for _, provider := range BuiltInProviders() {
+		if provider.OfficialOpenAPIAvailability != SpecAvailabilityUnavailable ||
+			provider.OfficialMachineSpecAvailability != SpecAvailabilityUnknown {
+			continue
+		}
+		if !hasHumanDocsReference(provider) {
+			continue
+		}
+		if _, ok := decisions[decisionKey(provider.DisplayName)]; !ok {
+			missing = append(missing, provider.ID)
+		}
+	}
+	if len(missing) > 0 {
+		t.Fatalf("human-docs-primary providers missing endpoint overlay decisions: %v", missing)
+	}
+}
+
+func hasHumanDocsReference(provider Provider) bool {
+	for _, ref := range provider.SpecReferences {
+		if ref.Kind == SpecKindHumanDocs {
+			return true
+		}
+	}
+	return false
+}
+
+func decisionKey(value string) string {
+	value = strings.ToLower(value)
+	var b strings.Builder
+	for _, r := range value {
+		if r >= 'a' && r <= 'z' || r >= '0' && r <= '9' {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
 }
 
 func TestSpecReferenceProtocolClassification(t *testing.T) {
