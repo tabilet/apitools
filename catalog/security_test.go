@@ -86,7 +86,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 33; got != want {
+	if got, want := len(overlays), 45; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -233,16 +233,16 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 	}
 	wantStatuses := map[string]AuthCompletenessStatus{
 		"airtable":        AuthStatusOverlayRequired,
-		"asana":           AuthStatusComplete,
+		"asana":           AuthStatusPresentIncomplete,
 		"aws-lambda":      AuthStatusOverlayRequired,
 		"aws-s3":          AuthStatusOverlayRequired,
 		"aws-sns":         AuthStatusOverlayRequired,
-		"bitbucket":       AuthStatusComplete,
-		"box":             AuthStatusComplete,
+		"bitbucket":       AuthStatusPresentIncomplete,
+		"box":             AuthStatusPresentIncomplete,
 		"calendly":        AuthStatusOverlayRequired,
-		"circleci":        AuthStatusComplete,
+		"circleci":        AuthStatusPresentIncomplete,
 		"clickup":         AuthStatusPresentIncomplete,
-		"cloudflare":      AuthStatusComplete,
+		"cloudflare":      AuthStatusPresentIncomplete,
 		"databricks":      AuthStatusOverlayRequired,
 		"discord":         AuthStatusComplete,
 		"dropbox":         AuthStatusOverlayRequired,
@@ -256,18 +256,18 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"grafana":         AuthStatusComplete,
 		"hubspot":         AuthStatusOverlayRequired,
 		"jenkins":         AuthStatusOverlayRequired,
-		"jira-cloud":      AuthStatusComplete,
+		"jira-cloud":      AuthStatusPresentIncomplete,
 		"linear":          AuthStatusOverlayRequired,
 		"mailchimp":       AuthStatusOverlayRequired,
 		"microsoft-graph": AuthStatusOverlayRequired,
 		"monday-com":      AuthStatusOverlayRequired,
 		"netlify":         AuthStatusComplete,
-		"notion":          AuthStatusComplete,
-		"okta":            AuthStatusComplete,
+		"notion":          AuthStatusPresentIncomplete,
+		"okta":            AuthStatusPresentIncomplete,
 		"openweathermap":  AuthStatusOverlayRequired,
-		"pagerduty":       AuthStatusComplete,
+		"pagerduty":       AuthStatusPresentIncomplete,
 		"paypal":          AuthStatusComplete,
-		"pipedrive":       AuthStatusComplete,
+		"pipedrive":       AuthStatusPresentIncomplete,
 		"quickbooks":      AuthStatusOverlayRequired,
 		"salesforce":      AuthStatusOverlayRequired,
 		"sendgrid":        AuthStatusComplete,
@@ -280,7 +280,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"stripe":          AuthStatusComplete,
 		"supabase":        AuthStatusPresentIncomplete,
 		"telegram":        AuthStatusOverlayRequired,
-		"trello":          AuthStatusComplete,
+		"trello":          AuthStatusPresentIncomplete,
 		"twilio":          AuthStatusComplete,
 		"typeform":        AuthStatusOverlayRequired,
 		"xero":            AuthStatusComplete,
@@ -297,6 +297,30 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 	}
 	if !reflect.DeepEqual(slack.OverlayIDs, []string{"slack-web-api-auth-review"}) {
 		t.Fatalf("slack overlay ids = %#v", slack.OverlayIDs)
+	}
+
+	parseableInvalidOverlays := map[string]string{
+		"asana":      "asana-openapi-v1-auth-review",
+		"bitbucket":  "bitbucket-cloud-swagger-v2-auth-review",
+		"box":        "box-platform-openapi-v3-auth-review",
+		"circleci":   "circleci-api-v2-auth-review",
+		"cloudflare": "cloudflare-api-auth-review",
+		"jira-cloud": "jira-cloud-platform-openapi-v3-auth-review",
+		"notion":     "notion-api-openapi-auth-review",
+		"okta":       "okta-management-minimal-openapi-auth-review",
+		"pagerduty":  "pagerduty-rest-openapi-v3-auth-review",
+		"pipedrive":  "pipedrive-api-v2-openapi-auth-review",
+		"trello":     "trello-cloud-openapi-v3-auth-review",
+		"zendesk":    "zendesk-sunshine-auth-review",
+	}
+	for providerID, overlayID := range parseableInvalidOverlays {
+		row, ok := report.FindProvider(providerID)
+		if !ok {
+			t.Fatalf("FindProvider(%s) did not match", providerID)
+		}
+		if !containsString(row.OverlayIDs, overlayID) {
+			t.Fatalf("%s overlay ids = %#v, want %q", providerID, row.OverlayIDs, overlayID)
+		}
 	}
 }
 
@@ -330,4 +354,13 @@ func bearerScheme(name string) SecurityScheme {
 		Type:   SecuritySchemeHTTP,
 		Scheme: "bearer",
 	}
+}
+
+func containsString(values []string, want string) bool {
+	for _, value := range values {
+		if value == want {
+			return true
+		}
+	}
+	return false
 }

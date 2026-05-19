@@ -158,6 +158,38 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Airtable has human Web API docs in this catalog entry but no recorded official OpenAPI document; Airtable docs describe PAT or OAuth token authentication, so OpenAPI imports need an advisory bearer-token overlay.",
 	},
+	parseableSpecAuthReviewOverlay(
+		"asana-openapi-v1-auth-review",
+		"asana",
+		"asana-openapi-v1",
+		[]SecurityScheme{
+			{
+				Name:        "personalAccessToken",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Asana personal access token carried as an Authorization bearer token.",
+			},
+			{
+				Name: "oauth2",
+				Type: SecuritySchemeOAuth2,
+				Flows: []OAuthFlow{{
+					Type:             OAuthFlowAuthorizationCode,
+					AuthorizationURL: "https://app.asana.com/-/oauth_authorize",
+					TokenURL:         "https://app.asana.com/-/oauth_token",
+					RefreshURL:       "https://app.asana.com/-/oauth_token",
+					Scopes:           []string{"default", "openid", "email"},
+				}},
+				Description: "Asana OAuth 2.0 authorization-code flow from the official OpenAPI artifact.",
+			},
+		},
+		[]SecurityRequirement{{Scheme: "personalAccessToken"}, {Scheme: "oauth2"}},
+		[]string{
+			"https://raw.githubusercontent.com/Asana/openapi/master/defs/asana_oas.yaml",
+			"https://developers.asana.com/docs/oauth",
+			"https://developers.asana.com/docs/personal-access-token",
+		},
+		"Asana's official OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation, so bearer and OAuth security metadata is carried as review-only overlay guidance.",
+	),
 	awsSigV4Overlay("aws-s3-sigv4-auth-overlay", "aws-s3", "aws-s3-smithy-model", "Amazon S3", []string{
 		"https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html",
 		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
@@ -170,6 +202,68 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		"https://docs.aws.amazon.com/sns/latest/api/welcome.html",
 		"https://docs.aws.amazon.com/sns/latest/api/CommonParameters.html",
 	}),
+	parseableSpecAuthReviewOverlay(
+		"bitbucket-cloud-swagger-v2-auth-review",
+		"bitbucket",
+		"bitbucket-cloud-swagger-v2",
+		[]SecurityScheme{
+			{
+				Name:        "basic",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Bitbucket Cloud basic authentication metadata from the official Swagger artifact.",
+			},
+			{
+				Name: "oauth2",
+				Type: SecuritySchemeOAuth2,
+				Flows: []OAuthFlow{{
+					Type:             OAuthFlowAuthorizationCode,
+					AuthorizationURL: "https://bitbucket.org/site/oauth2/authorize",
+					TokenURL:         "https://bitbucket.org/site/oauth2/access_token",
+					Scopes:           []string{"repository", "repository:write", "project", "pullrequest", "account"},
+				}},
+				Description: "Bitbucket Cloud OAuth 2.0 flow and scopes from the official Swagger artifact.",
+			},
+			{
+				Name:          "api_key",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Authorization",
+				Description:   "Bitbucket Cloud API token or app password carried in the Authorization header.",
+			},
+		},
+		[]SecurityRequirement{{Scheme: "api_key"}, {Scheme: "oauth2"}, {Scheme: "basic"}},
+		[]string{
+			"https://api.bitbucket.org/swagger.json",
+			"https://developer.atlassian.com/cloud/bitbucket/rest/intro/",
+			"https://support.atlassian.com/bitbucket-cloud/docs/using-api-tokens/",
+			"https://developer.atlassian.com/cloud/bitbucket/oauth-2/",
+		},
+		"Bitbucket Cloud's official Swagger artifact is tracked as parseable-swagger-invalid by strict refresh validation, so API token, basic, and OAuth metadata is carried as review-only overlay guidance.",
+	),
+	parseableSpecAuthReviewOverlay(
+		"box-platform-openapi-v3-auth-review",
+		"box",
+		"box-platform-openapi-v3",
+		[]SecurityScheme{{
+			Name: "OAuth2Security",
+			Type: SecuritySchemeOAuth2,
+			Flows: []OAuthFlow{{
+				Type:             OAuthFlowAuthorizationCode,
+				AuthorizationURL: "https://account.box.com/api/oauth2/authorize",
+				TokenURL:         "https://api.box.com/oauth2/token",
+				Scopes:           []string{"root_readonly", "root_readwrite", "manage_app_users", "manage_managed_users"},
+			}},
+			Description: "Box Platform OAuth 2.0 authorization-code security metadata from the official OpenAPI artifact.",
+		}},
+		[]SecurityRequirement{{Scheme: "OAuth2Security"}},
+		[]string{
+			"https://raw.githubusercontent.com/box/box-openapi/main/openapi.json",
+			"https://developer.box.com/guides/authentication/oauth2/",
+			"https://developer.box.com/reference/",
+		},
+		"Box's official OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation, so OAuth security metadata is carried as review-only overlay guidance.",
+	),
 	{
 		ID:         "calendly-public-api-auth-overlay",
 		ProviderID: "calendly",
@@ -191,6 +285,81 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Calendly has human API docs in this catalog entry but no recorded downloadable official OpenAPI document; docs describe personal access tokens and OAuth 2.1, so OpenAPI imports need an advisory bearer-token overlay.",
 	},
+	parseableSpecAuthReviewOverlay(
+		"circleci-api-v2-auth-review",
+		"circleci",
+		"circleci-api-v2-openapi",
+		[]SecurityScheme{
+			{
+				Name:          "api_key_header",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Circle-Token",
+				Description:   "CircleCI API token carried in the Circle-Token header.",
+			},
+			{
+				Name:        "basic_auth",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "CircleCI API token used as the HTTP Basic username with an empty password.",
+			},
+			{
+				Name:          "api_key_query",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInQuery,
+				ParameterName: "circle-token",
+				Description:   "Deprecated CircleCI query-string token form recorded in the official OpenAPI artifact.",
+			},
+		},
+		[]SecurityRequirement{{Scheme: "api_key_header"}, {Scheme: "basic_auth"}, {Scheme: "api_key_query"}},
+		[]string{
+			"https://circleci.com/api/v2/openapi.json",
+			"https://circleci.com/docs/guides/toolkit/managing-api-tokens/",
+			"https://circleci.com/docs/guides/toolkit/api-developers-guide/",
+		},
+		"CircleCI's official OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation, so header token, basic-auth token, and deprecated query-token metadata is carried as review-only overlay guidance.",
+	),
+	parseableSpecAuthReviewOverlay(
+		"cloudflare-api-auth-review",
+		"cloudflare",
+		"cloudflare-api-openapi",
+		[]SecurityScheme{
+			{
+				Name:        "api_token",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Cloudflare scoped API token carried as an Authorization bearer token.",
+			},
+			{
+				Name:          "api_email",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "X-Auth-Email",
+				Description:   "Cloudflare account email header used with legacy global API key authentication.",
+			},
+			{
+				Name:          "api_key",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "X-Auth-Key",
+				Description:   "Cloudflare legacy global API key header used with X-Auth-Email.",
+			},
+			{
+				Name:          "user_service_key",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "X-Auth-User-Service-Key",
+				Description:   "Cloudflare user service key header recorded in the official OpenAPI artifact.",
+			},
+		},
+		[]SecurityRequirement{{Scheme: "api_token"}, {Scheme: "api_email"}, {Scheme: "api_key"}, {Scheme: "user_service_key"}},
+		[]string{
+			"https://raw.githubusercontent.com/cloudflare/api-schemas/main/openapi.yaml",
+			"https://developers.cloudflare.com/fundamentals/api/get-started/create-token/",
+			"https://developers.cloudflare.com/fundamentals/api/get-started/keys/",
+		},
+		"Cloudflare's official OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation; preferred API-token and legacy key/email metadata is carried as review-only overlay guidance.",
+	),
 	{
 		ID:         "clickup-api-v2-auth-review",
 		ProviderID: "clickup",
@@ -223,7 +392,7 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			"https://developer.clickup.com/docs/authentication",
 			"https://developer.clickup.com/reference/getaccesstoken",
 		},
-		SourceNote: "ClickUp's official OpenAPI document includes an Authorization header API key scheme and root security; OAuth authorization-code endpoints are documented separately, so keep this as a present-incomplete auth review overlay.",
+		SourceNote: "ClickUp's official OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation. It includes an Authorization header API key scheme and root security; OAuth authorization-code endpoints are documented separately, so keep this as a present-incomplete auth review overlay.",
 	},
 	{
 		ID:         "databricks-rest-api-auth-overlay",
@@ -307,7 +476,7 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			"https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api",
 			"https://github.com/github/rest-api-description",
 		},
-		SourceNote: "GitHub's official OpenAPI description has no security schemes or security requirements; official REST docs describe Authorization bearer tokens for most requests and basic authentication for some app-management endpoints.",
+		SourceNote: "GitHub's official OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation and has no security schemes or security requirements; official REST docs describe Authorization bearer tokens for most requests and basic authentication for some app-management endpoints.",
 	},
 	{
 		ID:         "gitlab-openapi-v2-auth-review",
@@ -442,6 +611,37 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "HubSpot exposes an official split OpenAPI spec index; official docs describe OAuth and private app bearer tokens, so selected specs should be checked with an advisory bearer-token overlay.",
 	},
+	parseableSpecAuthReviewOverlay(
+		"jira-cloud-platform-openapi-v3-auth-review",
+		"jira-cloud",
+		"jira-cloud-platform-openapi-v3",
+		[]SecurityScheme{
+			{
+				Name: "OAuth2",
+				Type: SecuritySchemeOAuth2,
+				Flows: []OAuthFlow{{
+					Type:             OAuthFlowAuthorizationCode,
+					AuthorizationURL: "https://auth.atlassian.com/authorize",
+					TokenURL:         "https://auth.atlassian.com/oauth/token",
+					Scopes:           []string{"read:jira-work", "write:jira-work", "manage:jira-project"},
+				}},
+				Description: "Atlassian OAuth 2.0 authorization-code security metadata for Jira Cloud.",
+			},
+			{
+				Name:        "basicAuth",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Jira Cloud basic authentication metadata from the official OpenAPI artifact.",
+			},
+		},
+		[]SecurityRequirement{{Scheme: "OAuth2"}, {Scheme: "basicAuth"}},
+		[]string{
+			"https://dac-static.atlassian.com/cloud/jira/platform/swagger-v3.v3.json",
+			"https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/",
+			"https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps/",
+		},
+		"Jira Cloud's official OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation, so OAuth2 and basic security metadata is carried as review-only overlay guidance.",
+	),
 	{
 		ID:         "jenkins-remote-api-auth-overlay",
 		ProviderID: "jenkins",
@@ -560,6 +760,59 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Monday.com GraphQL docs describe Authorization-header API tokens and OAuth-generated tokens; OpenAPI-only imports need advisory token-header security metadata.",
 	},
+	parseableSpecAuthReviewOverlay(
+		"notion-api-openapi-auth-review",
+		"notion",
+		"notion-api-openapi",
+		[]SecurityScheme{
+			{
+				Name:        "bearerAuth",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Notion integration token or OAuth access token carried as an Authorization bearer token.",
+			},
+			{
+				Name:        "basicAuth",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Notion basic authentication metadata recorded in the official OpenAPI artifact.",
+			},
+		},
+		[]SecurityRequirement{{Scheme: "bearerAuth"}},
+		[]string{
+			"https://developers.notion.com/openapi.json",
+			"https://developers.notion.com/reference/authentication",
+		},
+		"Notion's official OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation, so bearer-token security metadata is carried as review-only overlay guidance.",
+	),
+	parseableSpecAuthReviewOverlay(
+		"okta-management-minimal-openapi-auth-review",
+		"okta",
+		"okta-management-minimal-openapi",
+		[]SecurityScheme{
+			{
+				Name:          "apiToken",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Authorization",
+				Description:   "Okta SSWS API token carried in the Authorization header.",
+			},
+			{
+				Name:         "oktaOAuth2",
+				Type:         SecuritySchemeHTTP,
+				Scheme:       "bearer",
+				BearerFormat: "OAuth 2.0 access token",
+				Description:  "Okta scoped OAuth 2.0 access token carried as an Authorization bearer token.",
+			},
+		},
+		[]SecurityRequirement{{Scheme: "apiToken"}, {Scheme: "oktaOAuth2"}},
+		[]string{
+			"https://raw.githubusercontent.com/okta/okta-management-openapi-spec/master/dist/current/management-minimal.yaml",
+			"https://developer.okta.com/docs/api/openapi/okta-management/guides/overview/",
+			"https://developer.okta.com/docs/guides/implement-oauth-for-okta/",
+		},
+		"Okta's official Management OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation, so SSWS token and scoped OAuth metadata is carried as review-only overlay guidance.",
+	),
 	{
 		ID:         "openweathermap-api-key-overlay",
 		ProviderID: "openweathermap",
@@ -581,6 +834,62 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "OpenWeather has human API docs in this catalog entry but no recorded official OpenAPI document; docs describe API key usage, so OpenAPI imports need an advisory appid query-key overlay.",
 	},
+	parseableSpecAuthReviewOverlay(
+		"pagerduty-rest-openapi-v3-auth-review",
+		"pagerduty",
+		"pagerduty-rest-openapi-v3",
+		[]SecurityScheme{{
+			Name:          "api_key",
+			Type:          SecuritySchemeAPIKey,
+			In:            APIKeyInHeader,
+			ParameterName: "Authorization",
+			Description:   "PagerDuty API token carried in the Authorization header.",
+		}},
+		[]SecurityRequirement{{Scheme: "api_key"}},
+		[]string{
+			"https://raw.githubusercontent.com/PagerDuty/api-schema/main/reference/REST/openapiv3.json",
+			"https://developer.pagerduty.com/api-reference/",
+		},
+		"PagerDuty's official OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation, so API-token security metadata is carried as review-only overlay guidance.",
+	),
+	parseableSpecAuthReviewOverlay(
+		"pipedrive-api-v2-openapi-auth-review",
+		"pipedrive",
+		"pipedrive-api-v2-openapi",
+		[]SecurityScheme{
+			{
+				Name:        "basic_authentication",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Pipedrive basic authentication metadata from the official OpenAPI artifact.",
+			},
+			{
+				Name:          "api_key",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "x-api-token",
+				Description:   "Pipedrive API token carried in the x-api-token header.",
+			},
+			{
+				Name: "oauth2",
+				Type: SecuritySchemeOAuth2,
+				Flows: []OAuthFlow{{
+					Type:             OAuthFlowAuthorizationCode,
+					AuthorizationURL: "https://oauth.pipedrive.com/oauth/authorize",
+					TokenURL:         "https://oauth.pipedrive.com/oauth/token",
+					RefreshURL:       "https://oauth.pipedrive.com/oauth/token",
+					Scopes:           []string{"base", "deals:read", "deals:write"},
+				}},
+				Description: "Pipedrive OAuth 2.0 authorization-code security metadata from the official OpenAPI artifact.",
+			},
+		},
+		[]SecurityRequirement{{Scheme: "api_key"}, {Scheme: "oauth2"}, {Scheme: "basic_authentication"}},
+		[]string{
+			"https://developers.pipedrive.com/docs/api/v1/openapi-v2.yaml",
+			"https://developers.pipedrive.com/docs/api/v1",
+		},
+		"Pipedrive's official OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation, so API-token, OAuth2, and basic security metadata is carried as review-only overlay guidance.",
+	),
 	{
 		ID:         "quickbooks-online-oauth-overlay",
 		ProviderID: "quickbooks",
@@ -771,7 +1080,7 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			"https://api.supabase.com/api/v1-json",
 			"https://supabase.com/docs/reference/api/introduction",
 		},
-		SourceNote: "Supabase's official Management API OpenAPI document declares a bearer scheme but no root security requirement; official API docs state that all API requests require an Authorization bearer token.",
+		SourceNote: "Supabase's official Management API OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation and declares a bearer scheme but no root security requirement; official API docs state that all API requests require an Authorization bearer token.",
 	},
 	{
 		ID:         "telegram-bot-token-auth-overlay",
@@ -812,6 +1121,61 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Typeform docs describe personal access tokens and OAuth 2.0 access tokens passed in the Authorization header; OpenAPI-only imports need advisory bearer-token security metadata.",
 	},
+	parseableSpecAuthReviewOverlay(
+		"trello-cloud-openapi-v3-auth-review",
+		"trello",
+		"trello-cloud-openapi-v3",
+		[]SecurityScheme{
+			{
+				Name:          "APIKey",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInQuery,
+				ParameterName: "key",
+				Description:   "Trello API key passed as the key query parameter.",
+			},
+			{
+				Name:          "APIToken",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInQuery,
+				ParameterName: "token",
+				Description:   "Trello API token passed as the token query parameter.",
+			},
+		},
+		[]SecurityRequirement{{Scheme: "APIKey"}, {Scheme: "APIToken"}},
+		[]string{
+			"https://dac-static.atlassian.com/cloud/trello/swagger.v3.json",
+			"https://developer.atlassian.com/cloud/trello/rest/",
+			"https://developer.atlassian.com/cloud/trello/guides/rest-api/api-introduction/",
+		},
+		"Trello's official OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation, so key/token query security metadata is carried as review-only overlay guidance.",
+	),
+	parseableSpecAuthReviewOverlay(
+		"zendesk-sunshine-auth-review",
+		"zendesk",
+		"zendesk-sunshine-conversations-openapi",
+		[]SecurityScheme{
+			{
+				Name:         "bearerAuth",
+				Type:         SecuritySchemeHTTP,
+				Scheme:       "bearer",
+				BearerFormat: "JWT",
+				Description:  "Zendesk Sunshine Conversations bearer token metadata from the official OpenAPI artifact.",
+			},
+			{
+				Name:        "basicAuth",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Zendesk Sunshine Conversations basic authentication metadata from the official OpenAPI artifact.",
+			},
+		},
+		[]SecurityRequirement{{Scheme: "bearerAuth", Scopes: []string{"app", "account"}}, {Scheme: "basicAuth", Scopes: []string{"app", "account"}}},
+		[]string{
+			"https://raw.githubusercontent.com/zendesk/sunshine-conversations-api-spec/master/openapi.yaml",
+			"https://developer.zendesk.com/documentation/conversations/references/openapi-specification/",
+			"https://developer.zendesk.com/api-reference/introduction/security-and-auth/",
+		},
+		"Zendesk's official Sunshine Conversations OpenAPI artifact is tracked as parseable-openapi-invalid by strict refresh validation, so messaging API bearer/basic metadata is carried as review-only overlay guidance.",
+	),
 	{
 		ID:         "zendesk-support-auth-review",
 		ProviderID: "zendesk",
@@ -881,6 +1245,19 @@ func awsSigV4Overlay(id, providerID, specRefID, serviceName string, sourceRefs [
 		RootSecurity: []SecurityRequirement{{Scheme: "awsSigV4"}},
 		SourceRefs:   sourceRefs,
 		SourceNote:   serviceName + " uses AWS Signature Version 4. This overlay records signing requirements as metadata only; apitools must not calculate signatures, resolve credentials, or choose AWS accounts.",
+	}
+}
+
+func parseableSpecAuthReviewOverlay(id, providerID, specRefID string, schemes []SecurityScheme, rootSecurity []SecurityRequirement, sourceRefs []string, sourceNote string) SecurityOverlay {
+	return SecurityOverlay{
+		ID:              id,
+		ProviderID:      providerID,
+		SpecRefID:       specRefID,
+		Status:          AuthStatusPresentIncomplete,
+		SecuritySchemes: schemes,
+		RootSecurity:    rootSecurity,
+		SourceRefs:      sourceRefs,
+		SourceNote:      sourceNote,
 	}
 }
 
