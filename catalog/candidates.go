@@ -355,6 +355,15 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for transactional email, templates, contacts, suppression lists, and email analytics.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "sentry",
+		displayName: "Sentry",
+		aliases:     []string{"sentry api", "sentry.io"},
+		category:    "observability",
+		n8nNode:     "SentryIo",
+		relevance:   "Popular observability service for issues, events, releases, organizations, teams, and error-monitoring automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "servicenow",
 		displayName: "ServiceNow",
 		aliases:     []string{"servicenow api", "servicenow rest"},

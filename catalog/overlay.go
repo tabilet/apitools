@@ -673,6 +673,33 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Shopify has human REST Admin API docs in this catalog entry but no recorded official OpenAPI document; docs describe Admin API access tokens and access scopes, so OpenAPI imports need an advisory header-token overlay.",
 	},
 	{
+		ID:         "sentry-api-auth-overlay",
+		ProviderID: "sentry",
+		SpecRefID:  "sentry-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "sentryBearer",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "bearer",
+				Description: "Sentry user, organization, or internal integration authentication token carried in the Authorization header.",
+			},
+			{
+				Name:        "sentryBasicLegacy",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Legacy Sentry API key basic authentication for older accounts and limited endpoints.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "sentryBearer"}},
+		SourceRefs: []string{
+			"https://docs.sentry.io/api/auth/",
+			"https://docs.sentry.io/api/permissions/",
+			"https://docs.sentry.io/api/",
+		},
+		SourceNote: "Sentry has human API docs in this catalog entry but no recorded official OpenAPI document; docs describe bearer auth tokens, limited DSN auth, and legacy API keys, so OpenAPI imports need an advisory auth overlay.",
+	},
+	{
 		ID:         "servicenow-rest-auth-overlay",
 		ProviderID: "servicenow",
 		SpecRefID:  "servicenow-rest-api-docs",

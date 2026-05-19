@@ -396,6 +396,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Twilio SendGrid's official Mail v3 OpenAPI document includes bearer API-key security metadata and root security requirements.",
 	},
 	{
+		ProviderID: "sentry",
+		SpecRefID:  "sentry-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://docs.sentry.io/api/", "https://docs.sentry.io/api/auth/"},
+		SourceNote: "Sentry has no recorded official OpenAPI document in this catalog entry; auth metadata comes from advisory bearer-token overlay notes.",
+	},
+	{
 		ProviderID: "servicenow",
 		SpecRefID:  "servicenow-rest-api-docs",
 		Status:     AuthStatusOverlayRequired,

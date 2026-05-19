@@ -906,6 +906,22 @@ var builtInProviders = []Provider{
 		quirks: []string{"Twilio SendGrid publishes split OpenAPI files by product area; this entry starts with the Mail v3 spec used by common transactional email workflows."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "sentry",
+		displayName:         "Sentry",
+		aliases:             []string{"sentry api", "sentry.io"},
+		category:            "observability",
+		relevance:           "Popular observability service for issues, events, releases, organizations, teams, and error-monitoring automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef("sentry-api-docs", "https://docs.sentry.io/api/", "Official Sentry API reference documentation."),
+			humanDocsRef("sentry-auth-docs", "https://docs.sentry.io/api/auth/", "Official Sentry API authentication documentation."),
+			humanDocsRef("sentry-permissions-docs", "https://docs.sentry.io/api/permissions/", "Official Sentry API permissions and scopes documentation."),
+		},
+		quirks: []string{"Sentry API docs are public human reference pages; M13 review did not find a stable public downloadable official OpenAPI document.", "Some Sentry endpoints support DSN-based auth and legacy API keys, but bearer auth tokens are the documented general API path."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "servicenow",
 		displayName:         "ServiceNow",
 		aliases:             []string{"servicenow api", "servicenow rest"},
