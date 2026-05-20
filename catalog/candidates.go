@@ -2023,6 +2023,42 @@ var builtInCandidates = []Candidate{
 		relevance:   "Request bin utility API for creating bins, sending test requests, and inspecting captured HTTP request payloads.",
 		userNeed:    UserOpenAPINeedLikely,
 	}),
+	workflowCandidate(candidateSeed{
+		id:          "segment",
+		displayName: "Segment",
+		aliases:     []string{"segment api", "twilio segment", "segment public api"},
+		category:    "customer-data-platform",
+		n8nNode:     "Segment",
+		relevance:   "Customer data platform API for workspaces, sources, destinations, warehouses, tracking plans, audiences, and event collection automation.",
+		userNeed:    UserOpenAPINeedPossible,
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "strava",
+		displayName: "Strava",
+		aliases:     []string{"strava api", "strava v3 api"},
+		category:    "fitness",
+		n8nNode:     "Strava",
+		relevance:   "Fitness activity platform API for athletes, activities, uploads, routes, segments, clubs, streams, and webhooks.",
+		userNeed:    UserOpenAPINeedNotExpected,
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "zoho",
+		displayName: "Zoho CRM",
+		aliases:     []string{"zoho api", "zoho crm api", "zohocrm"},
+		category:    "crm",
+		n8nNode:     "Zoho",
+		relevance:   "CRM API for leads, contacts, accounts, deals, invoices, products, records, modules, fields, users, and sales automation.",
+		userNeed:    UserOpenAPINeedNotExpected,
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "uproc",
+		displayName: "uProc",
+		aliases:     []string{"uproc api", "uproc.io"},
+		category:    "data-enrichment",
+		n8nNode:     "UProc",
+		relevance:   "Data enrichment and validation service for profile, company, communication, internet, and operational data processing tools.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
 }
 
 type candidateSeed struct {

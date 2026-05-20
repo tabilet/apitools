@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 225; got != want {
+	if got, want := len(candidates), 229; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -189,6 +189,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"salesmate",
 		"seatable",
 		"securityscorecard",
+		"segment",
 		"sendgrid",
 		"sendy",
 		"sentry",
@@ -203,6 +204,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"stackby",
 		"storyblok",
 		"strapi",
+		"strava",
 		"stripe",
 		"supabase",
 		"surveymonkey",
@@ -224,6 +226,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"typeform",
 		"unleashed-software",
 		"uplead",
+		"uproc",
 		"uptimerobot",
 		"urlscan",
 		"venafi",
@@ -241,6 +244,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"yourls",
 		"zammad",
 		"zendesk",
+		"zoho",
 		"zoom",
 		"zulip",
 	}

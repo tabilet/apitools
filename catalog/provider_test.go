@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 225; got != want {
+	if got, want := len(catalog.ListProviders()), 229; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -189,6 +189,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"salesmate",
 		"seatable",
 		"securityscorecard",
+		"segment",
 		"sendgrid",
 		"sendy",
 		"sentry",
@@ -203,6 +204,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"stackby",
 		"storyblok",
 		"strapi",
+		"strava",
 		"stripe",
 		"supabase",
 		"surveymonkey",
@@ -224,6 +226,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"typeform",
 		"unleashed-software",
 		"uplead",
+		"uproc",
 		"uptimerobot",
 		"urlscan",
 		"venafi",
@@ -241,6 +244,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"yourls",
 		"zammad",
 		"zendesk",
+		"zoho",
 		"zoom",
 		"zulip",
 	}
@@ -370,11 +374,13 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "salesmate crm", id: "salesmate"},
 		{key: "sea table", id: "seatable"},
 		{key: "twilio sendgrid", id: "sendgrid"},
+		{key: "twilio segment", id: "segment"},
 		{key: "sendy api", id: "sendy"},
 		{key: "sentry api", id: "sentry"},
 		{key: "servicenow rest", id: "servicenow"},
 		{key: "shopify admin api", id: "shopify"},
 		{key: "stripe api", id: "stripe"},
+		{key: "strava v3 api", id: "strava"},
 		{key: "snowflake api", id: "snowflake"},
 		{key: "splunk api", id: "splunk"},
 		{key: "stackby api", id: "stackby"},
@@ -389,6 +395,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "twitter api", id: "twitter"},
 		{key: "typeform api", id: "typeform"},
 		{key: "unleashed api", id: "unleashed-software"},
+		{key: "uproc.io", id: "uproc"},
 		{key: "uptime robot api", id: "uptimerobot"},
 		{key: "vero track", id: "vero"},
 		{key: "webflow api", id: "webflow"},
@@ -399,6 +406,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "xero accounting", id: "xero"},
 		{key: "zoom meetings", id: "zoom"},
 		{key: "zendesk support", id: "zendesk"},
+		{key: "zohocrm", id: "zoho"},
 	}
 	for _, test := range tests {
 		provider, ok := FindBuiltInProvider(test.key)
@@ -580,6 +588,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "salesforce", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "salesmate", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "seatable", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "segment", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindHumanDocs},
 		{id: "sendgrid", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "sendy", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "sentry", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
@@ -595,6 +604,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "stackby", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "storyblok", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "strapi", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "strava", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "stripe", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "supabase", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "surveymonkey", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
@@ -611,6 +621,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "typeform", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "unleashed-software", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "uplead", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "uproc", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "uptimerobot", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "vero", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "vonage", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
@@ -624,6 +635,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "xero", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "yourls", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "zendesk", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
+		{id: "zoho", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "zoom", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "zulip", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 	}

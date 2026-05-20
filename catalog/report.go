@@ -1620,6 +1620,34 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceRefs: []string{"https://www.postb.in/"},
 		SourceNote: "PostBin's public request-bin utility surface is anonymous in the reviewed scope; no credential-bearing API docs or official OpenAPI document were found during M34 review.",
 	},
+	{
+		ProviderID: "segment",
+		SpecRefID:  "segment-public-api-docs",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://docs.segmentapis.build/", "https://docs.segmentapis.build/tag/Authentication"},
+		SourceNote: "Segment's official Public API docs are rendered from an embedded OpenAPI 3.0.3 definition with bearer token security, and the authentication docs require Authorization bearer API tokens over HTTPS.",
+	},
+	{
+		ProviderID: "strava",
+		SpecRefID:  "strava-api-v3-swagger",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://developers.strava.com/swagger/swagger.json", "https://developers.strava.com/docs/authentication/", "https://developers.strava.com/docs/reference/"},
+		SourceNote: "Strava's official Swagger document includes an OAuth2 access-code security definition and root security requirement; the official reference states API requests require authentication.",
+	},
+	{
+		ProviderID: "zoho",
+		SpecRefID:  "zoho-crm-v8-records-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://github.com/zoho/crm-oas", "https://raw.githubusercontent.com/zoho/crm-oas/main/v8.0/record.json", "https://www.zoho.com/crm/developer/docs/api/v8/oauth-overview.html"},
+		SourceNote: "Zoho CRM's official v8.0 OpenAPI documents include OAuth2 authorization-code security schemes and operation security requirements for protected CRM APIs.",
+	},
+	{
+		ProviderID: "uproc",
+		SpecRefID:  "uproc-public-profile-tool-docs",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://uproc.io/", "https://uproc.io/blog/how-to-get-public-profile-by-sales-profile", "https://uproc.io/blog/how-to-get-parsed-and-validated-phone"},
+		SourceNote: "uProc official service and tool pages reference API use and email/API-key authentication, but M35 review did not find stable official text describing an OpenAPI security scheme or credential transport.",
+	},
 }
 
 func validateSecurityClassification(classification SecurityClassification, providers map[string]Provider) error {

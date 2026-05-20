@@ -168,3 +168,7 @@ documents and must not be treated as provider truth.
 | Nextcloud | Official server OpenAPI is recorded from the developer manual, so no docs-derived endpoint overlay is needed; WebDAV remains protocol-specific metadata. |
 | Philips Hue | No endpoint overlay for now. The official full API reference is login-gated and the available public Hue pages do not expose enough endpoint detail for a reviewed subset; unofficial OpenHue specs are not provider truth. |
 | PostBin | No endpoint overlay for now. M34 review did not find stable official endpoint documentation or an official OpenAPI document for PostBin's public request-bin API. |
+| Segment | No endpoint overlay for now. Official Segment Public API docs are rendered from an embedded OpenAPI 3.0.3 definition and expose a browser Download OpenAPI action, but M35 review did not find a stable standalone URL to register as a refreshable artifact. |
+| Strava | Official Swagger/OpenAPI is recorded from developers.strava.com, so no docs-derived endpoint overlay is needed. |
+| Zoho CRM | Official Zoho CRM v8.0 OpenAPI documents are recorded from the zoho/crm-oas repository, so no docs-derived endpoint overlay is needed. |
+| uProc | No endpoint overlay for now. Official uProc tool pages describe API use through generated examples and images, but M35 review did not find stable official text endpoint documentation or an official OpenAPI document for a reviewed REST subset. |
