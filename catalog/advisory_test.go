@@ -189,6 +189,80 @@ func TestBuiltInProviderAdvisoryReportPreservesDropboxStoneAdvisoryOverlay(t *te
 	assertHasFollowUp(t, row.ManualFollowUps, "Review registered advisory endpoint overlay metadata")
 }
 
+func TestHighValueSaaSCurationSetAdvisoryCoverage(t *testing.T) {
+	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{
+		Artifacts: []CatalogSpecArtifact{
+			m46EndpointOverlayArtifact("airtable", "airtable-web-api-overlay"),
+			m46EndpointOverlayArtifact("quickbooks", "quickbooks-online-accounting-api-overlay"),
+			m46EndpointOverlayArtifact("salesforce", "salesforce-rest-core-overlay"),
+			m46EndpointOverlayArtifact("servicenow", "servicenow-rest-api-overlay"),
+			m46EndpointOverlayArtifact("shopify", "shopify-admin-rest-overlay"),
+		},
+	})
+	if err != nil {
+		t.Fatalf("BuiltInProviderAdvisoryReport() error = %v", err)
+	}
+	rows := map[string]ProviderAdvisory{}
+	for _, row := range report.Providers {
+		rows[row.ProviderID] = row
+	}
+	tests := []struct {
+		provider        string
+		openAPI         SpecAvailability
+		specKind        SpecKind
+		endpointOverlay string
+	}{
+		{provider: "airtable", openAPI: SpecAvailabilityUnavailable, specKind: SpecKindHumanDocs, endpointOverlay: "airtable-web-api-overlay"},
+		{provider: "asana", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "box", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "discord", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "github", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "gitlab", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "hubspot", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPIIndex},
+		{provider: "jira-cloud", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "linear", openAPI: SpecAvailabilityUnavailable, specKind: SpecKindHumanDocs},
+		{provider: "notion", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "openai", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "pagerduty", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "quickbooks", openAPI: SpecAvailabilityUnavailable, specKind: SpecKindHumanDocs, endpointOverlay: "quickbooks-online-accounting-api-overlay"},
+		{provider: "salesforce", openAPI: SpecAvailabilityUnavailable, specKind: SpecKindHumanDocs, endpointOverlay: "salesforce-rest-core-overlay"},
+		{provider: "sendgrid", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "servicenow", openAPI: SpecAvailabilityUnavailable, specKind: SpecKindHumanDocs, endpointOverlay: "servicenow-rest-api-overlay"},
+		{provider: "shopify", openAPI: SpecAvailabilityUnavailable, specKind: SpecKindHumanDocs, endpointOverlay: "shopify-admin-rest-overlay"},
+		{provider: "slack", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "stripe", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "trello", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "twilio", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "xero", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "zendesk", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+		{provider: "zoho", openAPI: SpecAvailabilityKnown, specKind: SpecKindOpenAPI},
+	}
+	for _, test := range tests {
+		row, ok := rows[test.provider]
+		if !ok {
+			t.Fatalf("missing M46 provider %s", test.provider)
+		}
+		if row.OpenAPIAvailability != test.openAPI {
+			t.Fatalf("%s OpenAPI availability = %q, want %q", test.provider, row.OpenAPIAvailability, test.openAPI)
+		}
+		if !advisoryHasSpecKind(row, test.specKind) {
+			t.Fatalf("%s missing spec kind %q", test.provider, test.specKind)
+		}
+		if row.AuthStatus == "" || row.AuthStatus == AuthStatusUnknown {
+			t.Fatalf("%s auth status = %q, want reviewed status", test.provider, row.AuthStatus)
+		}
+		if test.openAPI == SpecAvailabilityUnavailable && row.UserOpenAPINeed != UserOpenAPINeedLikely {
+			t.Fatalf("%s user OpenAPI need = %q, want likely", test.provider, row.UserOpenAPINeed)
+		}
+		if test.endpointOverlay != "" && !advisoryHasEndpointOverlay(row, test.endpointOverlay) {
+			t.Fatalf("%s missing endpoint overlay %q", test.provider, test.endpointOverlay)
+		}
+		if test.provider == "linear" && len(row.EndpointOverlays) != 0 {
+			t.Fatalf("linear endpoint overlays = %#v, want none", row.EndpointOverlays)
+		}
+	}
+}
+
 func TestBuiltInProviderAdvisoryReportMissingCacheHasNoArtifactPath(t *testing.T) {
 	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{ProviderKey: "slack"})
 	if err != nil {
@@ -263,4 +337,35 @@ func assertNoFollowUp(t *testing.T, values []string, unwanted string) {
 
 func contains(value, substr string) bool {
 	return strings.Contains(value, substr)
+}
+
+func m46EndpointOverlayArtifact(providerID, artifactID string) CatalogSpecArtifact {
+	return CatalogSpecArtifact{
+		ProviderID:  providerID,
+		SpecRefID:   artifactID,
+		ArtifactID:  artifactID,
+		Kind:        "advisory-overlay",
+		Path:        "advisory-overlays/" + artifactID + ".json",
+		OverlayPath: "advisory-overlays/" + artifactID + ".json",
+		BuilderPath: "overlay-builders/build_" + providerID + "_overlay.go",
+		Metadata:    map[string]string{"derived_from_docs": "true", "official_openapi": "false"},
+	}
+}
+
+func advisoryHasSpecKind(row ProviderAdvisory, kind SpecKind) bool {
+	for _, ref := range row.SpecReferences {
+		if ref.Kind == kind {
+			return true
+		}
+	}
+	return false
+}
+
+func advisoryHasEndpointOverlay(row ProviderAdvisory, artifactID string) bool {
+	for _, overlay := range row.EndpointOverlays {
+		if overlay.ArtifactID == artifactID {
+			return true
+		}
+	}
+	return false
 }

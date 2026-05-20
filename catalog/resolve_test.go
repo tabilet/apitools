@@ -37,6 +37,29 @@ func TestResolveProviderPrefersSmithyBeforeHumanDocs(t *testing.T) {
 	}
 }
 
+func TestResolveProviderPreservesAuthoredHumanDocsPriority(t *testing.T) {
+	tests := []struct {
+		provider  string
+		specRefID string
+	}{
+		{provider: "airtable", specRefID: "airtable-web-api-docs"},
+		{provider: "linear", specRefID: "linear-graphql-docs"},
+		{provider: "quickbooks", specRefID: "quickbooks-online-api-docs"},
+		{provider: "salesforce", specRefID: "salesforce-rest-docs"},
+		{provider: "servicenow", specRefID: "servicenow-rest-api-docs"},
+		{provider: "shopify", specRefID: "shopify-admin-rest-docs"},
+	}
+	for _, test := range tests {
+		resolved, err := ResolveProvider(ResolveProviderOptions{ProviderKey: test.provider})
+		if err != nil {
+			t.Fatalf("%s: ResolveProvider() error = %v", test.provider, err)
+		}
+		if resolved.OpenAPI.SpecRefID != test.specRefID {
+			t.Fatalf("%s: OpenAPI spec ref = %q, want %q", test.provider, resolved.OpenAPI.SpecRefID, test.specRefID)
+		}
+	}
+}
+
 func TestResolveProviderPrecedence(t *testing.T) {
 	tests := []struct {
 		name         string

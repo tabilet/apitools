@@ -1504,7 +1504,7 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		RootSecurity: []SecurityRequirement{{Scheme: "shopifyAccessToken"}},
 		SourceRefs: []string{
 			"https://shopify.dev/docs/api/admin-rest",
-			"https://shopify.dev/api/admin-rest/usage/access-scopes",
+			"https://shopify.dev/docs/api/admin-rest/usage/access-scopes",
 			"https://shopify.dev/docs/api/admin-rest/usage/versioning",
 		},
 		SourceNote: "Shopify has human REST Admin API docs in this catalog entry but no recorded official OpenAPI document; docs describe Admin API access tokens and access scopes, so OpenAPI imports need an advisory header-token overlay.",

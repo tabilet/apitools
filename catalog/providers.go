@@ -370,11 +370,11 @@ var builtInProviders = []Provider{
 		machineAvailability: SpecAvailabilityUnknown,
 		userNeed:            UserOpenAPINeedLikely,
 		specs: []SpecReference{
-			humanDocsRef("airtable-web-api-docs", "https://airtable.com/developers/web/api/introduction", "Official Airtable Web API documentation. M12 review records no stable public official OpenAPI document; base-specific schemas still require user-provided or generated OpenAPI for precise field shapes."),
-			humanDocsRef("airtable-web-api-support-docs", "https://support.airtable.com/docs/getting-started-with-airtables-web-api", "Official Airtable support guide for Web API usage, pagination, rate limits, and PAT/OAuth migration notes."),
-			humanDocsRef("airtable-personal-access-token-docs", "https://support.airtable.com/v1/docs/fr/creating-and-using-api-keys-and-access-tokens", "Official Airtable support guide for personal access tokens, scopes, resources, and legacy API key deprecation."),
+			humanDocsRef20260520("airtable-web-api-docs", "https://airtable.com/developers/web/api/introduction", "Official Airtable Web API documentation. M46 review records no stable public official OpenAPI document; base-specific schemas still require user-provided or generated OpenAPI for precise field shapes."),
+			humanDocsRef20260520("airtable-web-api-support-docs", "https://support.airtable.com/docs/getting-started-with-airtables-web-api", "Official Airtable support guide for Web API usage, pagination, rate limits, and PAT/OAuth migration notes."),
+			humanDocsRef20260520("airtable-personal-access-token-docs", "https://support.airtable.com/docs/creating-personal-access-tokens", "Official Airtable support guide for personal access tokens, scopes, resources, and legacy API key deprecation."),
 		},
-		quirks: []string{"Base-specific Airtable schemas can vary by workspace and base; user-provided or generated OpenAPI is needed for precise field shapes."},
+		quirks: []string{"Base-specific Airtable schemas can vary by workspace and base; user-provided or generated OpenAPI is needed for precise field shapes.", "M46 review retained the docs-derived advisory endpoint overlay because the official Web API docs support a reviewed record subset but do not expose a stable provider-wide OpenAPI artifact."},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "box",
@@ -1221,10 +1221,10 @@ var builtInProviders = []Provider{
 		machineAvailability: SpecAvailabilityUnknown,
 		userNeed:            UserOpenAPINeedLikely,
 		specs: []SpecReference{
-			humanDocsRef("linear-graphql-docs", "https://linear.app/developers/graphql", "Official Linear GraphQL API documentation. Linear exposes GraphQL introspection rather than a public OpenAPI document."),
-			humanDocsRef("linear-api-docs", "https://linear.app/docs/api/", "Official Linear API documentation index."),
+			humanDocsRef20260520("linear-graphql-docs", "https://linear.app/developers/graphql", "Official Linear GraphQL API documentation. Linear exposes GraphQL introspection rather than a public OpenAPI document."),
+			humanDocsRef20260520("linear-api-docs", "https://linear.app/docs/api/", "Official Linear API documentation index."),
 		},
-		quirks: []string{"Linear's public API is GraphQL with introspection support, so OpenAPI-only workflows need a user-provided or generated OpenAPI document if REST-shaped operation metadata is required."},
+		quirks: []string{"Linear's public API is GraphQL with introspection support, so OpenAPI-only workflows need a user-provided or generated OpenAPI document if REST-shaped operation metadata is required.", "M46 review retained the explicit no-endpoint-overlay decision because a generic GraphQL POST overlay would hide native operation semantics."},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "mailchimp",
@@ -1557,10 +1557,10 @@ var builtInProviders = []Provider{
 		machineAvailability: SpecAvailabilityUnknown,
 		userNeed:            UserOpenAPINeedLikely,
 		specs: []SpecReference{
-			humanDocsRef("quickbooks-online-api-docs", "https://developer.intuit.com/app/developer/qbo/docs/learn/explore-the-quickbooks-online-api", "Official Intuit QuickBooks Online Accounting API documentation. M12 review records no stable public downloadable official OpenAPI document."),
-			humanDocsRef("quickbooks-oauth-docs", "https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0", "Official Intuit QuickBooks OAuth 2.0 authentication and authorization documentation."),
+			humanDocsRef20260520("quickbooks-online-api-docs", "https://developer.intuit.com/app/developer/qbo/docs/learn/explore-the-quickbooks-online-api", "Official Intuit QuickBooks Online Accounting API documentation. M46 review records no stable public downloadable official OpenAPI document."),
+			humanDocsRef20260520("quickbooks-oauth-docs", "https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0", "Official Intuit QuickBooks OAuth 2.0 authentication and authorization documentation."),
 		},
-		quirks: []string{"QuickBooks Online APIs are company/realm scoped and official docs emphasize OAuth 2.0, sandbox setup, and entity references; OpenAPI-only workflows need a user-supplied or generated document."},
+		quirks: []string{"QuickBooks Online APIs are company/realm scoped and official docs emphasize OAuth 2.0, sandbox setup, and entity references; OpenAPI-only workflows need a user-supplied or generated document.", "M46 review retained the docs-derived advisory endpoint overlay for common Accounting API resources while leaving full company-specific entity coverage to user-provided specs."},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "salesforce",
@@ -1572,11 +1572,11 @@ var builtInProviders = []Provider{
 		machineAvailability: SpecAvailabilityUnknown,
 		userNeed:            UserOpenAPINeedLikely,
 		specs: []SpecReference{
-			humanDocsRef("salesforce-rest-docs", "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm", "Official Salesforce REST API Developer Guide."),
-			humanDocsRef("salesforce-rest-auth-docs", "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm", "Official Salesforce REST API OAuth quick start documentation."),
-			humanDocsRef("salesforce-openapi-generation-notes", "https://help.salesforce.com/s/articleView?id=release-notes.rn_api_rest.htm&language=en_US&release=236&type=5", "Official Salesforce release note describing beta OpenAPI 3.0 spec generation for Salesforce Platform REST API."),
+			humanDocsRef20260520("salesforce-rest-docs", "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm", "Official Salesforce REST API Developer Guide."),
+			humanDocsRef20260520("salesforce-rest-auth-docs", "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm", "Official Salesforce REST API OAuth quick start documentation."),
+			humanDocsRef20260520("salesforce-openapi-generation-notes", "https://help.salesforce.com/s/articleView?id=release-notes.rn_api_rest.htm&language=en_US&release=236&type=5", "Official Salesforce release note describing beta OpenAPI 3.0 spec generation for Salesforce Platform REST API."),
 		},
-		quirks: []string{"Salesforce REST API OpenAPI generation is org/configuration dependent in current official docs; M12 review records no stable public downloadable core REST OpenAPI document, so OpenAPI-only workflows need an org-generated or user-provided document."},
+		quirks: []string{"Salesforce REST API OpenAPI generation is org/configuration dependent in current official docs; M46 review records no stable public downloadable core REST OpenAPI document, so OpenAPI-only workflows need an org-generated or user-provided document.", "M46 review retained the docs-derived advisory endpoint overlay for core sObject/query/composite metadata without choosing an org, instance, or API version."},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "seatable",
@@ -1651,12 +1651,13 @@ var builtInProviders = []Provider{
 		machineAvailability: SpecAvailabilityUnknown,
 		userNeed:            UserOpenAPINeedLikely,
 		specs: []SpecReference{
-			humanDocsRef("servicenow-rest-api-docs", "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/c_RESTAPI.html", "Official ServiceNow REST API documentation. ServiceNow documents instance-side REST API Explorer and REST access requirements."),
-			humanDocsRef("servicenow-openapi-export-docs", "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/export-openapi-specification.html", "Official ServiceNow documentation for exporting a REST API as an OpenAPI specification from a ServiceNow instance."),
+			humanDocsRef20260520("servicenow-rest-api-docs", "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/c_RESTAPI.html", "Official ServiceNow REST API documentation. ServiceNow documents instance-side REST API Explorer and REST access requirements."),
+			humanDocsRef20260520("servicenow-openapi-export-docs", "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/export-openapi-specification.html", "Official ServiceNow documentation for exporting a REST API as an OpenAPI specification from a ServiceNow instance."),
 		},
 		quirks: []string{
-			"ServiceNow REST API Explorer OpenAPI exports are instance- and API-selection-specific and require appropriate roles; M12 review records no stable public downloadable provider-wide OpenAPI document.",
+			"ServiceNow REST API Explorer OpenAPI exports are instance- and API-selection-specific and require appropriate roles; M46 review records no stable public downloadable provider-wide OpenAPI document.",
 			"ServiceNow warns that REST API Explorer can interact with the current instance; catalog tooling must treat exported specs as untrusted metadata and never execute API operations.",
+			"M46 review retained the docs-derived advisory endpoint overlay for common table/import metadata while leaving instance-specific OpenAPI exports to user-provided artifacts.",
 		},
 	}),
 	providerCatalogEntry(providerSeed{
@@ -1669,13 +1670,13 @@ var builtInProviders = []Provider{
 		machineAvailability: SpecAvailabilityUnknown,
 		userNeed:            UserOpenAPINeedLikely,
 		specs: []SpecReference{
-			humanDocsRef("shopify-admin-rest-docs", "https://shopify.dev/docs/api/admin-rest", "Official Shopify REST Admin API reference. M12 review records no stable public official OpenAPI document."),
-			humanDocsRef("shopify-admin-rest-auth-docs", "https://shopify.dev/api/admin-rest/usage/access-scopes", "Official Shopify REST Admin API access scope documentation."),
-			humanDocsRef("shopify-admin-rest-versioning", "https://shopify.dev/docs/api/admin-rest/usage/versioning", "Official Shopify REST Admin API versioning documentation."),
-			humanDocsRef("shopify-api-access-scopes", "https://shopify.dev/docs/api/usage/access-scopes", "Official Shopify API access scopes documentation for Admin API authorization."),
-			humanDocsRef("shopify-admin-graphql-docs", "https://shopify.dev/docs/api/admin-graphql", "Official Shopify GraphQL Admin API reference, which Shopify documents alongside REST Admin APIs."),
+			humanDocsRef20260520("shopify-admin-rest-docs", "https://shopify.dev/docs/api/admin-rest", "Official Shopify REST Admin API reference. M46 review records no stable public official OpenAPI document."),
+			humanDocsRef20260520("shopify-admin-rest-auth-docs", "https://shopify.dev/docs/api/admin-rest/usage/access-scopes", "Official Shopify REST Admin API access scope documentation."),
+			humanDocsRef20260520("shopify-admin-rest-versioning", "https://shopify.dev/docs/api/admin-rest/usage/versioning", "Official Shopify REST Admin API versioning documentation."),
+			humanDocsRef20260520("shopify-api-access-scopes", "https://shopify.dev/docs/api/usage/access-scopes", "Official Shopify API access scopes documentation for Admin API authorization."),
+			humanDocsRef20260520("shopify-admin-graphql-docs", "https://shopify.dev/docs/api/admin-graphql", "Official Shopify GraphQL Admin API reference, which Shopify documents alongside REST Admin APIs."),
 		},
-		quirks: []string{"Shopify's REST Admin API is versioned in endpoint URLs and public docs emphasize access scopes; M12 review records no stable public downloadable official OpenAPI document."},
+		quirks: []string{"Shopify's REST Admin API is versioned in endpoint URLs and public docs emphasize access scopes; M46 review records no stable public downloadable official OpenAPI document.", "Shopify marks the REST Admin API as legacy for new public apps and points new public app development toward GraphQL Admin API; the REST overlay remains a reviewed subset for existing REST-oriented workflows."},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "slack",

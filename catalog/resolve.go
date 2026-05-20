@@ -162,9 +162,10 @@ func validateResolutionRef(label, value string) error {
 
 func preferredSpecReference(provider Provider) (SpecReference, bool) {
 	for _, kind := range []SpecKind{SpecKindOpenAPI, SpecKindOpenAPIIndex, SpecKindGoogleDiscovery, SpecKindSmithyJSON, SpecKindHumanDocs} {
-		refs := provider.SpecReferencesByKind(kind)
-		if len(refs) > 0 {
-			return refs[0], true
+		for _, ref := range provider.SpecReferences {
+			if ref.Kind == kind {
+				return ref, true
+			}
 		}
 	}
 	return SpecReference{}, false

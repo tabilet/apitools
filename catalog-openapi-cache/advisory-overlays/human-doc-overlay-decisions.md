@@ -4,6 +4,20 @@ These OpenAPI-shaped advisory overlays are derived from official documentation
 or official machine-readable sources. They are not official provider OpenAPI
 documents and must not be treated as provider truth.
 
+## M46 High-Value SaaS Review
+
+The 2026-05-20 high-value SaaS review retained the existing official
+OpenAPI/Swagger/OpenAPI-index artifacts for Asana, Box, Discord, GitHub,
+GitLab, HubSpot, Jira Cloud, Notion, OpenAI, PagerDuty, SendGrid, Slack,
+Stripe, Trello, Twilio, Xero, Zendesk, and Zoho.
+
+The same review retained docs-derived endpoint overlays for Airtable,
+QuickBooks, Salesforce, ServiceNow, and Shopify because official docs support
+focused REST-shaped subsets, while no stable public provider-wide OpenAPI
+artifact was recorded. Linear remains an explicit no-endpoint-overlay case:
+its public API is GraphQL with introspection, and a generic POST `/graphql`
+overlay would hide native operation semantics.
+
 ## Built
 
 | Provider | Overlay | Reason |
