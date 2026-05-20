@@ -368,6 +368,16 @@ var specArtifacts = []specArtifact{
 		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
+		providerID: "elastic",
+		artifactID: "elastic-elasticsearch-openapi",
+		kind:       "openapi",
+		url:        "https://www.elastic.co/docs/api/doc/elasticsearch.json",
+		path:       "openapi/elastic-elasticsearch-openapi.json",
+		title:      "Elasticsearch API",
+		openapi:    "3.0.3",
+		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
+	},
+	{
 		providerID: "highlevel",
 		artifactID: "highlevel-calendars-openapi",
 		kind:       "openapi",
