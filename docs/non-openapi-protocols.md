@@ -8,13 +8,13 @@ stance for each family.
 
 | Protocol | Current role | Import stance |
 |---|---|---|
-| Smithy JSON | Official AWS service model review artifact and native protocol metadata source. | Parsed explicitly through `awssmithy.Parse` / `ParseMap`; deprecated OpenAPI-shaped conversion remains compatibility metadata only. |
+| Smithy JSON | Official AWS service model review artifact and native protocol metadata source. | Parsed explicitly through `awssmithy.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid losing protocol semantics. |
 | Google Discovery | Official Google REST API description artifact and native protocol metadata source. | Parsed explicitly through `googlediscovery.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid treating Discovery as an OpenAPI runtime contract. |
 | Dropbox Stone | Official Dropbox API model source. | Review-only until Stone schema parsing and route lowering are implemented. |
 | OpenAPI index | Provider-owned index of OpenAPI documents. | Review-only index; individual child OpenAPI documents still need explicit selection and validation. |
 | Human docs | Official documentation source for docs-derived advisory overlays. | Not importable by itself; endpoint overlays are advisory and source-backed, not provider truth. |
 
-## Converter Priority
+## Parser Priority
 
 1. **Google Discovery native parsing.**
    Discovery documents are structured JSON, already include method IDs and REST
@@ -28,9 +28,8 @@ stance for each family.
    Smithy models describe AWS service operations and protocol traits. The
    native parser preserves AWS protocol details such as HTTP bindings, greedy
    labels, prefix headers, query-param maps, static Query/JSON protocol fields,
-   and service/signing names for downstream protocol-aware generators.
-   Deprecated OpenAPI-shaped lowering remains derived compatibility metadata,
-   not a runtime contract.
+   and service/signing names for downstream protocol-aware generators without
+   producing OpenAPI-shaped metadata.
 
 3. **Dropbox Stone parsing.**
    Stone can provide useful route and schema metadata for Dropbox, but it needs
@@ -44,8 +43,8 @@ stance for each family.
 
 ## Boundary
 
-Converters and parsers must treat source documents as untrusted metadata. They
-may derive operation inventories, protocol metadata, and auth summaries, but
-they must not execute provider operations, resolve credentials, sign requests,
-choose accounts or regions, or promote converted output as official provider
-OpenAPI.
+Parsers and compatibility adapters must treat source documents as untrusted
+metadata. They may derive operation inventories, protocol metadata, and auth
+summaries, but they must not execute provider operations, resolve credentials,
+sign requests, choose accounts or regions, or promote derived output as
+official provider OpenAPI.
