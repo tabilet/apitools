@@ -1047,6 +1047,15 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.0.3",
 	},
 	{
+		providerID: "nvidia-dsx-air",
+		artifactID: "nvidia-dsx-air-openapi",
+		kind:       "openapi",
+		url:        "https://dsx-air.nvidia.com/api/schema/",
+		path:       "openapi/nvidia-dsx-air-openapi.yaml",
+		title:      "NVIDIA Air API",
+		openapi:    "3.0.3",
+	},
+	{
 		providerID: "strava",
 		artifactID: "strava-api-v3-swagger",
 		kind:       "openapi",

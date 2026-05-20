@@ -3913,6 +3913,23 @@ var builtInProviders = []Provider{
 		quirks: []string{"Nextcloud is self-hosted or provider-hosted, so API base URLs, enabled apps, WebDAV paths, and OCS endpoints are instance-dependent.", "The official server OpenAPI covers the documented generated server API reference; WebDAV and app-specific APIs may need separate protocol handling outside OpenAPI import."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "nvidia-dsx-air",
+		displayName:         "NVIDIA DSX Air",
+		aliases:             []string{"nvidia air", "nvidia air api", "dsx air", "dsx-air", "nvidia dsx air api"},
+		category:            "infrastructure-simulation",
+		relevance:           "NVIDIA cloud-hosted infrastructure simulation platform for data center digital twins, simulations, images, nodes, services, workers, fleets, and training sessions.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			officialOpenAPIRef20260520("nvidia-dsx-air-openapi", "https://dsx-air.nvidia.com/api/schema/", SourceAuthorityOfficialProvider, "3.0.3 / API v0.1.0", `sha256:dff59377915e43f5d9b30fe4f315c01163cf55eb243b2b28a88566fb639ebb28 content-length:561909`, "NVIDIA documentation terms apply to the official DSX Air OpenAPI schema.", "Official NVIDIA DSX Air OpenAPI 3.0 schema served by the public API documentation."),
+			humanDocsRef20260520("nvidia-dsx-air-api-sdk-docs", "https://docs.nvidia.com/networking-ethernet-software/nvidia-air-v2/API-SDK/", "Official NVIDIA DSX Air API and SDK documentation page."),
+			humanDocsRef20260520("nvidia-dsx-air-auth-docs", "https://docs.nvidia.com/networking-ethernet-software/nvidia-air-v2/Authentication/", "Official NVIDIA DSX Air API authentication documentation for NGC API keys, roles, and scopes."),
+			humanDocsRef20260520("nvidia-dsx-air-sdk-docs", "https://docs.nvidia.com/air/sdk/latest/", "Official NVIDIA DSX Air Python SDK documentation."),
+		},
+		quirks: []string{"The official OpenAPI schema is served from the DSX Air API docs endpoint and currently omits reusable security scheme metadata; NGC API-key bearer authentication is recorded in the catalog security overlay.", "DSX Air access, organizations, roles, scopes, simulations, and worker resources are operator/account dependent; apitools records metadata only and does not create API keys or select organizations."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "philips-hue",
 		displayName:         "Philips Hue",
 		aliases:             []string{"hue api", "philips hue api", "meethue"},

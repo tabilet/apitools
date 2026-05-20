@@ -2006,6 +2006,28 @@ var builtInCandidates = []Candidate{
 		userNeed:    UserOpenAPINeedNotExpected,
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "nvidia-dsx-air",
+		displayName: "NVIDIA DSX Air",
+		aliases:     []string{"nvidia air", "nvidia air api", "dsx air", "dsx-air", "nvidia dsx air api"},
+		category:    "infrastructure-simulation",
+		relevance:   "NVIDIA cloud-hosted infrastructure simulation platform for data center digital twins, simulations, images, nodes, services, workers, fleets, and training sessions.",
+		userNeed:    UserOpenAPINeedNotExpected,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://docs.nvidia.com/networking-ethernet-software/nvidia-air-v2/API-SDK/",
+				Note:   "Official DSX Air documentation states the platform provides REST API and Python SDK access.",
+			},
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://dsx-air.nvidia.com/api/schema/",
+				Note:   "Official DSX Air OpenAPI schema endpoint.",
+			},
+		},
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "philips-hue",
 		displayName: "Philips Hue",
 		aliases:     []string{"hue api", "philips hue api", "meethue"},
@@ -2072,6 +2094,7 @@ type candidateSeed struct {
 	machineSpecKind string
 	machineStatus   SpecStatus
 	userNeed        UserOpenAPINeed
+	evidence        []CandidateEvidence
 }
 
 func workflowCandidate(seed candidateSeed) Candidate {
@@ -2113,5 +2136,6 @@ func workflowCandidate(seed candidateSeed) Candidate {
 			Note:   "n8n built-in node presence is a prioritization signal only, not runtime compatibility evidence.",
 		})
 	}
+	candidate.Evidence = append(candidate.Evidence, seed.evidence...)
 	return candidate
 }

@@ -3976,6 +3976,25 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Philips Hue official API docs are login-gated and no stable public official OpenAPI document was recorded; OAuth2 remote API metadata comes from advisory overlay notes.",
 	},
+	{
+		ID:         "nvidia-dsx-air-auth-overlay",
+		ProviderID: "nvidia-dsx-air",
+		SpecRefID:  "nvidia-dsx-air-openapi",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:         "nvidiaDSXAirBearer",
+			Type:         SecuritySchemeHTTP,
+			Scheme:       "bearer",
+			BearerFormat: "NGC API key",
+			Description:  "NVIDIA DSX Air API key carried as an Authorization bearer token.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "nvidiaDSXAirBearer"}},
+		SourceRefs: []string{
+			"https://docs.nvidia.com/networking-ethernet-software/nvidia-air-v2/Authentication/",
+			"https://docs.nvidia.com/networking-ethernet-software/nvidia-air-v2/API-SDK/",
+		},
+		SourceNote: "NVIDIA DSX Air's authentication docs describe NGC API keys in the Authorization bearer header, while the official OpenAPI schema omits reusable security scheme metadata.",
+	},
 }
 
 func awsSigV4Overlay(id, providerID, specRefID, serviceName string, sourceRefs []string) SecurityOverlay {

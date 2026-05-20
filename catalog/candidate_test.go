@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 229; got != want {
+	if got, want := len(candidates), 230; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -153,6 +153,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"nocodb",
 		"notion",
 		"npm",
+		"nvidia-dsx-air",
 		"odoo",
 		"okta",
 		"onesimpleapi",
@@ -342,6 +343,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "monica crm api", id: "monica-crm"},
 		{key: "api.nasa.gov", id: "nasa"},
 		{key: "netlify api", id: "netlify"},
+		{key: "nvidia air api", id: "nvidia-dsx-air"},
 		{key: "nocodb api", id: "nocodb"},
 		{key: "odoo xml-rpc api", id: "odoo"},
 		{key: "onfleet api", id: "onfleet"},
@@ -393,14 +395,25 @@ func TestBuiltInCandidatesCaptureFixtureAndPriorityEvidence(t *testing.T) {
 			t.Fatalf("%s has local fixture but missing try-n8n fixture evidence", candidate.ID)
 		}
 		var foundN8n bool
+		var foundOfficialDocsReview bool
 		for _, evidence := range candidate.Evidence {
-			if evidence.Source != EvidenceN8nNodeDirectory {
-				continue
+			switch evidence.Source {
+			case EvidenceN8nNodeDirectory:
+				foundN8n = true
+				if evidence.Use != EvidenceUsePriority {
+					t.Fatalf("%s n8n evidence use = %q, want %q", candidate.ID, evidence.Use, EvidenceUsePriority)
+				}
+			case EvidenceOfficialDocs:
+				if evidence.Use == EvidenceUseReview {
+					foundOfficialDocsReview = true
+				}
 			}
-			foundN8n = true
-			if evidence.Use != EvidenceUsePriority {
-				t.Fatalf("%s n8n evidence use = %q, want %q", candidate.ID, evidence.Use, EvidenceUsePriority)
+		}
+		if candidate.ID == "nvidia-dsx-air" {
+			if !foundOfficialDocsReview {
+				t.Fatalf("%s missing official-docs review evidence", candidate.ID)
 			}
+			continue
 		}
 		if !foundN8n {
 			t.Fatalf("%s missing n8n priority evidence", candidate.ID)

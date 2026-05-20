@@ -106,7 +106,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 173; got != want {
+	if got, want := len(overlays), 174; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -337,6 +337,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"nocodb",
 		"notion",
 		"npm",
+		"nvidia-dsx-air",
 		"odoo",
 		"okta",
 		"onesimpleapi",
@@ -634,6 +635,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"mandrill":           AuthStatusOverlayRequired,
 		"metabase":           AuthStatusOverlayRequired,
 		"nextcloud":          AuthStatusComplete,
+		"nvidia-dsx-air":     AuthStatusOverlayRequired,
 		"philips-hue":        AuthStatusOverlayRequired,
 		"postbin":            AuthStatusIntentionallyAnonymous,
 		"trello":             AuthStatusPresentIncomplete,

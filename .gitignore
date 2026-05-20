@@ -4,6 +4,9 @@ dist/
 catalog-openapi-cache/cache.sqlite
 catalog-openapi-cache/google-discovery
 catalog-openapi-cache/openapi
+!catalog-openapi-cache/openapi/
+catalog-openapi-cache/openapi/*
+!catalog-openapi-cache/openapi/nvidia-dsx-air-openapi.yaml
 AGENTS.md
 memory-bank
 memory-bank/

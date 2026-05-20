@@ -1607,6 +1607,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Nextcloud's official server OpenAPI document includes Basic and bearer security schemes for documented server API endpoints.",
 	},
 	{
+		ProviderID: "nvidia-dsx-air",
+		SpecRefID:  "nvidia-dsx-air-openapi",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://dsx-air.nvidia.com/api/schema/", "https://docs.nvidia.com/networking-ethernet-software/nvidia-air-v2/Authentication/"},
+		SourceNote: "NVIDIA DSX Air publishes an official OpenAPI schema, but the schema currently omits reusable security scheme metadata; NGC API-key bearer authentication is represented as catalog overlay guidance.",
+	},
+	{
 		ProviderID: "philips-hue",
 		SpecRefID:  "philips-hue-api-v2-notice",
 		Status:     AuthStatusOverlayRequired,
