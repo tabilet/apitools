@@ -9,18 +9,20 @@ stance for each family.
 | Protocol | Current role | Import stance |
 |---|---|---|
 | Smithy JSON | Official AWS service model review artifact and native protocol metadata source. | Parsed explicitly through `awssmithy.Parse` / `ParseMap`; deprecated OpenAPI-shaped conversion remains compatibility metadata only. |
-| Google Discovery | Official Google REST API description artifact. | Best first candidate for a converter because it already describes REST resources, methods, parameters, request bodies, and schemas. |
+| Google Discovery | Official Google REST API description artifact and native protocol metadata source. | Parsed explicitly through `googlediscovery.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid treating Discovery as an OpenAPI runtime contract. |
 | Dropbox Stone | Official Dropbox API model source. | Review-only until Stone schema parsing and route lowering are implemented. |
 | OpenAPI index | Provider-owned index of OpenAPI documents. | Review-only index; individual child OpenAPI documents still need explicit selection and validation. |
 | Human docs | Official documentation source for docs-derived advisory overlays. | Not importable by itself; endpoint overlays are advisory and source-backed, not provider truth. |
 
 ## Converter Priority
 
-1. **Google Discovery to OpenAPI-shaped metadata.**
+1. **Google Discovery native parsing.**
    Discovery documents are structured JSON, already include method IDs and REST
-   paths, and have broad coverage for Google Workspace APIs. A converter should
-   produce reviewable OpenAPI-shaped metadata without credentials, API calls, or
-   automatic catalog promotion.
+   paths, and have broad coverage for Google Workspace APIs. The parser
+   preserves native service, method, schema, auth-scope, and media-upload
+   metadata for downstream protocol-aware generators without producing OpenAPI,
+   resolving credentials, making API calls, or automatically promoting catalog
+   artifacts.
 
 2. **Smithy JSON native parsing.**
    Smithy models describe AWS service operations and protocol traits. The
