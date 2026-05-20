@@ -446,6 +446,8 @@ func (p *modelParser) bindOutput(op *Operation) error {
 		switch binding.Location {
 		case "header", "prefixHeaders", "payload":
 			op.OutputBindings = append(op.OutputBindings, binding)
+		case "responseCode":
+			op.OutputBindings = append(op.OutputBindings, binding)
 		case "":
 			op.OutputBindings = append(op.OutputBindings, binding)
 		}

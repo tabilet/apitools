@@ -83,6 +83,32 @@ func TestParsePreservesRuntimeHTTPBindings(t *testing.T) {
 	}
 }
 
+func TestParsePreservesResponseHTTPBindings(t *testing.T) {
+	model, err := awssmithy.Parse(mustJSON(t, lambdaInvokeFixture()))
+	if err != nil {
+		t.Fatalf("Parse failed: %v", err)
+	}
+	op, ok := model.OperationByName("Invoke")
+	if !ok {
+		t.Fatal("missing Invoke")
+	}
+	seen := map[string]string{}
+	for _, binding := range op.OutputBindings {
+		if binding != nil {
+			seen[binding.MemberName] = binding.Location
+		}
+	}
+	for member, location := range map[string]string{
+		"StatusCode":    "responseCode",
+		"FunctionError": "header",
+		"Payload":       "payload",
+	} {
+		if got := seen[member]; got != location {
+			t.Fatalf("%s location = %q, want %q; bindings %#v", member, got, location, seen)
+		}
+	}
+}
+
 func TestParsePreservesProtocolDistinctOperationPaths(t *testing.T) {
 	model, err := awssmithy.Parse(mustJSON(t, map[string]any{
 		"smithy": "2.0",
@@ -316,6 +342,32 @@ func awsJSONFixture(protocol string) map[string]any {
 			}},
 		},
 	}
+}
+
+func lambdaInvokeFixture() map[string]any {
+	raw := restJSONFixture()
+	shapes := raw["shapes"].(map[string]any)
+	service := shapes["com.amazonaws.lambda#Lambda"].(map[string]any)
+	service["operations"] = []any{ref("com.amazonaws.lambda#Invoke")}
+	shapes["com.amazonaws.lambda#Invoke"] = map[string]any{
+		"type":   "operation",
+		"input":  ref("com.amazonaws.lambda#InvokeRequest"),
+		"output": ref("com.amazonaws.lambda#InvokeResponse"),
+		"traits": map[string]any{
+			"smithy.api#http": map[string]any{"method": "POST", "uri": "/2015-03-31/functions/{FunctionName}/invocations", "code": float64(200)},
+		},
+	}
+	shapes["com.amazonaws.lambda#InvokeRequest"] = map[string]any{"type": "structure", "members": map[string]any{
+		"FunctionName": member("com.amazonaws.lambda#FunctionName", map[string]any{"smithy.api#httpLabel": map[string]any{}, "smithy.api#required": map[string]any{}}),
+		"Payload":      member("com.amazonaws.lambda#Blob", map[string]any{"smithy.api#httpPayload": map[string]any{}}),
+	}}
+	shapes["com.amazonaws.lambda#InvokeResponse"] = map[string]any{"type": "structure", "members": map[string]any{
+		"StatusCode":    member("smithy.api#Integer", map[string]any{"smithy.api#httpResponseCode": map[string]any{}}),
+		"FunctionError": member("smithy.api#String", map[string]any{"smithy.api#httpHeader": "X-Amz-Function-Error"}),
+		"Payload":       member("com.amazonaws.lambda#Blob", map[string]any{"smithy.api#httpPayload": map[string]any{}}),
+	}}
+	shapes["com.amazonaws.lambda#Blob"] = map[string]any{"type": "blob"}
+	return raw
 }
 
 func serviceShape(name, protocol string, operations []any) map[string]any {
