@@ -69,14 +69,15 @@ type AdvisoryRegisteredArtifact struct {
 	Path      string `json:"path"`
 }
 
-// AdvisoryEndpointOverlay records a docs-derived endpoint overlay registered
-// in the local catalog artifact cache.
+// AdvisoryEndpointOverlay records an advisory endpoint overlay registered in
+// the local catalog artifact cache.
 type AdvisoryEndpointOverlay struct {
-	ArtifactID  string `json:"artifact_id"`
-	Kind        string `json:"kind,omitempty"`
-	Path        string `json:"path"`
-	OverlayPath string `json:"overlay_path,omitempty"`
-	BuilderPath string `json:"builder_path,omitempty"`
+	ArtifactID  string            `json:"artifact_id"`
+	Kind        string            `json:"kind,omitempty"`
+	Path        string            `json:"path"`
+	OverlayPath string            `json:"overlay_path,omitempty"`
+	BuilderPath string            `json:"builder_path,omitempty"`
+	Metadata    map[string]string `json:"metadata,omitempty"`
 }
 
 // BuiltInProviderAdvisoryReport builds advisory output for built-in catalog
@@ -241,6 +242,7 @@ func advisoryEndpointOverlaysByProvider(artifacts []CatalogSpecArtifact) map[str
 			Path:        path,
 			OverlayPath: overlayPath,
 			BuilderPath: strings.TrimSpace(artifact.BuilderPath),
+			Metadata:    cloneStringMap(artifact.Metadata),
 		})
 	}
 	for providerID := range out {
@@ -255,14 +257,19 @@ func advisoryEndpointOverlaysByProvider(artifacts []CatalogSpecArtifact) map[str
 }
 
 func cloneAdvisoryEndpointOverlays(overlays []AdvisoryEndpointOverlay) []AdvisoryEndpointOverlay {
-	return append([]AdvisoryEndpointOverlay(nil), overlays...)
+	out := make([]AdvisoryEndpointOverlay, len(overlays))
+	for i, overlay := range overlays {
+		out[i] = overlay
+		out[i].Metadata = cloneStringMap(overlay.Metadata)
+	}
+	return out
 }
 
 func advisoryManualFollowUps(provider Provider, report ProviderSecurityReport, overlays []SecurityOverlay, refs []AdvisorySpecReference, endpointOverlays []AdvisoryEndpointOverlay) []string {
 	var followUps []string
 	if provider.UserOpenAPINeed == UserOpenAPINeedLikely {
 		if len(endpointOverlays) > 0 {
-			followUps = append(followUps, "Review registered docs-derived endpoint overlay metadata for the covered advisory subset; broader workflows may still need a user-provided or generated OpenAPI document.")
+			followUps = append(followUps, "Review registered advisory endpoint overlay metadata for the covered subset; broader workflows may still need a user-provided or generated OpenAPI document.")
 		} else {
 			followUps = append(followUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
 		}
@@ -282,4 +289,15 @@ func advisoryManualFollowUps(provider Provider, report ProviderSecurityReport, o
 		}
 	}
 	return sortedUniqueStrings(followUps)
+}
+
+func cloneStringMap(values map[string]string) map[string]string {
+	if len(values) == 0 {
+		return nil
+	}
+	out := make(map[string]string, len(values))
+	for key, value := range values {
+		out[key] = value
+	}
+	return out
 }

@@ -1130,6 +1130,9 @@ func writeCatalogAdvisoryReport(out io.Writer, report catalogpkg.ProviderAdvisor
 				if overlay.BuilderPath != "" {
 					fmt.Fprintf(out, "  builder: %s\n", overlay.BuilderPath)
 				}
+				if metadata := formatMetadata(overlay.Metadata); metadata != "" {
+					fmt.Fprintf(out, "  metadata: %s\n", metadata)
+				}
 			}
 		}
 		if len(provider.ManualFollowUps) > 0 {
@@ -1567,9 +1570,26 @@ func catalogSpecArtifactsFromCache(path string) ([]catalogpkg.CatalogSpecArtifac
 			Path:        artifact.Path,
 			OverlayPath: artifact.OverlayPath,
 			BuilderPath: artifact.BuilderPath,
+			Metadata:    artifact.Metadata,
 		})
 	}
 	return rows, closeCache, nil
+}
+
+func formatMetadata(metadata map[string]string) string {
+	if len(metadata) == 0 {
+		return ""
+	}
+	keys := make([]string, 0, len(metadata))
+	for key := range metadata {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	values := make([]string, 0, len(keys))
+	for _, key := range keys {
+		values = append(values, key+"="+metadata[key])
+	}
+	return strings.Join(values, ", ")
 }
 
 func catalogSpecArtifactsFromExistingCache(path string) ([]catalogpkg.CatalogSpecArtifact, func(), error) {

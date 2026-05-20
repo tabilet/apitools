@@ -172,7 +172,8 @@ func TestCatalogAdvisoryShowsRegisteredEndpointOverlay(t *testing.T) {
 		"activecampaign-api-v3-overlay",
 		overlayPath,
 		"builder: " + builderPath,
-		"Review registered docs-derived endpoint overlay metadata",
+		"metadata: derived_from_docs=true, official_openapi=false",
+		"Review registered advisory endpoint overlay metadata",
 	} {
 		if !strings.Contains(out.String(), expected) {
 			t.Fatalf("catalog advisory output missing %q:\n%s", expected, out.String())

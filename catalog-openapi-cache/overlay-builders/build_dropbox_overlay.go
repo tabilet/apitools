@@ -12,21 +12,23 @@ func main() {
 		"openapi": "3.0.3",
 		"info": map[string]any{
 			"title":       "Dropbox Core API Advisory Overlay",
-			"version":     "2026-05-18",
-			"description": "Advisory OpenAPI overlay derived from official Dropbox HTTP documentation and the official Dropbox Stone spec. This is not an official Dropbox OpenAPI document.",
+			"version":     "2026-05-20",
+			"description": "Stone-derived advisory OpenAPI overlay for a reviewed Dropbox API v2 subset. This is not an official Dropbox OpenAPI document.",
 		},
 		"servers": []map[string]any{{"url": "https://api.dropboxapi.com"}},
 		"x-apitools-overlay": map[string]any{
-			"provider_id":       "dropbox",
-			"overlay_id":        "dropbox-core-api-advisory-overlay",
-			"official_openapi":  false,
-			"derived_from_docs": true,
+			"provider_id":                        "dropbox",
+			"overlay_id":                         "dropbox-core-api-advisory-overlay",
+			"official_openapi":                   false,
+			"derived_from_docs":                  true,
+			"derived_from_official_machine_spec": true,
+			"source_protocol":                    "dropbox-stone",
 			"source_refs": []string{
 				"https://github.com/dropbox/dropbox-api-spec",
 				"https://www.dropbox.com/developers/documentation/http/documentation",
 				"https://developers.dropbox.com/oauth-guide",
 			},
-			"source_note": "Dropbox publishes an official API v2 Stone specification for SDK generation and human HTTP documentation, but no official OpenAPI document is recorded in the apitools catalog.",
+			"source_note": "Dropbox publishes an official API v2 Stone specification for SDK generation plus human HTTP and OAuth documentation, but no official OpenAPI document is recorded in the apitools catalog. This overlay is a reviewed advisory subset, not a general Stone conversion.",
 		},
 		"components": map[string]any{
 			"securitySchemes": map[string]any{

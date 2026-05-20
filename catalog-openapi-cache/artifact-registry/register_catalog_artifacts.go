@@ -32,6 +32,7 @@ type overlayArtifact struct {
 	path        string
 	builderPath string
 	sourceURL   string
+	metadata    map[string]string
 }
 
 func main() {
@@ -55,6 +56,13 @@ func run() error {
 		}
 	}
 	for _, overlay := range overlayArtifacts {
+		metadata := map[string]string{
+			"official_openapi":  "false",
+			"derived_from_docs": "true",
+		}
+		for key, value := range overlay.metadata {
+			metadata[key] = value
+		}
 		if err := cache.StoreCatalogArtifact(ctx, sqlitecache.CatalogArtifact{
 			ProviderID:  overlay.providerID,
 			ArtifactID:  overlay.artifactID,
@@ -63,10 +71,7 @@ func run() error {
 			SourceURL:   overlay.sourceURL,
 			OverlayPath: overlay.path,
 			BuilderPath: overlay.builderPath,
-			Metadata: map[string]string{
-				"official_openapi":  "false",
-				"derived_from_docs": "true",
-			},
+			Metadata:    metadata,
 		}); err != nil {
 			return err
 		}
@@ -1216,7 +1221,11 @@ var overlayArtifacts = []overlayArtifact{
 		artifactID:  "dropbox-core-api-overlay",
 		path:        "advisory-overlays/dropbox-core-api-overlay.json",
 		builderPath: "overlay-builders/build_dropbox_overlay.go",
-		sourceURL:   "https://www.dropbox.com/developers/documentation/http/documentation",
+		sourceURL:   "https://github.com/dropbox/dropbox-api-spec",
+		metadata: map[string]string{
+			"derived_from_official_machine_spec": "true",
+			"source_protocol":                    "dropbox-stone",
+		},
 	},
 	{
 		providerID:  "eventbrite",

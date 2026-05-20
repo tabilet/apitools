@@ -117,9 +117,9 @@
     }
   },
   "info": {
-    "description": "Advisory OpenAPI overlay derived from official Dropbox HTTP documentation and the official Dropbox Stone spec. This is not an official Dropbox OpenAPI document.",
+    "description": "Stone-derived advisory OpenAPI overlay for a reviewed Dropbox API v2 subset. This is not an official Dropbox OpenAPI document.",
     "title": "Dropbox Core API Advisory Overlay",
-    "version": "2026-05-18"
+    "version": "2026-05-20"
   },
   "openapi": "3.0.3",
   "paths": {
@@ -528,10 +528,12 @@
   ],
   "x-apitools-overlay": {
     "derived_from_docs": true,
+    "derived_from_official_machine_spec": true,
     "official_openapi": false,
     "overlay_id": "dropbox-core-api-advisory-overlay",
     "provider_id": "dropbox",
-    "source_note": "Dropbox publishes an official API v2 Stone specification for SDK generation and human HTTP documentation, but no official OpenAPI document is recorded in the apitools catalog.",
+    "source_note": "Dropbox publishes an official API v2 Stone specification for SDK generation plus human HTTP and OAuth documentation, but no official OpenAPI document is recorded in the apitools catalog. This overlay is a reviewed advisory subset, not a general Stone conversion.",
+    "source_protocol": "dropbox-stone",
     "source_refs": [
       "https://github.com/dropbox/dropbox-api-spec",
       "https://www.dropbox.com/developers/documentation/http/documentation",

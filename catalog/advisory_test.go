@@ -99,6 +99,7 @@ func TestBuiltInProviderAdvisoryReportJoinsEndpointOverlay(t *testing.T) {
 				Path:        "advisory-overlays/activecampaign-api-v3-overlay.json",
 				OverlayPath: "advisory-overlays/activecampaign-api-v3-overlay.json",
 				BuilderPath: "overlay-builders/build_m21_human_docs_overlays.go",
+				Metadata:    map[string]string{"derived_from_docs": "true", "official_openapi": "false"},
 			},
 			{
 				ProviderID:  "webflow",
@@ -128,11 +129,64 @@ func TestBuiltInProviderAdvisoryReportJoinsEndpointOverlay(t *testing.T) {
 	if overlay.BuilderPath != "overlay-builders/build_m21_human_docs_overlays.go" {
 		t.Fatalf("endpoint overlay builder = %q", overlay.BuilderPath)
 	}
+	if overlay.Metadata["official_openapi"] != "false" {
+		t.Fatalf("endpoint overlay metadata = %#v", overlay.Metadata)
+	}
 	if len(row.RegisteredArtifactPaths) != 0 {
 		t.Fatalf("registered spec artifact paths = %#v, want none", row.RegisteredArtifactPaths)
 	}
-	assertHasFollowUp(t, row.ManualFollowUps, "Review registered docs-derived endpoint overlay metadata")
+	assertHasFollowUp(t, row.ManualFollowUps, "Review registered advisory endpoint overlay metadata")
 	assertNoFollowUp(t, row.ManualFollowUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
+}
+
+func TestBuiltInProviderAdvisoryReportPreservesDropboxStoneAdvisoryOverlay(t *testing.T) {
+	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{
+		ProviderKey: "dropbox",
+		Artifacts: []CatalogSpecArtifact{
+			{
+				ProviderID:  "dropbox",
+				SpecRefID:   "dropbox-core-api-overlay",
+				ArtifactID:  "dropbox-core-api-overlay",
+				Kind:        "advisory-overlay",
+				Path:        "advisory-overlays/dropbox-core-api-overlay.json",
+				OverlayPath: "advisory-overlays/dropbox-core-api-overlay.json",
+				BuilderPath: "overlay-builders/build_dropbox_overlay.go",
+				Metadata: map[string]string{
+					"derived_from_docs":                  "true",
+					"derived_from_official_machine_spec": "true",
+					"official_openapi":                   "false",
+					"source_protocol":                    "dropbox-stone",
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("BuiltInProviderAdvisoryReport() error = %v", err)
+	}
+	row := report.Providers[0]
+	if row.OpenAPIAvailability != SpecAvailabilityUnavailable {
+		t.Fatalf("dropbox openapi availability = %q", row.OpenAPIAvailability)
+	}
+	var foundStone bool
+	for _, ref := range row.SpecReferences {
+		if ref.ID == "dropbox-api-stone-spec" {
+			foundStone = true
+			if ref.Protocol != SpecProtocolDropboxStone {
+				t.Fatalf("dropbox protocol = %q, want %q", ref.Protocol, SpecProtocolDropboxStone)
+			}
+		}
+	}
+	if !foundStone {
+		t.Fatal("missing dropbox stone spec reference")
+	}
+	if got, want := len(row.EndpointOverlays), 1; got != want {
+		t.Fatalf("endpoint overlays len = %d, want %d", got, want)
+	}
+	overlay := row.EndpointOverlays[0]
+	if overlay.Metadata["source_protocol"] != string(SpecProtocolDropboxStone) || overlay.Metadata["official_openapi"] != "false" {
+		t.Fatalf("dropbox overlay metadata = %#v", overlay.Metadata)
+	}
+	assertHasFollowUp(t, row.ManualFollowUps, "Review registered advisory endpoint overlay metadata")
 }
 
 func TestBuiltInProviderAdvisoryReportMissingCacheHasNoArtifactPath(t *testing.T) {
@@ -167,7 +221,11 @@ func TestProviderAdvisoryReportReturnsCopies(t *testing.T) {
 	}
 	report.Providers[0].Aliases[0] = "mutated"
 	report.Providers[0].SpecReferences[0].RegisteredArtifactPath = "mutated"
-	report.Providers[0].EndpointOverlays = append(report.Providers[0].EndpointOverlays, AdvisoryEndpointOverlay{ArtifactID: "mutated"})
+	report.Providers[0].EndpointOverlays = append(report.Providers[0].EndpointOverlays, AdvisoryEndpointOverlay{
+		ArtifactID: "mutated",
+		Metadata:   map[string]string{"official_openapi": "false"},
+	})
+	report.Providers[0].EndpointOverlays[0].Metadata["official_openapi"] = "mutated"
 
 	fresh, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{ProviderKey: "slack"})
 	if err != nil {
