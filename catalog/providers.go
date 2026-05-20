@@ -88,6 +88,123 @@ var builtInProviders = []Provider{
 			humanDocsRef("asana-api-docs", "https://developers.asana.com/docs/api-features", "Official Asana API documentation."),
 		},
 	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-acm",
+		displayName: "AWS Certificate Manager",
+		aliases:     []string{"amazon certificate manager", "aws acm", "aws acm api", "acm"},
+		category:    "certificate-management",
+		relevance:   "Popular infrastructure service for TLS certificate request, import, renewal, validation, tagging, and certificate inventory automation.",
+		specID:      "aws-acm-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/acm/service/2015-12-08/acm-2015-12-08.json",
+		version:     "2015-12-08",
+		blobSHA:     "241a40e44b060a7ce644f446d3dd250369cc90da",
+		serviceName: "AWS Certificate Manager",
+		apiDocsURL:  "https://docs.aws.amazon.com/acm/latest/APIReference/Welcome.html",
+	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-cognito",
+		displayName: "AWS Cognito",
+		aliases:     []string{"amazon cognito", "aws cognito api", "cognito", "cognito-idp"},
+		category:    "identity",
+		relevance:   "Popular identity service for user pools, users, groups, identity providers, app clients, tokens, and authentication workflow automation.",
+		specID:      "aws-cognito-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/cognito-identity-provider/service/2016-04-18/cognito-identity-provider-2016-04-18.json",
+		version:     "2016-04-18",
+		blobSHA:     "8a4134d8afc171893828655eb97674f7dda26843",
+		serviceName: "AWS Cognito Identity Provider",
+		apiDocsURL:  "https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/Welcome.html",
+	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-comprehend",
+		displayName: "AWS Comprehend",
+		aliases:     []string{"amazon comprehend", "aws comprehend api", "comprehend"},
+		category:    "ai-nlp",
+		relevance:   "Popular AWS natural-language service for entity, sentiment, key phrase, language, document classification, and text analysis automation.",
+		specID:      "aws-comprehend-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/comprehend/service/2017-11-27/comprehend-2017-11-27.json",
+		version:     "2017-11-27",
+		blobSHA:     "5224bf3ab5d00ec2877d81696d564e65906b414c",
+		serviceName: "Amazon Comprehend",
+		apiDocsURL:  "https://docs.aws.amazon.com/comprehend/latest/APIReference/Welcome.html",
+	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-dynamodb",
+		displayName: "AWS DynamoDB",
+		aliases:     []string{"amazon dynamodb", "aws dynamodb api", "dynamodb"},
+		category:    "database",
+		relevance:   "Popular AWS database service for tables, items, indexes, streams, backups, tags, and key-value workflow automation.",
+		specID:      "aws-dynamodb-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/dynamodb/service/2012-08-10/dynamodb-2012-08-10.json",
+		version:     "2012-08-10",
+		blobSHA:     "94c6d0a66d9e24008d597c09ac12e2f6dbf11c16",
+		serviceName: "Amazon DynamoDB",
+		apiDocsURL:  "https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/Welcome.html",
+	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-elb",
+		displayName: "AWS ELB",
+		aliases:     []string{"amazon elb", "aws elb api", "elb", "elastic load balancing", "classic load balancer"},
+		category:    "cloud-networking",
+		relevance:   "Popular AWS networking service for Classic Load Balancers, listeners, policies, health checks, tags, and traffic automation.",
+		specID:      "aws-elb-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/elastic-load-balancing/service/2012-06-01/elastic-load-balancing-2012-06-01.json",
+		version:     "2012-06-01",
+		blobSHA:     "1f51accc25e29cb9e1d7e098f0978b8ffbcf3049",
+		serviceName: "Elastic Load Balancing",
+		apiDocsURL:  "https://docs.aws.amazon.com/elasticloadbalancing/2012-06-01/APIReference/Welcome.html",
+	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-elbv2",
+		displayName: "AWS ELBv2",
+		aliases:     []string{"amazon elbv2", "aws elbv2 api", "elbv2", "elastic load balancing v2", "application load balancer", "network load balancer"},
+		category:    "cloud-networking",
+		relevance:   "Popular AWS networking service for Application, Network, and Gateway Load Balancers, target groups, listeners, rules, tags, and traffic automation.",
+		specID:      "aws-elbv2-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/elastic-load-balancing-v2/service/2015-12-01/elastic-load-balancing-v2-2015-12-01.json",
+		version:     "2015-12-01",
+		blobSHA:     "0b00f7d0edfa9e9b20491ec37b18a92a1ee814b6",
+		serviceName: "Elastic Load Balancing v2",
+		apiDocsURL:  "https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/Welcome.html",
+	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-iam",
+		displayName: "AWS IAM",
+		aliases:     []string{"amazon iam", "aws iam api", "iam"},
+		category:    "identity",
+		relevance:   "Core AWS identity service for users, groups, roles, policies, access keys, login profiles, and account authorization metadata automation.",
+		specID:      "aws-iam-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/iam/service/2010-05-08/iam-2010-05-08.json",
+		version:     "2010-05-08",
+		blobSHA:     "784d7b2e6c8edc68b6127c11b3c3191609fdbb8d",
+		serviceName: "AWS Identity and Access Management",
+		apiDocsURL:  "https://docs.aws.amazon.com/IAM/latest/APIReference/welcome.html",
+	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-rekognition",
+		displayName: "AWS Rekognition",
+		aliases:     []string{"amazon rekognition", "aws rekognition api", "rekognition"},
+		category:    "ai-vision",
+		relevance:   "Popular AWS vision service for image labels, faces, celebrities, moderation, collections, videos, and visual workflow automation.",
+		specID:      "aws-rekognition-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/rekognition/service/2016-06-27/rekognition-2016-06-27.json",
+		version:     "2016-06-27",
+		blobSHA:     "fe687e9c611479793cce03a637b603158cf24f1e",
+		serviceName: "Amazon Rekognition",
+		apiDocsURL:  "https://docs.aws.amazon.com/rekognition/latest/APIReference/Welcome.html",
+	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-ses",
+		displayName: "AWS SES",
+		aliases:     []string{"amazon ses", "aws ses api", "ses"},
+		category:    "email",
+		relevance:   "Popular AWS email service for identities, templates, sending, configuration sets, receipt rules, and email automation.",
+		specID:      "aws-ses-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/ses/service/2010-12-01/ses-2010-12-01.json",
+		version:     "2010-12-01",
+		blobSHA:     "c80893df118312810a037fc333d2bea60f669b80",
+		serviceName: "Amazon Simple Email Service",
+		apiDocsURL:  "https://docs.aws.amazon.com/ses/latest/APIReference/Welcome.html",
+	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "aws-s3",
 		displayName:         "AWS S3",
@@ -168,6 +285,45 @@ var builtInProviders = []Provider{
 			humanDocsRef("aws-api-models-announcement-sns", "https://aws.amazon.com/about-aws/whats-new/2025/06/open-source-aws-api-models", "Official AWS announcement for open-source AWS API Models."),
 		},
 		quirks: []string{"AWS SNS publishes official Smithy JSON service models rather than OpenAPI; OpenAPI-only workflows need a generated or user-provided OpenAPI document.", "AWS SigV4 request signing is recorded as metadata only; apitools must not sign requests or choose AWS accounts."},
+	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-sqs",
+		displayName: "AWS SQS",
+		aliases:     []string{"amazon sqs", "aws sqs api", "sqs"},
+		category:    "messaging",
+		relevance:   "Popular AWS messaging service for queues, messages, visibility timeouts, dead-letter queues, attributes, and workflow automation.",
+		specID:      "aws-sqs-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/sqs/service/2012-11-05/sqs-2012-11-05.json",
+		version:     "2012-11-05",
+		blobSHA:     "bd1ee3154d1ce0612b47f8618dcb311ab8bc5195",
+		serviceName: "Amazon SQS",
+		apiDocsURL:  "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/welcome.html",
+	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-textract",
+		displayName: "AWS Textract",
+		aliases:     []string{"amazon textract", "aws textract api", "textract"},
+		category:    "ai-document-processing",
+		relevance:   "Popular AWS document analysis service for text, forms, tables, queries, expense, lending, and asynchronous document workflow automation.",
+		specID:      "aws-textract-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/textract/service/2018-06-27/textract-2018-06-27.json",
+		version:     "2018-06-27",
+		blobSHA:     "2994b47f2c523f4c098aa2e13026823d60b449e8",
+		serviceName: "Amazon Textract",
+		apiDocsURL:  "https://docs.aws.amazon.com/textract/latest/dg/API_Reference.html",
+	}),
+	awsSmithyProvider20260520(awsSmithyProviderSeed{
+		id:          "aws-transcribe",
+		displayName: "AWS Transcribe",
+		aliases:     []string{"amazon transcribe", "aws transcribe api", "transcribe"},
+		category:    "ai-speech",
+		relevance:   "Popular AWS speech service for transcription jobs, vocabularies, language models, call analytics, medical transcription, and audio workflow automation.",
+		specID:      "aws-transcribe-smithy-model",
+		specURL:     "https://raw.githubusercontent.com/aws/api-models-aws/main/models/transcribe/service/2017-10-26/transcribe-2017-10-26.json",
+		version:     "2017-10-26",
+		blobSHA:     "10efb265903df3b28a9f7e5efeec83d3fcfef722",
+		serviceName: "Amazon Transcribe",
+		apiDocsURL:  "https://docs.aws.amazon.com/transcribe/latest/APIReference/Welcome.html",
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "airtable",
@@ -4041,6 +4197,54 @@ type providerSeed struct {
 	userNeed            UserOpenAPINeed
 	specs               []SpecReference
 	quirks              []string
+}
+
+type awsSmithyProviderSeed struct {
+	id          string
+	displayName string
+	aliases     []string
+	category    string
+	relevance   string
+	specID      string
+	specURL     string
+	version     string
+	blobSHA     string
+	serviceName string
+	apiDocsURL  string
+}
+
+func awsSmithyProvider20260520(seed awsSmithyProviderSeed) Provider {
+	return providerCatalogEntry(providerSeed{
+		id:                  seed.id,
+		displayName:         seed.displayName,
+		aliases:             seed.aliases,
+		category:            seed.category,
+		relevance:           seed.relevance,
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityKnown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			awsSmithyRef20260520(seed.specID, seed.specURL, seed.version, seed.blobSHA, seed.serviceName),
+			humanDocsRef20260520(seed.id+"-api-docs", seed.apiDocsURL, "Official "+seed.serviceName+" API Reference documentation."),
+			humanDocsRef20260520(seed.id+"-sigv4-docs", "https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html", "Official AWS Signature Version 4 authentication documentation."),
+			humanDocsRef20260520(seed.id+"-api-models-announcement", "https://aws.amazon.com/about-aws/whats-new/2025/06/open-source-aws-api-models", "Official AWS announcement for open-source AWS API Models."),
+		},
+		quirks: []string{seed.serviceName + " publishes official Smithy JSON service models rather than OpenAPI; OpenAPI-only workflows need a generated or user-provided OpenAPI document.", "AWS SigV4 request signing is recorded as metadata only; apitools must not sign requests or choose AWS accounts."},
+	})
+}
+
+func awsSmithyRef20260520(id, url, version, blobSHA, serviceName string) SpecReference {
+	return SpecReference{
+		ID:              id,
+		Kind:            SpecKindSmithyJSON,
+		URL:             url,
+		SourceAuthority: SourceAuthorityOfficialGitHub,
+		Version:         version,
+		VerifiedAt:      "2026-05-20",
+		Revision:        "github-blob:" + blobSHA,
+		LicenseNote:     "AWS API Models repository is licensed under Apache 2.0.",
+		SourceNote:      "Official AWS API Models Smithy JSON service model for " + serviceName + "; this is a machine-readable AWS service model, not an OpenAPI document.",
+	}
 }
 
 func providerCatalogEntry(seed providerSeed) Provider {

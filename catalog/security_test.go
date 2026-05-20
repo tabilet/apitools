@@ -106,7 +106,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 174; got != want {
+	if got, want := len(overlays), 186; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -213,9 +213,21 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"apitemplate-io",
 		"asana",
 		"autopilot",
+		"aws-acm",
+		"aws-cognito",
+		"aws-comprehend",
+		"aws-dynamodb",
+		"aws-elb",
+		"aws-elbv2",
+		"aws-iam",
 		"aws-lambda",
+		"aws-rekognition",
 		"aws-s3",
+		"aws-ses",
 		"aws-sns",
+		"aws-sqs",
+		"aws-textract",
+		"aws-transcribe",
 		"bamboohr",
 		"bannerbear",
 		"baserow",
@@ -447,9 +459,21 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"airtop":             AuthStatusPresentIncomplete,
 		"asana":              AuthStatusPresentIncomplete,
 		"autopilot":          AuthStatusOverlayRequired,
+		"aws-acm":            AuthStatusOverlayRequired,
+		"aws-cognito":        AuthStatusOverlayRequired,
+		"aws-comprehend":     AuthStatusOverlayRequired,
+		"aws-dynamodb":       AuthStatusOverlayRequired,
+		"aws-elb":            AuthStatusOverlayRequired,
+		"aws-elbv2":          AuthStatusOverlayRequired,
+		"aws-iam":            AuthStatusOverlayRequired,
 		"aws-lambda":         AuthStatusOverlayRequired,
+		"aws-rekognition":    AuthStatusOverlayRequired,
 		"aws-s3":             AuthStatusOverlayRequired,
+		"aws-ses":            AuthStatusOverlayRequired,
 		"aws-sns":            AuthStatusOverlayRequired,
+		"aws-sqs":            AuthStatusOverlayRequired,
+		"aws-textract":       AuthStatusOverlayRequired,
+		"aws-transcribe":     AuthStatusOverlayRequired,
 		"bamboohr":           AuthStatusOverlayRequired,
 		"bannerbear":         AuthStatusOverlayRequired,
 		"baserow":            AuthStatusComplete,

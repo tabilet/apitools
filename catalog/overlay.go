@@ -372,6 +372,54 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		"https://docs.aws.amazon.com/sns/latest/api/welcome.html",
 		"https://docs.aws.amazon.com/sns/latest/api/CommonParameters.html",
 	}),
+	awsSigV4Overlay("aws-acm-sigv4-auth-overlay", "aws-acm", "aws-acm-smithy-model", "AWS Certificate Manager", []string{
+		"https://docs.aws.amazon.com/acm/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-cognito-sigv4-auth-overlay", "aws-cognito", "aws-cognito-smithy-model", "AWS Cognito Identity Provider", []string{
+		"https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-comprehend-sigv4-auth-overlay", "aws-comprehend", "aws-comprehend-smithy-model", "Amazon Comprehend", []string{
+		"https://docs.aws.amazon.com/comprehend/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-dynamodb-sigv4-auth-overlay", "aws-dynamodb", "aws-dynamodb-smithy-model", "Amazon DynamoDB", []string{
+		"https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-elb-sigv4-auth-overlay", "aws-elb", "aws-elb-smithy-model", "Elastic Load Balancing", []string{
+		"https://docs.aws.amazon.com/elasticloadbalancing/2012-06-01/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-elbv2-sigv4-auth-overlay", "aws-elbv2", "aws-elbv2-smithy-model", "Elastic Load Balancing v2", []string{
+		"https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-iam-sigv4-auth-overlay", "aws-iam", "aws-iam-smithy-model", "AWS Identity and Access Management", []string{
+		"https://docs.aws.amazon.com/IAM/latest/APIReference/welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-rekognition-sigv4-auth-overlay", "aws-rekognition", "aws-rekognition-smithy-model", "Amazon Rekognition", []string{
+		"https://docs.aws.amazon.com/rekognition/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-ses-sigv4-auth-overlay", "aws-ses", "aws-ses-smithy-model", "Amazon Simple Email Service", []string{
+		"https://docs.aws.amazon.com/ses/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-sqs-sigv4-auth-overlay", "aws-sqs", "aws-sqs-smithy-model", "Amazon SQS", []string{
+		"https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-textract-sigv4-auth-overlay", "aws-textract", "aws-textract-smithy-model", "Amazon Textract", []string{
+		"https://docs.aws.amazon.com/textract/latest/dg/API_Reference.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-transcribe-sigv4-auth-overlay", "aws-transcribe", "aws-transcribe-smithy-model", "Amazon Transcribe", []string{
+		"https://docs.aws.amazon.com/transcribe/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
 	parseableSpecAuthReviewOverlay(
 		"bitbucket-cloud-swagger-v2-auth-review",
 		"bitbucket",

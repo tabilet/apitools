@@ -210,30 +210,44 @@ func TestParseRejectsMalformedSmithy(t *testing.T) {
 
 func TestCatalogAWSArtifactsRemainSmithyReviewArtifacts(t *testing.T) {
 	for _, path := range []string{
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-acm-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-cognito-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-comprehend-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-dynamodb-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-elb-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-elbv2-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-iam-smithy-model.json"),
 		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-lambda-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-rekognition-smithy-model.json"),
 		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-s3-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-ses-smithy-model.json"),
 		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-sns-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-sqs-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-textract-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-transcribe-smithy-model.json"),
 	} {
-		data, err := os.ReadFile(path)
-		if err != nil {
-			if os.IsNotExist(err) {
-				t.Skipf("catalog review artifact %s is not present", path)
+		t.Run(filepath.Base(path), func(t *testing.T) {
+			data, err := os.ReadFile(path)
+			if err != nil {
+				if os.IsNotExist(err) {
+					t.Skipf("catalog review artifact %s is not present", path)
+				}
+				t.Fatalf("read %s: %v", path, err)
 			}
-			t.Fatalf("read %s: %v", path, err)
-		}
-		var raw map[string]any
-		if err := json.Unmarshal(data, &raw); err != nil {
-			t.Fatalf("parse %s: %v", path, err)
-		}
-		if raw["smithy"] != "2.0" {
-			t.Fatalf("%s smithy = %v, want 2.0", path, raw["smithy"])
-		}
-		if raw["openapi"] != nil || raw["swagger"] != nil {
-			t.Fatalf("%s is unexpectedly OpenAPI-shaped", path)
-		}
-		if _, err := awssmithy.Parse(data); err != nil {
-			t.Fatalf("parse %s: %v", path, err)
-		}
+			var raw map[string]any
+			if err := json.Unmarshal(data, &raw); err != nil {
+				t.Fatalf("parse %s: %v", path, err)
+			}
+			if raw["smithy"] != "2.0" {
+				t.Fatalf("%s smithy = %v, want 2.0", path, raw["smithy"])
+			}
+			if raw["openapi"] != nil || raw["swagger"] != nil {
+				t.Fatalf("%s is unexpectedly OpenAPI-shaped", path)
+			}
+			if _, err := awssmithy.Parse(data); err != nil {
+				t.Fatalf("parse %s: %v", path, err)
+			}
+		})
 	}
 }
 

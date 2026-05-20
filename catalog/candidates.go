@@ -59,6 +59,62 @@ var builtInCandidates = []Candidate{
 		n8nNode:     "Asana",
 		relevance:   "Popular workflow service for task, project, and work-management automation.",
 	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-acm",
+		displayName: "AWS Certificate Manager",
+		aliases:     []string{"amazon certificate manager", "aws acm", "aws acm api", "acm"},
+		category:    "certificate-management",
+		n8nNode:     "Aws/CertificateManager",
+		relevance:   "Popular infrastructure service for TLS certificate request, import, renewal, validation, tagging, and certificate inventory automation.",
+	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-cognito",
+		displayName: "AWS Cognito",
+		aliases:     []string{"amazon cognito", "aws cognito api", "cognito", "cognito-idp"},
+		category:    "identity",
+		n8nNode:     "Aws/Cognito",
+		relevance:   "Popular identity service for user pools, users, groups, identity providers, app clients, tokens, and authentication workflow automation.",
+	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-comprehend",
+		displayName: "AWS Comprehend",
+		aliases:     []string{"amazon comprehend", "aws comprehend api", "comprehend"},
+		category:    "ai-nlp",
+		n8nNode:     "Aws/Comprehend",
+		relevance:   "Popular AWS natural-language service for entity, sentiment, key phrase, language, document classification, and text analysis automation.",
+	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-dynamodb",
+		displayName: "AWS DynamoDB",
+		aliases:     []string{"amazon dynamodb", "aws dynamodb api", "dynamodb"},
+		category:    "database",
+		n8nNode:     "Aws/DynamoDB",
+		relevance:   "Popular AWS database service for tables, items, indexes, streams, backups, tags, and key-value workflow automation.",
+	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-elb",
+		displayName: "AWS ELB",
+		aliases:     []string{"amazon elb", "aws elb api", "elb", "elastic load balancing", "classic load balancer"},
+		category:    "cloud-networking",
+		n8nNode:     "Aws/ELB",
+		relevance:   "Popular AWS networking service for Classic Load Balancers, listeners, policies, health checks, tags, and traffic automation.",
+	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-elbv2",
+		displayName: "AWS ELBv2",
+		aliases:     []string{"amazon elbv2", "aws elbv2 api", "elbv2", "elastic load balancing v2", "application load balancer", "network load balancer"},
+		category:    "cloud-networking",
+		n8nNode:     "Aws/ELB",
+		relevance:   "Popular AWS networking service for Application, Network, and Gateway Load Balancers, target groups, listeners, rules, tags, and traffic automation.",
+	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-iam",
+		displayName: "AWS IAM",
+		aliases:     []string{"amazon iam", "aws iam api", "iam"},
+		category:    "identity",
+		n8nNode:     "Aws/IAM",
+		relevance:   "Core AWS identity service for users, groups, roles, policies, access keys, login profiles, and account authorization metadata automation.",
+	}),
 	workflowCandidate(candidateSeed{
 		id:              "aws-s3",
 		displayName:     "AWS S3",
@@ -91,6 +147,46 @@ var builtInCandidates = []Candidate{
 		machineSpecKind: string(SpecKindSmithyJSON),
 		machineStatus:   SpecStatusNeedsVerification,
 		userNeed:        UserOpenAPINeedLikely,
+	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-rekognition",
+		displayName: "AWS Rekognition",
+		aliases:     []string{"amazon rekognition", "aws rekognition api", "rekognition"},
+		category:    "ai-vision",
+		n8nNode:     "Aws/Rekognition",
+		relevance:   "Popular AWS vision service for image labels, faces, celebrities, moderation, collections, videos, and visual workflow automation.",
+	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-ses",
+		displayName: "AWS SES",
+		aliases:     []string{"amazon ses", "aws ses api", "ses"},
+		category:    "email",
+		n8nNode:     "Aws/SES",
+		relevance:   "Popular AWS email service for identities, templates, sending, configuration sets, receipt rules, and email automation.",
+	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-sqs",
+		displayName: "AWS SQS",
+		aliases:     []string{"amazon sqs", "aws sqs api", "sqs"},
+		category:    "messaging",
+		n8nNode:     "Aws/SQS",
+		relevance:   "Popular AWS messaging service for queues, messages, visibility timeouts, dead-letter queues, attributes, and workflow automation.",
+	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-textract",
+		displayName: "AWS Textract",
+		aliases:     []string{"amazon textract", "aws textract api", "textract"},
+		category:    "ai-document-processing",
+		n8nNode:     "Aws/Textract",
+		relevance:   "Popular AWS document analysis service for text, forms, tables, queries, expense, lending, and asynchronous document workflow automation.",
+	}),
+	awsSmithyCandidate(awsSmithyCandidateSeed{
+		id:          "aws-transcribe",
+		displayName: "AWS Transcribe",
+		aliases:     []string{"amazon transcribe", "aws transcribe api", "transcribe"},
+		category:    "ai-speech",
+		n8nNode:     "Aws/Transcribe",
+		relevance:   "Popular AWS speech service for transcription jobs, vocabularies, language models, call analytics, medical transcription, and audio workflow automation.",
 	}),
 	workflowCandidate(candidateSeed{
 		id:          "airtable",
@@ -2095,6 +2191,29 @@ type candidateSeed struct {
 	machineStatus   SpecStatus
 	userNeed        UserOpenAPINeed
 	evidence        []CandidateEvidence
+}
+
+type awsSmithyCandidateSeed struct {
+	id          string
+	displayName string
+	aliases     []string
+	category    string
+	n8nNode     string
+	relevance   string
+}
+
+func awsSmithyCandidate(seed awsSmithyCandidateSeed) Candidate {
+	return workflowCandidate(candidateSeed{
+		id:              seed.id,
+		displayName:     seed.displayName,
+		aliases:         seed.aliases,
+		category:        seed.category,
+		n8nNode:         seed.n8nNode,
+		relevance:       seed.relevance,
+		machineSpecKind: string(SpecKindSmithyJSON),
+		machineStatus:   SpecStatusNeedsVerification,
+		userNeed:        UserOpenAPINeedLikely,
+	})
 }
 
 func workflowCandidate(seed candidateSeed) Candidate {
