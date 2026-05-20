@@ -58,6 +58,7 @@ type CatalogSpecRefreshReviewResult struct {
 	ValidationError        string                  `json:"validation_error,omitempty"`
 	VerificationStale      bool                    `json:"verification_stale,omitempty"`
 	Metadata               SpecMetadata            `json:"metadata,omitempty"`
+	CorrectionNotes        []string                `json:"correction_notes,omitempty"`
 	ManualFollowUps        []string                `json:"manual_follow_ups,omitempty"`
 }
 
@@ -165,9 +166,10 @@ func reviewCatalogRefreshArtifact(ref catalog.RefreshableSpecReference, opts Cat
 	digest := sha256.Sum256(content)
 	result.SHA256 = hex.EncodeToString(digest[:])
 
-	status, metadata, err := validateCatalogRefreshContent(context.Background(), ref, content, ref.URL)
+	status, metadata, correctionNotes, err := validateCatalogRefreshContentWithCorrections(context.Background(), ref, content, ref.URL)
 	result.ValidationStatus = status
 	result.Metadata = metadata
+	result.CorrectionNotes = correctionNotes
 	protocol = catalogRefreshProtocolClassification(ref, metadata)
 	result.Protocol = protocol.Protocol
 	result.ProtocolVersion = protocol.Version
@@ -201,6 +203,9 @@ func (result *CatalogSpecRefreshReviewResult) addCatalogRefreshReviewFollowUps(o
 	case CatalogRefreshParseableOpenAPIInvalid, CatalogRefreshParseableSwaggerInvalid:
 		result.ManualFollowUps = append(result.ManualFollowUps, "Review the local artifact before updating durable catalog metadata.")
 		result.ManualFollowUps = append(result.ManualFollowUps, "Review strict validation errors before treating this artifact as import-ready metadata.")
+	}
+	if len(result.CorrectionNotes) > 0 {
+		result.ManualFollowUps = append(result.ManualFollowUps, "Review catalog refresh correction notes before treating this artifact as import-ready metadata.")
 	}
 }
 

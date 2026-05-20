@@ -148,6 +148,154 @@ func TestRefreshCatalogSpecReferencesSavesParseableInvalidSwagger(t *testing.T) 
 	}
 }
 
+func TestRefreshCatalogSpecReferencesAppliesHighLevelCorrection(t *testing.T) {
+	content := `{
+		"openapi":"3.0.0",
+		"info":{"title":"Contacts API","version":"1.0"},
+		"paths":{
+			"/contacts/search/duplicate":{"get":{"responses":{"200":{"description":""},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"$ref":"../common/common-schemas.json#/components/schemas/BadRequestDTO"}}}}}}}
+		},
+		"components":{"schemas":{"NestedArray":{"type":"array","items":{"type":"array"}}}}
+	}`
+	status, metadata, notes, err := validateCatalogRefreshContentWithCorrections(context.Background(), catalog.RefreshableSpecReference{
+		ProviderID: "highlevel",
+		SpecRefID:  "highlevel-contacts-openapi",
+		Kind:       catalog.SpecKindOpenAPI,
+	}, []byte(content), "https://raw.githubusercontent.com/GoHighLevel/highlevel-api-docs/main/apps/contacts.json")
+	if err != nil {
+		t.Fatalf("validateCatalogRefreshContentWithCorrections() error = %v", err)
+	}
+	if status != CatalogRefreshValidOpenAPI {
+		t.Fatalf("status = %q, want %q", status, CatalogRefreshValidOpenAPI)
+	}
+	if metadata.Title != "Contacts API" || metadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", metadata)
+	}
+	if len(notes) == 0 || !strings.Contains(notes[0], "HighLevel") {
+		t.Fatalf("correction notes = %#v", notes)
+	}
+}
+
+func TestRefreshCatalogSpecReferencesAppliesStravaCorrection(t *testing.T) {
+	content := `{
+		"swagger":"2.0",
+		"info":{"title":"Strava API v3","version":"3.0.0"},
+		"paths":{"/activities":{"get":{"responses":{"200":{"description":"ok","schema":{"$ref":"https://developers.strava.com/swagger/activity.json#/DetailedActivity"}}}}}},
+		"securityDefinitions":{"strava_oauth":{"type":"oauth2","flow":"accessCode","authorizationUrl":"https://www.strava.com/oauth/authorize","tokenUrl":"https://www.strava.com/oauth/token","scopes":{"read":"Read data"}}},
+		"security":[{"strava_oauth":["public"]}]
+	}`
+	status, metadata, notes, err := validateCatalogRefreshContentWithCorrections(context.Background(), catalog.RefreshableSpecReference{
+		ProviderID: "strava",
+		SpecRefID:  "strava-api-v3-swagger",
+		Kind:       catalog.SpecKindOpenAPI,
+	}, []byte(content), "https://developers.strava.com/swagger/swagger.json")
+	if err != nil {
+		t.Fatalf("validateCatalogRefreshContentWithCorrections() error = %v", err)
+	}
+	if status != CatalogRefreshValidSwagger {
+		t.Fatalf("status = %q, want %q", status, CatalogRefreshValidSwagger)
+	}
+	if metadata.Title != "Strava API v3" || metadata.Swagger != "2.0" || metadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", metadata)
+	}
+	if len(notes) == 0 || !strings.Contains(notes[0], "Strava") {
+		t.Fatalf("correction notes = %#v", notes)
+	}
+}
+
+func TestRefreshCatalogSpecReferencesAppliesSpotifyCorrection(t *testing.T) {
+	content := `
+openapi: "3.0.3"
+info:
+  title: Spotify Web API
+  version: "1.0.0"
+paths:
+  /me/tracks:
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - uris
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: ok
+  /playlists/{playlist_id}/images:
+    put:
+      parameters:
+        - name: playlist_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          image/jpeg:
+            schema:
+              type: string
+              format: byte
+              required: true
+      responses:
+        "202":
+          description: ok
+components:
+  x-spotify-policy:
+    policies:
+      $ref: ../policies.yaml
+  schemas:
+    PagingObject:
+      type: object
+      required:
+        - href
+        - items
+      properties:
+        href:
+          type: string
+`
+	status, metadata, notes, err := validateCatalogRefreshContentWithCorrections(context.Background(), catalog.RefreshableSpecReference{
+		ProviderID: "spotify",
+		SpecRefID:  "spotify-web-api-openapi",
+		Kind:       catalog.SpecKindOpenAPI,
+	}, []byte(content), "https://developer.spotify.com/reference/web-api/open-api-schema.yaml")
+	if err != nil {
+		t.Fatalf("validateCatalogRefreshContentWithCorrections() error = %v", err)
+	}
+	if status != CatalogRefreshValidOpenAPI {
+		t.Fatalf("status = %q, want %q", status, CatalogRefreshValidOpenAPI)
+	}
+	if metadata.Title != "Spotify Web API" || metadata.OperationCount != 2 {
+		t.Fatalf("metadata = %#v", metadata)
+	}
+	if len(notes) == 0 || !strings.Contains(notes[0], "Spotify") {
+		t.Fatalf("correction notes = %#v", notes)
+	}
+}
+
+func TestRefreshCatalogSpecReferencesDoesNotApplyCorrectionsToOtherProviders(t *testing.T) {
+	content := `{"openapi":"3.0.0","info":{"title":"External Ref","version":"1.0.0"},"paths":{"/items":{"get":{"responses":{"200":{"description":"ok","content":{"application/json":{"schema":{"$ref":"../common/common-schemas.json#/components/schemas/BadRequestDTO"}}}}}}}}`
+	status, _, notes, err := validateCatalogRefreshContentWithCorrections(context.Background(), catalog.RefreshableSpecReference{
+		ProviderID: "other",
+		SpecRefID:  "other-openapi",
+		Kind:       catalog.SpecKindOpenAPI,
+	}, []byte(content), "https://example.com/openapi.json")
+	if err == nil {
+		t.Fatalf("validateCatalogRefreshContentWithCorrections() expected error")
+	}
+	if status != CatalogRefreshInvalid {
+		t.Fatalf("status = %q, want %q", status, CatalogRefreshInvalid)
+	}
+	if len(notes) != 0 {
+		t.Fatalf("correction notes = %#v, want none", notes)
+	}
+}
+
 func TestRefreshCatalogSpecReferencesRejectsUnparseableOpenAPI(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

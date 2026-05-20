@@ -375,7 +375,6 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/highlevel-calendars-openapi.json",
 		title:      "Calendars API",
 		openapi:    "3.0.0",
-		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "highlevel",
@@ -385,7 +384,6 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/highlevel-contacts-openapi.json",
 		title:      "Contacts API",
 		openapi:    "3.0.0",
-		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "highlevel",
@@ -395,7 +393,6 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/highlevel-oauth-openapi.json",
 		title:      "OAuth 2.0",
 		openapi:    "3.0.0",
-		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "highlevel",
@@ -405,7 +402,6 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/highlevel-opportunities-openapi.json",
 		title:      "Opportunities API",
 		openapi:    "3.0.0",
-		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "highlevel",
@@ -415,7 +411,6 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/highlevel-users-openapi.json",
 		title:      "Users API",
 		openapi:    "3.0.0",
-		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
 	},
 	{
 		providerID: "kobotoolbox",
@@ -962,7 +957,6 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/spotify-web-api-openapi.yaml",
 		title:      "Spotify Web API",
 		openapi:    "3.0.3",
-		status:     apitools.CatalogRefreshInvalid,
 	},
 	{
 		providerID: "toggl",
@@ -1045,7 +1039,6 @@ var specArtifacts = []specArtifact{
 		path:       "openapi/strava-api-v3-swagger.json",
 		title:      "Strava API v3",
 		swagger:    "2.0",
-		status:     apitools.CatalogRefreshInvalid,
 	},
 	{
 		providerID: "zoho",

@@ -55,6 +55,7 @@ type CatalogSpecRefreshResult struct {
 	SHA256           string               `json:"sha256,omitempty"`
 	Bytes            int64                `json:"bytes,omitempty"`
 	Metadata         SpecMetadata         `json:"metadata,omitempty"`
+	CorrectionNotes  []string             `json:"correction_notes,omitempty"`
 	ManualFollowUps  []string             `json:"manual_follow_ups,omitempty"`
 }
 
@@ -84,7 +85,7 @@ func (c *Client) refreshCatalogSpecReference(ctx context.Context, ref catalog.Re
 	if err != nil {
 		return CatalogSpecRefreshResult{}, err
 	}
-	validationStatus, metadata, err := validateCatalogRefreshContent(ctx, ref, content, finalURL.String())
+	validationStatus, metadata, correctionNotes, err := validateCatalogRefreshContentWithCorrections(ctx, ref, content, finalURL.String())
 	if err != nil && !catalogRefreshStatusAllowsSave(validationStatus) {
 		return CatalogSpecRefreshResult{}, err
 	}
@@ -108,6 +109,9 @@ func (c *Client) refreshCatalogSpecReference(ctx context.Context, ref catalog.Re
 	if catalogRefreshStatusNeedsStrictReview(validationStatus) {
 		manualFollowUps = append(manualFollowUps, "Review strict validation errors before treating this artifact as import-ready metadata.")
 	}
+	if len(correctionNotes) > 0 {
+		manualFollowUps = append(manualFollowUps, "Review catalog refresh correction notes before treating this artifact as import-ready metadata.")
+	}
 	protocol := catalogRefreshProtocolClassification(ref, metadata)
 	return CatalogSpecRefreshResult{
 		ProviderID:       ref.ProviderID,
@@ -125,6 +129,7 @@ func (c *Client) refreshCatalogSpecReference(ctx context.Context, ref catalog.Re
 		SHA256:           hex.EncodeToString(digest[:]),
 		Bytes:            int64(len(content)),
 		Metadata:         metadata,
+		CorrectionNotes:  correctionNotes,
 		ManualFollowUps:  manualFollowUps,
 	}, nil
 }
@@ -140,6 +145,17 @@ func catalogRefreshProtocolClassification(ref catalog.RefreshableSpecReference, 
 }
 
 func validateCatalogRefreshContent(ctx context.Context, ref catalog.RefreshableSpecReference, content []byte, sourceURL string) (string, SpecMetadata, error) {
+	status, metadata, _, err := validateCatalogRefreshContentWithCorrections(ctx, ref, content, sourceURL)
+	return status, metadata, err
+}
+
+func validateCatalogRefreshContentWithCorrections(ctx context.Context, ref catalog.RefreshableSpecReference, content []byte, sourceURL string) (string, SpecMetadata, []string, error) {
+	correctedContent, correctionNotes := correctedCatalogRefreshContent(ref, content)
+	status, metadata, err := validateCatalogRefreshContentRaw(ctx, ref, correctedContent, sourceURL)
+	return status, metadata, correctionNotes, err
+}
+
+func validateCatalogRefreshContentRaw(ctx context.Context, ref catalog.RefreshableSpecReference, content []byte, sourceURL string) (string, SpecMetadata, error) {
 	switch ref.Kind {
 	case catalog.SpecKindOpenAPI:
 		metadata, ok := downloadedSpecMetadata(ctx, content, sourceURL)
