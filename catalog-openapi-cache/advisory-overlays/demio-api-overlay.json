@@ -1,0 +1,210 @@
+{
+  "components": {
+    "schemas": {
+      "DemioCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DemioError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DemioObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "demioAPIKey": {
+        "description": "Demio API key carried in the Api-Key request header.",
+        "in": "header",
+        "name": "Api-Key",
+        "type": "apiKey"
+      },
+      "demioAPISecret": {
+        "description": "Demio API secret carried in the Api-Secret request header.",
+        "in": "header",
+        "name": "Api-Secret",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Demio human API documentation. This is not an official Demio OpenAPI document.",
+    "title": "Demio API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/event/register": {
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "registerDemioParticipant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemioObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemioObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "demioAPIKey": [],
+            "demioAPISecret": []
+          }
+        ],
+        "summary": "Register participant"
+      }
+    },
+    "/event/{event_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getDemioEvent",
+        "parameters": [
+          {
+            "description": "Event ID.",
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemioObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "demioAPIKey": [],
+            "demioAPISecret": []
+          }
+        ],
+        "summary": "Get event"
+      }
+    },
+    "/event/{event_id}/report": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getDemioEventReport",
+        "parameters": [
+          {
+            "description": "Event ID.",
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemioObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "demioAPIKey": [],
+            "demioAPISecret": []
+          }
+        ],
+        "summary": "Get event report"
+      }
+    },
+    "/events": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listDemioEvents",
+        "parameters": [
+          {
+            "description": "Event type filter.",
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemioCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "demioAPIKey": [],
+            "demioAPISecret": []
+          }
+        ],
+        "summary": "List events"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://my.demio.com/api/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "demio",
+    "source_note": "Demio publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected event, registration, and report endpoints.",
+    "source_refs": [
+      "https://publicdemioapi.docs.apiary.io/",
+      "https://help.demio.com/en/articles/4544025-api-limitations"
+    ]
+  }
+}

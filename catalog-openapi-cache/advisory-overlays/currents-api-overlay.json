@@ -1,0 +1,866 @@
+{
+  "components": {
+    "schemas": {
+      "CurrentsCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CurrentsError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CurrentsObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "currentsBearer": {
+        "bearerFormat": "Currents API key",
+        "description": "Currents API key carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Currents human API documentation. This is not an official Currents OpenAPI document.",
+    "title": "Currents API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/actions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCurrentsActions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "List actions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createCurrentsAction",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CurrentsObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Create action"
+      }
+    },
+    "/actions/{action_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteCurrentsAction",
+        "parameters": [
+          {
+            "description": "Action ID.",
+            "in": "path",
+            "name": "action_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Delete action"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCurrentsAction",
+        "parameters": [
+          {
+            "description": "Action ID.",
+            "in": "path",
+            "name": "action_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Get action"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateCurrentsAction",
+        "parameters": [
+          {
+            "description": "Action ID.",
+            "in": "path",
+            "name": "action_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CurrentsObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Update action"
+      }
+    },
+    "/instances/{instance_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCurrentsInstance",
+        "parameters": [
+          {
+            "description": "Instance ID.",
+            "in": "path",
+            "name": "instance_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Get instance"
+      }
+    },
+    "/projects": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCurrentsProjects",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "List projects"
+      }
+    },
+    "/projects/{project_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCurrentsProject",
+        "parameters": [
+          {
+            "description": "Project ID.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Get project"
+      }
+    },
+    "/projects/{project_id}/insights": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCurrentsProjectInsights",
+        "parameters": [
+          {
+            "description": "Project ID.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Get project insights"
+      }
+    },
+    "/projects/{project_id}/runs": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCurrentsProjectRuns",
+        "parameters": [
+          {
+            "description": "Project ID.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "List project runs"
+      }
+    },
+    "/runs/{run_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteCurrentsRun",
+        "parameters": [
+          {
+            "description": "Run ID.",
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Delete run"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCurrentsRun",
+        "parameters": [
+          {
+            "description": "Run ID.",
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Get run"
+      }
+    },
+    "/runs/{run_id}/cancel": {
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "cancelCurrentsRun",
+        "parameters": [
+          {
+            "description": "Run ID.",
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CurrentsObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Cancel run"
+      }
+    },
+    "/signature/test": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createCurrentsTestSignature",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CurrentsObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Create test signature"
+      }
+    },
+    "/spec-files/{project_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCurrentsSpecFiles",
+        "parameters": [
+          {
+            "description": "Project ID.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "List spec files"
+      }
+    },
+    "/test-results/{signature}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCurrentsTestResults",
+        "parameters": [
+          {
+            "description": "Test signature.",
+            "in": "path",
+            "name": "signature",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "List test results"
+      }
+    },
+    "/tests/{project_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCurrentsTests",
+        "parameters": [
+          {
+            "description": "Project ID.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "List tests"
+      }
+    },
+    "/webhooks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCurrentsWebhooks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "List webhooks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createCurrentsWebhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CurrentsObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Create webhook"
+      }
+    },
+    "/webhooks/{webhook_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteCurrentsWebhook",
+        "parameters": [
+          {
+            "description": "Webhook ID.",
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Delete webhook"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCurrentsWebhook",
+        "parameters": [
+          {
+            "description": "Webhook ID.",
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Get webhook"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateCurrentsWebhook",
+        "parameters": [
+          {
+            "description": "Webhook ID.",
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CurrentsObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentsObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "currentsBearer": []
+          }
+        ],
+        "summary": "Update webhook"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.currents.dev/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "currents",
+    "source_note": "Currents publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected projects, runs, tests, spec files, actions, signatures, instances, and webhooks endpoints.",
+    "source_refs": [
+      "https://docs.currents.dev/api",
+      "https://docs.currents.dev/resources/api/authentication",
+      "https://docs.currents.dev/api/resources"
+    ]
+  }
+}

@@ -14,6 +14,7 @@ documents and must not be treated as provider truth.
 | Adalo | `adalo-api-overlay.json` | API docs support a focused app collections, records, and push notification subset; app, collection, and field schemas remain operator supplied. |
 | Affinity | `affinity-v1-api-overlay.json` | V1 API docs support a focused lists, fields, field values, people, organizations, opportunities, interactions, notes, files, and webhooks subset. |
 | Agile CRM | `agile-crm-rest-api-overlay.json` | REST API docs support a focused contacts, companies, deals, tasks, events, tracks, campaigns, and help desk subset; account subdomain remains operator supplied. |
+| APITemplate.io | `apitemplate-io-api-overlay.json` | API docs support a focused v1 PDF/image creation and template listing subset with X-API-KEY auth. |
 | Airtable | `airtable-web-api-overlay.json` | REST-shaped official Web API docs support a focused table/record subset. |
 | Autopilot | `autopilot-api-overlay.json` | API Blueprint-style docs and help docs support a focused contacts and lists subset with the documented API-key header. |
 | BambooHR | `bamboohr-api-v1-overlay.json` | REST-shaped API docs support a focused employees, directory, fields, reports, and time-off subset; customer subdomain remains operator supplied. |
@@ -27,7 +28,9 @@ documents and must not be treated as provider truth.
 | CoinGecko | `coingecko-api-v3-overlay.json` | API reference docs support a focused public v3 price, coin, market, and exchange subset; Demo and Pro auth variants remain catalog security metadata. |
 | Contentful | `contentful-management-api-overlay.json` | REST-shaped Content Management API docs support a focused spaces, environments, entries, assets, and content-types subset. |
 | Copper | `copper-developer-api-overlay.json` | Developer API docs support a focused users, leads, people, companies, opportunities, projects, tasks, activities, and webhooks subset. |
+| Currents | `currents-api-overlay.json` | API docs support a focused projects, runs, tests, spec files, actions, signatures, instances, and webhooks subset with bearer API-key auth. |
 | Databricks | `databricks-workspace-rest-overlay.json` | REST-shaped workspace API docs support a focused jobs, clusters, workspace, and DBFS subset; host remains operator supplied. |
+| Demio | `demio-api-overlay.json` | Public API docs support a focused events, registrations, and reports subset with paired Api-Key and Api-Secret headers. |
 | DHL | `dhl-shipment-tracking-overlay.json` | Shipment Tracking - Unified docs support the documented shipment tracking endpoint with subscription-key auth. |
 | Drift | `drift-platform-api-overlay.json` | REST-shaped Platform API docs support a focused contacts, conversations, and users subset with OAuth bearer auth. |
 | Disqus | `disqus-api-overlay.json` | REST-shaped API docs support a focused forums, threads, and posts subset with access_token/api_key request-parameter auth. |
@@ -64,8 +67,10 @@ documents and must not be treated as provider truth.
 | Mailchimp | `mailchimp-marketing-api-overlay.json` | REST-shaped Marketing API docs support a focused lists, campaigns, and reports subset. |
 | MailerLite | `mailerlite-api-overlay.json` | REST-shaped current API docs support a focused subscribers, groups, campaigns, and forms subset; Classic auth remains security metadata. |
 | Mailjet | `mailjet-rest-api-overlay.json` | REST-shaped REST API docs support a focused contacts, list-recipients, campaigns, messages, and send subset. |
+| Mandrill | `mandrill-transactional-api-overlay.json` | Transactional API docs support a focused messages, templates, users, and webhooks subset; API key is modeled as advisory credential placement because it is sent in each request payload. |
 | Mautic | `mautic-api-overlay.json` | Instance-hosted REST API docs support a focused contacts, companies, segments, campaigns, and emails subset; host remains operator supplied. |
 | MessageBird | `messagebird-api-overlay.json` | REST-shaped API docs support a focused balance, messages, contacts, voice calls, and HLR subset with AccessKey auth. |
+| Metabase | `metabase-api-overlay.json` | API docs and instance live-doc guidance support a focused session, current user, databases, questions, alerts, and metrics subset; host remains operator supplied. |
 | Medium | `medium-api-overlay.json` | REST-shaped official API docs support a focused current-user, publication list, and post publishing subset with bearer auth. |
 | Monica CRM | `monica-crm-api-overlay.json` | REST-shaped API docs support a focused contacts, activities, calls, reminders, and tags subset with bearer auth. |
 | Mocean | `mocean-api-overlay.json` | REST-shaped API docs support a focused SMS, voice dial, and account balance subset with API key and secret request parameters. |
@@ -156,3 +161,10 @@ documents and must not be treated as provider truth.
 | Orbit | No endpoint overlay for now. Orbit has shut down and the official docs endpoint was not reliably reachable during review; historical auth metadata is retained only for catalog inspection. |
 | Oura | Official API v2 OpenAPI is recorded, so no docs-derived endpoint overlay is needed. |
 | SyncroMSP | Official OpenAPI is recorded from the SyncroMSP API documentation, so no docs-derived endpoint overlay is needed. |
+| TheHive | Official TheHive 4 OpenAPI is recorded, so no docs-derived endpoint overlay is needed. |
+| TheHive Project | Official TheHive 5 OpenAPI is recorded, so no docs-derived endpoint overlay is needed. |
+| E-goi | Official Marketing API v3 OpenAPI is recorded, so no docs-derived endpoint overlay is needed. |
+| Mailcheck | Official OpenAPI is recorded from app.mailcheck.co, so no docs-derived endpoint overlay is needed. |
+| Nextcloud | Official server OpenAPI is recorded from the developer manual, so no docs-derived endpoint overlay is needed; WebDAV remains protocol-specific metadata. |
+| Philips Hue | No endpoint overlay for now. The official full API reference is login-gated and the available public Hue pages do not expose enough endpoint detail for a reviewed subset; unofficial OpenHue specs are not provider truth. |
+| PostBin | No endpoint overlay for now. M34 review did not find stable official endpoint documentation or an official OpenAPI document for PostBin's public request-bin API. |

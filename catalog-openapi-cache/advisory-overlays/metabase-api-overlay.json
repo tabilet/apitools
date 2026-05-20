@@ -1,0 +1,373 @@
+{
+  "components": {
+    "schemas": {
+      "MetabaseCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MetabaseError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MetabaseObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "metabaseSession": {
+        "description": "Metabase session token carried in the X-Metabase-Session request header after a metadata-only /api/session exchange.",
+        "in": "header",
+        "name": "X-Metabase-Session",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Metabase human API documentation. This is not an official Metabase OpenAPI document.",
+    "title": "Metabase API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/alert": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMetabaseAlerts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetabaseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "metabaseSession": []
+          }
+        ],
+        "summary": "List alerts"
+      }
+    },
+    "/api/card": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMetabaseQuestions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetabaseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "metabaseSession": []
+          }
+        ],
+        "summary": "List questions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMetabaseQuestion",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetabaseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetabaseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "metabaseSession": []
+          }
+        ],
+        "summary": "Create question"
+      }
+    },
+    "/api/card/{card_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMetabaseQuestion",
+        "parameters": [
+          {
+            "description": "Question/card ID.",
+            "in": "path",
+            "name": "card_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetabaseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "metabaseSession": []
+          }
+        ],
+        "summary": "Get question"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateMetabaseQuestion",
+        "parameters": [
+          {
+            "description": "Question/card ID.",
+            "in": "path",
+            "name": "card_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetabaseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetabaseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "metabaseSession": []
+          }
+        ],
+        "summary": "Update question"
+      }
+    },
+    "/api/database": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMetabaseDatabases",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetabaseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "metabaseSession": []
+          }
+        ],
+        "summary": "List databases"
+      }
+    },
+    "/api/database/{db_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMetabaseDatabase",
+        "parameters": [
+          {
+            "description": "Database ID.",
+            "in": "path",
+            "name": "db_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetabaseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "metabaseSession": []
+          }
+        ],
+        "summary": "Get database"
+      }
+    },
+    "/api/metric": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMetabaseMetrics",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetabaseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "metabaseSession": []
+          }
+        ],
+        "summary": "List metrics"
+      }
+    },
+    "/api/session": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMetabaseSession",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetabaseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetabaseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Create session"
+      }
+    },
+    "/api/user/current": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMetabaseCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetabaseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "metabaseSession": []
+          }
+        ],
+        "summary": "Get current user"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{metabase_host}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "metabase",
+    "source_note": "Metabase publishes human API documentation and instance-specific live OpenAPI docs but no recorded stable provider-hosted OpenAPI artifact; this overlay covers selected questions, databases, alerts, metrics, and session endpoints.",
+    "source_refs": [
+      "https://www.metabase.com/docs/latest/api",
+      "https://www.metabase.com/learn/metabase-basics/administration/administration-and-operation/metabase-api"
+    ]
+  }
+}

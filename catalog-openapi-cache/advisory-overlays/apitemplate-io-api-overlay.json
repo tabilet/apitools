@@ -1,0 +1,219 @@
+{
+  "components": {
+    "schemas": {
+      "APITemplateCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "APITemplateError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "APITemplateObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "apitemplateAPIKey": {
+        "description": "APITemplate.io API key carried in the X-API-KEY request header.",
+        "in": "header",
+        "name": "X-API-KEY",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official APITemplate.io human API documentation. This is not an official APITemplate.io OpenAPI document.",
+    "title": "APITemplate.io API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/create": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAPITemplatePDF",
+        "parameters": [
+          {
+            "description": "Template ID.",
+            "in": "query",
+            "name": "template_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/APITemplateObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APITemplateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "apitemplateAPIKey": []
+          }
+        ],
+        "summary": "Create PDF or image from template"
+      }
+    },
+    "/create-image": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAPITemplateImage",
+        "parameters": [
+          {
+            "description": "Template ID.",
+            "in": "query",
+            "name": "template_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/APITemplateObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APITemplateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "apitemplateAPIKey": []
+          }
+        ],
+        "summary": "Create image from template"
+      }
+    },
+    "/create-pdf": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAPITemplatePDFDocument",
+        "parameters": [
+          {
+            "description": "Template ID.",
+            "in": "query",
+            "name": "template_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/APITemplateObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APITemplateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "apitemplateAPIKey": []
+          }
+        ],
+        "summary": "Create PDF document from template"
+      }
+    },
+    "/list-templates": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAPITemplateTemplates",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APITemplateCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "apitemplateAPIKey": []
+          }
+        ],
+        "summary": "List templates"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.apitemplate.io/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "apitemplate-io",
+    "source_note": "APITemplate.io publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected v1 template, PDF, and image generation endpoints.",
+    "source_refs": [
+      "https://docs.apitemplate.io/api/index.html"
+    ]
+  }
+}

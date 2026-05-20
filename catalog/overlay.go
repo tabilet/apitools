@@ -3849,6 +3849,133 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Tapfiliate has official human REST API docs but no recorded stable public official OpenAPI document; Api-Key header metadata comes from advisory overlay notes.",
 	},
+	{
+		ID:         "apitemplate-io-api-auth-overlay",
+		ProviderID: "apitemplate-io",
+		SpecRefID:  "apitemplate-io-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:          "apitemplateAPIKey",
+			Type:          SecuritySchemeAPIKey,
+			In:            APIKeyInHeader,
+			ParameterName: "X-API-KEY",
+			Description:   "APITemplate.io API key carried in the X-API-KEY request header.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "apitemplateAPIKey"}},
+		SourceRefs: []string{
+			"https://docs.apitemplate.io/api/index.html",
+		},
+		SourceNote: "APITemplate.io has official human API docs but no recorded stable public official OpenAPI document; X-API-KEY metadata comes from advisory overlay notes.",
+	},
+	{
+		ID:         "currents-api-auth-overlay",
+		ProviderID: "currents",
+		SpecRefID:  "currents-api-auth-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:         "currentsBearer",
+			Type:         SecuritySchemeHTTP,
+			Scheme:       "bearer",
+			BearerFormat: "Currents API key",
+			Description:  "Currents API key carried in the Authorization bearer header.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "currentsBearer"}},
+		SourceRefs: []string{
+			"https://docs.currents.dev/resources/api/authentication",
+			"https://docs.currents.dev/api",
+		},
+		SourceNote: "Currents has official human API docs but no recorded stable public official OpenAPI document; bearer API-key metadata comes from advisory overlay notes.",
+	},
+	{
+		ID:         "demio-api-auth-overlay",
+		ProviderID: "demio",
+		SpecRefID:  "demio-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "demioAPIKey",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Api-Key",
+				Description:   "Demio API key carried in the Api-Key request header.",
+			},
+			{
+				Name:          "demioAPISecret",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Api-Secret",
+				Description:   "Demio API secret carried in the Api-Secret request header.",
+			},
+		},
+		RootSecuritySets: []SecurityRequirementSet{{
+			Requirements: []SecurityRequirement{{Scheme: "demioAPIKey"}, {Scheme: "demioAPISecret"}},
+		}},
+		SourceRefs: []string{
+			"https://publicdemioapi.docs.apiary.io/",
+			"https://help.demio.com/en/articles/4544025-api-limitations",
+		},
+		SourceNote: "Demio has official human API docs but no recorded stable public official OpenAPI document; paired Api-Key and Api-Secret header metadata comes from advisory overlay notes.",
+	},
+	{
+		ID:         "mandrill-api-auth-overlay",
+		ProviderID: "mandrill",
+		SpecRefID:  "mandrill-transactional-fundamentals",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:          "mandrillAPIKey",
+			Type:          SecuritySchemeAPIKey,
+			In:            APIKeyInQuery,
+			ParameterName: "key",
+			Description:   "Mailchimp Transactional API key carried as the key field in each JSON or form request payload; query placement is advisory only because OpenAPI security schemes cannot model JSON-body credentials.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "mandrillAPIKey"}},
+		SourceRefs: []string{
+			"https://mailchimp.com/developer/transactional/docs/fundamentals/",
+			"https://mailchimp.com/developer/transactional/api/",
+		},
+		SourceNote: "Mailchimp Transactional has official human API docs but no recorded stable public official OpenAPI document; the required key payload field is represented as advisory credential-placement metadata.",
+	},
+	{
+		ID:         "metabase-api-auth-overlay",
+		ProviderID: "metabase",
+		SpecRefID:  "metabase-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:          "metabaseSession",
+			Type:          SecuritySchemeAPIKey,
+			In:            APIKeyInHeader,
+			ParameterName: "X-Metabase-Session",
+			Description:   "Metabase session token carried in the X-Metabase-Session request header after a metadata-only /api/session exchange.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "metabaseSession"}},
+		SourceRefs: []string{
+			"https://www.metabase.com/docs/latest/api",
+			"https://www.metabase.com/learn/metabase-basics/administration/administration-and-operation/metabase-api",
+		},
+		SourceNote: "Metabase exposes human API docs and instance-specific live OpenAPI docs, but no recorded stable provider-hosted OpenAPI artifact; session-header metadata comes from advisory overlay notes.",
+	},
+	{
+		ID:         "philips-hue-api-auth-overlay",
+		ProviderID: "philips-hue",
+		SpecRefID:  "philips-hue-api-v2-notice",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:        "philipsHueOAuth2",
+			Type:        SecuritySchemeOAuth2,
+			Description: "Philips Hue remote API OAuth2 access token carried in the Authorization bearer header.",
+			Flows: []OAuthFlow{{
+				Type:             OAuthFlowAuthorizationCode,
+				AuthorizationURL: "https://api.meethue.com/v2/oauth2/authorize",
+				TokenURL:         "https://api.meethue.com/v2/oauth2/token",
+			}},
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "philipsHueOAuth2"}},
+		SourceRefs: []string{
+			"https://developers.meethue.com/new-hue-api/",
+			"https://developers.meethue.com/terms-of-use-and-conditions/",
+		},
+		SourceNote: "Philips Hue official API docs are login-gated and no stable public official OpenAPI document was recorded; OAuth2 remote API metadata comes from advisory overlay notes.",
+	},
 }
 
 func awsSigV4Overlay(id, providerID, specRefID, serviceName string, sourceRefs []string) SecurityOverlay {

@@ -1,0 +1,308 @@
+{
+  "components": {
+    "schemas": {
+      "MandrillCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MandrillError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MandrillObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "mandrillAPIKey": {
+        "description": "Mailchimp Transactional API key carried as the key field in each JSON or form request payload; query placement is advisory only because OpenAPI security schemes cannot model JSON-body credentials.",
+        "in": "query",
+        "name": "key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Mailchimp Transactional human API documentation. This is not an official Mailchimp OpenAPI document.",
+    "title": "Mailchimp Transactional API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/messages/send-template.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendMandrillTemplateMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MandrillObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MandrillCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mandrillAPIKey": []
+          }
+        ],
+        "summary": "Send template message"
+      }
+    },
+    "/messages/send.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendMandrillMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MandrillObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MandrillCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mandrillAPIKey": []
+          }
+        ],
+        "summary": "Send message"
+      }
+    },
+    "/templates/info.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMandrillTemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MandrillObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MandrillObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mandrillAPIKey": []
+          }
+        ],
+        "summary": "Get template"
+      }
+    },
+    "/templates/list.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMandrillTemplates",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MandrillObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MandrillCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mandrillAPIKey": []
+          }
+        ],
+        "summary": "List templates"
+      }
+    },
+    "/users/info.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMandrillUserInfo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MandrillObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MandrillObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mandrillAPIKey": []
+          }
+        ],
+        "summary": "Get user info"
+      }
+    },
+    "/users/ping.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "pingMandrill",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MandrillObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MandrillObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mandrillAPIKey": []
+          }
+        ],
+        "summary": "Ping API"
+      }
+    },
+    "/webhooks/list.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMandrillWebhooks",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MandrillObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MandrillCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mandrillAPIKey": []
+          }
+        ],
+        "summary": "List webhooks"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://mandrillapp.com/api/1.0"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "mandrill",
+    "source_note": "Mailchimp publishes Transactional API human documentation but no recorded stable public official OpenAPI document; this overlay covers selected messages, templates, users, and webhooks endpoints.",
+    "source_refs": [
+      "https://mailchimp.com/developer/transactional/api/",
+      "https://mailchimp.com/developer/transactional/docs/fundamentals/"
+    ]
+  }
+}
