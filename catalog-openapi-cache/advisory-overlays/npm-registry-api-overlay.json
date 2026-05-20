@@ -1,0 +1,312 @@
+{
+  "components": {
+    "schemas": {
+      "NpmCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "NpmError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "NpmObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "npmBearer": {
+        "bearerFormat": "npm access token",
+        "description": "npm registry access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official npm registry human documentation. This is not an official npm OpenAPI document.",
+    "title": "npm Registry API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/-/package/{package_name}/dist-tags": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listNpmDistTags",
+        "parameters": [
+          {
+            "description": "Package name.",
+            "in": "path",
+            "name": "package_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NpmObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "npmBearer": []
+          }
+        ],
+        "summary": "List package dist-tags"
+      }
+    },
+    "/-/package/{package_name}/dist-tags/{dist_tag_name}": {
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "setNpmDistTag",
+        "parameters": [
+          {
+            "description": "Package name.",
+            "in": "path",
+            "name": "package_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Dist-tag name.",
+            "in": "path",
+            "name": "dist_tag_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NpmObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NpmObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "npmBearer": []
+          }
+        ],
+        "summary": "Set package dist-tag"
+      }
+    },
+    "/-/v1/search": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchNpmPackages",
+        "parameters": [
+          {
+            "description": "Search text.",
+            "in": "query",
+            "name": "text",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum results.",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NpmCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "npmBearer": []
+          }
+        ],
+        "summary": "Search packages"
+      }
+    },
+    "/-/whoami": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getNpmWhoami",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NpmObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "npmBearer": []
+          }
+        ],
+        "summary": "Get authenticated npm user"
+      }
+    },
+    "/{package_name}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getNpmPackageMetadata",
+        "parameters": [
+          {
+            "description": "Package name.",
+            "in": "path",
+            "name": "package_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NpmObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "npmBearer": []
+          }
+        ],
+        "summary": "Get package metadata"
+      }
+    },
+    "/{package_name}/{package_version}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getNpmPackageVersion",
+        "parameters": [
+          {
+            "description": "Package name.",
+            "in": "path",
+            "name": "package_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Package version.",
+            "in": "path",
+            "name": "package_version",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NpmObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "npmBearer": []
+          }
+        ],
+        "summary": "Get package version metadata"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://registry.npmjs.org"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "npm",
+    "source_note": "npm publishes registry API documentation but no recorded stable public official OpenAPI document; this overlay covers selected package metadata, search, dist-tag, and whoami endpoints.",
+    "source_refs": [
+      "https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md",
+      "https://docs.npmjs.com/cli/v11/using-npm/registry"
+    ]
+  }
+}

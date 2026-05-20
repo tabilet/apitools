@@ -1,0 +1,339 @@
+{
+  "components": {
+    "schemas": {
+      "StrapiCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "StrapiError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "StrapiObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "strapiBearer": {
+        "bearerFormat": "Strapi JWT or API token",
+        "description": "Strapi JWT or API token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Strapi human API documentation. This is not an official Strapi OpenAPI document.",
+    "title": "Strapi REST API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/auth/local": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createStrapiLocalAuth",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrapiObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrapiObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "summary": "Create local auth token"
+      }
+    },
+    "/{content_type}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listStrapiEntries",
+        "parameters": [
+          {
+            "description": "Collection type API ID.",
+            "in": "path",
+            "name": "content_type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter expression.",
+            "in": "query",
+            "name": "filters",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Sort expression.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination expression.",
+            "in": "query",
+            "name": "pagination",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrapiCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "strapiBearer": []
+          }
+        ],
+        "summary": "List entries"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createStrapiEntry",
+        "parameters": [
+          {
+            "description": "Collection type API ID.",
+            "in": "path",
+            "name": "content_type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrapiObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrapiObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "strapiBearer": []
+          }
+        ],
+        "summary": "Create entry"
+      }
+    },
+    "/{content_type}/{entry_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteStrapiEntry",
+        "parameters": [
+          {
+            "description": "Collection type API ID.",
+            "in": "path",
+            "name": "content_type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Entry ID.",
+            "in": "path",
+            "name": "entry_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrapiObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "strapiBearer": []
+          }
+        ],
+        "summary": "Delete entry"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getStrapiEntry",
+        "parameters": [
+          {
+            "description": "Collection type API ID.",
+            "in": "path",
+            "name": "content_type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Entry ID.",
+            "in": "path",
+            "name": "entry_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrapiObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "strapiBearer": []
+          }
+        ],
+        "summary": "Get entry"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateStrapiEntry",
+        "parameters": [
+          {
+            "description": "Collection type API ID.",
+            "in": "path",
+            "name": "content_type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Entry ID.",
+            "in": "path",
+            "name": "entry_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrapiObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrapiObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "strapiBearer": []
+          }
+        ],
+        "summary": "Update entry"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{strapi_host}/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "strapi",
+    "source_note": "Strapi publishes REST API documentation and app-local OpenAPI generation guidance but no stable provider-wide public OpenAPI document; this overlay covers generic collection routes.",
+    "source_refs": [
+      "https://docs.strapi.io/cms/api/rest",
+      "https://docs.strapi.io/cms/plugins/documentation"
+    ]
+  }
+}

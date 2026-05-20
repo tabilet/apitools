@@ -1,0 +1,382 @@
+{
+  "components": {
+    "schemas": {
+      "WufooCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WufooError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "WufooObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "wufooBasic": {
+        "description": "Wufoo API key supplied as HTTP Basic username with any placeholder password.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Wufoo human API documentation. This is not an official Wufoo OpenAPI document.",
+    "title": "Wufoo API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/forms.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWufooForms",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WufooCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wufooBasic": []
+          }
+        ],
+        "summary": "List forms"
+      }
+    },
+    "/forms/{form_hash}.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getWufooForm",
+        "parameters": [
+          {
+            "description": "Form hash.",
+            "in": "path",
+            "name": "form_hash",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WufooObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wufooBasic": []
+          }
+        ],
+        "summary": "Get form"
+      }
+    },
+    "/forms/{form_hash}/entries.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWufooEntries",
+        "parameters": [
+          {
+            "description": "Form hash.",
+            "in": "path",
+            "name": "form_hash",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WufooCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wufooBasic": []
+          }
+        ],
+        "summary": "List form entries"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWufooEntry",
+        "parameters": [
+          {
+            "description": "Form hash.",
+            "in": "path",
+            "name": "form_hash",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WufooObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WufooObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wufooBasic": []
+          }
+        ],
+        "summary": "Create form entry"
+      }
+    },
+    "/forms/{form_hash}/webhooks.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWufooWebhooks",
+        "parameters": [
+          {
+            "description": "Form hash.",
+            "in": "path",
+            "name": "form_hash",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WufooCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wufooBasic": []
+          }
+        ],
+        "summary": "List form webhooks"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createWufooWebhook",
+        "parameters": [
+          {
+            "description": "Form hash.",
+            "in": "path",
+            "name": "form_hash",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WufooObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WufooObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wufooBasic": []
+          }
+        ],
+        "summary": "Create form webhook"
+      }
+    },
+    "/forms/{form_hash}/webhooks/{webhook_id}.json": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteWufooWebhook",
+        "parameters": [
+          {
+            "description": "Form hash.",
+            "in": "path",
+            "name": "form_hash",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webhook ID.",
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WufooObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wufooBasic": []
+          }
+        ],
+        "summary": "Delete form webhook"
+      }
+    },
+    "/reports.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWufooReports",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WufooCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wufooBasic": []
+          }
+        ],
+        "summary": "List reports"
+      }
+    },
+    "/users.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listWufooUsers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WufooCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "wufooBasic": []
+          }
+        ],
+        "summary": "List users"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{subdomain}.wufoo.com/api/v3"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "wufoo",
+    "source_note": "Wufoo publishes API v3 human documentation but no recorded stable public official OpenAPI document; this overlay covers selected forms, entries, reports, users, and webhooks endpoints.",
+    "source_refs": [
+      "https://www.wufoo.com/docs/api/v3/",
+      "https://www.wufoo.com/docs/api/v3/forms/"
+    ]
+  }
+}

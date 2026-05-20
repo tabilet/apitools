@@ -1,0 +1,110 @@
+{
+  "components": {
+    "schemas": {
+      "YOURLError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "YOURLSObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "yourlsSignature": {
+        "description": "YOURLS passwordless API signature carried in the signature query parameter.",
+        "in": "query",
+        "name": "signature",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official YOURLS human API documentation. This is not an official YOURLS OpenAPI document.",
+    "title": "YOURLS API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/yourls-api.php": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "callYOURLSAPI",
+        "parameters": [
+          {
+            "description": "YOURLS API action such as shorturl, expand, stats, or url-stats.",
+            "in": "query",
+            "name": "action",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "URL for shorten or stats actions.",
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Short URL keyword for expand or stats actions.",
+            "in": "query",
+            "name": "shorturl",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Response format.",
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YOURLSObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "yourlsSignature": []
+          }
+        ],
+        "summary": "Call YOURLS API action"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{yourls_host}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "yourls",
+    "source_note": "YOURLS publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected shorturl, expand, stats, and URL stats actions.",
+    "source_refs": [
+      "https://yourls.org/docs/guide/advanced/api",
+      "https://yourls.org/docs/guide/advanced/passwordless-api"
+    ]
+  }
+}

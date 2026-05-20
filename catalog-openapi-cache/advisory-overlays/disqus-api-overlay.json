@@ -1,0 +1,337 @@
+{
+  "components": {
+    "schemas": {
+      "DisqusCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DisqusError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DisqusObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "disqusAPIKey": {
+        "description": "Disqus public API key carried in the api_key request parameter.",
+        "in": "query",
+        "name": "api_key",
+        "type": "apiKey"
+      },
+      "disqusAccessToken": {
+        "description": "Disqus access token carried in the access_token request parameter.",
+        "in": "query",
+        "name": "access_token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Disqus human API documentation. This is not an official Disqus OpenAPI document.",
+    "title": "Disqus API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/forums/details.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getDisqusForum",
+        "parameters": [
+          {
+            "description": "Forum shortname.",
+            "in": "query",
+            "name": "forum",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisqusObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "disqusAccessToken": []
+          }
+        ],
+        "summary": "Get forum details"
+      }
+    },
+    "/forums/listCategories.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listDisqusForumCategories",
+        "parameters": [
+          {
+            "description": "Forum shortname.",
+            "in": "query",
+            "name": "forum",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisqusCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "disqusAccessToken": []
+          }
+        ],
+        "summary": "List forum categories"
+      }
+    },
+    "/forums/listPosts.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listDisqusForumPosts",
+        "parameters": [
+          {
+            "description": "Forum shortname.",
+            "in": "query",
+            "name": "forum",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum results.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisqusCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "disqusAccessToken": []
+          }
+        ],
+        "summary": "List forum posts"
+      }
+    },
+    "/forums/listThreads.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listDisqusForumThreads",
+        "parameters": [
+          {
+            "description": "Forum shortname.",
+            "in": "query",
+            "name": "forum",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum results.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisqusCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "disqusAccessToken": []
+          }
+        ],
+        "summary": "List forum threads"
+      }
+    },
+    "/threads/details.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getDisqusThread",
+        "parameters": [
+          {
+            "description": "Thread identifier.",
+            "in": "query",
+            "name": "thread",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisqusObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "disqusAccessToken": []
+          }
+        ],
+        "summary": "Get thread details"
+      }
+    },
+    "/threads/listPosts.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listDisqusThreadPosts",
+        "parameters": [
+          {
+            "description": "Thread identifier.",
+            "in": "query",
+            "name": "thread",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum results.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisqusCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "disqusAccessToken": []
+          }
+        ],
+        "summary": "List thread posts"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://disqus.com/api/3.0"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "disqus",
+    "source_note": "Disqus publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected forum, thread, and post endpoints.",
+    "source_refs": [
+      "https://disqus.com/api/docs/",
+      "https://disqus.com/api/docs/auth/"
+    ]
+  }
+}

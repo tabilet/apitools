@@ -1,0 +1,544 @@
+{
+  "components": {
+    "schemas": {
+      "TravisCICollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TravisCIError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TravisCIObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "travisAPIVersion": {
+        "description": "Travis CI API version header required by API v3 requests.",
+        "in": "header",
+        "name": "Travis-API-Version",
+        "type": "apiKey"
+      },
+      "travisAuthorization": {
+        "description": "Travis CI API token carried in the Authorization header using token syntax.",
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Travis CI human API documentation. This is not an official Travis CI OpenAPI document.",
+    "title": "Travis CI API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/build/{build_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTravisCIBuild",
+        "parameters": [
+          {
+            "description": "Build ID.",
+            "in": "path",
+            "name": "build_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "Get build"
+      }
+    },
+    "/job/{job_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTravisCIJob",
+        "parameters": [
+          {
+            "description": "Job ID.",
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "Get job"
+      }
+    },
+    "/repo/{repository_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTravisCIRepository",
+        "parameters": [
+          {
+            "description": "Repository ID or slug.",
+            "in": "path",
+            "name": "repository_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "Get repository"
+      }
+    },
+    "/repo/{repository_id}/branch/{branch_name}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTravisCIBranch",
+        "parameters": [
+          {
+            "description": "Repository ID or slug.",
+            "in": "path",
+            "name": "repository_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Branch name.",
+            "in": "path",
+            "name": "branch_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "Get branch"
+      }
+    },
+    "/repo/{repository_id}/builds": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listTravisCIBuilds",
+        "parameters": [
+          {
+            "description": "Repository ID or slug.",
+            "in": "path",
+            "name": "repository_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCICollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "List builds"
+      }
+    },
+    "/repo/{repository_id}/env_var/{env_var_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteTravisCIEnvironmentVariable",
+        "parameters": [
+          {
+            "description": "Repository ID or slug.",
+            "in": "path",
+            "name": "repository_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Environment variable ID.",
+            "in": "path",
+            "name": "env_var_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "Delete environment variable"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTravisCIEnvironmentVariable",
+        "parameters": [
+          {
+            "description": "Repository ID or slug.",
+            "in": "path",
+            "name": "repository_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Environment variable ID.",
+            "in": "path",
+            "name": "env_var_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "Get environment variable"
+      }
+    },
+    "/repo/{repository_id}/env_vars": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listTravisCIEnvironmentVariables",
+        "parameters": [
+          {
+            "description": "Repository ID or slug.",
+            "in": "path",
+            "name": "repository_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCICollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "List environment variables"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createTravisCIEnvironmentVariable",
+        "parameters": [
+          {
+            "description": "Repository ID or slug.",
+            "in": "path",
+            "name": "repository_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TravisCIObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "Create environment variable"
+      }
+    },
+    "/repo/{repository_id}/request": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createTravisCIRequest",
+        "parameters": [
+          {
+            "description": "Repository ID or slug.",
+            "in": "path",
+            "name": "repository_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TravisCIObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "Create build request"
+      }
+    },
+    "/repos": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listTravisCIRepositories",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCICollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "List repositories"
+      }
+    },
+    "/user": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTravisCIUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravisCIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "travisAPIVersion": [],
+            "travisAuthorization": []
+          }
+        ],
+        "summary": "Get user"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.travis-ci.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "travis-ci",
+    "source_note": "Travis CI publishes human API v3 documentation but no recorded stable public official OpenAPI document; this overlay covers selected repositories, builds, jobs, requests, branches, and environment-variable endpoints.",
+    "source_refs": [
+      "https://developer.travis-ci.com/",
+      "https://developer.travis-ci.com/authentication"
+    ]
+  }
+}

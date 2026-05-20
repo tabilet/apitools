@@ -1,0 +1,209 @@
+{
+  "components": {
+    "schemas": {
+      "MediumCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MediumError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MediumObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "mediumBearer": {
+        "bearerFormat": "Medium access token",
+        "description": "Medium OAuth or integration token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Medium human API documentation. This is not an official Medium OpenAPI document.",
+    "title": "Medium API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/me": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMediumCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediumObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mediumBearer": []
+          }
+        ],
+        "summary": "Get current user"
+      }
+    },
+    "/publications/{publication_id}/posts": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMediumPublicationPost",
+        "parameters": [
+          {
+            "description": "Publication ID.",
+            "in": "path",
+            "name": "publication_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediumObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediumObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mediumBearer": []
+          }
+        ],
+        "summary": "Create publication post"
+      }
+    },
+    "/users/{user_id}/posts": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMediumUserPost",
+        "parameters": [
+          {
+            "description": "User ID.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediumObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediumObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mediumBearer": []
+          }
+        ],
+        "summary": "Create user post"
+      }
+    },
+    "/users/{user_id}/publications": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMediumUserPublications",
+        "parameters": [
+          {
+            "description": "User ID.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediumCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mediumBearer": []
+          }
+        ],
+        "summary": "List user publications"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.medium.com/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "medium",
+    "source_note": "Medium publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected user, publication, and post endpoints.",
+    "source_refs": [
+      "https://github.com/Medium/medium-api-docs"
+    ]
+  }
+}

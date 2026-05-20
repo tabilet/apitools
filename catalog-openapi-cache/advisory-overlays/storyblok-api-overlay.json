@@ -1,0 +1,419 @@
+{
+  "components": {
+    "schemas": {
+      "StoryblokCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "StoryblokError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "StoryblokObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "storyblokContentToken": {
+        "description": "Storyblok Content Delivery API token carried in the token query parameter.",
+        "in": "query",
+        "name": "token",
+        "type": "apiKey"
+      },
+      "storyblokManagementBearer": {
+        "bearerFormat": "Storyblok personal access token",
+        "description": "Storyblok Management API token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Storyblok human API documentation. This is not an official Storyblok OpenAPI document.",
+    "title": "Storyblok API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v1/spaces/{space_id}/stories": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listStoryblokManagementStories",
+        "parameters": [
+          {
+            "description": "Space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryblokCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "storyblokManagementBearer": []
+          }
+        ],
+        "summary": "List management stories"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createStoryblokManagementStory",
+        "parameters": [
+          {
+            "description": "Space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoryblokObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryblokObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "storyblokManagementBearer": []
+          }
+        ],
+        "summary": "Create management story"
+      }
+    },
+    "/v1/spaces/{space_id}/stories/{story_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteStoryblokManagementStory",
+        "parameters": [
+          {
+            "description": "Space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Story ID.",
+            "in": "path",
+            "name": "story_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryblokObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "storyblokManagementBearer": []
+          }
+        ],
+        "summary": "Delete management story"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getStoryblokManagementStory",
+        "parameters": [
+          {
+            "description": "Space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Story ID.",
+            "in": "path",
+            "name": "story_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryblokObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "storyblokManagementBearer": []
+          }
+        ],
+        "summary": "Get management story"
+      }
+    },
+    "/v1/spaces/{space_id}/stories/{story_id}/publish": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "publishStoryblokStory",
+        "parameters": [
+          {
+            "description": "Space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Story ID.",
+            "in": "path",
+            "name": "story_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryblokObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "storyblokManagementBearer": []
+          }
+        ],
+        "summary": "Publish story"
+      }
+    },
+    "/v1/spaces/{space_id}/stories/{story_id}/unpublish": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "unpublishStoryblokStory",
+        "parameters": [
+          {
+            "description": "Space ID.",
+            "in": "path",
+            "name": "space_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Story ID.",
+            "in": "path",
+            "name": "story_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryblokObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "storyblokManagementBearer": []
+          }
+        ],
+        "summary": "Unpublish story"
+      }
+    },
+    "/v2/cdn/stories": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listStoryblokContentStories",
+        "parameters": [
+          {
+            "description": "Story path prefix.",
+            "in": "query",
+            "name": "starts_with",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Content version.",
+            "in": "query",
+            "name": "version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryblokCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "storyblokContentToken": []
+          }
+        ],
+        "summary": "List content stories"
+      }
+    },
+    "/v2/cdn/stories/{story_slug}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getStoryblokContentStory",
+        "parameters": [
+          {
+            "description": "Story slug.",
+            "in": "path",
+            "name": "story_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Content version.",
+            "in": "query",
+            "name": "version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryblokObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "storyblokContentToken": []
+          }
+        ],
+        "summary": "Get content story"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.storyblok.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "storyblok",
+    "source_note": "Storyblok publishes human Content Delivery and Management API documentation but no recorded stable public official OpenAPI document; this overlay covers selected story endpoints.",
+    "source_refs": [
+      "https://www.storyblok.com/docs/api/content-delivery/v2",
+      "https://www.storyblok.com/docs/api/management"
+    ]
+  }
+}
