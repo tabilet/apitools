@@ -204,7 +204,11 @@ func (c *converter) convertPaths() (map[string]any, error) {
 			pathItem = map[string]any{}
 			paths[path] = pathItem
 		}
-		pathItem[strings.ToLower(method)] = op
+		methodKey := strings.ToLower(method)
+		if existing := mapValueOrNil(pathItem[methodKey]); existing != nil {
+			return nil, fmt.Errorf("operations %q and %q map to the same OpenAPI path/method %s %s", existing["x-smithy-id"], id, methodKey, path)
+		}
+		pathItem[methodKey] = op
 	}
 	return paths, nil
 }
@@ -284,7 +288,11 @@ func (c *converter) convertOperation(id string, operation map[string]any) (strin
 	} else if len(httpTrait) == 0 {
 		return "", "", nil, nil
 	}
-	path, queryLiterals, greedyLabels := splitSmithyURI(uri)
+	httpPath, queryLiterals, greedyLabels := splitSmithyURI(uri)
+	path := operationPathKey(httpPath, queryLiterals)
+	if c.protocol == "awsQuery" {
+		path = "/?Action=" + opName
+	}
 	if method == "" {
 		return "", "", nil, fmt.Errorf("operation %q missing HTTP method", id)
 	}
@@ -303,6 +311,7 @@ func (c *converter) convertOperation(id string, operation map[string]any) (strin
 		"description":           smithyDocumentation(operation),
 		"responses":             c.responsesFor(outputTarget, code),
 		"x-smithy-id":           id,
+		"x-smithy-http-path":    httpPath,
 		"x-smithy-protocol":     c.protocol,
 		"x-smithy-service":      c.serviceID,
 		"x-aws-operation-name":  opName,
@@ -323,7 +332,7 @@ func (c *converter) convertOperation(id string, operation map[string]any) (strin
 		op["x-smithy-greedy-labels"] = greedyLabels
 	}
 
-	parameters, boundMembers, err := c.operationParameters(inputTarget, path, queryLiterals)
+	parameters, boundMembers, err := c.operationParameters(inputTarget, httpPath, queryLiterals)
 	if err != nil {
 		return "", "", nil, err
 	}
@@ -366,6 +375,7 @@ func (c *converter) operationParameters(inputTarget, path string, queryLiterals 
 			in := ""
 			paramName := name
 			required := hasTrait(member, "smithy.api#required")
+			extensions := map[string]any{}
 			switch {
 			case hasTrait(member, "smithy.api#httpLabel"):
 				in = "path"
@@ -375,11 +385,20 @@ func (c *converter) operationParameters(inputTarget, path string, queryLiterals 
 				if value := stringValue(mtraits["smithy.api#httpQuery"]); value != "" {
 					paramName = value
 				}
+			case hasTrait(member, "smithy.api#httpQueryParams"):
+				in = "query"
+				extensions["x-smithy-http-query-params"] = true
 			case hasTrait(member, "smithy.api#httpHeader"):
 				in = "header"
 				if value := stringValue(mtraits["smithy.api#httpHeader"]); value != "" {
 					paramName = value
 				}
+			case hasTrait(member, "smithy.api#httpPrefixHeaders"):
+				in = "header"
+				if value := stringValue(mtraits["smithy.api#httpPrefixHeaders"]); value != "" {
+					paramName = value
+				}
+				extensions["x-smithy-http-prefix-headers"] = paramName
 			default:
 				continue
 			}
@@ -396,6 +415,9 @@ func (c *converter) operationParameters(inputTarget, path string, queryLiterals 
 			}
 			if doc := smithyDocumentation(member); doc != "" {
 				param["description"] = doc
+			}
+			for key, value := range extensions {
+				param[key] = value
 			}
 			params = append(params, param)
 		}
@@ -472,6 +494,15 @@ func (c *converter) operationRequestBody(opName, inputTarget string, bound map[s
 			return nil, err
 		}
 		required = hasTrait(member, "smithy.api#required")
+		mediaType := c.mediaTypeForTarget(targetValue(member))
+		return map[string]any{
+			"required": required,
+			"content": map[string]any{
+				mediaType: map[string]any{
+					"schema": schema,
+				},
+			},
+		}, nil
 	} else {
 		bodySchema, err := c.structureRequestSchema(inputTarget, bound)
 		if err != nil {
@@ -483,7 +514,7 @@ func (c *converter) operationRequestBody(opName, inputTarget string, bound map[s
 		schema = bodySchema
 		required = len(stringSlice(schema["required"])) > 0
 	}
-	mediaType := c.requestMediaType(schema)
+	mediaType := c.protocolMediaType()
 	return map[string]any{
 		"required": required,
 		"content": map[string]any{
@@ -564,14 +595,15 @@ func (c *converter) awsQueryRequestSchema(opName, inputTarget string) (map[strin
 func (c *converter) responsesFor(outputTarget string, code int) map[string]any {
 	response := map[string]any{"description": "Success"}
 	if outputTarget != "" && outputTarget != "smithy.api#Unit" {
-		mediaType := "application/json"
-		if c.protocol == "restXml" || c.protocol == "awsQuery" {
-			mediaType = "application/xml"
+		content, headers, extensions := c.responseBindings(outputTarget)
+		if len(content) > 0 {
+			response["content"] = content
 		}
-		response["content"] = map[string]any{
-			mediaType: map[string]any{
-				"schema": c.refForTarget(outputTarget),
-			},
+		if len(headers) > 0 {
+			response["headers"] = headers
+		}
+		for key, value := range extensions {
+			response[key] = value
 		}
 	}
 	return map[string]any{
@@ -579,11 +611,110 @@ func (c *converter) responsesFor(outputTarget string, code int) map[string]any {
 	}
 }
 
-func (c *converter) requestMediaType(schema map[string]any) string {
-	if stringValue(schema["type"]) == "string" && stringValue(schema["format"]) == "binary" {
+func (c *converter) responseBindings(outputTarget string) (map[string]any, map[string]any, map[string]any) {
+	output := mapValueOrNil(c.shapes[outputTarget])
+	if stringValue(output["type"]) != "structure" || c.protocol == "awsQuery" {
+		schema := c.refForTarget(outputTarget)
+		return map[string]any{c.mediaTypeForTarget(outputTarget): map[string]any{"schema": schema}}, nil, nil
+	}
+	members := mapValueOrNil(output["members"])
+	headers := map[string]any{}
+	extensions := map[string]any{}
+	bodyProperties := map[string]any{}
+	var bodyRequired []string
+	payloadMember := ""
+	hasResponseBinding := false
+	for _, name := range sortedKeys(members) {
+		member := mapValueOrNil(members[name])
+		mtraits := traits(member)
+		switch {
+		case hasTrait(member, "smithy.api#httpPayload"):
+			hasResponseBinding = true
+			payloadMember = name
+		case hasTrait(member, "smithy.api#httpHeader"):
+			hasResponseBinding = true
+			headerName := firstNonEmpty(stringValue(mtraits["smithy.api#httpHeader"]), name)
+			header, err := c.responseHeader(member)
+			if err == nil {
+				headers[headerName] = header
+			}
+		case hasTrait(member, "smithy.api#httpPrefixHeaders"):
+			hasResponseBinding = true
+			headerName := firstNonEmpty(stringValue(mtraits["smithy.api#httpPrefixHeaders"]), name)
+			header, err := c.responseHeader(member)
+			if err == nil {
+				header["x-smithy-http-prefix-headers"] = headerName
+				headers[headerName] = header
+			}
+		case hasTrait(member, "smithy.api#httpResponseCode"):
+			hasResponseBinding = true
+			extensions["x-smithy-http-response-code-member"] = name
+		default:
+			schema, err := c.memberSchema(member)
+			if err == nil {
+				bodyProperties[name] = schema
+				if hasTrait(member, "smithy.api#required") {
+					bodyRequired = append(bodyRequired, name)
+				}
+			}
+		}
+	}
+	if !hasResponseBinding {
+		schema := c.refForTarget(outputTarget)
+		return map[string]any{c.mediaTypeForTarget(outputTarget): map[string]any{"schema": schema}}, nil, nil
+	}
+	var content map[string]any
+	if payloadMember != "" {
+		member := mapValueOrNil(members[payloadMember])
+		schema, err := c.memberSchema(member)
+		if err == nil {
+			content = map[string]any{
+				c.mediaTypeForTarget(targetValue(member)): map[string]any{"schema": schema},
+			}
+		}
+	} else if len(bodyProperties) > 0 {
+		schema := map[string]any{
+			"type":       "object",
+			"properties": bodyProperties,
+		}
+		if len(bodyRequired) > 0 {
+			schema["required"] = bodyRequired
+		}
+		content = map[string]any{
+			c.protocolMediaType(): map[string]any{"schema": schema},
+		}
+	} else if len(headers) == 0 && len(extensions) == 0 {
+		content = map[string]any{
+			c.mediaTypeForTarget(outputTarget): map[string]any{"schema": c.refForTarget(outputTarget)},
+		}
+	}
+	return content, headers, extensions
+}
+
+func (c *converter) responseHeader(member map[string]any) (map[string]any, error) {
+	schema, err := c.memberSchema(member)
+	if err != nil {
+		return nil, err
+	}
+	header := map[string]any{"schema": schema}
+	if doc := smithyDocumentation(member); doc != "" {
+		header["description"] = doc
+	}
+	return header, nil
+}
+
+func (c *converter) mediaTypeForTarget(target string) string {
+	if schema := preludeSchema(target); stringValue(schema["type"]) == "string" && stringValue(schema["format"]) == "binary" {
 		return "application/octet-stream"
 	}
-	if c.protocol == "restXml" {
+	if shape := mapValueOrNil(c.shapes[target]); stringValue(shape["type"]) == "blob" {
+		return "application/octet-stream"
+	}
+	return c.protocolMediaType()
+}
+
+func (c *converter) protocolMediaType() string {
+	if c.protocol == "restXml" || c.protocol == "awsQuery" {
 		return "application/xml"
 	}
 	return "application/json"
@@ -849,6 +980,21 @@ func splitSmithyURI(uri string) (string, map[string]string, []string) {
 	return path, literals, greedy
 }
 
+func operationPathKey(path string, queryLiterals map[string]string) string {
+	if len(queryLiterals) == 0 {
+		return path
+	}
+	parts := make([]string, 0, len(queryLiterals))
+	for _, name := range sortedKeysStringMap(queryLiterals) {
+		if queryLiterals[name] == "" {
+			parts = append(parts, name)
+			continue
+		}
+		parts = append(parts, name+"="+queryLiterals[name])
+	}
+	return path + "?" + strings.Join(parts, "&")
+}
+
 func pathLabels(path string) []string {
 	matches := regexp.MustCompile(`\{([^{}]+)\}`).FindAllStringSubmatch(path, -1)
 	out := make([]string, 0, len(matches))
@@ -858,6 +1004,18 @@ func pathLabels(path string) []string {
 		}
 	}
 	return out
+}
+
+func sortedKeysStringMap(m map[string]string) []string {
+	if len(m) == 0 {
+		return nil
+	}
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
 }
 
 func hasParameter(params []any, in, name string) bool {

@@ -83,7 +83,7 @@ func TestConvertRestXMLOperation(t *testing.T) {
 
 func TestConvertAWSQueryOperation(t *testing.T) {
 	doc := mustConvertMap(t, awsQueryFixture())
-	op := operation(t, doc, "/", "post")
+	op := operation(t, doc, "/?Action=Publish", "post")
 	if got, want := op["x-aws-query-action"], "Publish"; got != want {
 		t.Fatalf("query action = %v, want %v", got, want)
 	}
@@ -104,6 +104,103 @@ func TestConvertAWSQueryOperation(t *testing.T) {
 		if !contains(required, want) {
 			t.Fatalf("required = %#v, missing %q", required, want)
 		}
+	}
+}
+
+func TestConvertPreservesCollidingSmithyOperations(t *testing.T) {
+	doc := mustConvertMap(t, map[string]any{
+		"smithy": "2.0",
+		"shapes": map[string]any{
+			"com.amazonaws.s3#AmazonS3": serviceShape("S3", "restXml", []any{
+				ref("com.amazonaws.s3#GetBucketAcl"),
+				ref("com.amazonaws.s3#GetBucketTagging"),
+			}),
+			"com.amazonaws.s3#GetBucketAcl": map[string]any{"type": "operation", "traits": map[string]any{
+				"smithy.api#http": map[string]any{"method": "GET", "uri": "/{Bucket}?acl", "code": float64(200)},
+			}},
+			"com.amazonaws.s3#GetBucketTagging": map[string]any{"type": "operation", "traits": map[string]any{
+				"smithy.api#http": map[string]any{"method": "GET", "uri": "/{Bucket}?tagging", "code": float64(200)},
+			}},
+		},
+	})
+	if got := operation(t, doc, "/{Bucket}?acl", "get")["operationId"]; got != "GetBucketAcl" {
+		t.Fatalf("acl operationId = %v, want GetBucketAcl", got)
+	}
+	if got := operation(t, doc, "/{Bucket}?tagging", "get")["operationId"]; got != "GetBucketTagging" {
+		t.Fatalf("tagging operationId = %v, want GetBucketTagging", got)
+	}
+
+	queryDoc := mustConvertMap(t, map[string]any{
+		"smithy": "2.0",
+		"shapes": map[string]any{
+			"com.amazonaws.sns#SNS": serviceShape("SNS", "awsQuery", []any{
+				ref("com.amazonaws.sns#Publish"),
+				ref("com.amazonaws.sns#Subscribe"),
+			}),
+			"com.amazonaws.sns#Publish":   map[string]any{"type": "operation"},
+			"com.amazonaws.sns#Subscribe": map[string]any{"type": "operation"},
+		},
+	})
+	if got := operation(t, queryDoc, "/?Action=Publish", "post")["operationId"]; got != "Publish" {
+		t.Fatalf("publish operationId = %v, want Publish", got)
+	}
+	if got := operation(t, queryDoc, "/?Action=Subscribe", "post")["operationId"]; got != "Subscribe" {
+		t.Fatalf("subscribe operationId = %v, want Subscribe", got)
+	}
+}
+
+func TestConvertModelsHTTPPrefixHeaders(t *testing.T) {
+	doc := mustConvertMap(t, restXMLFixture())
+	op := operation(t, doc, "/{Bucket}/{Key}", "put")
+	params := op["parameters"].([]any)
+	var found bool
+	for _, param := range params {
+		m := param.(map[string]any)
+		if m["in"] == "header" && m["name"] == "x-amz-meta-" {
+			found = true
+			if got, want := m["x-smithy-http-prefix-headers"], "x-amz-meta-"; got != want {
+				t.Fatalf("prefix extension = %v, want %v", got, want)
+			}
+		}
+	}
+	if !found {
+		t.Fatalf("missing prefix header parameter in %#v", params)
+	}
+}
+
+func TestConvertModelsResponseHTTPBindings(t *testing.T) {
+	doc := mustConvertMap(t, map[string]any{
+		"smithy": "2.0",
+		"shapes": map[string]any{
+			"com.amazonaws.lambda#Lambda": serviceShape("Lambda", "restJson1", []any{ref("com.amazonaws.lambda#Invoke")}),
+			"com.amazonaws.lambda#Invoke": map[string]any{
+				"type":   "operation",
+				"output": ref("com.amazonaws.lambda#InvocationResponse"),
+				"traits": map[string]any{
+					"smithy.api#http": map[string]any{"method": "POST", "uri": "/2015-03-31/functions/{FunctionName}/invocations", "code": float64(200)},
+				},
+			},
+			"com.amazonaws.lambda#InvocationResponse": map[string]any{"type": "structure", "members": map[string]any{
+				"StatusCode":      member("smithy.api#Integer", map[string]any{"smithy.api#httpResponseCode": map[string]any{}}),
+				"FunctionError":   member("smithy.api#String", map[string]any{"smithy.api#httpHeader": "X-Amz-Function-Error"}),
+				"ExecutedVersion": member("smithy.api#String", map[string]any{"smithy.api#httpHeader": "X-Amz-Executed-Version"}),
+				"Payload":         member("com.amazonaws.lambda#Blob", map[string]any{"smithy.api#httpPayload": map[string]any{}}),
+			}},
+			"com.amazonaws.lambda#Blob": map[string]any{"type": "blob"},
+		},
+	})
+	op := operation(t, doc, "/2015-03-31/functions/{FunctionName}/invocations", "post")
+	response := op["responses"].(map[string]any)["200"].(map[string]any)
+	if got, want := response["x-smithy-http-response-code-member"], "StatusCode"; got != want {
+		t.Fatalf("response code member = %v, want %v", got, want)
+	}
+	headers := response["headers"].(map[string]any)
+	if _, ok := headers["X-Amz-Function-Error"]; !ok {
+		t.Fatalf("headers = %#v, missing function error", headers)
+	}
+	content := response["content"].(map[string]any)
+	if _, ok := content["application/octet-stream"]; !ok {
+		t.Fatalf("content = %#v, want octet-stream payload", content)
 	}
 }
 
@@ -188,6 +285,7 @@ func TestCatalogAWSArtifactsRemainSmithyReviewArtifacts(t *testing.T) {
 		if _, err := awssmithy.Convert(data); err != nil {
 			t.Fatalf("convert %s: %v", path, err)
 		}
+		assertConvertedOperationCount(t, path, data, raw)
 	}
 }
 
@@ -239,8 +337,10 @@ func restXMLFixture() map[string]any {
 				"Key":         member("com.amazonaws.s3#ObjectKey", map[string]any{"smithy.api#httpLabel": map[string]any{}, "smithy.api#required": map[string]any{}}),
 				"Body":        member("smithy.api#Blob", map[string]any{"smithy.api#httpPayload": map[string]any{}}),
 				"ContentType": member("smithy.api#String", map[string]any{"smithy.api#httpHeader": "Content-Type"}),
+				"Metadata":    member("com.amazonaws.s3#Metadata", map[string]any{"smithy.api#httpPrefixHeaders": "x-amz-meta-"}),
 			}},
 			"com.amazonaws.s3#BucketName": map[string]any{"type": "string"},
+			"com.amazonaws.s3#Metadata":   map[string]any{"type": "map", "key": ref("smithy.api#String"), "value": ref("smithy.api#String")},
 			"com.amazonaws.s3#ObjectKey":  map[string]any{"type": "string"},
 		},
 	}
@@ -321,6 +421,42 @@ func operation(t *testing.T, doc map[string]any, path, method string) map[string
 	return op
 }
 
+func assertConvertedOperationCount(t *testing.T, path string, data []byte, raw map[string]any) {
+	t.Helper()
+	source := 0
+	for _, shape := range raw["shapes"].(map[string]any) {
+		if stringValue(mapValue(shape)["type"]) == "operation" {
+			source++
+		}
+	}
+	out, err := awssmithy.Convert(data)
+	if err != nil {
+		t.Fatalf("convert %s: %v", path, err)
+	}
+	var converted map[string]any
+	if err := json.Unmarshal(out, &converted); err != nil {
+		t.Fatalf("parse converted %s: %v", path, err)
+	}
+	actual := convertedOperationCount(converted)
+	if actual != source {
+		t.Fatalf("%s converted operations = %d, want %d", path, actual, source)
+	}
+}
+
+func convertedOperationCount(doc map[string]any) int {
+	count := 0
+	for _, itemValue := range doc["paths"].(map[string]any) {
+		item := itemValue.(map[string]any)
+		for method := range item {
+			switch method {
+			case "get", "put", "post", "delete", "options", "head", "patch", "trace":
+				count++
+			}
+		}
+	}
+	return count
+}
+
 func assertParameter(t *testing.T, params []any, in, name string, required bool) {
 	t.Helper()
 	for _, param := range params {
@@ -333,6 +469,16 @@ func assertParameter(t *testing.T, params []any, in, name string, required bool)
 		}
 	}
 	t.Fatalf("missing %s parameter %q in %#v", in, name, params)
+}
+
+func mapValue(v any) map[string]any {
+	m, _ := v.(map[string]any)
+	return m
+}
+
+func stringValue(v any) string {
+	s, _ := v.(string)
+	return s
 }
 
 func nestedString(root map[string]any, keys ...string) string {
