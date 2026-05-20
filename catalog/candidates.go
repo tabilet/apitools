@@ -59,6 +59,40 @@ var builtInCandidates = []Candidate{
 		n8nNode:     "Asana",
 		relevance:   "Popular workflow service for task, project, and work-management automation.",
 	}),
+	workflowCandidate(candidateSeed{
+		id:          "azure-cosmos-db",
+		displayName: "Azure Cosmos DB",
+		aliases:     []string{"azure cosmos", "azure cosmos db api", "cosmos db", "cosmos db api", "microsoft azure cosmos db"},
+		category:    "database",
+		n8nNode:     "Microsoft/AzureCosmosDb",
+		relevance:   "Popular Azure database service for NoSQL accounts, databases, containers, items, partitioning, throughput, and resource management automation.",
+		userNeed:    UserOpenAPINeedPossible,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2025-10-15/cosmos-db.json",
+				Note:   "Official Azure REST API Specs Swagger document for Cosmos DB Resource Manager operations.",
+			},
+		},
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "azure-storage",
+		displayName: "Azure Storage",
+		aliases:     []string{"azure blob storage", "azure storage api", "azure storage blob api", "microsoft azure storage"},
+		category:    "data-storage",
+		n8nNode:     "Microsoft/Storage",
+		relevance:   "Popular Azure storage service for blob containers, blobs, metadata, leases, snapshots, and object storage automation.",
+		userNeed:    UserOpenAPINeedNotExpected,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/storage/data-plane/Microsoft.BlobStorage/stable/2025-11-05/blob.json",
+				Note:   "Official Azure REST API Specs Swagger document for Azure Blob Storage data-plane operations.",
+			},
+		},
+	}),
 	awsSmithyCandidate(awsSmithyCandidateSeed{
 		id:          "aws-acm",
 		displayName: "AWS Certificate Manager",
@@ -662,10 +696,74 @@ var builtInCandidates = []Candidate{
 	workflowCandidate(candidateSeed{
 		id:          "microsoft-graph",
 		displayName: "Microsoft Graph",
-		aliases:     []string{"microsoft graph api", "graph api", "office 365"},
+		aliases:     []string{"microsoft graph api", "graph api", "office 365", "office 365 api", "microsoft 365 api"},
 		category:    "productivity",
 		n8nNode:     "Microsoft",
 		relevance:   "Popular platform API for Microsoft 365 users, files, mail, calendars, and collaboration automation.",
+	}),
+	microsoftGraphCandidate(microsoftGraphCandidateSeed{
+		id:          "microsoft-entra",
+		displayName: "Microsoft Entra",
+		aliases:     []string{"entra", "entra id", "entra id api", "microsoft entra api", "microsoft entra id"},
+		category:    "identity",
+		n8nNode:     "Microsoft/Entra",
+		relevance:   "Microsoft identity and access-management API surface for users, groups, applications, directory objects, and tenant governance automation.",
+	}),
+	microsoftGraphCandidate(microsoftGraphCandidateSeed{
+		id:          "microsoft-excel",
+		displayName: "Microsoft Excel",
+		aliases:     []string{"excel graph api", "microsoft excel api", "microsoft excel graph", "office excel api"},
+		category:    "productivity",
+		n8nNode:     "Microsoft/Excel",
+		relevance:   "Microsoft Graph workbook API surface for Excel files, worksheets, tables, ranges, charts, and spreadsheet automation.",
+	}),
+	microsoftGraphCandidate(microsoftGraphCandidateSeed{
+		id:          "microsoft-graph-security",
+		displayName: "Microsoft Graph Security",
+		aliases:     []string{"graph security", "graph security api", "microsoft graph security api", "microsoft security graph"},
+		category:    "security",
+		n8nNode:     "Microsoft/GraphSecurity",
+		relevance:   "Microsoft Graph security API surface for alerts, secure scores, threat indicators, and security operations automation.",
+	}),
+	microsoftGraphCandidate(microsoftGraphCandidateSeed{
+		id:          "microsoft-onedrive",
+		displayName: "Microsoft OneDrive",
+		aliases:     []string{"microsoft onedrive api", "onedrive", "onedrive api", "one drive api"},
+		category:    "file-storage",
+		n8nNode:     "Microsoft/OneDrive",
+		relevance:   "Microsoft Graph file API surface for OneDrive drives, drive items, folders, file upload/download, and file-sharing automation.",
+	}),
+	microsoftGraphCandidate(microsoftGraphCandidateSeed{
+		id:          "microsoft-outlook",
+		displayName: "Microsoft Outlook",
+		aliases:     []string{"microsoft outlook api", "outlook api", "outlook calendar api", "outlook mail api"},
+		category:    "email",
+		n8nNode:     "Microsoft/Outlook",
+		relevance:   "Microsoft Graph mail, calendar, contacts, and Outlook data API surface for message and event automation.",
+	}),
+	microsoftGraphCandidate(microsoftGraphCandidateSeed{
+		id:          "microsoft-sharepoint",
+		displayName: "Microsoft SharePoint",
+		aliases:     []string{"microsoft sharepoint api", "sharepoint", "sharepoint api", "sharepoint sites api"},
+		category:    "collaboration",
+		n8nNode:     "Microsoft/SharePoint",
+		relevance:   "Microsoft Graph SharePoint API surface for sites, lists, list items, columns, pages, and collaboration content automation.",
+	}),
+	microsoftGraphCandidate(microsoftGraphCandidateSeed{
+		id:          "microsoft-teams",
+		displayName: "Microsoft Teams",
+		aliases:     []string{"microsoft teams api", "teams api", "teams graph api"},
+		category:    "collaboration",
+		n8nNode:     "Microsoft/Teams",
+		relevance:   "Microsoft Graph Teams API surface for teams, channels, chats, messages, memberships, and collaboration automation.",
+	}),
+	microsoftGraphCandidate(microsoftGraphCandidateSeed{
+		id:          "microsoft-todo",
+		displayName: "Microsoft To Do",
+		aliases:     []string{"microsoft todo", "microsoft todo api", "microsoft to do api", "todo graph api"},
+		category:    "tasks",
+		n8nNode:     "Microsoft/ToDo",
+		relevance:   "Microsoft Graph To Do API surface for task lists, tasks, checklist items, linked resources, and personal task automation.",
 	}),
 	workflowCandidate(candidateSeed{
 		id:          "monday-com",
@@ -2321,6 +2419,36 @@ type googleDiscoveryCandidateSeed struct {
 	category    string
 	n8nNode     string
 	relevance   string
+}
+
+type microsoftGraphCandidateSeed struct {
+	id          string
+	displayName string
+	aliases     []string
+	category    string
+	n8nNode     string
+	relevance   string
+}
+
+func microsoftGraphCandidate(seed microsoftGraphCandidateSeed) Candidate {
+	return workflowCandidate(candidateSeed{
+		id:            seed.id,
+		displayName:   seed.displayName,
+		aliases:       seed.aliases,
+		category:      seed.category,
+		n8nNode:       seed.n8nNode,
+		relevance:     seed.relevance,
+		userNeed:      UserOpenAPINeedNotExpected,
+		machineStatus: SpecStatusUnknown,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/master/openapi/v1.0/openapi.yaml",
+				Note:   "Official shared Microsoft Graph OpenAPI v1.0 document from microsoftgraph/msgraph-metadata.",
+			},
+		},
+	})
 }
 
 func awsSmithyCandidate(seed awsSmithyCandidateSeed) Candidate {

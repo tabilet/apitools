@@ -86,14 +86,40 @@ func BuildCatalogSpecRefreshReviewReport(refs []catalog.RefreshableSpecReference
 	})
 
 	var report CatalogSpecRefreshReviewReport
+	reviewByArtifactPath := map[string]CatalogSpecRefreshReviewResult{}
 	for _, ref := range refs {
+		if path := strings.TrimSpace(ref.RegisteredArtifactPath); path != "" {
+			if reviewed, ok := reviewByArtifactPath[path]; ok {
+				report.Results = append(report.Results, reuseCatalogRefreshReviewResult(ref, reviewed, opts))
+				continue
+			}
+		}
 		result, err := reviewCatalogRefreshArtifact(ref, opts)
 		if err != nil {
 			return CatalogSpecRefreshReviewReport{}, err
 		}
+		if path := strings.TrimSpace(result.RegisteredArtifactPath); path != "" && result.Exists {
+			reviewByArtifactPath[path] = result
+		}
 		report.Results = append(report.Results, result)
 	}
 	return report, nil
+}
+
+func reuseCatalogRefreshReviewResult(ref catalog.RefreshableSpecReference, reviewed CatalogSpecRefreshReviewResult, opts CatalogSpecRefreshReviewOptions) CatalogSpecRefreshReviewResult {
+	result := reviewed
+	result.ProviderID = ref.ProviderID
+	result.ProviderName = ref.ProviderName
+	result.SpecRefID = ref.SpecRefID
+	result.Kind = ref.Kind
+	result.URL = ref.URL
+	result.SourceAuthority = ref.SourceAuthority
+	result.VerifiedAt = ref.VerifiedAt
+	result.RegisteredArtifactPath = strings.TrimSpace(ref.RegisteredArtifactPath)
+	result.VerificationStale = false
+	result.ManualFollowUps = nil
+	result.addCatalogRefreshReviewFollowUps(opts)
+	return result
 }
 
 func normalizeCatalogSpecRefreshReviewOptions(opts CatalogSpecRefreshReviewOptions) CatalogSpecRefreshReviewOptions {

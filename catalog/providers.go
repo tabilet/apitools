@@ -90,6 +90,39 @@ var builtInProviders = []Provider{
 			humanDocsRef("asana-api-docs", "https://developers.asana.com/docs/api-features", "Official Asana API documentation."),
 		},
 	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "azure-cosmos-db",
+		displayName:         "Azure Cosmos DB",
+		aliases:             []string{"azure cosmos", "azure cosmos db api", "cosmos db", "cosmos db api", "microsoft azure cosmos db"},
+		category:            "database",
+		relevance:           "Popular Azure database service for NoSQL accounts, databases, containers, items, partitioning, throughput, and resource management automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedPossible,
+		specs: []SpecReference{
+			officialOpenAPIRef20260520("azure-cosmos-db-resource-manager-openapi", "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2025-10-15/cosmos-db.json", SourceAuthorityOfficialGitHub, "Swagger 2.0 / 2025-10-15", `github:1a37711b19072f2ed81a4dc1e2763e49d3a0d7c2 sha256:96f9252ca2fc20d199c1053f12b870df292725bbbcce69bd1ff10d6a19ace510 content-length:377894`, "Azure REST API Specs repository license and Microsoft documentation terms apply.", "Official Azure REST API Specs Swagger 2.0 document for Microsoft.DocumentDB Cosmos DB Resource Manager operations."),
+			humanDocsRef20260520("azure-cosmos-db-rest-docs", "https://learn.microsoft.com/en-us/rest/api/cosmos-db/", "Official Azure Cosmos DB REST API documentation."),
+			humanDocsRef20260520("azure-cosmos-db-access-control-docs", "https://learn.microsoft.com/en-us/rest/api/cosmos-db/access-control-on-cosmosdb-resources", "Official Azure Cosmos DB REST API access-control and authorization documentation."),
+		},
+		quirks: []string{"The registered stable Swagger document covers Azure Resource Manager control-plane operations for Cosmos DB accounts and resources; SQL data-plane item/query endpoints are documented separately and may need a user-provided or generated OpenAPI document for exact item-level workflow shapes.", "Cosmos DB shared-key authorization requires a computed Authorization token plus x-ms-date and x-ms-version headers; apitools records this as metadata only and must not compute signatures, resolve keys, or choose accounts/databases."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "azure-storage",
+		displayName:         "Azure Storage",
+		aliases:             []string{"azure blob storage", "azure storage api", "azure storage blob api", "microsoft azure storage"},
+		category:            "data-storage",
+		relevance:           "Popular Azure storage service for blob containers, blobs, metadata, leases, snapshots, and object storage automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			officialOpenAPIRef20260520("azure-blob-storage-openapi", "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/storage/data-plane/Microsoft.BlobStorage/stable/2025-11-05/blob.json", SourceAuthorityOfficialGitHub, "Swagger 2.0 / 2025-11-05", `github:1a37711b19072f2ed81a4dc1e2763e49d3a0d7c2 sha256:6f5156eaf06cf48a93430c305abe3e5781ca5c6445b290781035172f633c8dd2 content-length:462120`, "Azure REST API Specs repository license and Microsoft documentation terms apply.", "Official Azure REST API Specs Swagger 2.0 document for Azure Blob Storage data-plane operations."),
+			humanDocsRef20260520("azure-storage-blob-rest-docs", "https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api", "Official Azure Blob Storage REST API documentation."),
+			humanDocsRef20260520("azure-storage-aad-auth-docs", "https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-with-azure-active-directory", "Official Azure Storage authorization with Microsoft Entra ID documentation."),
+			humanDocsRef20260520("azure-storage-shared-key-docs", "https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key", "Official Azure Storage shared-key authorization documentation."),
+		},
+		quirks: []string{"Azure Storage Blob data-plane hosts are account-specific under blob.core.windows.net or a configured sovereign/private endpoint; apitools records host/auth metadata only and does not choose accounts or endpoints.", "Shared-key authorization requires request canonicalization and signing; apitools must not calculate signatures or resolve account keys."},
+	}),
 	awsSmithyProvider20260520(awsSmithyProviderSeed{
 		id:          "aws-acm",
 		displayName: "AWS Certificate Manager",
@@ -1213,28 +1246,106 @@ var builtInProviders = []Provider{
 	providerCatalogEntry(providerSeed{
 		id:                  "microsoft-graph",
 		displayName:         "Microsoft Graph",
-		aliases:             []string{"graph", "microsoft graph api", "ms graph"},
+		aliases:             []string{"graph", "microsoft 365 api", "microsoft graph api", "ms graph", "office 365 api"},
 		category:            "productivity",
 		relevance:           "Popular workflow platform for Microsoft 365 users, mail, calendar, files, groups, Teams, and directory automation.",
 		openAPIAvailability: SpecAvailabilityKnown,
 		machineAvailability: SpecAvailabilityUnknown,
 		userNeed:            UserOpenAPINeedNotExpected,
 		specs: []SpecReference{
-			{
-				ID:              "microsoft-graph-v1-openapi",
-				Kind:            SpecKindOpenAPI,
-				URL:             "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/master/openapi/v1.0/openapi.yaml",
-				SourceAuthority: SourceAuthorityOfficialGitHub,
-				Version:         "v1.0",
-				VerifiedAt:      verifiedAt20260518,
-				Revision:        `repo:ecfbb0d49b8bf7f7cb13310726a5feb3697dd42f etag:"cd695e01b812ea837a64b212571aaa4c55bbb82b2afff6459226cb22dfddc0ac"`,
-				LicenseNote:     "Microsoft Graph metadata repository license applies.",
-				SourceNote:      "Official Microsoft Graph metadata repository OpenAPI v1.0 document.",
-			},
+			microsoftGraphOpenAPIRef20260520("Microsoft Graph"),
 			humanDocsRef("microsoft-graph-docs", "https://learn.microsoft.com/en-us/graph/overview", "Official Microsoft Graph documentation."),
 			humanDocsRef("microsoft-graph-auth-docs", "https://learn.microsoft.com/en-us/graph/auth/auth-concepts", "Official Microsoft Graph authentication and authorization documentation."),
 		},
 		quirks: []string{"The Microsoft Graph v1.0 OpenAPI document is very large and lacks OpenAPI security schemes; importers should use catalog auth overlay metadata and preserve source path-backed caching."},
+	}),
+	microsoftGraphServiceProvider20260520(microsoftGraphServiceSeed{
+		id:          "microsoft-entra",
+		displayName: "Microsoft Entra",
+		aliases:     []string{"entra", "entra id", "entra id api", "microsoft entra api", "microsoft entra id"},
+		category:    "identity",
+		relevance:   "Microsoft identity and access-management API surface for users, groups, applications, directory objects, and tenant governance automation.",
+		serviceName: "Microsoft Entra",
+		docsID:      "microsoft-entra-graph-docs",
+		docsURL:     "https://learn.microsoft.com/en-us/graph/identity-network-access-overview/",
+		docsNote:    "Official Microsoft Graph overview for Microsoft Entra identity and network access APIs.",
+	}),
+	microsoftGraphServiceProvider20260520(microsoftGraphServiceSeed{
+		id:          "microsoft-excel",
+		displayName: "Microsoft Excel",
+		aliases:     []string{"excel graph api", "microsoft excel api", "microsoft excel graph", "office excel api"},
+		category:    "productivity",
+		relevance:   "Microsoft Graph workbook API surface for Excel files, worksheets, tables, ranges, charts, and spreadsheet automation.",
+		serviceName: "Microsoft Excel",
+		docsID:      "microsoft-excel-graph-docs",
+		docsURL:     "https://learn.microsoft.com/en-us/graph/api/resources/excel",
+		docsNote:    "Official Microsoft Graph Excel workbook API documentation.",
+	}),
+	microsoftGraphServiceProvider20260520(microsoftGraphServiceSeed{
+		id:          "microsoft-graph-security",
+		displayName: "Microsoft Graph Security",
+		aliases:     []string{"graph security", "graph security api", "microsoft graph security api", "microsoft security graph"},
+		category:    "security",
+		relevance:   "Microsoft Graph security API surface for alerts, secure scores, threat indicators, and security operations automation.",
+		serviceName: "Microsoft Graph Security",
+		docsID:      "microsoft-graph-security-docs",
+		docsURL:     "https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview",
+		docsNote:    "Official Microsoft Graph Security API overview documentation.",
+	}),
+	microsoftGraphServiceProvider20260520(microsoftGraphServiceSeed{
+		id:          "microsoft-onedrive",
+		displayName: "Microsoft OneDrive",
+		aliases:     []string{"microsoft onedrive api", "onedrive", "onedrive api", "one drive api"},
+		category:    "file-storage",
+		relevance:   "Microsoft Graph file API surface for OneDrive drives, drive items, folders, file upload/download, and file-sharing automation.",
+		serviceName: "Microsoft OneDrive",
+		docsID:      "microsoft-onedrive-graph-docs",
+		docsURL:     "https://learn.microsoft.com/en-us/graph/onedrive-concept-overview",
+		docsNote:    "Official Microsoft Graph OneDrive API overview documentation.",
+	}),
+	microsoftGraphServiceProvider20260520(microsoftGraphServiceSeed{
+		id:          "microsoft-outlook",
+		displayName: "Microsoft Outlook",
+		aliases:     []string{"microsoft outlook api", "outlook api", "outlook calendar api", "outlook mail api"},
+		category:    "email",
+		relevance:   "Microsoft Graph mail, calendar, contacts, and Outlook data API surface for message and event automation.",
+		serviceName: "Microsoft Outlook",
+		docsID:      "microsoft-outlook-graph-docs",
+		docsURL:     "https://learn.microsoft.com/en-us/graph/api/resources/mail-api-overview",
+		docsNote:    "Official Microsoft Graph Outlook mail API overview documentation.",
+	}),
+	microsoftGraphServiceProvider20260520(microsoftGraphServiceSeed{
+		id:          "microsoft-sharepoint",
+		displayName: "Microsoft SharePoint",
+		aliases:     []string{"microsoft sharepoint api", "sharepoint", "sharepoint api", "sharepoint sites api"},
+		category:    "collaboration",
+		relevance:   "Microsoft Graph SharePoint API surface for sites, lists, list items, columns, pages, and collaboration content automation.",
+		serviceName: "Microsoft SharePoint",
+		docsID:      "microsoft-sharepoint-graph-docs",
+		docsURL:     "https://learn.microsoft.com/en-us/graph/api/resources/sharepoint",
+		docsNote:    "Official Microsoft Graph SharePoint API documentation.",
+	}),
+	microsoftGraphServiceProvider20260520(microsoftGraphServiceSeed{
+		id:          "microsoft-teams",
+		displayName: "Microsoft Teams",
+		aliases:     []string{"microsoft teams api", "teams api", "teams graph api"},
+		category:    "collaboration",
+		relevance:   "Microsoft Graph Teams API surface for teams, channels, chats, messages, memberships, and collaboration automation.",
+		serviceName: "Microsoft Teams",
+		docsID:      "microsoft-teams-graph-docs",
+		docsURL:     "https://learn.microsoft.com/en-us/graph/teams-concept-overview",
+		docsNote:    "Official Microsoft Graph Teams API overview documentation.",
+	}),
+	microsoftGraphServiceProvider20260520(microsoftGraphServiceSeed{
+		id:          "microsoft-todo",
+		displayName: "Microsoft To Do",
+		aliases:     []string{"microsoft todo", "microsoft todo api", "microsoft to do api", "todo graph api"},
+		category:    "tasks",
+		relevance:   "Microsoft Graph To Do API surface for task lists, tasks, checklist items, linked resources, and personal task automation.",
+		serviceName: "Microsoft To Do",
+		docsID:      "microsoft-todo-graph-docs",
+		docsURL:     "https://learn.microsoft.com/en-us/graph/api/resources/todo-overview",
+		docsNote:    "Official Microsoft Graph To Do API overview documentation.",
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "monday-com",
@@ -4414,6 +4525,55 @@ type googleDiscoveryProviderSeed struct {
 	revision    string
 	serviceName string
 	apiDocsURL  string
+}
+
+type microsoftGraphServiceSeed struct {
+	id          string
+	displayName string
+	aliases     []string
+	category    string
+	relevance   string
+	serviceName string
+	docsID      string
+	docsURL     string
+	docsNote    string
+}
+
+func microsoftGraphServiceProvider20260520(seed microsoftGraphServiceSeed) Provider {
+	return providerCatalogEntry(providerSeed{
+		id:                  seed.id,
+		displayName:         seed.displayName,
+		aliases:             seed.aliases,
+		category:            seed.category,
+		relevance:           seed.relevance,
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			microsoftGraphOpenAPIRef20260520(seed.serviceName),
+			humanDocsRef20260520(seed.docsID, seed.docsURL, seed.docsNote),
+			humanDocsRef20260520(seed.id+"-graph-auth-docs", "https://learn.microsoft.com/en-us/graph/auth/auth-concepts", "Official Microsoft Graph authentication and authorization documentation for Microsoft identity platform bearer tokens and permissions."),
+		},
+		quirks: []string{"This provider is a service-level catalog view over the shared Microsoft Graph OpenAPI v1.0 artifact, not a separate Microsoft-published service-specific OpenAPI document.", "Microsoft Graph endpoints can be tenant-, user-, permission-, and cloud-environment-sensitive; apitools records source/auth metadata only and does not choose tenants, users, accounts, or scopes."},
+	})
+}
+
+func microsoftGraphOpenAPIRef20260520(serviceName string) SpecReference {
+	sourceNote := "Official Microsoft Graph metadata repository OpenAPI v1.0 document."
+	if serviceName != "Microsoft Graph" {
+		sourceNote = "Official Microsoft Graph metadata repository OpenAPI v1.0 document; this service-level catalog entry uses the shared Graph source for " + serviceName + "."
+	}
+	return SpecReference{
+		ID:              "microsoft-graph-v1-openapi",
+		Kind:            SpecKindOpenAPI,
+		URL:             "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/master/openapi/v1.0/openapi.yaml",
+		SourceAuthority: SourceAuthorityOfficialGitHub,
+		Version:         "v1.0",
+		VerifiedAt:      "2026-05-20",
+		Revision:        `repo:b53175b062a570f07ae1c4db09a8fbea10b29e8c etag:"25dc683b8ad53242eb2e212cbc5a9f17c4456cf727511c34dda0ecffe63d5682" sha256:e5f2972041343141313322aa0576df027e15242171004423a54c834def0c04ce content-length:37110274`,
+		LicenseNote:     "Microsoft Graph metadata repository license applies.",
+		SourceNote:      sourceNote,
+	}
 }
 
 func awsSmithyProvider20260520(seed awsSmithyProviderSeed) Provider {

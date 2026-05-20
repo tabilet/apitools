@@ -1222,6 +1222,77 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Microsoft Graph's official OpenAPI v1.0 document lacks OpenAPI security schemes; official docs describe Microsoft identity platform access tokens sent as Authorization bearer tokens.",
 	},
+	microsoftGraphOAuthOverlay("microsoft-entra-graph-auth-overlay", "microsoft-entra", "Microsoft Entra", []string{"User.Read.All", "Group.ReadWrite.All", "Directory.Read.All", "Application.ReadWrite.All"}, "Directory.Read.All", []string{"https://learn.microsoft.com/en-us/graph/identity-network-access-overview/", "https://learn.microsoft.com/en-us/graph/auth/auth-concepts", "https://learn.microsoft.com/en-us/graph/permissions-reference"}),
+	microsoftGraphOAuthOverlay("microsoft-excel-graph-auth-overlay", "microsoft-excel", "Microsoft Excel", []string{"Files.ReadWrite", "Sites.ReadWrite.All"}, "Files.ReadWrite", []string{"https://learn.microsoft.com/en-us/graph/api/resources/excel", "https://learn.microsoft.com/en-us/graph/auth/auth-concepts", "https://learn.microsoft.com/en-us/graph/permissions-reference"}),
+	microsoftGraphOAuthOverlay("microsoft-graph-security-auth-overlay", "microsoft-graph-security", "Microsoft Graph Security", []string{"SecurityEvents.Read.All", "SecurityEvents.ReadWrite.All", "SecurityActions.ReadWrite.All"}, "SecurityEvents.Read.All", []string{"https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview", "https://learn.microsoft.com/en-us/graph/auth/auth-concepts", "https://learn.microsoft.com/en-us/graph/permissions-reference"}),
+	microsoftGraphOAuthOverlay("microsoft-onedrive-graph-auth-overlay", "microsoft-onedrive", "Microsoft OneDrive", []string{"Files.ReadWrite", "Files.Read.All", "Sites.Read.All"}, "Files.ReadWrite", []string{"https://learn.microsoft.com/en-us/graph/onedrive-concept-overview", "https://learn.microsoft.com/en-us/graph/auth/auth-concepts", "https://learn.microsoft.com/en-us/graph/permissions-reference"}),
+	microsoftGraphOAuthOverlay("microsoft-outlook-graph-auth-overlay", "microsoft-outlook", "Microsoft Outlook", []string{"Mail.Read", "Mail.Send", "Calendars.ReadWrite", "Contacts.Read"}, "Mail.Read", []string{"https://learn.microsoft.com/en-us/graph/api/resources/mail-api-overview", "https://learn.microsoft.com/en-us/graph/auth/auth-concepts", "https://learn.microsoft.com/en-us/graph/permissions-reference"}),
+	microsoftGraphOAuthOverlay("microsoft-sharepoint-graph-auth-overlay", "microsoft-sharepoint", "Microsoft SharePoint", []string{"Sites.Read.All", "Sites.ReadWrite.All"}, "Sites.Read.All", []string{"https://learn.microsoft.com/en-us/graph/api/resources/sharepoint", "https://learn.microsoft.com/en-us/graph/auth/auth-concepts", "https://learn.microsoft.com/en-us/graph/permissions-reference"}),
+	microsoftGraphOAuthOverlay("microsoft-teams-graph-auth-overlay", "microsoft-teams", "Microsoft Teams", []string{"Team.ReadBasic.All", "ChannelMessage.Read.All", "ChannelMessage.Send", "Chat.ReadWrite"}, "Team.ReadBasic.All", []string{"https://learn.microsoft.com/en-us/graph/teams-concept-overview", "https://learn.microsoft.com/en-us/graph/auth/auth-concepts", "https://learn.microsoft.com/en-us/graph/permissions-reference"}),
+	microsoftGraphOAuthOverlay("microsoft-todo-graph-auth-overlay", "microsoft-todo", "Microsoft To Do", []string{"Tasks.Read", "Tasks.ReadWrite"}, "Tasks.ReadWrite", []string{"https://learn.microsoft.com/en-us/graph/api/resources/todo-overview", "https://learn.microsoft.com/en-us/graph/auth/auth-concepts", "https://learn.microsoft.com/en-us/graph/permissions-reference"}),
+	{
+		ID:         "azure-cosmos-db-auth-overlay",
+		ProviderID: "azure-cosmos-db",
+		SpecRefID:  "azure-cosmos-db-resource-manager-openapi",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "azureCosmosDBAuthorization",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Authorization",
+				Description:   "Azure Cosmos DB REST requests use an Authorization header containing a computed shared-key token or Azure authorization metadata, depending on API surface.",
+			},
+			{
+				Name:          "azureCosmosDBDate",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "x-ms-date",
+				Description:   "Azure Cosmos DB REST shared-key authorization signs the request date in the x-ms-date header.",
+			},
+		},
+		RootSecuritySets: []SecurityRequirementSet{
+			{Requirements: []SecurityRequirement{{Scheme: "azureCosmosDBAuthorization"}, {Scheme: "azureCosmosDBDate"}}},
+		},
+		SourceRefs: []string{
+			"https://learn.microsoft.com/en-us/rest/api/cosmos-db/",
+			"https://learn.microsoft.com/en-us/rest/api/cosmos-db/access-control-on-cosmosdb-resources",
+			"https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2025-10-15/cosmos-db.json",
+		},
+		SourceNote: "Azure Cosmos DB REST authorization depends on shared-key or Azure authorization context and request headers; apitools records credential placement and signing metadata only and must not compute signatures or choose accounts, databases, tenants, or subscriptions.",
+	},
+	{
+		ID:         "azure-storage-auth-overlay",
+		ProviderID: "azure-storage",
+		SpecRefID:  "azure-blob-storage-openapi",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:         "azureStorageBearer",
+				Type:         SecuritySchemeHTTP,
+				Scheme:       "bearer",
+				BearerFormat: "Microsoft Entra ID access token",
+				Description:  "Microsoft Entra ID access token for Azure Storage carried as an Authorization bearer token.",
+			},
+			{
+				Name:          "azureStorageSharedKey",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "Authorization",
+				Description:   "Azure Storage shared-key authorization header containing the computed SharedKey signature.",
+			},
+		},
+		RootSecuritySets: []SecurityRequirementSet{
+			{Requirements: []SecurityRequirement{{Scheme: "azureStorageBearer", Scopes: []string{"https://storage.azure.com/.default"}}}},
+			{Requirements: []SecurityRequirement{{Scheme: "azureStorageSharedKey"}}},
+		},
+		SourceRefs: []string{
+			"https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-with-azure-active-directory",
+			"https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key",
+			"https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/storage/data-plane/Microsoft.BlobStorage/stable/2025-11-05/blob.json",
+		},
+		SourceNote: "Azure Storage Blob supports Microsoft Entra bearer tokens and shared-key signatures. This overlay records auth alternatives as metadata only; apitools must not request tokens, canonicalize or sign requests, or choose storage accounts/endpoints.",
+	},
 	{
 		ID:         "monday-graphql-auth-overlay",
 		ProviderID: "monday-com",
@@ -4309,6 +4380,34 @@ func googleOAuthScheme(name string, scopes []string) SecurityScheme {
 		},
 		Scopes:      sortedStrings(scopes),
 		Description: "Google OAuth 2.0 authorization code flow with provider-specific scopes.",
+	}
+}
+
+func microsoftGraphOAuthOverlay(id, providerID, serviceName string, scopes []string, rootScope string, sourceRefs []string) SecurityOverlay {
+	return SecurityOverlay{
+		ID:         id,
+		ProviderID: providerID,
+		SpecRefID:  "microsoft-graph-v1-openapi",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name: "microsoftGraphOAuth2",
+				Type: SecuritySchemeOAuth2,
+				Flows: []OAuthFlow{
+					{
+						Type:             OAuthFlowAuthorizationCode,
+						AuthorizationURL: "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+						TokenURL:         "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+						Scopes:           sortedStrings(scopes),
+					},
+				},
+				Scopes:      sortedStrings(scopes),
+				Description: "Microsoft identity platform OAuth 2.0 authorization-code flow with service-relevant Microsoft Graph scopes.",
+			},
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "microsoftGraphOAuth2", Scopes: []string{rootScope}}},
+		SourceRefs:   sourceRefs,
+		SourceNote:   serviceName + " uses the shared Microsoft Graph OpenAPI artifact, which lacks OpenAPI security schemes. OAuth scopes are recorded as metadata only; apitools must not fetch tokens or choose tenants, users, accounts, or cloud environments.",
 	}
 }
 

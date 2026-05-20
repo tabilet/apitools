@@ -50,6 +50,10 @@ func correctedCatalogRefreshContent(ref catalog.RefreshableSpecReference, conten
 		if applyStravaRefreshCorrection(root) {
 			notes = append(notes, "Applied reviewed Strava refresh correction: replaced official external Swagger model refs with permissive local object placeholders and removed the undeclared root OAuth scope.")
 		}
+	case ref.ProviderID == "azure-cosmos-db" && ref.SpecRefID == "azure-cosmos-db-resource-manager-openapi":
+		if applyExternalRefObjectPlaceholderCorrection(root) {
+			notes = append(notes, "Applied reviewed Azure Cosmos DB refresh correction: replaced official external Swagger refs with permissive local object placeholders for offline artifact validation.")
+		}
 	case ref.ProviderID == "spotify" && ref.SpecRefID == "spotify-web-api-openapi":
 		if applySpotifyRefreshCorrection(root) {
 			notes = append(notes, "Applied reviewed Spotify refresh correction: removed an external policy extension ref, dropped schema-level boolean required flags, and pruned required entries that are not declared properties.")
@@ -129,14 +133,7 @@ func applyHighLevelRefreshCorrection(root map[string]any) bool {
 
 func applyStravaRefreshCorrection(root map[string]any) bool {
 	changed := false
-	walkCatalogRefreshObjects(root, func(obj map[string]any) {
-		if ref := catalogRefreshString(obj["$ref"]); ref != "" && isExternalRef(ref) {
-			delete(obj, "$ref")
-			obj["type"] = "object"
-			obj["additionalProperties"] = true
-			changed = true
-		}
-	})
+	changed = applyExternalRefObjectPlaceholderCorrection(root)
 	if security, ok := root["security"].([]any); ok {
 		for _, requirement := range security {
 			req, ok := requirement.(map[string]any)
@@ -160,6 +157,19 @@ func applyStravaRefreshCorrection(root map[string]any) bool {
 			}
 		}
 	}
+	return changed
+}
+
+func applyExternalRefObjectPlaceholderCorrection(root map[string]any) bool {
+	changed := false
+	walkCatalogRefreshObjects(root, func(obj map[string]any) {
+		if ref := catalogRefreshString(obj["$ref"]); ref != "" && isExternalRef(ref) {
+			delete(obj, "$ref")
+			obj["type"] = "object"
+			obj["additionalProperties"] = true
+			changed = true
+		}
+	})
 	return changed
 }
 
