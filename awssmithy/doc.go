@@ -1,8 +1,5 @@
-// Package awssmithy parses official AWS Smithy JSON service models into native
-// protocol-aware metadata.
+// Package awssmithy provides a compatibility wrapper over
+// github.com/OpenUdon/awssmithy.
 //
-// The parser is intentionally metadata-only. It preserves Smithy service,
-// operation, HTTP binding, shape, AWS protocol, and signing traits without
-// executing API operations, resolving credentials, signing requests, fetching
-// tokens, or choosing AWS accounts or regions.
+// Deprecated: use github.com/OpenUdon/awssmithy directly.
 package awssmithy

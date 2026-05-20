@@ -3,6 +3,7 @@ module github.com/OpenUdon/apitools
 go 1.25.5
 
 require (
+	github.com/OpenUdon/awssmithy v0.0.0
 	github.com/OpenUdon/oas v0.0.0-20260507023120-7fb319711323
 	gopkg.in/yaml.v3 v3.0.1
 	modernc.org/sqlite v1.50.0
@@ -21,3 +22,5 @@ require (
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 )
+
+replace github.com/OpenUdon/awssmithy => ../awssmithy
