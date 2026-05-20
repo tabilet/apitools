@@ -2,6 +2,8 @@ package catalog
 
 const verifiedAt20260518 = "2026-05-18"
 
+const googleDiscoveryNativeQuirk = "Google Discovery documents are native machine-readable metadata, not OpenAPI; OpenAPI-only workflows need downstream lowering or a user-provided OpenAPI document."
+
 var builtInProviders = []Provider{
 	providerCatalogEntry(providerSeed{
 		id:                  "action-network",
@@ -763,7 +765,194 @@ var builtInProviders = []Provider{
 			},
 			humanDocsRef("gmail-rest-docs", "https://developers.google.com/workspace/gmail/api/reference/rest", "Official Gmail API REST reference."),
 		},
-		quirks: []string{"Google Discovery documents are not OpenAPI and need conversion or a user-supplied OpenAPI document for OpenAPI-only workflows."},
+		quirks: []string{googleDiscoveryNativeQuirk},
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-admin",
+		displayName: "Google Admin SDK",
+		aliases:     []string{"google admin sdk", "admin sdk directory", "google directory api", "gsuite admin"},
+		category:    "identity-admin",
+		relevance:   "Popular Google Workspace administration API for users, groups, domains, devices, org units, privileges, and directory automation.",
+		specID:      "admin-directory-discovery-v1",
+		specURL:     "https://admin.googleapis.com/$discovery/rest?version=directory_v1",
+		version:     "directory_v1",
+		revision:    "20260513",
+		serviceName: "Admin SDK API",
+		apiDocsURL:  "https://developers.google.com/admin-sdk/directory/reference/rest",
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-analytics",
+		displayName: "Google Analytics",
+		aliases:     []string{"google analytics api", "google analytics data api", "ga4 api"},
+		category:    "analytics",
+		relevance:   "Popular analytics API for GA4 reports, dimensions, metrics, cohorts, realtime reports, pivots, and audience analytics automation.",
+		specID:      "analyticsdata-discovery-v1beta",
+		specURL:     "https://analyticsdata.googleapis.com/$discovery/rest?version=v1beta",
+		version:     "v1beta",
+		revision:    "20260513",
+		serviceName: "Google Analytics Data API",
+		apiDocsURL:  "https://developers.google.com/analytics/devguides/reporting/data/v1/rest",
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-bigquery",
+		displayName: "Google BigQuery",
+		aliases:     []string{"bigquery", "bigquery api", "google bigquery"},
+		category:    "data-warehouse",
+		relevance:   "Popular Google Cloud data warehouse API for datasets, tables, jobs, queries, models, routines, and analytics automation.",
+		specID:      "bigquery-discovery-v2",
+		specURL:     "https://bigquery.googleapis.com/$discovery/rest?version=v2",
+		version:     "v2",
+		revision:    "20260429",
+		serviceName: "BigQuery API",
+		apiDocsURL:  "https://cloud.google.com/bigquery/docs/reference/rest",
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-books",
+		displayName: "Google Books",
+		aliases:     []string{"google books api", "books api", "google books"},
+		category:    "books",
+		relevance:   "Popular public books API for volumes, bookshelves, user library metadata, and book-search workflow automation.",
+		specID:      "books-discovery-v1",
+		specURL:     "https://books.googleapis.com/$discovery/rest?version=v1",
+		version:     "v1",
+		revision:    "20260514",
+		serviceName: "Books API",
+		apiDocsURL:  "https://developers.google.com/books/docs/v1/reference",
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "google-business-profile",
+		displayName:         "Google Business Profile",
+		aliases:             []string{"google business profile api", "google my business", "my business api", "business profile api"},
+		category:            "local-business",
+		relevance:           "Popular local business API family for accounts, locations, business information, posts, reviews, and profile automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityKnown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			googleDiscoveryRef20260520("businessinformation-discovery-v1", "https://mybusinessbusinessinformation.googleapis.com/$discovery/rest?version=v1", "v1", "20260513", "My Business Business Information API"),
+			googleDiscoveryRef20260520("businessprofile-accountmanagement-discovery-v1", "https://mybusinessaccountmanagement.googleapis.com/$discovery/rest?version=v1", "v1", "20260513", "My Business Account Management API"),
+			humanDocsRef20260520("google-business-profile-businessinformation-docs", "https://developers.google.com/my-business/reference/businessinformation/rest", "Official Google Business Profile Business Information API REST reference."),
+			humanDocsRef20260520("google-business-profile-accountmanagement-docs", "https://developers.google.com/my-business/reference/accountmanagement/rest", "Official Google Business Profile Account Management API REST reference."),
+			humanDocsRef20260520("google-business-profile-v4-docs", "https://developers.google.com/my-business/reference/rest/v4", "Official legacy Google Business Profile v4 REST reference for posts and reviews."),
+		},
+		quirks: []string{googleDiscoveryNativeQuirk, "Current Google Discovery coverage exists for Business Information and Account Management APIs; the legacy mybusiness.googleapis.com/v4 posts and reviews surface used by some workflows is documented in human REST docs but did not expose a current Discovery document during M44 review."},
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-chat",
+		displayName: "Google Chat",
+		aliases:     []string{"google chat api", "google chat", "hangouts chat api"},
+		category:    "team-chat",
+		relevance:   "Popular Google Workspace chat API for spaces, members, messages, reactions, attachments, and collaboration automation.",
+		specID:      "chat-discovery-v1",
+		specURL:     "https://chat.googleapis.com/$discovery/rest?version=v1",
+		version:     "v1",
+		revision:    "20260512",
+		serviceName: "Google Chat API",
+		apiDocsURL:  "https://developers.google.com/workspace/chat/api/reference/rest",
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-cloud-language",
+		displayName: "Google Cloud Natural Language",
+		aliases:     []string{"cloud natural language api", "google cloud natural language", "google natural language"},
+		category:    "ai-nlp",
+		relevance:   "Popular Google Cloud NLP API for entity, sentiment, syntax, classification, moderation, and text-analysis automation.",
+		specID:      "language-discovery-v1",
+		specURL:     "https://language.googleapis.com/$discovery/rest?version=v1",
+		version:     "v1",
+		revision:    "20260517",
+		serviceName: "Cloud Natural Language API",
+		apiDocsURL:  "https://cloud.google.com/natural-language/docs/reference/rest",
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-cloud-storage",
+		displayName: "Google Cloud Storage",
+		aliases:     []string{"google cloud storage", "cloud storage api", "google storage api", "gcs"},
+		category:    "cloud-storage",
+		relevance:   "Popular Google Cloud object storage API for buckets, objects, ACLs, IAM, uploads, and file automation.",
+		specID:      "storage-discovery-v1",
+		specURL:     "https://storage.googleapis.com/$discovery/rest?version=v1",
+		version:     "v1",
+		revision:    "20260512",
+		serviceName: "Cloud Storage JSON API",
+		apiDocsURL:  "https://cloud.google.com/storage/docs/json_api",
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-docs",
+		displayName: "Google Docs",
+		aliases:     []string{"google docs api", "docs api", "google documents api"},
+		category:    "documents",
+		relevance:   "Popular Google Workspace document API for documents, batch updates, structural elements, suggestions, and document automation.",
+		specID:      "docs-discovery-v1",
+		specURL:     "https://docs.googleapis.com/$discovery/rest?version=v1",
+		version:     "v1",
+		revision:    "20260513",
+		serviceName: "Google Docs API",
+		apiDocsURL:  "https://developers.google.com/workspace/docs/api/reference/rest",
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-firestore",
+		displayName: "Google Firestore",
+		aliases:     []string{"google firestore", "cloud firestore api", "firebase firestore"},
+		category:    "database",
+		relevance:   "Popular Google Cloud document database API for documents, collections, queries, indexes, backups, and Firebase workflow automation.",
+		specID:      "firestore-discovery-v1",
+		specURL:     "https://firestore.googleapis.com/$discovery/rest?version=v1",
+		version:     "v1",
+		revision:    "20260517",
+		serviceName: "Cloud Firestore API",
+		apiDocsURL:  "https://cloud.google.com/firestore/docs/reference/rest",
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-slides",
+		displayName: "Google Slides",
+		aliases:     []string{"google slides api", "slides api", "google presentations api"},
+		category:    "presentations",
+		relevance:   "Popular Google Workspace presentation API for presentations, pages, shapes, images, text, and deck automation.",
+		specID:      "slides-discovery-v1",
+		specURL:     "https://slides.googleapis.com/$discovery/rest?version=v1",
+		version:     "v1",
+		revision:    "20260513",
+		serviceName: "Google Slides API",
+		apiDocsURL:  "https://developers.google.com/workspace/slides/api/reference/rest",
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-tasks",
+		displayName: "Google Tasks",
+		aliases:     []string{"google tasks api", "tasks api", "google task api"},
+		category:    "tasks",
+		relevance:   "Popular Google Workspace task API for task lists, tasks, due dates, notes, completion state, and personal productivity automation.",
+		specID:      "tasks-discovery-v1",
+		specURL:     "https://tasks.googleapis.com/$discovery/rest?version=v1",
+		version:     "v1",
+		revision:    "20260519",
+		serviceName: "Google Tasks API",
+		apiDocsURL:  "https://developers.google.com/tasks/reference/rest",
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-translate",
+		displayName: "Google Translate",
+		aliases:     []string{"google translate api", "cloud translation api", "google cloud translation"},
+		category:    "translation",
+		relevance:   "Popular Google Cloud translation API for text translation, language detection, and supported-language workflow automation.",
+		specID:      "translate-discovery-v2",
+		specURL:     "https://www.googleapis.com/discovery/v1/apis/translate/v2/rest",
+		version:     "v2",
+		revision:    "20170525",
+		serviceName: "Google Cloud Translation API",
+		apiDocsURL:  "https://cloud.google.com/translate/docs/reference/rest/v2",
+	}),
+	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
+		id:          "google-youtube",
+		displayName: "YouTube",
+		aliases:     []string{"youtube api", "youtube data api", "google youtube"},
+		category:    "video",
+		relevance:   "Popular Google video platform API for channels, videos, playlists, captions, comments, search, and media automation.",
+		specID:      "youtube-discovery-v3",
+		specURL:     "https://youtube.googleapis.com/$discovery/rest?version=v3",
+		version:     "v3",
+		revision:    "20260519",
+		serviceName: "YouTube Data API v3",
+		apiDocsURL:  "https://developers.google.com/youtube/v3/docs",
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "gong",
@@ -806,7 +995,7 @@ var builtInProviders = []Provider{
 			humanDocsRef("calendar-rest-docs", "https://developers.google.com/workspace/calendar/api/v3/reference", "Official Google Calendar API v3 REST reference."),
 			humanDocsRef("calendar-auth-scopes", "https://developers.google.com/workspace/calendar/api/auth", "Official Google Calendar API OAuth scope documentation."),
 		},
-		quirks: []string{"Google Discovery documents are not OpenAPI and need conversion or a user-supplied OpenAPI document for OpenAPI-only workflows."},
+		quirks: []string{googleDiscoveryNativeQuirk},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "google-drive",
@@ -830,7 +1019,7 @@ var builtInProviders = []Provider{
 			},
 			humanDocsRef("drive-rest-docs", "https://developers.google.com/drive/api/reference/rest/v3", "Official Google Drive API v3 REST reference."),
 		},
-		quirks: []string{"Google Discovery documents are not OpenAPI and need conversion or a user-supplied OpenAPI document for OpenAPI-only workflows."},
+		quirks: []string{googleDiscoveryNativeQuirk},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "google-sheets",
@@ -856,7 +1045,7 @@ var builtInProviders = []Provider{
 			humanDocsRef("sheets-rest-docs", "https://developers.google.com/workspace/sheets/api/reference/rest", "Official Google Sheets API v4 REST reference."),
 			humanDocsRef("sheets-auth-scopes", "https://developers.google.com/workspace/sheets/api/scopes", "Official Google Sheets API OAuth scope documentation."),
 		},
-		quirks: []string{"Google Discovery documents are not OpenAPI and need conversion or a user-supplied OpenAPI document for OpenAPI-only workflows."},
+		quirks: []string{googleDiscoveryNativeQuirk},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "grafana",
@@ -4213,6 +4402,20 @@ type awsSmithyProviderSeed struct {
 	apiDocsURL  string
 }
 
+type googleDiscoveryProviderSeed struct {
+	id          string
+	displayName string
+	aliases     []string
+	category    string
+	relevance   string
+	specID      string
+	specURL     string
+	version     string
+	revision    string
+	serviceName string
+	apiDocsURL  string
+}
+
 func awsSmithyProvider20260520(seed awsSmithyProviderSeed) Provider {
 	return providerCatalogEntry(providerSeed{
 		id:                  seed.id,
@@ -4244,6 +4447,38 @@ func awsSmithyRef20260520(id, url, version, blobSHA, serviceName string) SpecRef
 		Revision:        "github-blob:" + blobSHA,
 		LicenseNote:     "AWS API Models repository is licensed under Apache 2.0.",
 		SourceNote:      "Official AWS API Models Smithy JSON service model for " + serviceName + "; this is a machine-readable AWS service model, not an OpenAPI document.",
+	}
+}
+
+func googleDiscoveryProvider20260520(seed googleDiscoveryProviderSeed) Provider {
+	return providerCatalogEntry(providerSeed{
+		id:                  seed.id,
+		displayName:         seed.displayName,
+		aliases:             seed.aliases,
+		category:            seed.category,
+		relevance:           seed.relevance,
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityKnown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			googleDiscoveryRef20260520(seed.specID, seed.specURL, seed.version, seed.revision, seed.serviceName),
+			humanDocsRef20260520(seed.id+"-rest-docs", seed.apiDocsURL, "Official "+seed.serviceName+" REST reference documentation."),
+		},
+		quirks: []string{googleDiscoveryNativeQuirk},
+	})
+}
+
+func googleDiscoveryRef20260520(id, url, version, revision, serviceName string) SpecReference {
+	return SpecReference{
+		ID:              id,
+		Kind:            SpecKindGoogleDiscovery,
+		URL:             url,
+		SourceAuthority: SourceAuthorityOfficialProvider,
+		Version:         version,
+		VerifiedAt:      "2026-05-20",
+		Revision:        "revision:" + revision,
+		LicenseNote:     "Google Developers Site Policies apply to documentation and code samples.",
+		SourceNote:      "Official " + serviceName + " Google Discovery document; it is machine-readable but not OpenAPI.",
 	}
 }
 

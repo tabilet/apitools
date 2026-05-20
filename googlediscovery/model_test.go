@@ -1,6 +1,7 @@
 package googlediscovery
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -145,5 +146,52 @@ func TestParsePreservesAllMediaUploadProtocols(t *testing.T) {
 	}
 	if got, want := op.MediaUploads["resumable"].Path, "/resumable/things"; got != want {
 		t.Fatalf("resumable path = %q, want %q", got, want)
+	}
+}
+
+func TestCatalogGoogleDiscoveryArtifactsRemainNativeReviewArtifacts(t *testing.T) {
+	for _, path := range []string{
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-calendar-discovery-v3.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "drive-discovery-v3.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "gmail-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-admin-directory-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-analyticsdata-discovery-v1beta.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-bigquery-discovery-v2.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-books-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-businessprofile-accountmanagement-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-businessprofile-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-chat-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-cloud-language-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-cloud-storage-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-docs-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-firestore-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-sheets-discovery-v4.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-slides-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-tasks-discovery-v1.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-translate-discovery-v2.json"),
+		filepath.Join("..", "catalog-openapi-cache", "google-discovery", "google-youtube-discovery-v3.json"),
+	} {
+		t.Run(filepath.Base(path), func(t *testing.T) {
+			data, err := os.ReadFile(path)
+			if err != nil {
+				if os.IsNotExist(err) {
+					t.Skipf("catalog review artifact %s is not present", path)
+				}
+				t.Fatalf("read %s: %v", path, err)
+			}
+			var raw map[string]any
+			if err := json.Unmarshal(data, &raw); err != nil {
+				t.Fatalf("parse %s: %v", path, err)
+			}
+			if raw["discoveryVersion"] == nil {
+				t.Fatalf("%s is missing Discovery version metadata", path)
+			}
+			if raw["openapi"] != nil || raw["swagger"] != nil {
+				t.Fatalf("%s is unexpectedly OpenAPI-shaped", path)
+			}
+			if _, err := Parse(data); err != nil {
+				t.Fatalf("parse %s: %v", path, err)
+			}
+		})
 	}
 }

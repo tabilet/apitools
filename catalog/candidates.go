@@ -407,6 +407,46 @@ var builtInCandidates = []Candidate{
 		machineStatus:   SpecStatusNeedsVerification,
 		userNeed:        UserOpenAPINeedLikely,
 	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-admin",
+		displayName: "Google Admin SDK",
+		aliases:     []string{"google admin sdk", "admin sdk directory", "google directory api", "gsuite admin"},
+		category:    "identity-admin",
+		n8nNode:     "Google/GSuiteAdmin",
+		relevance:   "Popular Google Workspace administration API for users, groups, domains, devices, org units, privileges, and directory automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-analytics",
+		displayName: "Google Analytics",
+		aliases:     []string{"google analytics api", "google analytics data api", "ga4 api"},
+		category:    "analytics",
+		n8nNode:     "Google/Analytics",
+		relevance:   "Popular analytics API for GA4 reports, dimensions, metrics, cohorts, realtime reports, pivots, and audience analytics automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-bigquery",
+		displayName: "Google BigQuery",
+		aliases:     []string{"bigquery", "bigquery api", "google bigquery"},
+		category:    "data-warehouse",
+		n8nNode:     "Google/BigQuery",
+		relevance:   "Popular Google Cloud data warehouse API for datasets, tables, jobs, queries, models, routines, and analytics automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-books",
+		displayName: "Google Books",
+		aliases:     []string{"google books api", "books api", "google books"},
+		category:    "books",
+		n8nNode:     "Google/Books",
+		relevance:   "Popular public books API for volumes, bookshelves, user library metadata, and book-search workflow automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-business-profile",
+		displayName: "Google Business Profile",
+		aliases:     []string{"google business profile api", "google my business", "my business api", "business profile api"},
+		category:    "local-business",
+		n8nNode:     "Google/BusinessProfile",
+		relevance:   "Popular local business API family for accounts, locations, business information, posts, reviews, and profile automation.",
+	}),
 	workflowCandidate(candidateSeed{
 		id:              "google-calendar",
 		displayName:     "Google Calendar",
@@ -417,6 +457,38 @@ var builtInCandidates = []Candidate{
 		machineSpecKind: "google-discovery",
 		machineStatus:   SpecStatusNeedsVerification,
 		userNeed:        UserOpenAPINeedLikely,
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-chat",
+		displayName: "Google Chat",
+		aliases:     []string{"google chat api", "google chat", "hangouts chat api"},
+		category:    "team-chat",
+		n8nNode:     "Google/Chat",
+		relevance:   "Popular Google Workspace chat API for spaces, members, messages, reactions, attachments, and collaboration automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-cloud-language",
+		displayName: "Google Cloud Natural Language",
+		aliases:     []string{"cloud natural language api", "google cloud natural language", "google natural language"},
+		category:    "ai-nlp",
+		n8nNode:     "Google/CloudNaturalLanguage",
+		relevance:   "Popular Google Cloud NLP API for entity, sentiment, syntax, classification, moderation, and text-analysis automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-cloud-storage",
+		displayName: "Google Cloud Storage",
+		aliases:     []string{"google cloud storage", "cloud storage api", "google storage api", "gcs"},
+		category:    "cloud-storage",
+		n8nNode:     "Google/CloudStorage",
+		relevance:   "Popular Google Cloud object storage API for buckets, objects, ACLs, IAM, uploads, and file automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-docs",
+		displayName: "Google Docs",
+		aliases:     []string{"google docs api", "docs api", "google documents api"},
+		category:    "documents",
+		n8nNode:     "Google/Docs",
+		relevance:   "Popular Google Workspace document API for documents, batch updates, structural elements, suggestions, and document automation.",
 	}),
 	workflowCandidate(candidateSeed{
 		id:              "google-drive",
@@ -430,6 +502,14 @@ var builtInCandidates = []Candidate{
 		machineStatus:   SpecStatusNeedsVerification,
 		userNeed:        UserOpenAPINeedLikely,
 	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-firestore",
+		displayName: "Google Firestore",
+		aliases:     []string{"google firestore", "cloud firestore api", "firebase firestore"},
+		category:    "database",
+		n8nNode:     "Google/Firebase/CloudFirestore",
+		relevance:   "Popular Google Cloud document database API for documents, collections, queries, indexes, backups, and Firebase workflow automation.",
+	}),
 	workflowCandidate(candidateSeed{
 		id:              "google-sheets",
 		displayName:     "Google Sheets",
@@ -440,6 +520,38 @@ var builtInCandidates = []Candidate{
 		machineSpecKind: "google-discovery",
 		machineStatus:   SpecStatusNeedsVerification,
 		userNeed:        UserOpenAPINeedLikely,
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-slides",
+		displayName: "Google Slides",
+		aliases:     []string{"google slides api", "slides api", "google presentations api"},
+		category:    "presentations",
+		n8nNode:     "Google/Slides",
+		relevance:   "Popular Google Workspace presentation API for presentations, pages, shapes, images, text, and deck automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-tasks",
+		displayName: "Google Tasks",
+		aliases:     []string{"google tasks api", "tasks api", "google task api"},
+		category:    "tasks",
+		n8nNode:     "Google/Task",
+		relevance:   "Popular Google Workspace task API for task lists, tasks, due dates, notes, completion state, and personal productivity automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-translate",
+		displayName: "Google Translate",
+		aliases:     []string{"google translate api", "cloud translation api", "google cloud translation"},
+		category:    "translation",
+		n8nNode:     "Google/Translate",
+		relevance:   "Popular Google Cloud translation API for text translation, language detection, and supported-language workflow automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-youtube",
+		displayName: "YouTube",
+		aliases:     []string{"youtube api", "youtube data api", "google youtube"},
+		category:    "video",
+		n8nNode:     "Google/YouTube",
+		relevance:   "Popular Google video platform API for channels, videos, playlists, captions, comments, search, and media automation.",
 	}),
 	workflowCandidate(candidateSeed{
 		id:          "grafana",
@@ -2202,6 +2314,15 @@ type awsSmithyCandidateSeed struct {
 	relevance   string
 }
 
+type googleDiscoveryCandidateSeed struct {
+	id          string
+	displayName string
+	aliases     []string
+	category    string
+	n8nNode     string
+	relevance   string
+}
+
 func awsSmithyCandidate(seed awsSmithyCandidateSeed) Candidate {
 	return workflowCandidate(candidateSeed{
 		id:              seed.id,
@@ -2211,6 +2332,20 @@ func awsSmithyCandidate(seed awsSmithyCandidateSeed) Candidate {
 		n8nNode:         seed.n8nNode,
 		relevance:       seed.relevance,
 		machineSpecKind: string(SpecKindSmithyJSON),
+		machineStatus:   SpecStatusNeedsVerification,
+		userNeed:        UserOpenAPINeedLikely,
+	})
+}
+
+func googleDiscoveryCandidate(seed googleDiscoveryCandidateSeed) Candidate {
+	return workflowCandidate(candidateSeed{
+		id:              seed.id,
+		displayName:     seed.displayName,
+		aliases:         seed.aliases,
+		category:        seed.category,
+		n8nNode:         seed.n8nNode,
+		relevance:       seed.relevance,
+		machineSpecKind: string(SpecKindGoogleDiscovery),
 		machineStatus:   SpecStatusNeedsVerification,
 		userNeed:        UserOpenAPINeedLikely,
 	})

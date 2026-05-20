@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 242; got != want {
+	if got, want := len(candidates), 256; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -104,9 +104,23 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"gitlab",
 		"gmail",
 		"gong",
+		"google-admin",
+		"google-analytics",
+		"google-bigquery",
+		"google-books",
+		"google-business-profile",
 		"google-calendar",
+		"google-chat",
+		"google-cloud-language",
+		"google-cloud-storage",
+		"google-docs",
 		"google-drive",
+		"google-firestore",
 		"google-sheets",
+		"google-slides",
+		"google-tasks",
+		"google-translate",
+		"google-youtube",
 		"gotify",
 		"gotowebinar",
 		"grafana",
@@ -307,6 +321,20 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "sqs", id: "aws-sqs"},
 		{key: "textract", id: "aws-textract"},
 		{key: "transcribe", id: "aws-transcribe"},
+		{key: "google admin sdk", id: "google-admin"},
+		{key: "ga4 api", id: "google-analytics"},
+		{key: "bigquery", id: "google-bigquery"},
+		{key: "books api", id: "google-books"},
+		{key: "google my business", id: "google-business-profile"},
+		{key: "google chat api", id: "google-chat"},
+		{key: "cloud natural language api", id: "google-cloud-language"},
+		{key: "gcs", id: "google-cloud-storage"},
+		{key: "google docs api", id: "google-docs"},
+		{key: "firebase firestore", id: "google-firestore"},
+		{key: "slides api", id: "google-slides"},
+		{key: "tasks api", id: "google-tasks"},
+		{key: "cloud translation api", id: "google-translate"},
+		{key: "youtube data api", id: "google-youtube"},
 		{key: "bamboo hr", id: "bamboohr"},
 		{key: "bannerbear api", id: "bannerbear"},
 		{key: "baserow database api", id: "baserow"},
@@ -519,8 +547,22 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"mailchimp",
 		"mailerlite",
 		"mailjet",
+		"google-admin",
+		"google-analytics",
+		"google-bigquery",
+		"google-books",
+		"google-business-profile",
 		"google-calendar",
+		"google-chat",
+		"google-cloud-language",
+		"google-cloud-storage",
+		"google-docs",
+		"google-firestore",
 		"google-sheets",
+		"google-slides",
+		"google-tasks",
+		"google-translate",
+		"google-youtube",
 		"gong",
 		"grafana",
 		"grist",
@@ -587,7 +629,7 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 			t.Fatalf("%s auth review = %q, want %q", candidate.ID, candidate.AuthSecurityReview, AuthSecurityNotReviewed)
 		}
 	}
-	for _, id := range []string{"aws-acm", "aws-cognito", "aws-comprehend", "aws-dynamodb", "aws-elb", "aws-elbv2", "aws-iam", "aws-lambda", "aws-rekognition", "aws-s3", "aws-ses", "aws-sns", "aws-sqs", "aws-textract", "aws-transcribe", "gmail", "google-calendar", "google-drive", "google-sheets"} {
+	for _, id := range []string{"aws-acm", "aws-cognito", "aws-comprehend", "aws-dynamodb", "aws-elb", "aws-elbv2", "aws-iam", "aws-lambda", "aws-rekognition", "aws-s3", "aws-ses", "aws-sns", "aws-sqs", "aws-textract", "aws-transcribe", "gmail", "google-admin", "google-analytics", "google-bigquery", "google-books", "google-business-profile", "google-calendar", "google-chat", "google-cloud-language", "google-cloud-storage", "google-docs", "google-drive", "google-firestore", "google-sheets", "google-slides", "google-tasks", "google-translate", "google-youtube"} {
 		candidate, ok := FindBuiltInCandidate(id)
 		if !ok {
 			t.Fatalf("missing %s", id)

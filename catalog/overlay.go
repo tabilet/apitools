@@ -840,6 +840,222 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 		SourceNote: "Google Sheets publishes an official Google Discovery document rather than OpenAPI; Google documents OAuth scopes separately, so OpenAPI-only consumers need an advisory OAuth2 overlay.",
 	},
+	googleDiscoveryOAuthOverlay(
+		"google-admin-discovery-auth-overlay",
+		"google-admin",
+		"admin-directory-discovery-v1",
+		"Google Admin SDK",
+		[]string{
+			"https://www.googleapis.com/auth/admin.directory.user.readonly",
+			"https://www.googleapis.com/auth/admin.directory.group.readonly",
+			"https://www.googleapis.com/auth/admin.directory.domain.readonly",
+			"https://www.googleapis.com/auth/admin.directory.orgunit.readonly",
+		},
+		"https://www.googleapis.com/auth/admin.directory.user.readonly",
+		[]string{
+			"https://admin.googleapis.com/$discovery/rest?version=directory_v1",
+			"https://developers.google.com/admin-sdk/directory/v1/guides/authorizing",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-analytics-discovery-auth-overlay",
+		"google-analytics",
+		"analyticsdata-discovery-v1beta",
+		"Google Analytics Data API",
+		[]string{
+			"https://www.googleapis.com/auth/analytics.readonly",
+			"https://www.googleapis.com/auth/analytics",
+		},
+		"https://www.googleapis.com/auth/analytics.readonly",
+		[]string{
+			"https://analyticsdata.googleapis.com/$discovery/rest?version=v1beta",
+			"https://developers.google.com/analytics/devguides/reporting/data/v1/authorization",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-bigquery-discovery-auth-overlay",
+		"google-bigquery",
+		"bigquery-discovery-v2",
+		"BigQuery",
+		[]string{
+			"https://www.googleapis.com/auth/bigquery",
+			"https://www.googleapis.com/auth/bigquery.insertdata",
+			"https://www.googleapis.com/auth/cloud-platform",
+			"https://www.googleapis.com/auth/cloud-platform.read-only",
+		},
+		"https://www.googleapis.com/auth/bigquery",
+		[]string{
+			"https://bigquery.googleapis.com/$discovery/rest?version=v2",
+			"https://cloud.google.com/bigquery/docs/authentication",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-books-discovery-auth-overlay",
+		"google-books",
+		"books-discovery-v1",
+		"Google Books",
+		[]string{"https://www.googleapis.com/auth/books"},
+		"https://www.googleapis.com/auth/books",
+		[]string{
+			"https://books.googleapis.com/$discovery/rest?version=v1",
+			"https://developers.google.com/books/docs/v1/using#auth",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-business-profile-discovery-auth-overlay",
+		"google-business-profile",
+		"businessinformation-discovery-v1",
+		"Google Business Profile",
+		[]string{"https://www.googleapis.com/auth/business.manage"},
+		"https://www.googleapis.com/auth/business.manage",
+		[]string{
+			"https://mybusinessbusinessinformation.googleapis.com/$discovery/rest?version=v1",
+			"https://mybusinessaccountmanagement.googleapis.com/$discovery/rest?version=v1",
+			"https://developers.google.com/my-business/content/basic-setup",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-chat-discovery-auth-overlay",
+		"google-chat",
+		"chat-discovery-v1",
+		"Google Chat",
+		[]string{
+			"https://www.googleapis.com/auth/chat.messages",
+			"https://www.googleapis.com/auth/chat.spaces",
+			"https://www.googleapis.com/auth/chat.memberships",
+			"https://www.googleapis.com/auth/chat.bot",
+		},
+		"https://www.googleapis.com/auth/chat.messages",
+		[]string{
+			"https://chat.googleapis.com/$discovery/rest?version=v1",
+			"https://developers.google.com/workspace/chat/authenticate-authorize",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-cloud-language-discovery-auth-overlay",
+		"google-cloud-language",
+		"language-discovery-v1",
+		"Cloud Natural Language",
+		[]string{
+			"https://www.googleapis.com/auth/cloud-language",
+			"https://www.googleapis.com/auth/cloud-platform",
+		},
+		"https://www.googleapis.com/auth/cloud-language",
+		[]string{
+			"https://language.googleapis.com/$discovery/rest?version=v1",
+			"https://cloud.google.com/natural-language/docs/authentication",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-cloud-storage-discovery-auth-overlay",
+		"google-cloud-storage",
+		"storage-discovery-v1",
+		"Google Cloud Storage",
+		[]string{
+			"https://www.googleapis.com/auth/devstorage.read_only",
+			"https://www.googleapis.com/auth/devstorage.read_write",
+			"https://www.googleapis.com/auth/devstorage.full_control",
+			"https://www.googleapis.com/auth/cloud-platform",
+		},
+		"https://www.googleapis.com/auth/devstorage.read_only",
+		[]string{
+			"https://storage.googleapis.com/$discovery/rest?version=v1",
+			"https://cloud.google.com/storage/docs/authentication",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-docs-discovery-auth-overlay",
+		"google-docs",
+		"docs-discovery-v1",
+		"Google Docs",
+		[]string{
+			"https://www.googleapis.com/auth/documents",
+			"https://www.googleapis.com/auth/documents.readonly",
+			"https://www.googleapis.com/auth/drive.file",
+		},
+		"https://www.googleapis.com/auth/documents.readonly",
+		[]string{
+			"https://docs.googleapis.com/$discovery/rest?version=v1",
+			"https://developers.google.com/workspace/docs/api/auth",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-firestore-discovery-auth-overlay",
+		"google-firestore",
+		"firestore-discovery-v1",
+		"Cloud Firestore",
+		[]string{
+			"https://www.googleapis.com/auth/datastore",
+			"https://www.googleapis.com/auth/cloud-platform",
+		},
+		"https://www.googleapis.com/auth/datastore",
+		[]string{
+			"https://firestore.googleapis.com/$discovery/rest?version=v1",
+			"https://cloud.google.com/firestore/docs/security/get-started-roles",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-slides-discovery-auth-overlay",
+		"google-slides",
+		"slides-discovery-v1",
+		"Google Slides",
+		[]string{
+			"https://www.googleapis.com/auth/presentations",
+			"https://www.googleapis.com/auth/presentations.readonly",
+			"https://www.googleapis.com/auth/drive.file",
+		},
+		"https://www.googleapis.com/auth/presentations.readonly",
+		[]string{
+			"https://slides.googleapis.com/$discovery/rest?version=v1",
+			"https://developers.google.com/workspace/slides/api/scopes",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-tasks-discovery-auth-overlay",
+		"google-tasks",
+		"tasks-discovery-v1",
+		"Google Tasks",
+		[]string{
+			"https://www.googleapis.com/auth/tasks.readonly",
+			"https://www.googleapis.com/auth/tasks",
+		},
+		"https://www.googleapis.com/auth/tasks.readonly",
+		[]string{
+			"https://tasks.googleapis.com/$discovery/rest?version=v1",
+			"https://developers.google.com/tasks/auth",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-translate-discovery-auth-overlay",
+		"google-translate",
+		"translate-discovery-v2",
+		"Google Cloud Translation",
+		[]string{
+			"https://www.googleapis.com/auth/cloud-translation",
+			"https://www.googleapis.com/auth/cloud-platform",
+		},
+		"https://www.googleapis.com/auth/cloud-translation",
+		[]string{
+			"https://www.googleapis.com/discovery/v1/apis/translate/v2/rest",
+			"https://cloud.google.com/translate/docs/authentication",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-youtube-discovery-auth-overlay",
+		"google-youtube",
+		"youtube-discovery-v3",
+		"YouTube Data API",
+		[]string{
+			"https://www.googleapis.com/auth/youtube.readonly",
+			"https://www.googleapis.com/auth/youtube.upload",
+			"https://www.googleapis.com/auth/youtube.force-ssl",
+		},
+		"https://www.googleapis.com/auth/youtube.readonly",
+		[]string{
+			"https://youtube.googleapis.com/$discovery/rest?version=v3",
+			"https://developers.google.com/youtube/v3/guides/authentication",
+		},
+	),
 	{
 		ID:         "hubspot-public-api-auth-overlay",
 		ProviderID: "hubspot",
@@ -4093,6 +4309,21 @@ func googleOAuthScheme(name string, scopes []string) SecurityScheme {
 		},
 		Scopes:      sortedStrings(scopes),
 		Description: "Google OAuth 2.0 authorization code flow with provider-specific scopes.",
+	}
+}
+
+func googleDiscoveryOAuthOverlay(id, providerID, specRefID, serviceName string, scopes []string, rootScope string, sourceRefs []string) SecurityOverlay {
+	return SecurityOverlay{
+		ID:         id,
+		ProviderID: providerID,
+		SpecRefID:  specRefID,
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			googleOAuthScheme("googleOAuth2", scopes),
+		},
+		RootSecurity: []SecurityRequirement{{Scheme: "googleOAuth2", Scopes: []string{rootScope}}},
+		SourceRefs:   sourceRefs,
+		SourceNote:   serviceName + " publishes an official Google Discovery document rather than OpenAPI; OAuth scopes are recorded as metadata only, and apitools must not fetch tokens or choose Google accounts or projects.",
 	}
 }
 
