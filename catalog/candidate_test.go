@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 177; got != want {
+	if got, want := len(candidates), 189; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -68,6 +68,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"dropbox",
 		"dropcontact",
 		"elastic",
+		"emelia",
 		"erpnext",
 		"eventbrite",
 		"facebook",
@@ -88,6 +89,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"google-calendar",
 		"google-drive",
 		"google-sheets",
+		"gotify",
 		"grafana",
 		"grist",
 		"gumroad",
@@ -126,8 +128,10 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"mindee",
 		"misp",
 		"mistral-ai",
+		"mocean",
 		"monday-com",
 		"monica-crm",
+		"msg91",
 		"nasa",
 		"netlify",
 		"netscaler",
@@ -147,8 +151,12 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"perplexity",
 		"phantombuster",
 		"pipedrive",
+		"plivo",
 		"posthog",
 		"postmark",
+		"pushbullet",
+		"pushcut",
+		"pushover",
 		"quickbooks",
 		"quickchart",
 		"reddit",
@@ -163,7 +171,9 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"sentry",
 		"servicenow",
 		"shopify",
+		"signl4",
 		"slack",
+		"sms77",
 		"snowflake",
 		"splunk",
 		"stackby",
@@ -185,6 +195,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"urlscan",
 		"venafi",
 		"vero",
+		"vonage",
 		"webflow",
 		"wekan",
 		"whatsapp",
@@ -195,6 +206,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"zammad",
 		"zendesk",
 		"zoom",
+		"zulip",
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("CandidateIDs() = %#v, want %#v", got, want)

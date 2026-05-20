@@ -61,6 +61,8 @@ documents and must not be treated as provider truth.
 | Mautic | `mautic-api-overlay.json` | Instance-hosted REST API docs support a focused contacts, companies, segments, campaigns, and emails subset; host remains operator supplied. |
 | MessageBird | `messagebird-api-overlay.json` | REST-shaped API docs support a focused balance, messages, contacts, voice calls, and HLR subset with AccessKey auth. |
 | Monica CRM | `monica-crm-api-overlay.json` | REST-shaped API docs support a focused contacts, activities, calls, reminders, and tags subset with bearer auth. |
+| Mocean | `mocean-api-overlay.json` | REST-shaped API docs support a focused SMS, voice dial, and account balance subset with API key and secret request parameters. |
+| MSG91 | `msg91-api-overlay.json` | REST-shaped API docs support a focused SMS, transactional SMS, OTP send, and OTP verify subset with authkey request-parameter auth. |
 | NASA | `nasa-open-apis-overlay.json` | Open APIs docs support a focused APOD, Mars Rover Photos, NeoWs, EPIC, and DONKI subset. |
 | Onfleet | `onfleet-api-overlay.json` | API docs support a focused auth, tasks, workers, teams, hubs, destinations, recipients, admins, and webhooks subset. |
 | OneSimpleApi | `onesimpleapi-toolkit-overlay.json` | Official docs support a focused web metadata, page status, screenshot, PDF, and QR utility subset. |
@@ -105,8 +107,13 @@ documents and must not be treated as provider truth.
 | Mistral AI | `mistral-ai-api-overlay.json` | Rendered API specs support a focused chat, embeddings, OCR, files, batch jobs, agents, and models subset; model selection remains outside apitools. |
 | Mindee | `mindee-api-overlay.json` | API docs support a focused receipt, invoice, and custom-model prediction subset across current and legacy token-header patterns. |
 | Phantombuster | `phantombuster-api-overlay.json` | API reference docs and llms index support a focused agents, containers, scripts, and organization subset; agent execution remains outside apitools. |
+| Plivo | `plivo-api-overlay.json` | REST-shaped Messaging and Voice API docs support a focused messages and calls subset with HTTP Basic auth. |
 | UpLead | `uplead-api-overlay.json` | API docs support a focused person search, company search, and credits subset with Authorization header API-key auth. |
 | Dropcontact | `dropcontact-api-overlay.json` | Developer docs support a focused batch enrichment and result retrieval subset with X-Access-Token auth. |
+| Pushbullet | `pushbullet-api-overlay.json` | REST-shaped API docs support a focused pushes, upload request, devices, contacts, channels, and subscriptions subset with OAuth bearer auth. |
+| Pushcut | `pushcut-api-overlay.json` | REST-shaped integration docs support a focused notifications, devices, and subscriptions subset with API-Key header auth. |
+| Pushover | `pushover-api-overlay.json` | REST-shaped API docs support a focused messages, receipts, user validation, and sounds subset with token and user request parameters. |
+| sms77 | `sms77-api-overlay.json` | REST-shaped seven.io API docs support a focused SMS, voice, balance, pricing, status, and contacts subset with X-Api-Key header auth. |
 
 ## No Endpoint Overlay
 
@@ -120,3 +127,8 @@ documents and must not be treated as provider truth.
 | Monday.com | No OpenAPI-shaped endpoint overlay for now. Monday.com's platform API is GraphQL at a single endpoint; useful operation coverage should come from a GraphQL-aware classifier or schema/introspection workflow, not a REST-shaped overlay. |
 | Odoo | No OpenAPI-shaped endpoint overlay for now. Odoo's official external API is model-oriented XML-RPC/JSON-RPC; a generic RPC wrapper would hide model semantics rather than improve REST-shaped metadata. |
 | TimeSaved | No OpenAPI-shaped endpoint overlay. The frozen M26 item is an n8n workflow metadata helper, not an external provider API with HTTP endpoints. |
+| SIGNL4 | Official OpenAPI is recorded for SIGNL4 API V1, so no docs-derived endpoint overlay is needed; auth overlay metadata records the reviewed X-S4-Api-Key requirement. |
+| Vonage | Official Messages API OpenAPI is recorded, so no docs-derived endpoint overlay is needed. The n8n legacy SMS endpoint is not used as provider truth. |
+| Zulip | Official REST API OpenAPI is recorded from the Zulip repository, so no docs-derived endpoint overlay is needed. |
+| Gotify | Official Swagger/OpenAPI is recorded from the Gotify server repository, so no docs-derived endpoint overlay is needed. |
+| Emelia | No OpenAPI-shaped endpoint overlay for now. Emelia's public API is GraphQL at a single endpoint; a generic `POST /graphql` wrapper would hide operation semantics rather than improve OpenAPI-like metadata. |

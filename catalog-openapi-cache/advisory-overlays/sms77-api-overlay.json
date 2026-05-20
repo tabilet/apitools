@@ -1,0 +1,277 @@
+{
+  "components": {
+    "schemas": {
+      "SevenCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SevenError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "SevenObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "sevenAPIKey": {
+        "description": "seven.io API key carried in the X-Api-Key header.",
+        "in": "header",
+        "name": "X-Api-Key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official seven.io human API documentation. This is not an official seven.io OpenAPI document.",
+    "title": "seven.io sms77 API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/balance": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getSevenBalance",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SevenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sevenAPIKey": []
+          }
+        ],
+        "summary": "Get account balance"
+      }
+    },
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listSevenContacts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SevenCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sevenAPIKey": []
+          }
+        ],
+        "summary": "List contacts"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createSevenContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SevenObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SevenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sevenAPIKey": []
+          }
+        ],
+        "summary": "Create contact"
+      }
+    },
+    "/pricing": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getSevenPricing",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SevenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sevenAPIKey": []
+          }
+        ],
+        "summary": "Get pricing"
+      }
+    },
+    "/sms": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendSevenSMS",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SevenObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SevenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sevenAPIKey": []
+          }
+        ],
+        "summary": "Send SMS"
+      }
+    },
+    "/status": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getSevenMessageStatus",
+        "parameters": [
+          {
+            "description": "Message ID.",
+            "in": "query",
+            "name": "msg_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SevenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sevenAPIKey": []
+          }
+        ],
+        "summary": "Get message status"
+      }
+    },
+    "/voice": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendSevenVoice",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SevenObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SevenObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "sevenAPIKey": []
+          }
+        ],
+        "summary": "Send voice message"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://gateway.seven.io/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "sms77",
+    "source_note": "seven.io publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected SMS, voice, balance, pricing, status, and contacts endpoints.",
+    "source_refs": [
+      "https://docs.seven.io/en/rest-api/endpoints/sms",
+      "https://docs.seven.io/en/rest-api/authentication"
+    ]
+  }
+}

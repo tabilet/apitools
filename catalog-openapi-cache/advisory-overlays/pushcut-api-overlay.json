@@ -1,0 +1,251 @@
+{
+  "components": {
+    "schemas": {
+      "PushcutCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PushcutError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PushcutObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "pushcutAPIKey": {
+        "description": "Pushcut API key carried in the API-Key header.",
+        "in": "header",
+        "name": "API-Key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Pushcut human API documentation. This is not an official Pushcut OpenAPI document.",
+    "title": "Pushcut API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/devices": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPushcutDevices",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushcutCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushcutAPIKey": []
+          }
+        ],
+        "summary": "List devices"
+      }
+    },
+    "/notifications": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPushcutNotifications",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushcutCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushcutAPIKey": []
+          }
+        ],
+        "summary": "List notifications"
+      }
+    },
+    "/notifications/{notification_name}": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendPushcutNotification",
+        "parameters": [
+          {
+            "description": "Notification name.",
+            "in": "path",
+            "name": "notification_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushcutObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushcutObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushcutAPIKey": []
+          }
+        ],
+        "summary": "Send notification"
+      }
+    },
+    "/subscriptions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPushcutSubscriptions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushcutCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushcutAPIKey": []
+          }
+        ],
+        "summary": "List subscriptions"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createPushcutSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushcutObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushcutObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushcutAPIKey": []
+          }
+        ],
+        "summary": "Create subscription"
+      }
+    },
+    "/subscriptions/{subscription_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deletePushcutSubscription",
+        "parameters": [
+          {
+            "description": "Subscription ID.",
+            "in": "path",
+            "name": "subscription_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushcutObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushcutAPIKey": []
+          }
+        ],
+        "summary": "Delete subscription"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.pushcut.io/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "pushcut",
+    "source_note": "Pushcut publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected notifications, devices, and subscriptions endpoints.",
+    "source_refs": [
+      "https://www.pushcut.io/support/integrations",
+      "https://www.pushcut.io/support/notifications"
+    ]
+  }
+}

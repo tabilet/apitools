@@ -1,0 +1,248 @@
+{
+  "components": {
+    "schemas": {
+      "PlivoCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PlivoError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PlivoObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "plivoBasic": {
+        "description": "Plivo Auth ID and Auth Token supplied using HTTP Basic authentication.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Plivo human API documentation. This is not an official Plivo OpenAPI document.",
+    "title": "Plivo API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/Call/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPlivoCalls",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlivoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "plivoBasic": []
+          }
+        ],
+        "summary": "List calls"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "makePlivoCall",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlivoObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlivoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "plivoBasic": []
+          }
+        ],
+        "summary": "Make call"
+      }
+    },
+    "/Call/{call_uuid}/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getPlivoCall",
+        "parameters": [
+          {
+            "description": "Call UUID.",
+            "in": "path",
+            "name": "call_uuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlivoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "plivoBasic": []
+          }
+        ],
+        "summary": "Get call"
+      }
+    },
+    "/Message/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPlivoMessages",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlivoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "plivoBasic": []
+          }
+        ],
+        "summary": "List messages"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendPlivoMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlivoObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlivoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "plivoBasic": []
+          }
+        ],
+        "summary": "Send message"
+      }
+    },
+    "/Message/{message_uuid}/": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getPlivoMessage",
+        "parameters": [
+          {
+            "description": "Message UUID.",
+            "in": "path",
+            "name": "message_uuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlivoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "plivoBasic": []
+          }
+        ],
+        "summary": "Get message"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.plivo.com/v1/Account/{auth_id}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "plivo",
+    "source_note": "Plivo publishes human Messaging and Voice API documentation but no recorded stable public official OpenAPI document; this overlay covers selected message and call endpoints.",
+    "source_refs": [
+      "https://www.plivo.com/docs/messaging/api/message/retrieve-a-message",
+      "https://www.plivo.com/docs/voice/api/call/the-call-object/"
+    ]
+  }
+}

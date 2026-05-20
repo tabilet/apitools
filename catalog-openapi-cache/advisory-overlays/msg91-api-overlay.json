@@ -1,0 +1,232 @@
+{
+  "components": {
+    "schemas": {
+      "MSG91Collection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MSG91Error": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MSG91Object": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "msg91AuthKey": {
+        "description": "MSG91 auth key carried in the authkey request parameter.",
+        "in": "query",
+        "name": "authkey",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official MSG91 human API documentation. This is not an official MSG91 OpenAPI document.",
+    "title": "MSG91 API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/sendhttp.php": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendMSG91SMS",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MSG91Object"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "msg91AuthKey": []
+          }
+        ],
+        "summary": "Send SMS"
+      }
+    },
+    "/v2/sendsms": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendMSG91TransactionalSMS",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MSG91Object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MSG91Object"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "msg91AuthKey": []
+          }
+        ],
+        "summary": "Send transactional SMS"
+      }
+    },
+    "/v5/otp": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendMSG91OTP",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MSG91Object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MSG91Object"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "msg91AuthKey": []
+          }
+        ],
+        "summary": "Send OTP"
+      }
+    },
+    "/v5/otp/verify": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "verifyMSG91OTP",
+        "parameters": [
+          {
+            "description": "OTP value.",
+            "in": "query",
+            "name": "otp",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Recipient mobile number.",
+            "in": "query",
+            "name": "mobile",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MSG91Object"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "msg91AuthKey": []
+          }
+        ],
+        "summary": "Verify OTP"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "verifyMSG91OTPWithBody",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MSG91Object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MSG91Object"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "msg91AuthKey": []
+          }
+        ],
+        "summary": "Verify OTP with request body"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.msg91.com/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "msg91",
+    "source_note": "MSG91 publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected SMS and OTP endpoints.",
+    "source_refs": [
+      "https://docs.msg91.com/sms",
+      "https://docs.msg91.com/overview"
+    ]
+  }
+}

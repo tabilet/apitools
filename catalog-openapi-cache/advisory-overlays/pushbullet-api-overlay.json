@@ -1,0 +1,350 @@
+{
+  "components": {
+    "schemas": {
+      "PushbulletCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PushbulletError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PushbulletObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "pushbulletBearer": {
+        "bearerFormat": "Pushbullet OAuth token",
+        "description": "Pushbullet OAuth access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Pushbullet human API documentation. This is not an official Pushbullet OpenAPI document.",
+    "title": "Pushbullet API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/channels": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPushbulletChannels",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushbulletCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushbulletBearer": []
+          }
+        ],
+        "summary": "List channels"
+      }
+    },
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPushbulletContacts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushbulletCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushbulletBearer": []
+          }
+        ],
+        "summary": "List contacts"
+      }
+    },
+    "/devices": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPushbulletDevices",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushbulletCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushbulletBearer": []
+          }
+        ],
+        "summary": "List devices"
+      }
+    },
+    "/pushes": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPushbulletPushes",
+        "parameters": [
+          {
+            "description": "Only return pushes modified after this timestamp.",
+            "in": "query",
+            "name": "modified_after",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushbulletCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushbulletBearer": []
+          }
+        ],
+        "summary": "List pushes"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createPushbulletPush",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushbulletObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushbulletObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushbulletBearer": []
+          }
+        ],
+        "summary": "Create push"
+      }
+    },
+    "/pushes/{push_iden}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deletePushbulletPush",
+        "parameters": [
+          {
+            "description": "Push identifier.",
+            "in": "path",
+            "name": "push_iden",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushbulletObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushbulletBearer": []
+          }
+        ],
+        "summary": "Delete push"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updatePushbulletPush",
+        "parameters": [
+          {
+            "description": "Push identifier.",
+            "in": "path",
+            "name": "push_iden",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushbulletObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushbulletObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushbulletBearer": []
+          }
+        ],
+        "summary": "Update push"
+      }
+    },
+    "/subscriptions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPushbulletSubscriptions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushbulletCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushbulletBearer": []
+          }
+        ],
+        "summary": "List subscriptions"
+      }
+    },
+    "/upload-request": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createPushbulletUploadRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushbulletObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushbulletObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushbulletBearer": []
+          }
+        ],
+        "summary": "Create upload request"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.pushbullet.com/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "pushbullet",
+    "source_note": "Pushbullet publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected pushes, upload, devices, contacts, channels, and subscriptions endpoints.",
+    "source_refs": [
+      "https://docs.pushbullet.com/"
+    ]
+  }
+}

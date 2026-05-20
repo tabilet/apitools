@@ -106,7 +106,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 137; got != want {
+	if got, want := len(overlays), 146; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -252,6 +252,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"dropbox",
 		"dropcontact",
 		"elastic",
+		"emelia",
 		"erpnext",
 		"eventbrite",
 		"facebook",
@@ -272,6 +273,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"google-calendar",
 		"google-drive",
 		"google-sheets",
+		"gotify",
 		"grafana",
 		"grist",
 		"gumroad",
@@ -310,8 +312,10 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"mindee",
 		"misp",
 		"mistral-ai",
+		"mocean",
 		"monday-com",
 		"monica-crm",
+		"msg91",
 		"nasa",
 		"netlify",
 		"netscaler",
@@ -331,8 +335,12 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"perplexity",
 		"phantombuster",
 		"pipedrive",
+		"plivo",
 		"posthog",
 		"postmark",
+		"pushbullet",
+		"pushcut",
+		"pushover",
 		"quickbooks",
 		"quickchart",
 		"reddit",
@@ -347,7 +355,9 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"sentry",
 		"servicenow",
 		"shopify",
+		"signl4",
 		"slack",
+		"sms77",
 		"snowflake",
 		"splunk",
 		"stackby",
@@ -369,6 +379,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"urlscan",
 		"venafi",
 		"vero",
+		"vonage",
 		"webflow",
 		"wekan",
 		"whatsapp",
@@ -379,6 +390,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"zammad",
 		"zendesk",
 		"zoom",
+		"zulip",
 	}
 	if !reflect.DeepEqual(gotIDs, wantIDs) {
 		t.Fatalf("report provider ids = %#v, want %#v", gotIDs, wantIDs)
@@ -434,6 +446,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"dropbox":            AuthStatusOverlayRequired,
 		"dropcontact":        AuthStatusOverlayRequired,
 		"elastic":            AuthStatusComplete,
+		"emelia":             AuthStatusOverlayRequired,
 		"erpnext":            AuthStatusOverlayRequired,
 		"eventbrite":         AuthStatusOverlayRequired,
 		"facebook":           AuthStatusOverlayRequired,
@@ -454,6 +467,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"google-calendar":    AuthStatusOverlayRequired,
 		"google-drive":       AuthStatusOverlayRequired,
 		"google-sheets":      AuthStatusOverlayRequired,
+		"gotify":             AuthStatusComplete,
 		"grafana":            AuthStatusComplete,
 		"grist":              AuthStatusOverlayRequired,
 		"gumroad":            AuthStatusOverlayRequired,
@@ -492,8 +506,10 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"mindee":             AuthStatusOverlayRequired,
 		"misp":               AuthStatusComplete,
 		"mistral-ai":         AuthStatusOverlayRequired,
+		"mocean":             AuthStatusOverlayRequired,
 		"monday-com":         AuthStatusOverlayRequired,
 		"monica-crm":         AuthStatusOverlayRequired,
+		"msg91":              AuthStatusOverlayRequired,
 		"nasa":               AuthStatusOverlayRequired,
 		"netlify":            AuthStatusComplete,
 		"netscaler":          AuthStatusOverlayRequired,
@@ -513,8 +529,12 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"perplexity":         AuthStatusComplete,
 		"phantombuster":      AuthStatusOverlayRequired,
 		"pipedrive":          AuthStatusPresentIncomplete,
+		"plivo":              AuthStatusOverlayRequired,
 		"posthog":            AuthStatusPresentIncomplete,
 		"postmark":           AuthStatusOverlayRequired,
+		"pushbullet":         AuthStatusOverlayRequired,
+		"pushcut":            AuthStatusOverlayRequired,
+		"pushover":           AuthStatusOverlayRequired,
 		"quickbooks":         AuthStatusOverlayRequired,
 		"quickchart":         AuthStatusIntentionallyAnonymous,
 		"reddit":             AuthStatusOverlayRequired,
@@ -529,7 +549,9 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"sentry":             AuthStatusOverlayRequired,
 		"servicenow":         AuthStatusOverlayRequired,
 		"shopify":            AuthStatusOverlayRequired,
+		"signl4":             AuthStatusOverlayRequired,
 		"slack":              AuthStatusPresentIncomplete,
+		"sms77":              AuthStatusOverlayRequired,
 		"snowflake":          AuthStatusComplete,
 		"splunk":             AuthStatusOverlayRequired,
 		"stackby":            AuthStatusOverlayRequired,
@@ -551,6 +573,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"urlscan":            AuthStatusComplete,
 		"venafi":             AuthStatusOverlayRequired,
 		"vero":               AuthStatusOverlayRequired,
+		"vonage":             AuthStatusComplete,
 		"webflow":            AuthStatusOverlayRequired,
 		"wekan":              AuthStatusOverlayRequired,
 		"whatsapp":           AuthStatusOverlayRequired,
@@ -561,6 +584,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"zammad":             AuthStatusOverlayRequired,
 		"zendesk":            AuthStatusPresentIncomplete,
 		"zoom":               AuthStatusPresentIncomplete,
+		"zulip":              AuthStatusComplete,
 	}
 	if !reflect.DeepEqual(statusByID, wantStatuses) {
 		t.Fatalf("report statuses = %#v, want %#v", statusByID, wantStatuses)

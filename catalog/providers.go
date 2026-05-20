@@ -3207,6 +3207,189 @@ var builtInProviders = []Provider{
 		},
 		quirks: []string{"M30 review did not find a stable public official OpenAPI document at explicit Dropcontact OpenAPI probes; developer.dropcontact.com/openapi.json returned access denied during review.", "Dropcontact enrichment jobs and polling are account-scoped; apitools records metadata only and does not submit contacts."},
 	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "mocean",
+		displayName:         "Mocean",
+		aliases:             []string{"mocean api", "moceanapi", "mocean sms"},
+		category:            "messaging",
+		relevance:           "Popular communications API for SMS, voice text-to-speech calls, delivery callbacks, and account balance checks.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef20260520("mocean-api-docs", "https://moceanapi.com/docs", "Official Mocean API reference documentation for SMS, voice, account balance, delivery reports, and mocean-api-key/mocean-api-secret authentication parameters."),
+		},
+		quirks: []string{"M31 review did not find a stable public official OpenAPI document at explicit Mocean OpenAPI or Swagger probes.", "Mocean authentication uses both API key and API secret parameters; apitools records placement metadata only and does not send messages or place calls."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "msg91",
+		displayName:         "MSG91",
+		aliases:             []string{"msg91 api", "msg91 sms"},
+		category:            "messaging",
+		relevance:           "Popular customer engagement and messaging platform for SMS, OTP, voice, WhatsApp, email, and campaign notification automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef20260520("msg91-sms-docs", "https://docs.msg91.com/sms", "Official MSG91 SMS documentation for campaign, transactional SMS, OTP, and messaging API usage."),
+			humanDocsRef20260520("msg91-overview-docs", "https://docs.msg91.com/overview", "Official MSG91 documentation overview for product API surfaces."),
+		},
+		quirks: []string{"M31 review did not find a stable public official OpenAPI document at explicit MSG91 OpenAPI probes.", "MSG91 exposes several product-specific messaging APIs; the catalog overlay records a focused SMS subset and authkey metadata only."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "plivo",
+		displayName:         "Plivo",
+		aliases:             []string{"plivo api", "plivo messaging", "plivo voice"},
+		category:            "messaging",
+		relevance:           "Popular communications API for SMS, MMS, WhatsApp, outbound calls, message records, and voice automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef20260520("plivo-messaging-api-docs", "https://www.plivo.com/docs/messaging/api/message/retrieve-a-message", "Official Plivo Messaging API documentation for listing, retrieving, sending, and managing message records with Auth ID/Auth Token HTTP Basic authentication examples."),
+			humanDocsRef20260520("plivo-voice-call-api-docs", "https://www.plivo.com/docs/voice/api/call/the-call-object/", "Official Plivo Voice Call API documentation for call records and outbound call operations."),
+			humanDocsRef20260520("plivo-docs-index", "https://www.plivo.com/docs/messaging", "Official Plivo documentation index and llms documentation index pointer."),
+		},
+		quirks: []string{"M31 review did not find a stable public official OpenAPI document at explicit Plivo OpenAPI probes.", "Plivo APIs are account-path scoped with Auth ID in the path and Basic authentication; apitools records variable account metadata only."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "pushbullet",
+		displayName:         "Pushbullet",
+		aliases:             []string{"pushbullet api", "pushbullet push"},
+		category:            "notifications",
+		relevance:           "Popular notification service for pushes, devices, contacts, channels, subscriptions, uploads, and realtime notification automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef20260520("pushbullet-api-docs", "https://docs.pushbullet.com/", "Official Pushbullet HTTP API documentation for pushes, devices, contacts, subscriptions, upload requests, realtime events, and OAuth2 bearer authentication."),
+		},
+		quirks: []string{"M31 review did not find a stable public official OpenAPI document at explicit Pushbullet OpenAPI probes.", "Pushbullet includes both REST endpoints and websocket realtime events; the docs-derived overlay records only REST-shaped endpoints."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "pushcut",
+		displayName:         "Pushcut",
+		aliases:             []string{"pushcut api", "pushcut notifications"},
+		category:            "notifications",
+		relevance:           "Popular iOS notification and automation service for notifications, webhooks, subscriptions, devices, and server actions.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef20260520("pushcut-notifications-docs", "https://www.pushcut.io/support/notifications", "Official Pushcut notifications and webhook documentation for notification trigger URLs and JSON payload controls."),
+			humanDocsRef20260520("pushcut-integrations-api-docs", "https://www.pushcut.io/support/integrations", "Official Pushcut integrations documentation describing the api.pushcut.io/v1 API and API-Key header authentication."),
+		},
+		quirks: []string{"M31 review did not find a stable public official OpenAPI document at explicit Pushcut OpenAPI probes.", "Pushcut supports both secret webhook URLs and API-Key-protected v1 API endpoints; apitools records both as metadata only and does not trigger notifications."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "pushover",
+		displayName:         "Pushover",
+		aliases:             []string{"pushover api", "pushover notifications"},
+		category:            "notifications",
+		relevance:           "Popular push notification service for app messages, emergency priorities, receipts, users, groups, and subscription messaging.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef20260520("pushover-message-api-docs", "https://pushover.net/api", "Official Pushover Message API documentation for messages, receipts, sounds, users/groups, subscriptions, and token/user parameter authentication."),
+			humanDocsRef20260520("pushover-client-api-docs", "https://pushover.net/api/client", "Official Pushover Open Client API documentation."),
+		},
+		quirks: []string{"M31 review did not find a stable public official OpenAPI document at explicit Pushover OpenAPI probes.", "Pushover message sends require both application token and user/group key parameters; apitools records credential placement only and does not send notifications."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "signl4",
+		displayName:         "SIGNL4",
+		aliases:             []string{"signl4 api", "signl4 alerts", "signl4 webhook"},
+		category:            "incident-management",
+		relevance:           "Popular alerting and incident response service for Signls, teams, duty schedules, categories, alert events, and webhooks.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			officialOpenAPIRef20260520("signl4-api-v1-openapi", "https://connect.signl4.com/api/docs/v1/swagger.json", SourceAuthorityOfficialProvider, "3.0.4 / 1", `sha256:d117d98c5bc82fcdc819df9e6cc3de281bcf898c601ef550c64c593540a90fb0 content-length:477314`, "SIGNL4 API documentation terms apply to the official OpenAPI document served by connect.signl4.com.", "Official SIGNL4 API V1 OpenAPI 3.0 JSON for Signls, teams, users, categories, duty scheduling, and alerting resources."),
+			humanDocsRef20260520("signl4-api-docs", "https://connect.signl4.com/api/docs/index.html", "Official SIGNL4 API documentation index."),
+			humanDocsRef20260520("signl4-rest-api-docs", "https://support.signl4.com/hc/en-us/sections/360004633357-REST-API", "Official SIGNL4 REST API support documentation section."),
+		},
+		quirks: []string{"The SIGNL4 OpenAPI document declares security schemes but leaves root security anonymous; catalog auth overlay records X-S4-Api-Key metadata for review.", "SIGNL4 webhook/team-secret alert URLs are separate from the broader API-key-protected REST API and are recorded as source context only."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "sms77",
+		displayName:         "sms77",
+		aliases:             []string{"seven", "seven.io", "sms77 api", "seven api"},
+		category:            "messaging",
+		relevance:           "Popular SMS and voice messaging platform now branded seven.io, covering SMS, voice, balance, contacts, analytics, and webhooks.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef20260520("seven-api-docs", "https://docs.seven.io/", "Official seven.io API documentation index for REST/HTTP, SMPP, Mail API, SDKs, and webhooks."),
+			humanDocsRef20260520("seven-sms-api-docs", "https://docs.seven.io/en/rest-api/endpoints/sms", "Official seven.io SMS endpoint documentation."),
+			humanDocsRef20260520("seven-auth-docs", "https://docs.seven.io/en/rest-api/authentication", "Official seven.io REST API authentication documentation for X-Api-Key header usage."),
+		},
+		quirks: []string{"M31 review did not find a stable public official OpenAPI document at explicit seven.io OpenAPI probes.", "sms77 is now branded seven.io; catalog aliases keep both names for lookup compatibility."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "vonage",
+		displayName:         "Vonage",
+		aliases:             []string{"nexmo", "vonage api", "vonage messages", "vonage sms"},
+		category:            "messaging",
+		relevance:           "Popular communications API platform for SMS, MMS, WhatsApp, messages, voice, applications, and multichannel notification automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			officialOpenAPIRef20260520("vonage-messages-api-openapi", "https://developer.vonage.com/api/v1/developer/api/file/messages?format=yml&vendorId=vonage", SourceAuthorityOfficialProvider, "3.0.3 / 1.17.0", `sha256:43098f3a0f1ef5db3bbdf6805accad88635090c13adb3cd97ea5da269a4dbdd2 content-length:186797`, "Vonage API documentation terms apply to the official Messages API OpenAPI document.", "Official Vonage Messages API OpenAPI 3.0 YAML downloaded from the developer documentation OpenAPI export."),
+			humanDocsRef20260520("vonage-messages-api-docs", "https://developer.vonage.com/en/api/messages", "Official Vonage Messages API reference documentation."),
+			humanDocsRef20260520("vonage-openapi-concepts", "https://developer.vonage.com/en/getting-started/concepts/openapi", "Official Vonage OpenAPI concepts documentation describing downloadable API specifications."),
+		},
+		quirks: []string{"The n8n Vonage node targets the legacy rest.nexmo.com SMS endpoint, while M31 records the current official Vonage Messages API OpenAPI export as the durable public machine-readable source.", "Vonage supports multiple authentication styles by API; consumers must preserve operation-level auth metadata and avoid generating JWTs in apitools."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "zulip",
+		displayName:         "Zulip",
+		aliases:             []string{"zulip api", "zulip chat"},
+		category:            "team-chat",
+		relevance:           "Popular open-source team chat service for streams, topics, messages, users, reactions, files, and chat automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			officialOpenAPIRef20260520("zulip-rest-api-openapi", "https://raw.githubusercontent.com/zulip/zulip/main/zerver/openapi/zulip.yaml", SourceAuthorityOfficialGitHub, "3.0.1 / 1.0.0", `sha256:1894e4e1ed7f2f8623fb97efbe545ab50e80e06dffe06d0fd9927536a8dc1a28 content-length:1507260`, "Zulip repository license and documentation terms apply to the official OpenAPI document.", "Official Zulip repository OpenAPI 3.0 YAML used to generate the Zulip REST API documentation."),
+			humanDocsRef20260520("zulip-rest-api-docs", "https://docs.zulip.com/api/rest", "Official Zulip REST API documentation."),
+			humanDocsRef20260520("zulip-openapi-docs", "https://zulip.readthedocs.io/en/latest/documentation/openapi.html", "Official Zulip developer documentation describing OpenAPI-backed REST API docs."),
+		},
+		quirks: []string{"Zulip servers are commonly self-hosted; the official OpenAPI document describes REST paths but consumers must preserve operator-supplied Zulip base URLs."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "gotify",
+		displayName:         "Gotify",
+		aliases:             []string{"gotify api", "gotify server", "gotify notifications"},
+		category:            "notifications",
+		relevance:           "Popular self-hosted push notification server for applications, clients, messages, plugins, and notification automation.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			officialOpenAPIRef20260520("gotify-server-openapi", "https://raw.githubusercontent.com/gotify/server/master/docs/spec.json", SourceAuthorityOfficialGitHub, "Swagger 2.0 / 2.1.0", `sha256:fcd36a45d9ba8e2496d6f2b14fa9dacb6c4ba8ca075198f93370b08ba29474e8 content-length:87476`, "Gotify server repository license and documentation terms apply to the official Swagger document.", "Official Gotify server Swagger 2.0 JSON for applications, clients, messages, plugins, health, and version resources."),
+			humanDocsRef20260520("gotify-rest-api-docs", "https://gotify.net/docs/index", "Official Gotify documentation index linking the REST API Swagger documentation."),
+			humanDocsRef20260520("gotify-push-message-docs", "https://gotify.net/docs/more-pushmsg", "Official Gotify push message examples and API token documentation."),
+		},
+		quirks: []string{"Gotify is self-hosted; catalog metadata records official server API shape but does not choose a Gotify instance URL.", "Gotify uses different token classes for application pushes and client management operations; consumers must preserve operation-level security metadata."},
+	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "emelia",
+		displayName:         "Emelia",
+		aliases:             []string{"emelia api", "emelia graphql", "emelia cold email"},
+		category:            "email-marketing",
+		relevance:           "Popular outbound sales and email campaign platform for campaigns, contact lists, LinkedIn scraper actions, and campaign activity webhooks.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef20260520("emelia-graphql-api-docs", "https://docs-old.emelia.io/", "Official Emelia API reference documentation for GraphQL operations, schemas, webhook management, and Authorization header API-key authentication."),
+		},
+		quirks: []string{"Emelia documents a GraphQL API at https://graphql.emelia.io/graphql rather than a stable public official OpenAPI document; a generic POST /graphql overlay would hide operation semantics.", "Emelia webhook management endpoints are REST-shaped but coupled to the GraphQL API surface; M31 records auth metadata and a no-overlay decision rather than a partial REST overlay."},
+	}),
 }
 
 type providerSeed struct {
@@ -3248,6 +3431,10 @@ func humanDocsRef20260519(id, url, note string) SpecReference {
 	return humanDocsRefAt(id, url, note, "2026-05-19")
 }
 
+func humanDocsRef20260520(id, url, note string) SpecReference {
+	return humanDocsRefAt(id, url, note, "2026-05-20")
+}
+
 func humanDocsRefAt(id, url, note, verifiedAt string) SpecReference {
 	return SpecReference{
 		ID:              id,
@@ -3268,6 +3455,20 @@ func officialOpenAPIRef20260519(id, url string, authority SourceAuthority, versi
 		SourceAuthority: authority,
 		Version:         version,
 		VerifiedAt:      "2026-05-19",
+		Revision:        revision,
+		LicenseNote:     licenseNote,
+		SourceNote:      sourceNote,
+	}
+}
+
+func officialOpenAPIRef20260520(id, url string, authority SourceAuthority, version, revision, licenseNote, sourceNote string) SpecReference {
+	return SpecReference{
+		ID:              id,
+		Kind:            SpecKindOpenAPI,
+		URL:             url,
+		SourceAuthority: authority,
+		Version:         version,
+		VerifiedAt:      "2026-05-20",
 		Revision:        revision,
 		LicenseNote:     licenseNote,
 		SourceNote:      sourceNote,

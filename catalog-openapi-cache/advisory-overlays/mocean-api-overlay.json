@@ -1,0 +1,158 @@
+{
+  "components": {
+    "schemas": {
+      "MoceanCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MoceanError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MoceanObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "moceanAPIKey": {
+        "description": "Mocean API key carried in the mocean-api-key request parameter.",
+        "in": "query",
+        "name": "mocean-api-key",
+        "type": "apiKey"
+      },
+      "moceanAPISecret": {
+        "description": "Mocean API secret carried in the mocean-api-secret request parameter.",
+        "in": "query",
+        "name": "mocean-api-secret",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Mocean human API documentation. This is not an official Mocean OpenAPI document.",
+    "title": "Mocean API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/rest/2/account/balance": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMoceanBalance",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoceanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "moceanAPIKey": [],
+            "moceanAPISecret": []
+          }
+        ],
+        "summary": "Get account balance"
+      }
+    },
+    "/rest/2/sms": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendMoceanSMS",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoceanObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoceanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "moceanAPIKey": [],
+            "moceanAPISecret": []
+          }
+        ],
+        "summary": "Send SMS"
+      }
+    },
+    "/rest/2/voice/dial": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendMoceanVoice",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoceanObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoceanObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "moceanAPIKey": [],
+            "moceanAPISecret": []
+          }
+        ],
+        "summary": "Start voice call"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://rest.moceanapi.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "mocean",
+    "source_note": "Mocean publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected SMS, voice, and account endpoints.",
+    "source_refs": [
+      "https://moceanapi.com/docs"
+    ]
+  }
+}

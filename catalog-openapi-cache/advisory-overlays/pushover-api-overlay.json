@@ -1,0 +1,198 @@
+{
+  "components": {
+    "schemas": {
+      "PushoverCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PushoverError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PushoverObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "pushoverAppToken": {
+        "description": "Pushover application API token carried in the token request parameter.",
+        "in": "query",
+        "name": "token",
+        "type": "apiKey"
+      },
+      "pushoverUserKey": {
+        "description": "Pushover user or group key carried in the user request parameter.",
+        "in": "query",
+        "name": "user",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Pushover human API documentation. This is not an official Pushover OpenAPI document.",
+    "title": "Pushover API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/messages.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "sendPushoverMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushoverObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushoverObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushoverAppToken": [],
+            "pushoverUserKey": []
+          }
+        ],
+        "summary": "Send message"
+      }
+    },
+    "/receipts/{receipt}.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getPushoverReceipt",
+        "parameters": [
+          {
+            "description": "Receipt token.",
+            "in": "path",
+            "name": "receipt",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushoverObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushoverAppToken": [],
+            "pushoverUserKey": []
+          }
+        ],
+        "summary": "Get receipt"
+      }
+    },
+    "/sounds.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPushoverSounds",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushoverCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushoverAppToken": [],
+            "pushoverUserKey": []
+          }
+        ],
+        "summary": "List sounds"
+      }
+    },
+    "/users/validate.json": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "validatePushoverUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushoverObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushoverObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "pushoverAppToken": [],
+            "pushoverUserKey": []
+          }
+        ],
+        "summary": "Validate user or group"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.pushover.net/1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "pushover",
+    "source_note": "Pushover publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected message, receipt, user validation, and sound endpoints.",
+    "source_refs": [
+      "https://pushover.net/api",
+      "https://pushover.net/api/client"
+    ]
+  }
+}
