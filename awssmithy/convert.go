@@ -14,6 +14,9 @@ var identifierRE = regexp.MustCompile(`[^A-Za-z0-9_]+`)
 
 // Convert converts an AWS Smithy JSON service model into bounded OpenAPI 3.0.1
 // shaped metadata.
+//
+// Deprecated: use Parse for protocol-native AWS Smithy metadata. The converted
+// output is derived metadata and is not suitable as an execution contract.
 func Convert(data []byte) ([]byte, error) {
 	var raw map[string]any
 	if err := json.Unmarshal(data, &raw); err != nil {
@@ -28,7 +31,14 @@ func Convert(data []byte) ([]byte, error) {
 
 // ConvertMap converts an already-decoded AWS Smithy JSON service model into
 // bounded OpenAPI-shaped metadata.
+//
+// Deprecated: use ParseMap for protocol-native AWS Smithy metadata. The
+// converted output is derived metadata and is not suitable as an execution
+// contract.
 func ConvertMap(raw map[string]any) (map[string]any, error) {
+	if _, err := ParseMap(raw); err != nil {
+		return nil, err
+	}
 	c := &converter{
 		raw:            raw,
 		componentNames: map[string]string{},
@@ -132,13 +142,7 @@ func (c *converter) selectService() error {
 }
 
 func (c *converter) serviceProtocol() string {
-	traits := traits(c.service)
-	for _, protocol := range []string{"restJson1", "restXml", "awsQuery"} {
-		if _, ok := traits["aws.protocols#"+protocol]; ok {
-			return protocol
-		}
-	}
-	return ""
+	return serviceProtocolFromTraits(traits(c.service))
 }
 
 func (c *converter) assignComponentNames() error {
@@ -282,7 +286,10 @@ func (c *converter) convertOperation(id string, operation map[string]any) (strin
 	method := strings.ToUpper(stringValue(httpTrait["method"]))
 	uri := firstNonEmpty(stringValue(httpTrait["uri"]), "/")
 	code := intValue(httpTrait["code"], 200)
-	if c.protocol == "awsQuery" {
+	if c.protocol == ProtocolAWSQuery || c.protocol == ProtocolEC2Query {
+		method = "POST"
+		uri = "/"
+	} else if c.protocol == ProtocolAWSJSON10 || c.protocol == ProtocolAWSJSON11 {
 		method = "POST"
 		uri = "/"
 	} else if len(httpTrait) == 0 {
@@ -290,7 +297,7 @@ func (c *converter) convertOperation(id string, operation map[string]any) (strin
 	}
 	httpPath, queryLiterals, greedyLabels := splitSmithyURI(uri)
 	path := operationPathKey(httpPath, queryLiterals)
-	if c.protocol == "awsQuery" {
+	if c.protocol == ProtocolAWSQuery || c.protocol == ProtocolEC2Query {
 		path = "/?Action=" + opName
 	}
 	if method == "" {
@@ -321,9 +328,12 @@ func (c *converter) convertOperation(id string, operation map[string]any) (strin
 	if signingName := c.awsSigningName(); signingName != "" {
 		op["x-aws-signing-name"] = signingName
 	}
-	if c.protocol == "awsQuery" {
+	if c.protocol == ProtocolAWSQuery || c.protocol == ProtocolEC2Query {
 		op["x-aws-query-action"] = opName
 		op["x-aws-query-version"] = stringValue(c.service["version"])
+	}
+	if c.protocol == ProtocolAWSJSON10 || c.protocol == ProtocolAWSJSON11 {
+		op["x-aws-json-target"] = localName(c.serviceID) + "." + opName
 	}
 	if len(queryLiterals) > 0 {
 		op["x-smithy-http-query-literals"] = queryLiterals
@@ -456,7 +466,7 @@ func (c *converter) operationParameters(inputTarget, path string, queryLiterals 
 }
 
 func (c *converter) operationRequestBody(opName, inputTarget string, bound map[string]bool) (map[string]any, error) {
-	if c.protocol == "awsQuery" {
+	if c.protocol == ProtocolAWSQuery || c.protocol == ProtocolEC2Query {
 		schema, err := c.awsQueryRequestSchema(opName, inputTarget)
 		if err != nil {
 			return nil, err
@@ -613,7 +623,7 @@ func (c *converter) responsesFor(outputTarget string, code int) map[string]any {
 
 func (c *converter) responseBindings(outputTarget string) (map[string]any, map[string]any, map[string]any) {
 	output := mapValueOrNil(c.shapes[outputTarget])
-	if stringValue(output["type"]) != "structure" || c.protocol == "awsQuery" {
+	if stringValue(output["type"]) != "structure" || c.protocol == ProtocolAWSQuery || c.protocol == ProtocolEC2Query {
 		schema := c.refForTarget(outputTarget)
 		return map[string]any{c.mediaTypeForTarget(outputTarget): map[string]any{"schema": schema}}, nil, nil
 	}
@@ -714,8 +724,15 @@ func (c *converter) mediaTypeForTarget(target string) string {
 }
 
 func (c *converter) protocolMediaType() string {
-	if c.protocol == "restXml" || c.protocol == "awsQuery" {
+	switch c.protocol {
+	case ProtocolRestXML:
 		return "application/xml"
+	case ProtocolAWSQuery, ProtocolEC2Query:
+		return "application/xml"
+	case ProtocolAWSJSON10:
+		return "application/x-amz-json-1.0"
+	case ProtocolAWSJSON11:
+		return "application/x-amz-json-1.1"
 	}
 	return "application/json"
 }

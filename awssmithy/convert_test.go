@@ -107,6 +107,79 @@ func TestConvertAWSQueryOperation(t *testing.T) {
 	}
 }
 
+func TestParseSupportsAWSProtocolFamilies(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		fixture    map[string]any
+		protocol   string
+		operation  string
+		mediaType  string
+		staticHead string
+	}{
+		{name: "restJson1", fixture: restJSONFixture(), protocol: "restJson1", operation: "GetFunction", mediaType: "application/json"},
+		{name: "restXml", fixture: restXMLFixture(), protocol: "restXml", operation: "PutObject", mediaType: "application/octet-stream"},
+		{name: "awsQuery", fixture: awsQueryFixture(), protocol: "awsQuery", operation: "Publish", mediaType: "application/x-www-form-urlencoded"},
+		{name: "ec2Query", fixture: ec2QueryFixture(), protocol: "ec2Query", operation: "DescribeInstances", mediaType: "application/x-www-form-urlencoded"},
+		{name: "awsJson1_0", fixture: awsJSONFixture("awsJson1_0"), protocol: "awsJson1_0", operation: "PutItem", mediaType: "application/x-amz-json-1.0", staticHead: "DynamoDB.PutItem"},
+		{name: "awsJson1_1", fixture: awsJSONFixture("awsJson1_1"), protocol: "awsJson1_1", operation: "PutItem", mediaType: "application/x-amz-json-1.1", staticHead: "DynamoDB.PutItem"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			model, err := awssmithy.Parse(mustJSON(t, tc.fixture))
+			if err != nil {
+				t.Fatalf("Parse failed: %v", err)
+			}
+			if got := model.Protocol; got != tc.protocol {
+				t.Fatalf("protocol = %q, want %q", got, tc.protocol)
+			}
+			op, ok := model.OperationByName(tc.operation)
+			if !ok {
+				t.Fatalf("missing operation %q", tc.operation)
+			}
+			if got := op.RequestMediaType; got != tc.mediaType {
+				t.Fatalf("request media = %q, want %q", got, tc.mediaType)
+			}
+			if tc.staticHead != "" {
+				if got := op.StaticHeaders["X-Amz-Target"]; got != tc.staticHead {
+					t.Fatalf("X-Amz-Target = %q, want %q", got, tc.staticHead)
+				}
+			}
+		})
+	}
+}
+
+func TestParsePreservesRuntimeHTTPBindings(t *testing.T) {
+	model, err := awssmithy.Parse(mustJSON(t, restXMLFixture()))
+	if err != nil {
+		t.Fatalf("Parse failed: %v", err)
+	}
+	op, ok := model.OperationByName("PutObject")
+	if !ok {
+		t.Fatal("missing PutObject")
+	}
+	if len(op.GreedyLabels) != 1 || op.GreedyLabels[0] != "Key" {
+		t.Fatalf("greedy labels = %#v, want Key", op.GreedyLabels)
+	}
+	if op.Payload == nil || op.Payload.MemberName != "Body" {
+		t.Fatalf("payload binding = %#v, want Body", op.Payload)
+	}
+	var metadata *awssmithy.MemberBinding
+	for _, binding := range op.InputBindings {
+		if binding != nil && binding.MemberName == "Metadata" {
+			metadata = binding
+			break
+		}
+	}
+	if metadata == nil {
+		t.Fatal("missing Metadata binding")
+	}
+	if got, want := metadata.Location, "prefixHeaders"; got != want {
+		t.Fatalf("metadata location = %q, want %q", got, want)
+	}
+	if got, want := metadata.WireName, "x-amz-meta-"; got != want {
+		t.Fatalf("metadata prefix = %q, want %q", got, want)
+	}
+}
+
 func TestConvertPreservesCollidingSmithyOperations(t *testing.T) {
 	doc := mustConvertMap(t, map[string]any{
 		"smithy": "2.0",
@@ -358,6 +431,39 @@ func awsQueryFixture() map[string]any {
 			"com.amazonaws.sns#PublishInput": map[string]any{"type": "structure", "members": map[string]any{
 				"TopicArn": member("smithy.api#String", map[string]any{"smithy.api#required": map[string]any{}}),
 				"Message":  member("smithy.api#String", map[string]any{"smithy.api#required": map[string]any{}}),
+			}},
+		},
+	}
+}
+
+func ec2QueryFixture() map[string]any {
+	return map[string]any{
+		"smithy": "2.0",
+		"shapes": map[string]any{
+			"com.amazonaws.ec2#AmazonEC2": serviceShape("EC2", "ec2Query", []any{ref("com.amazonaws.ec2#DescribeInstances")}),
+			"com.amazonaws.ec2#DescribeInstances": map[string]any{
+				"type":  "operation",
+				"input": ref("com.amazonaws.ec2#DescribeInstancesRequest"),
+			},
+			"com.amazonaws.ec2#DescribeInstancesRequest": map[string]any{"type": "structure", "members": map[string]any{
+				"InstanceIds": member("com.amazonaws.ec2#InstanceIdList", nil),
+			}},
+			"com.amazonaws.ec2#InstanceIdList": map[string]any{"type": "list", "member": ref("smithy.api#String")},
+		},
+	}
+}
+
+func awsJSONFixture(protocol string) map[string]any {
+	return map[string]any{
+		"smithy": "2.0",
+		"shapes": map[string]any{
+			"com.amazonaws.dynamodb#DynamoDB": serviceShape("DynamoDB", protocol, []any{ref("com.amazonaws.dynamodb#PutItem")}),
+			"com.amazonaws.dynamodb#PutItem": map[string]any{
+				"type":  "operation",
+				"input": ref("com.amazonaws.dynamodb#PutItemInput"),
+			},
+			"com.amazonaws.dynamodb#PutItemInput": map[string]any{"type": "structure", "members": map[string]any{
+				"TableName": member("smithy.api#String", map[string]any{"smithy.api#required": map[string]any{}}),
 			}},
 		},
 	}

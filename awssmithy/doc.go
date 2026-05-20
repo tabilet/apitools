@@ -1,9 +1,12 @@
-// Package awssmithy converts official AWS Smithy JSON service models into a
-// bounded OpenAPI 3.0.1 shape.
+// Package awssmithy parses official AWS Smithy JSON service models into native
+// protocol-aware metadata.
 //
-// The converter is intentionally metadata-only. It maps Smithy service,
-// operation, HTTP binding, schema, and AWS protocol/signing traits into
-// OpenAPI-shaped metadata without executing API operations, resolving
-// credentials, signing requests, fetching tokens, or choosing AWS accounts or
-// regions.
+// The parser is intentionally metadata-only. It preserves Smithy service,
+// operation, HTTP binding, shape, AWS protocol, and signing traits without
+// executing API operations, resolving credentials, signing requests, fetching
+// tokens, or choosing AWS accounts or regions.
+//
+// Deprecated OpenAPI-shaped conversion helpers remain for explicit
+// compatibility callers, but their output is derived metadata and not an
+// execution contract.
 package awssmithy
