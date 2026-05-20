@@ -1,0 +1,179 @@
+{
+  "components": {
+    "schemas": {
+      "HumanticAICollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HumanticAIError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HumanticAIObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "humanticAIAPIKey": {
+        "description": "Humantic AI API key carried in the apikey query parameter.",
+        "in": "query",
+        "name": "apikey",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Humantic AI human API documentation. This is not an official Humantic AI OpenAPI document.",
+    "title": "Humantic AI API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/user-profile": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHumanticAIProfile",
+        "parameters": [
+          {
+            "description": "Profile identifier.",
+            "in": "query",
+            "name": "userid",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional comma-delimited persona filter.",
+            "in": "query",
+            "name": "persona",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HumanticAIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "humanticAIAPIKey": []
+          }
+        ],
+        "summary": "Get profile"
+      }
+    },
+    "/user-profile/create": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createHumanticAIProfile",
+        "parameters": [
+          {
+            "description": "LinkedIn URL, email, or unique profile identifier.",
+            "in": "query",
+            "name": "userid",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HumanticAIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "humanticAIAPIKey": []
+          }
+        ],
+        "summary": "Create profile from profile URL or email"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createHumanticAIProfileWithResumeOrText",
+        "parameters": [
+          {
+            "description": "LinkedIn URL, email, or unique profile identifier.",
+            "in": "query",
+            "name": "userid",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HumanticAIObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HumanticAIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "humanticAIAPIKey": []
+          }
+        ],
+        "summary": "Create profile from resume or text"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.humantic.ai/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "humantic-ai",
+    "source_note": "Humantic AI publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected user-profile create, retrieve, and update endpoints.",
+    "source_refs": [
+      "https://api.humantic.ai/"
+    ]
+  }
+}

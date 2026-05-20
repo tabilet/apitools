@@ -1,0 +1,412 @@
+{
+  "components": {
+    "schemas": {
+      "MistralAICollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MistralAIError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MistralAIObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "mistralBearer": {
+        "bearerFormat": "Mistral AI API key",
+        "description": "Mistral AI API key carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Mistral AI API specification documentation. This is not an official Mistral AI OpenAPI document.",
+    "title": "Mistral AI API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/v1/agents": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMistralAIAgents",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistralAICollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mistralBearer": []
+          }
+        ],
+        "summary": "List agents"
+      }
+    },
+    "/v1/batch/jobs": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMistralAIBatchJobs",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistralAICollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mistralBearer": []
+          }
+        ],
+        "summary": "List batch jobs"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMistralAIBatchJob",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MistralAIObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistralAIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mistralBearer": []
+          }
+        ],
+        "summary": "Create batch job"
+      }
+    },
+    "/v1/chat/completions": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMistralAIChatCompletion",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MistralAIObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistralAIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mistralBearer": []
+          }
+        ],
+        "summary": "Create chat completion"
+      }
+    },
+    "/v1/embeddings": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMistralAIEmbeddings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MistralAIObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistralAIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mistralBearer": []
+          }
+        ],
+        "summary": "Create embeddings"
+      }
+    },
+    "/v1/files": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMistralAIFiles",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistralAICollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mistralBearer": []
+          }
+        ],
+        "summary": "List files"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "uploadMistralAIFile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MistralAIObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistralAIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mistralBearer": []
+          }
+        ],
+        "summary": "Upload file"
+      }
+    },
+    "/v1/files/{file_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteMistralAIFile",
+        "parameters": [
+          {
+            "description": "File ID.",
+            "in": "path",
+            "name": "file_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistralAIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mistralBearer": []
+          }
+        ],
+        "summary": "Delete file"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMistralAIFile",
+        "parameters": [
+          {
+            "description": "File ID.",
+            "in": "path",
+            "name": "file_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistralAIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mistralBearer": []
+          }
+        ],
+        "summary": "Get file"
+      }
+    },
+    "/v1/models": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMistralAIModels",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistralAICollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mistralBearer": []
+          }
+        ],
+        "summary": "List models"
+      }
+    },
+    "/v1/ocr": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMistralAIOCR",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MistralAIObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistralAIObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mistralBearer": []
+          }
+        ],
+        "summary": "Run OCR"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.mistral.ai"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "mistral-ai",
+    "source_note": "Mistral AI publishes rendered API specifications but no recorded stable public downloadable OpenAPI document; this overlay covers selected chat, embeddings, OCR, files, batch jobs, agents, and models endpoints.",
+    "source_refs": [
+      "https://docs.mistral.ai/api",
+      "https://docs.mistral.ai/admin/security-access/api-keys"
+    ]
+  }
+}

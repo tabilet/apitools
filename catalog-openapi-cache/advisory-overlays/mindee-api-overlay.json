@@ -1,0 +1,260 @@
+{
+  "components": {
+    "schemas": {
+      "MindeeCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MindeeError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MindeeObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "mindeeInferuserToken": {
+        "description": "Mindee legacy product API key carried in the X-Inferuser-Token header.",
+        "in": "header",
+        "name": "X-Inferuser-Token",
+        "type": "apiKey"
+      },
+      "mindeeV1Token": {
+        "description": "Mindee v1 product API key carried in the Authorization header using Token syntax.",
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Mindee human API documentation. This is not an official Mindee OpenAPI document.",
+    "title": "Mindee API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/products/expense_receipts/v2/predict": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "predictMindeeLegacyReceipt",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MindeeObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MindeeObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mindeeInferuserToken": []
+          }
+        ],
+        "summary": "Predict legacy receipt"
+      }
+    },
+    "/products/invoices/v2/predict": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "predictMindeeLegacyInvoice",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MindeeObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MindeeObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mindeeInferuserToken": []
+          }
+        ],
+        "summary": "Predict legacy invoice"
+      }
+    },
+    "/v1/products/mindee/expense_receipts/v4/predict": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "predictMindeeReceiptV4",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MindeeObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MindeeObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mindeeV1Token": []
+          }
+        ],
+        "summary": "Predict receipt"
+      }
+    },
+    "/v1/products/mindee/invoices/v4/predict": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "predictMindeeInvoiceV4",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MindeeObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MindeeObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mindeeV1Token": []
+          }
+        ],
+        "summary": "Predict invoice"
+      }
+    },
+    "/v1/products/{owner}/{model}/v1/predict": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "predictMindeeCustomModel",
+        "parameters": [
+          {
+            "description": "Model owner.",
+            "in": "path",
+            "name": "owner",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Model identifier.",
+            "in": "path",
+            "name": "model",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MindeeObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MindeeObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mindeeV1Token": []
+          }
+        ],
+        "summary": "Predict custom model"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.mindee.net"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "mindee",
+    "source_note": "Mindee publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected receipt, invoice, and model inference endpoints.",
+    "source_refs": [
+      "https://docs.mindee.com/integrations/api-overview",
+      "https://docs.mindee.com/integrations/api-keys"
+    ]
+  }
+}

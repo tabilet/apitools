@@ -1,0 +1,361 @@
+{
+  "components": {
+    "schemas": {
+      "HunterCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HunterError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HunterObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "hunterAPIKey": {
+        "description": "Hunter API key carried in the api_key query parameter.",
+        "in": "query",
+        "name": "api_key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Hunter human API documentation. This is not an official Hunter OpenAPI document.",
+    "title": "Hunter API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/account": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHunterAccount",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HunterObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "hunterAPIKey": []
+          }
+        ],
+        "summary": "Get account"
+      }
+    },
+    "/campaigns": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHunterCampaigns",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HunterCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "hunterAPIKey": []
+          }
+        ],
+        "summary": "List campaigns"
+      }
+    },
+    "/domain-search": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchHunterDomain",
+        "parameters": [
+          {
+            "description": "Domain name.",
+            "in": "query",
+            "name": "domain",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Email type filter.",
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Seniority filter.",
+            "in": "query",
+            "name": "seniority",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Department filter.",
+            "in": "query",
+            "name": "department",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum results.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HunterCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "hunterAPIKey": []
+          }
+        ],
+        "summary": "Search domain emails"
+      }
+    },
+    "/email-finder": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "findHunterEmail",
+        "parameters": [
+          {
+            "description": "First name.",
+            "in": "query",
+            "name": "first_name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Last name.",
+            "in": "query",
+            "name": "last_name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Domain name.",
+            "in": "query",
+            "name": "domain",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HunterObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "hunterAPIKey": []
+          }
+        ],
+        "summary": "Find email"
+      }
+    },
+    "/email-verifier": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "verifyHunterEmail",
+        "parameters": [
+          {
+            "description": "Email address.",
+            "in": "query",
+            "name": "email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HunterObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "hunterAPIKey": []
+          }
+        ],
+        "summary": "Verify email"
+      }
+    },
+    "/leads": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHunterLeads",
+        "parameters": [
+          {
+            "description": "Maximum results.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HunterCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "hunterAPIKey": []
+          }
+        ],
+        "summary": "List leads"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createHunterLead",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HunterObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HunterObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "hunterAPIKey": []
+          }
+        ],
+        "summary": "Create lead"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.hunter.io/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "hunter",
+    "source_note": "Hunter publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected domain search, email finder, email verifier, leads, campaigns, and account endpoints.",
+    "source_refs": [
+      "https://hunter.io/api-documentation"
+    ]
+  }
+}

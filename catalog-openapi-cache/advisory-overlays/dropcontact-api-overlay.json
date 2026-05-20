@@ -1,0 +1,123 @@
+{
+  "components": {
+    "schemas": {
+      "DropcontactCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DropcontactError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "DropcontactObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "dropcontactAccessToken": {
+        "description": "Dropcontact API key carried in the X-Access-Token header.",
+        "in": "header",
+        "name": "X-Access-Token",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Dropcontact human API documentation. This is not an official Dropcontact OpenAPI document.",
+    "title": "Dropcontact API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/batch": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createDropcontactBatch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DropcontactObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropcontactObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "dropcontactAccessToken": []
+          }
+        ],
+        "summary": "Create enrichment batch"
+      }
+    },
+    "/batch/{request_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getDropcontactBatch",
+        "parameters": [
+          {
+            "description": "Batch request ID.",
+            "in": "path",
+            "name": "request_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropcontactObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "dropcontactAccessToken": []
+          }
+        ],
+        "summary": "Get enrichment batch"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.dropcontact.io"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "dropcontact",
+    "source_note": "Dropcontact publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected batch enrichment and request retrieval endpoints.",
+    "source_refs": [
+      "https://developer.dropcontact.com/"
+    ]
+  }
+}

@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 165; got != want {
+	if got, want := len(candidates), 177; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -66,6 +66,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"discourse",
 		"drift",
 		"dropbox",
+		"dropcontact",
 		"elastic",
 		"erpnext",
 		"eventbrite",
@@ -96,16 +97,20 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"highlevel",
 		"home-assistant",
 		"hubspot",
+		"humantic-ai",
+		"hunter",
 		"intercom",
 		"invoice-ninja",
 		"iterable",
 		"jenkins",
+		"jina-ai",
 		"jira-cloud",
 		"jotform",
 		"keap",
 		"kobotoolbox",
 		"line",
 		"linear",
+		"lingvanex",
 		"linkedin",
 		"magento",
 		"mailchimp",
@@ -118,7 +123,9 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"mautic",
 		"messagebird",
 		"microsoft-graph",
+		"mindee",
 		"misp",
+		"mistral-ai",
 		"monday-com",
 		"monica-crm",
 		"nasa",
@@ -130,11 +137,15 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"okta",
 		"onesimpleapi",
 		"onfleet",
+		"openai",
 		"openthesaurus",
 		"openweathermap",
 		"paddle",
 		"pagerduty",
 		"paypal",
+		"peekalink",
+		"perplexity",
+		"phantombuster",
 		"pipedrive",
 		"posthog",
 		"postmark",
@@ -169,6 +180,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"twitter",
 		"typeform",
 		"unleashed-software",
+		"uplead",
 		"uptimerobot",
 		"urlscan",
 		"venafi",

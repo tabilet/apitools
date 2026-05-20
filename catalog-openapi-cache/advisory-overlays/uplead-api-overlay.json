@@ -1,0 +1,187 @@
+{
+  "components": {
+    "schemas": {
+      "UpLeadCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "UpLeadError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "UpLeadObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "upleadAPIKey": {
+        "description": "UpLead API key carried in the Authorization header.",
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official UpLead human API documentation. This is not an official UpLead OpenAPI document.",
+    "title": "UpLead API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/company-search": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchUpLeadCompany",
+        "parameters": [
+          {
+            "description": "Company domain.",
+            "in": "query",
+            "name": "domain",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Company name.",
+            "in": "query",
+            "name": "company",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpLeadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "upleadAPIKey": []
+          }
+        ],
+        "summary": "Search company"
+      }
+    },
+    "/credits": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getUpLeadCredits",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpLeadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "upleadAPIKey": []
+          }
+        ],
+        "summary": "Get credits"
+      }
+    },
+    "/person-search": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchUpLeadPerson",
+        "parameters": [
+          {
+            "description": "Email address.",
+            "in": "query",
+            "name": "email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "First name.",
+            "in": "query",
+            "name": "first_name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Last name.",
+            "in": "query",
+            "name": "last_name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Domain name.",
+            "in": "query",
+            "name": "domain",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpLeadObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "upleadAPIKey": []
+          }
+        ],
+        "summary": "Search person"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.uplead.com/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "uplead",
+    "source_note": "UpLead publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected person and company enrichment endpoints.",
+    "source_refs": [
+      "https://docs.uplead.com/"
+    ]
+  }
+}

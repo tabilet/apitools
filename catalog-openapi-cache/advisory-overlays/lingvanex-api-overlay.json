@@ -1,0 +1,262 @@
+{
+  "components": {
+    "schemas": {
+      "LingvaNexCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "LingvaNexError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "LingvaNexObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "lingvaNexBearer": {
+        "bearerFormat": "LingvaNex API key",
+        "description": "LingvaNex API key carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official LingvaNex human API documentation. This is not an official LingvaNex OpenAPI document.",
+    "title": "LingvaNex API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/detect": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "detectLingvaNexLanguage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LingvaNexObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LingvaNexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lingvaNexBearer": []
+          }
+        ],
+        "summary": "Detect language"
+      }
+    },
+    "/getDictionary": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getLingvaNexDictionary",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LingvaNexObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LingvaNexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lingvaNexBearer": []
+          }
+        ],
+        "summary": "Get dictionary entries"
+      }
+    },
+    "/getLanguageByCode": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getLingvaNexLanguageByCode",
+        "parameters": [
+          {
+            "description": "Language code.",
+            "in": "query",
+            "name": "code",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LingvaNexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lingvaNexBearer": []
+          }
+        ],
+        "summary": "Get language by code"
+      }
+    },
+    "/getLanguages": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listLingvaNexLanguages",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LingvaNexCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lingvaNexBearer": []
+          }
+        ],
+        "summary": "List languages"
+      }
+    },
+    "/translate": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "translateLingvaNexText",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LingvaNexObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LingvaNexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lingvaNexBearer": []
+          }
+        ],
+        "summary": "Translate text"
+      }
+    },
+    "/translate_file_url": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "translateLingvaNexFileURL",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LingvaNexObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LingvaNexObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lingvaNexBearer": []
+          }
+        ],
+        "summary": "Translate file by URL"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api-b2b.backenster.com/b1/api/v3"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "lingvanex",
+    "source_note": "LingvaNex publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected translation, language detection, and language-list endpoints.",
+    "source_refs": [
+      "https://docs.lingvanex.com/reference/user-guide",
+      "https://github.com/lingvanex-mt/python-translation-api"
+    ]
+  }
+}

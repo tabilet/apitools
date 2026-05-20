@@ -1,0 +1,357 @@
+{
+  "components": {
+    "schemas": {
+      "PhantombusterCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PhantombusterError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "PhantombusterObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "phantombusterAPIKey": {
+        "description": "Phantombuster API key carried in the X-Phantombuster-Key header.",
+        "in": "header",
+        "name": "X-Phantombuster-Key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Phantombuster human API documentation. This is not an official Phantombuster OpenAPI document.",
+    "title": "Phantombuster API Advisory Overlay",
+    "version": "2026-05-19"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/agents/delete": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deletePhantombusterAgent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhantombusterObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhantombusterObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "phantombusterAPIKey": []
+          }
+        ],
+        "summary": "Delete agent"
+      }
+    },
+    "/agents/fetch": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getPhantombusterAgent",
+        "parameters": [
+          {
+            "description": "Agent ID.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhantombusterObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "phantombusterAPIKey": []
+          }
+        ],
+        "summary": "Get agent"
+      }
+    },
+    "/agents/fetch-all": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPhantombusterAgents",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhantombusterCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "phantombusterAPIKey": []
+          }
+        ],
+        "summary": "List agents"
+      }
+    },
+    "/agents/fetch-output": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getPhantombusterAgentOutput",
+        "parameters": [
+          {
+            "description": "Agent ID.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhantombusterObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "phantombusterAPIKey": []
+          }
+        ],
+        "summary": "Get agent output"
+      }
+    },
+    "/agents/launch": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "launchPhantombusterAgent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhantombusterObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhantombusterObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "phantombusterAPIKey": []
+          }
+        ],
+        "summary": "Launch agent"
+      }
+    },
+    "/containers/fetch": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getPhantombusterContainer",
+        "parameters": [
+          {
+            "description": "Container ID.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhantombusterObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "phantombusterAPIKey": []
+          }
+        ],
+        "summary": "Get container"
+      }
+    },
+    "/containers/fetch-all": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPhantombusterContainers",
+        "parameters": [
+          {
+            "description": "Agent ID.",
+            "in": "query",
+            "name": "agentId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhantombusterCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "phantombusterAPIKey": []
+          }
+        ],
+        "summary": "List containers"
+      }
+    },
+    "/orgs/fetch": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getPhantombusterOrganization",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhantombusterObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "phantombusterAPIKey": []
+          }
+        ],
+        "summary": "Get organization"
+      }
+    },
+    "/scripts/fetch-all": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPhantombusterScripts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhantombusterCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "phantombusterAPIKey": []
+          }
+        ],
+        "summary": "List scripts"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.phantombuster.com/api/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "phantombuster",
+    "source_note": "Phantombuster publishes human API reference documentation but no recorded stable public official OpenAPI document; this overlay covers selected agents, containers, scripts, and organization endpoints.",
+    "source_refs": [
+      "https://hub.phantombuster.com/docs/api",
+      "https://hub.phantombuster.com/reference",
+      "https://hub.phantombuster.com/llms.txt"
+    ]
+  }
+}

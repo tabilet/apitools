@@ -99,11 +99,23 @@ documents and must not be treated as provider truth.
 | Venafi | `venafi-api-overlay.json` | TLS Protect Cloud and Datacenter docs support a focused certificate, certificate request, application, preference, OAuth, request, and retrieve subset. |
 | Wekan | `wekan-rest-api-overlay.json` | REST API wiki docs and OpenAPI generator docs support a focused login, user, board, list, card, and checklist subset; host and board schemas remain operator supplied. |
 | Zammad | `zammad-api-overlay.json` | API docs support a focused ticket, user, group, organization, article, object attribute, and search subset; instance host remains operator supplied. |
+| Humantic AI | `humantic-ai-api-overlay.json` | API docs support a focused user-profile create, retrieve, and update subset; profile analysis execution remains outside apitools. |
+| Hunter | `hunter-api-overlay.json` | API docs support a focused domain search, email finder, email verifier, leads, campaigns, and account subset with query API-key auth. |
+| LingvaNex | `lingvanex-api-overlay.json` | API docs and official example repository support a focused translation, detection, language, dictionary, and file-URL translation subset. |
+| Mistral AI | `mistral-ai-api-overlay.json` | Rendered API specs support a focused chat, embeddings, OCR, files, batch jobs, agents, and models subset; model selection remains outside apitools. |
+| Mindee | `mindee-api-overlay.json` | API docs support a focused receipt, invoice, and custom-model prediction subset across current and legacy token-header patterns. |
+| Phantombuster | `phantombuster-api-overlay.json` | API reference docs and llms index support a focused agents, containers, scripts, and organization subset; agent execution remains outside apitools. |
+| UpLead | `uplead-api-overlay.json` | API docs support a focused person search, company search, and credits subset with Authorization header API-key auth. |
+| Dropcontact | `dropcontact-api-overlay.json` | Developer docs support a focused batch enrichment and result retrieval subset with X-Access-Token auth. |
 
 ## No Endpoint Overlay
 
 | Provider | Decision |
 |---|---|
+| Jina AI | Official OpenAPI documents are recorded for Search Foundation, Reader, and Search surfaces. DeepSearch OpenAPI probes require authorization, so M30 records only auth overlay metadata rather than a docs-derived endpoint overlay. |
+| OpenAI | Official documented OpenAPI is recorded, so no docs-derived endpoint overlay is needed. |
+| Perplexity | Official OpenAPI is recorded, so no docs-derived endpoint overlay is needed. |
+| Peekalink | Official OpenAPI is recorded, so no docs-derived endpoint overlay is needed. |
 | Linear | No OpenAPI-shaped endpoint overlay for now. Linear's public API is GraphQL with introspection; a single `POST /graphql` wrapper would hide operation semantics rather than improve OpenAPI-like metadata. |
 | Monday.com | No OpenAPI-shaped endpoint overlay for now. Monday.com's platform API is GraphQL at a single endpoint; useful operation coverage should come from a GraphQL-aware classifier or schema/introspection workflow, not a REST-shaped overlay. |
 | Odoo | No OpenAPI-shaped endpoint overlay for now. Odoo's official external API is model-oriented XML-RPC/JSON-RPC; a generic RPC wrapper would hide model semantics rather than improve REST-shaped metadata. |
