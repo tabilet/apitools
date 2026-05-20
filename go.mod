@@ -4,6 +4,7 @@ go 1.25.5
 
 require (
 	github.com/OpenUdon/awssmithy v0.0.0
+	github.com/OpenUdon/googlediscovery v0.0.0-20260520203137-c02129a009fc
 	github.com/OpenUdon/oas v0.0.0-20260507023120-7fb319711323
 	gopkg.in/yaml.v3 v3.0.1
 	modernc.org/sqlite v1.50.0

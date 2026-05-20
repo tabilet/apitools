@@ -1,7 +1,5 @@
-// Package googlediscovery parses Google Discovery documents into native
-// metadata.
+// Package googlediscovery provides a compatibility wrapper over
+// github.com/OpenUdon/googlediscovery.
 //
-// The parser is intentionally metadata-only. It maps Discovery paths, schemas,
-// media upload hints, and OAuth scopes without executing API operations or
-// resolving credentials.
+// Deprecated: use github.com/OpenUdon/googlediscovery directly.
 package googlediscovery
