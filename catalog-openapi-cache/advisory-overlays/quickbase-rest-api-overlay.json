@@ -1,0 +1,371 @@
+{
+  "components": {
+    "schemas": {
+      "QuickbaseCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "QuickbaseError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "QuickbaseObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "quickbaseBearer": {
+        "bearerFormat": "Quickbase user token",
+        "description": "Quickbase user token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      },
+      "quickbaseRealmHostname": {
+        "description": "Quickbase realm hostname carried in the QB-Realm-Hostname request header.",
+        "in": "header",
+        "name": "QB-Realm-Hostname",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Quickbase human API documentation. This is not an official Quickbase OpenAPI document.",
+    "title": "Quickbase REST API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/fields": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listQuickbaseFields",
+        "parameters": [
+          {
+            "description": "Table ID.",
+            "in": "query",
+            "name": "tableId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickbaseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "quickbaseBearer": [],
+            "quickbaseRealmHostname": []
+          }
+        ],
+        "summary": "List fields"
+      }
+    },
+    "/files/{file_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteQuickbaseFile",
+        "parameters": [
+          {
+            "description": "File ID.",
+            "in": "path",
+            "name": "file_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickbaseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "quickbaseBearer": [],
+            "quickbaseRealmHostname": []
+          }
+        ],
+        "summary": "Delete file"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "downloadQuickbaseFile",
+        "parameters": [
+          {
+            "description": "File ID.",
+            "in": "path",
+            "name": "file_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickbaseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "quickbaseBearer": [],
+            "quickbaseRealmHostname": []
+          }
+        ],
+        "summary": "Download file"
+      }
+    },
+    "/records": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteQuickbaseRecords",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickbaseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickbaseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "quickbaseBearer": [],
+            "quickbaseRealmHostname": []
+          }
+        ],
+        "summary": "Delete records"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "upsertQuickbaseRecords",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickbaseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickbaseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "quickbaseBearer": [],
+            "quickbaseRealmHostname": []
+          }
+        ],
+        "summary": "Create or update records"
+      }
+    },
+    "/records/query": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "queryQuickbaseRecords",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickbaseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickbaseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "quickbaseBearer": [],
+            "quickbaseRealmHostname": []
+          }
+        ],
+        "summary": "Query records"
+      }
+    },
+    "/reports/{report_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getQuickbaseReport",
+        "parameters": [
+          {
+            "description": "Report ID.",
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickbaseObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "quickbaseBearer": [],
+            "quickbaseRealmHostname": []
+          }
+        ],
+        "summary": "Get report"
+      }
+    },
+    "/reports/{report_id}/run": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "runQuickbaseReport",
+        "parameters": [
+          {
+            "description": "Report ID.",
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickbaseObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickbaseCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "quickbaseBearer": [],
+            "quickbaseRealmHostname": []
+          }
+        ],
+        "summary": "Run report"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.quickbase.com/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "quickbase",
+    "source_note": "Quickbase publishes REST API human documentation but no directly downloadable stable official OpenAPI document during review; this overlay covers selected fields, records, reports, and file endpoints.",
+    "source_refs": [
+      "https://developer.quickbase.com/",
+      "https://help.quickbase.com/docs/authentication-and-secure-access",
+      "https://help.quickbase.com/docs/create-and-use-user-tokens"
+    ]
+  }
+}

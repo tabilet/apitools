@@ -1,0 +1,585 @@
+{
+  "components": {
+    "schemas": {
+      "TapfiliateCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TapfiliateError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "TapfiliateObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "tapfiliateAPIKey": {
+        "description": "Tapfiliate API key carried in the Api-Key request header.",
+        "in": "header",
+        "name": "Api-Key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Tapfiliate human API documentation. This is not an official Tapfiliate OpenAPI document.",
+    "title": "Tapfiliate REST API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/affiliates": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listTapfiliateAffiliates",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "List affiliates"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createTapfiliateAffiliate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TapfiliateObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "Create affiliate"
+      }
+    },
+    "/affiliates/{affiliate_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteTapfiliateAffiliate",
+        "parameters": [
+          {
+            "description": "Affiliate ID.",
+            "in": "path",
+            "name": "affiliate_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "Delete affiliate"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTapfiliateAffiliate",
+        "parameters": [
+          {
+            "description": "Affiliate ID.",
+            "in": "path",
+            "name": "affiliate_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "Get affiliate"
+      }
+    },
+    "/affiliates/{affiliate_id}/metadata/{metadata_key}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteTapfiliateAffiliateMetadata",
+        "parameters": [
+          {
+            "description": "Affiliate ID.",
+            "in": "path",
+            "name": "affiliate_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Metadata key.",
+            "in": "path",
+            "name": "metadata_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "Delete affiliate metadata"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "setTapfiliateAffiliateMetadata",
+        "parameters": [
+          {
+            "description": "Affiliate ID.",
+            "in": "path",
+            "name": "affiliate_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Metadata key.",
+            "in": "path",
+            "name": "metadata_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TapfiliateObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "Set affiliate metadata"
+      }
+    },
+    "/affiliates/{affiliate_id}/notes": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listTapfiliateAffiliateNotes",
+        "parameters": [
+          {
+            "description": "Affiliate ID.",
+            "in": "path",
+            "name": "affiliate_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "List affiliate notes"
+      }
+    },
+    "/programs": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listTapfiliatePrograms",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "List programs"
+      }
+    },
+    "/programs/{program_id}/affiliates": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listTapfiliateProgramAffiliates",
+        "parameters": [
+          {
+            "description": "Program ID.",
+            "in": "path",
+            "name": "program_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "List program affiliates"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "addTapfiliateProgramAffiliate",
+        "parameters": [
+          {
+            "description": "Program ID.",
+            "in": "path",
+            "name": "program_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TapfiliateObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "Add program affiliate"
+      }
+    },
+    "/programs/{program_id}/affiliates/{affiliate_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getTapfiliateProgramAffiliate",
+        "parameters": [
+          {
+            "description": "Program ID.",
+            "in": "path",
+            "name": "program_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Affiliate ID.",
+            "in": "path",
+            "name": "affiliate_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "Get program affiliate"
+      }
+    },
+    "/programs/{program_id}/affiliates/{affiliate_id}/approved": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "disapproveTapfiliateProgramAffiliate",
+        "parameters": [
+          {
+            "description": "Program ID.",
+            "in": "path",
+            "name": "program_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Affiliate ID.",
+            "in": "path",
+            "name": "affiliate_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "Disapprove program affiliate"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "approveTapfiliateProgramAffiliate",
+        "parameters": [
+          {
+            "description": "Program ID.",
+            "in": "path",
+            "name": "program_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Affiliate ID.",
+            "in": "path",
+            "name": "affiliate_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TapfiliateObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapfiliateObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "tapfiliateAPIKey": []
+          }
+        ],
+        "summary": "Approve program affiliate"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.tapfiliate.com/1.6"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "tapfiliate",
+    "source_note": "Tapfiliate publishes human REST API documentation but no recorded stable public official OpenAPI document; this overlay covers selected affiliate, metadata, and program affiliate endpoints.",
+    "source_refs": [
+      "https://tapfiliate.com/docs/rest/",
+      "https://tapfiliate.com/docs/rest/#authentication"
+    ]
+  }
+}

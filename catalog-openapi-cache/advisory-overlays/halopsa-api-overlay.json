@@ -1,0 +1,479 @@
+{
+  "components": {
+    "schemas": {
+      "HaloPSACollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HaloPSAError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "HaloPSAObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "halopsaOAuth2": {
+        "description": "HaloPSA OAuth2 client credentials access token carried in the Authorization bearer header.",
+        "flows": {
+          "clientCredentials": {
+            "scopes": {
+              "admin": "Administrative API access.",
+              "edit:customers": "Edit customers.",
+              "edit:tickets": "Edit tickets."
+            },
+            "tokenUrl": "https://{halo_auth_host}/auth/token"
+          }
+        },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official HaloPSA human API documentation. This is not an official HaloPSA OpenAPI document.",
+    "title": "HaloPSA API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/client": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHaloPSAClients",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSACollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "List clients"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createHaloPSAClient",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HaloPSAObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSAObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "Create client"
+      }
+    },
+    "/client/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHaloPSAClient",
+        "parameters": [
+          {
+            "description": "Client ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSAObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "Get client"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateHaloPSAClient",
+        "parameters": [
+          {
+            "description": "Client ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HaloPSAObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSAObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "Update client"
+      }
+    },
+    "/site": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHaloPSASites",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSACollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "List sites"
+      }
+    },
+    "/site/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHaloPSASite",
+        "parameters": [
+          {
+            "description": "Site ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSAObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "Get site"
+      }
+    },
+    "/tickets": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHaloPSATickets",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSACollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "List tickets"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createHaloPSATicket",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HaloPSAObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSAObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "Create ticket"
+      }
+    },
+    "/tickets/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHaloPSATicket",
+        "parameters": [
+          {
+            "description": "Ticket ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSAObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "Get ticket"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateHaloPSATicket",
+        "parameters": [
+          {
+            "description": "Ticket ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HaloPSAObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSAObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "Update ticket"
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHaloPSAUsers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSACollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "List users"
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHaloPSAUser",
+        "parameters": [
+          {
+            "description": "User ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloPSAObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "halopsaOAuth2": []
+          }
+        ],
+        "summary": "Get user"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{halo_resource_host}/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "halopsa",
+    "source_note": "HaloPSA publishes human API documentation and tenant-specific API hosts but no recorded stable provider-wide public OpenAPI document; this overlay covers selected tickets, clients, sites, and users endpoints.",
+    "source_refs": [
+      "https://apidoc.halopsa.com/",
+      "https://support.halopsa.com/portal/kb/articles/haloapi"
+    ]
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "components": {
+    "schemas": {
+      "ProfitWellCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ProfitWellError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ProfitWellObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "profitwellAuthorization": {
+        "description": "ProfitWell private or public API token carried directly in the Authorization header.",
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official ProfitWell human API documentation. This is not an official ProfitWell OpenAPI document.",
+    "title": "ProfitWell API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/company/settings": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getProfitWellCompanySettings",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfitWellObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "profitwellAuthorization": []
+          }
+        ],
+        "summary": "Get company settings"
+      }
+    },
+    "/metrics/daily": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getProfitWellDailyMetrics",
+        "parameters": [
+          {
+            "description": "Month.",
+            "in": "query",
+            "name": "month",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated metrics.",
+            "in": "query",
+            "name": "metrics",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfitWellObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "profitwellAuthorization": []
+          }
+        ],
+        "summary": "Get daily metrics"
+      }
+    },
+    "/metrics/monthly": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getProfitWellMonthlyMetrics",
+        "parameters": [
+          {
+            "description": "Comma-separated metrics.",
+            "in": "query",
+            "name": "metrics",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfitWellObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "profitwellAuthorization": []
+          }
+        ],
+        "summary": "Get monthly metrics"
+      }
+    },
+    "/metrics/plans": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listProfitWellPlans",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfitWellCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "profitwellAuthorization": []
+          }
+        ],
+        "summary": "List metric plans"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.profitwell.com/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "profitwell",
+    "source_note": "ProfitWell publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected company and metrics endpoints.",
+    "source_refs": [
+      "https://profitwellapiv2.docs.apiary.io/"
+    ]
+  }
+}

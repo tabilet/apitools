@@ -1,0 +1,639 @@
+{
+  "components": {
+    "schemas": {
+      "LemlistCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "LemlistError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "LemlistObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "lemlistBasic": {
+        "description": "lemlist API key carried as the HTTP Basic password with an empty username.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official lemlist human API documentation. This is not an official lemlist OpenAPI document.",
+    "title": "lemlist API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/activities": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listLemlistActivities",
+        "parameters": [
+          {
+            "description": "Campaign ID.",
+            "in": "query",
+            "name": "campaignId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum results.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "List activities"
+      }
+    },
+    "/campaigns": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listLemlistCampaigns",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "List campaigns"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createLemlistCampaign",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LemlistObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "Create campaign"
+      }
+    },
+    "/campaigns/{campaign_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getLemlistCampaign",
+        "parameters": [
+          {
+            "description": "Campaign ID.",
+            "in": "path",
+            "name": "campaign_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "Get campaign"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateLemlistCampaign",
+        "parameters": [
+          {
+            "description": "Campaign ID.",
+            "in": "path",
+            "name": "campaign_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LemlistObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "Update campaign"
+      }
+    },
+    "/campaigns/{campaign_id}/leads": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listLemlistCampaignLeads",
+        "parameters": [
+          {
+            "description": "Campaign ID.",
+            "in": "path",
+            "name": "campaign_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "List campaign leads"
+      }
+    },
+    "/campaigns/{campaign_id}/leads/{email}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteLemlistCampaignLead",
+        "parameters": [
+          {
+            "description": "Campaign ID.",
+            "in": "path",
+            "name": "campaign_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Lead email.",
+            "in": "path",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "Delete campaign lead"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getLemlistLeadByEmail",
+        "parameters": [
+          {
+            "description": "Campaign ID.",
+            "in": "path",
+            "name": "campaign_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Lead email.",
+            "in": "path",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "Get lead by email"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createLemlistCampaignLead",
+        "parameters": [
+          {
+            "description": "Campaign ID.",
+            "in": "path",
+            "name": "campaign_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Lead email.",
+            "in": "path",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LemlistObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "Create campaign lead"
+      }
+    },
+    "/enrich": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "enrichLemlistData",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LemlistObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "Enrich data"
+      }
+    },
+    "/leads/{lead_id}/enrich": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "enrichLemlistLead",
+        "parameters": [
+          {
+            "description": "Lead ID.",
+            "in": "path",
+            "name": "lead_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LemlistObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "Enrich lead"
+      }
+    },
+    "/team": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getLemlistTeam",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "Get team"
+      }
+    },
+    "/unsubscribes": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listLemlistUnsubscribes",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "List unsubscribes"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "addLemlistUnsubscribe",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LemlistObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "Add unsubscribe"
+      }
+    },
+    "/unsubscribes/{email}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteLemlistUnsubscribe",
+        "parameters": [
+          {
+            "description": "Email address.",
+            "in": "path",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LemlistObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lemlistBasic": []
+          }
+        ],
+        "summary": "Delete unsubscribe"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.lemlist.com/api"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "lemlist",
+    "source_note": "lemlist publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected campaigns, leads, activities, enrichment, team, and unsubscribe endpoints.",
+    "source_refs": [
+      "https://developer.lemlist.com/api-reference/getting-started/overview",
+      "https://developer.lemlist.com/api-reference/getting-started/authentication",
+      "https://developer.lemlist.com/llms.txt"
+    ]
+  }
+}

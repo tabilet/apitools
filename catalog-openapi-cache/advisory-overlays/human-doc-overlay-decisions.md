@@ -36,6 +36,7 @@ documents and must not be treated as provider truth.
 | Facebook | `facebook-graph-api-overlay.json` | Graph API and Pages API docs support a focused profile, page, feed, comments, likes, page subscriptions, photos, conversations, and app subscription subset. |
 | Facebook Lead Ads | `facebook-lead-ads-overlay.json` | Lead Ads retrieval and webhook docs support a focused page form, lead retrieval, leadgen form, and webhook subscription subset. |
 | FileMaker | `filemaker-data-api-overlay.json` | Data API reference docs support a focused sessions, layouts, records, scripts, and containers subset; host, database, layout, and script names remain operator supplied. |
+| Flow | `flow-api-overlay.json` | REST-shaped API docs support a focused tasks, access tokens, and integration webhook subset with bearer personal-access-token auth. |
 | Form.io | `formio-api-overlay.json` | API docs support a focused projects, forms, submissions, and roles subset; cloud/self-hosted base URL and project aliases remain operator supplied. |
 | Formstack | `formstack-api-v2-overlay.json` | Forms API v2 docs support a focused forms, fields, submissions, folders, and webhooks subset. |
 | Freshdesk | `freshdesk-api-v2-overlay.json` | REST-shaped API v2 docs support a focused tickets, contacts, companies, and agents subset; account domain remains operator supplied. |
@@ -44,9 +45,11 @@ documents and must not be treated as provider truth.
 | GetResponse | `getresponse-api-v3-overlay.json` | REST-shaped API v3 docs support a focused campaigns, contacts, newsletters, and tags subset with API-key auth. |
 | Ghost | `ghost-admin-api-overlay.json` | REST-shaped Admin API docs support a focused posts, pages, tags, users, and members subset; admin host remains operator supplied. |
 | Gong | `gong-public-api-overlay.json` | Public help docs support a narrow users and call-upload subset; the full API reference remains account-session gated. |
+| GoTo Webinar | `gotowebinar-api-overlay.json` | API v2 docs support a focused webinars, sessions, registrants, attendees, panelists, and co-organizers subset with OAuth2 bearer auth. |
 | Grist | `grist-rest-api-overlay.json` | REST API usage and reference docs support a focused organizations, workspaces, documents, tables, records, SQL queries, and webhooks subset; site host remains operator supplied. |
 | Gumroad | `gumroad-api-overlay.json` | API docs support a focused products, sales, offers, license verification, and resource-subscription subset. |
 | Hacker News | `hackernews-firebase-api-overlay.json` | Official Firebase API docs support a focused public item, user, story-list, and updates subset. |
+| HaloPSA | `halopsa-api-overlay.json` | API docs support a focused tickets, clients, sites, and users subset; auth and resource hosts remain tenant supplied. |
 | Harvest | `harvest-api-v2-overlay.json` | REST-shaped API v2 docs support a focused users, company, clients, projects, time-entries, and invoices subset. |
 | Help Scout | `help-scout-inbox-api-v2-overlay.json` | REST-shaped Inbox API v2 docs support a focused conversations, customers, mailboxes, and threads subset. |
 | Iterable | `iterable-api-overlay.json` | REST-shaped API docs support a focused users, events, campaigns, lists, and templates subset. |
@@ -54,7 +57,9 @@ documents and must not be treated as provider truth.
 | Jenkins | `jenkins-remote-api-overlay.json` | Official Remote Access API docs support a small generic controller/job/queue subset; instance and plugin coverage remains variable. |
 | JotForm | `jotform-api-overlay.json` | API docs support a focused forms, submissions, questions, reports, folders, and webhooks subset. |
 | Keap | `keap-rest-api-overlay.json` | REST-shaped docs support a focused contacts, companies, orders, and tags subset with OAuth bearer auth. |
+| Lemlist | `lemlist-api-overlay.json` | API reference docs support a focused campaigns, leads, activities, enrichment, team, and unsubscribes subset with Basic auth using an API key password. |
 | LinkedIn | `linkedin-api-overlay.json` | Marketing and shared API docs support a focused userinfo, organization, posts, ad accounts, and lead forms subset; Rest.li/version headers and product access remain review-sensitive. |
+| LoneScale | `lonescale-api-overlay.json` | Public API docs support a focused lists, list items, user, and workflows subset with X-API-KEY auth. |
 | Magento / Adobe Commerce | `magento-rest-api-overlay.json` | REST docs and local Swagger generation guidance support a focused products, categories, customers, orders, invoices, shipments, and token subset; Commerce host, store code, installed modules, and scopes remain operator supplied. |
 | Mailchimp | `mailchimp-marketing-api-overlay.json` | REST-shaped Marketing API docs support a focused lists, campaigns, and reports subset. |
 | MailerLite | `mailerlite-api-overlay.json` | REST-shaped current API docs support a focused subscribers, groups, campaigns, and forms subset; Classic auth remains security metadata. |
@@ -72,6 +77,8 @@ documents and must not be treated as provider truth.
 | OpenThesaurus | `openthesaurus-api-overlay.json` | Webservice docs support the documented anonymous synonym search endpoint with JSON/XML and lookup options. |
 | OpenWeatherMap | `openweathermap-one-call-3-overlay.json` | One Call 3.0 docs support a narrow weather endpoint overlay. |
 | Postmark | `postmark-api-overlay.json` | REST-shaped API docs and API Explorer support a focused email, template, bounce, and server subset with separate server/account token headers. |
+| ProfitWell | `profitwell-api-v2-overlay.json` | API v2 docs support a focused company settings and metrics subset with Authorization header token auth. |
+| Quickbase | `quickbase-rest-api-overlay.json` | REST API docs support a focused fields, records, reports, and file subset with bearer user-token and realm-hostname headers. |
 | QuickBooks | `quickbooks-online-accounting-api-overlay.json` | REST-shaped Accounting API docs support a focused customer, invoice, payment, and company-info subset. |
 | QuickChart | `quickchart-api-overlay.json` | Chart and QR-code docs support a focused anonymous chart, QR, and Graphviz rendering subset. |
 | Raindrop.io | `raindrop-api-overlay.json` | REST-shaped API docs support a focused raindrops, collections, tags, filters, highlights, and user subset with OAuth bearer auth. |
@@ -87,6 +94,8 @@ documents and must not be treated as provider truth.
 | Splunk | `splunk-enterprise-rest-overlay.json` | REST API docs support a focused server, search jobs, results, and saved-search subset; product version remains review-sensitive. |
 | Storyblok | `storyblok-api-overlay.json` | Content Delivery and Management API docs support a focused story read, list, publish, unpublish, and management subset with content-token and bearer auth. |
 | Strapi | `strapi-rest-api-overlay.json` | REST API docs support a generic collection-entry and local-auth subset; host and content types remain operator supplied. |
+| Taiga | `taiga-api-overlay.json` | REST API docs support a focused projects, epics, issues, tasks, user stories, users, and webhooks subset; cloud/self-hosted host remains operator selected. |
+| Tapfiliate | `tapfiliate-api-overlay.json` | REST API docs support a focused affiliates, affiliate metadata, programs, and program-affiliate subset with Api-Key auth. |
 | Telegram | `telegram-bot-api-overlay.json` | Bot API docs support common bot methods; bot token is modeled as a server variable because OpenAPI security schemes cannot represent Telegram path-token auth exactly. |
 | Todoist | `todoist-rest-api-v2-overlay.json` | REST API v2 docs support a focused projects, sections, tasks, and comments subset; docs now point developers toward newer unified API docs. |
 | Travis CI | `travis-ci-api-overlay.json` | API v3 docs support a focused repositories, builds, jobs, requests, branches, and environment-variable subset with token and API-version headers. |
@@ -144,3 +153,6 @@ documents and must not be treated as provider truth.
 | Emelia | No OpenAPI-shaped endpoint overlay for now. Emelia's public API is GraphQL at a single endpoint; a generic `POST /graphql` wrapper would hide operation semantics rather than improve OpenAPI-like metadata. |
 | Spotify | Official Web API OpenAPI is recorded, so no docs-derived endpoint overlay is needed. |
 | Toggl Track | Official Track API Swagger/OpenAPI is recorded, so no docs-derived endpoint overlay is needed. |
+| Orbit | No endpoint overlay for now. Orbit has shut down and the official docs endpoint was not reliably reachable during review; historical auth metadata is retained only for catalog inspection. |
+| Oura | Official API v2 OpenAPI is recorded, so no docs-derived endpoint overlay is needed. |
+| SyncroMSP | Official OpenAPI is recorded from the SyncroMSP API documentation, so no docs-derived endpoint overlay is needed. |

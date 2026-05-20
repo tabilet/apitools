@@ -1,0 +1,1048 @@
+{
+  "components": {
+    "schemas": {
+      "GoToWebinarCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "GoToWebinarError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "GoToWebinarObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "gotoOAuth2": {
+        "description": "GoTo OAuth2 access token carried in the Authorization bearer header.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://api.getgo.com/oauth/v2/authorize",
+            "scopes": {},
+            "tokenUrl": "https://api.getgo.com/oauth/v2/token"
+          }
+        },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official GoTo Webinar human API documentation. This is not an official GoTo OpenAPI document.",
+    "title": "GoTo Webinar API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/accounts/{account_key}/webinars": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGoToWebinarAccountWebinars",
+        "parameters": [
+          {
+            "description": "Account key.",
+            "in": "path",
+            "name": "account_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "List account webinars"
+      }
+    },
+    "/organizers/{organizer_key}/sessions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGoToWebinarOrganizerSessions",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "List organizer sessions"
+      }
+    },
+    "/organizers/{organizer_key}/webinars": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createGoToWebinar",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoToWebinarObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Create webinar"
+      }
+    },
+    "/organizers/{organizer_key}/webinars/{webinar_key}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteGoToWebinar",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Delete webinar"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getGoToWebinar",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Get webinar"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateGoToWebinar",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoToWebinarObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Update webinar"
+      }
+    },
+    "/organizers/{organizer_key}/webinars/{webinar_key}/coorganizers": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGoToWebinarCoorganizers",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "List co-organizers"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createGoToWebinarCoorganizer",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoToWebinarObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Create co-organizer"
+      }
+    },
+    "/organizers/{organizer_key}/webinars/{webinar_key}/panelists": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGoToWebinarPanelists",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "List panelists"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createGoToWebinarPanelist",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoToWebinarObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Create panelist"
+      }
+    },
+    "/organizers/{organizer_key}/webinars/{webinar_key}/registrants": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGoToWebinarRegistrants",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "List registrants"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createGoToWebinarRegistrant",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoToWebinarObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Create registrant"
+      }
+    },
+    "/organizers/{organizer_key}/webinars/{webinar_key}/registrants/{registrant_key}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteGoToWebinarRegistrant",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Registrant key.",
+            "in": "path",
+            "name": "registrant_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Delete registrant"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getGoToWebinarRegistrant",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Registrant key.",
+            "in": "path",
+            "name": "registrant_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Get registrant"
+      }
+    },
+    "/organizers/{organizer_key}/webinars/{webinar_key}/sessions": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGoToWebinarSessions",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "List webinar sessions"
+      }
+    },
+    "/organizers/{organizer_key}/webinars/{webinar_key}/sessions/{session_key}/attendees": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listGoToWebinarAttendees",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Session key.",
+            "in": "path",
+            "name": "session_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "List attendees"
+      }
+    },
+    "/organizers/{organizer_key}/webinars/{webinar_key}/sessions/{session_key}/attendees/{registrant_key}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getGoToWebinarAttendee",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Session key.",
+            "in": "path",
+            "name": "session_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Registrant key.",
+            "in": "path",
+            "name": "registrant_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Get attendee"
+      }
+    },
+    "/organizers/{organizer_key}/webinars/{webinar_key}/sessions/{session_key}/attendees/{registrant_key}/{details}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getGoToWebinarAttendeeDetails",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Session key.",
+            "in": "path",
+            "name": "session_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Registrant key.",
+            "in": "path",
+            "name": "registrant_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Details segment.",
+            "in": "path",
+            "name": "details",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Get attendee details"
+      }
+    },
+    "/organizers/{organizer_key}/webinars/{webinar_key}/sessions/{session_key}/{details}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getGoToWebinarSessionDetails",
+        "parameters": [
+          {
+            "description": "Organizer key.",
+            "in": "path",
+            "name": "organizer_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webinar key.",
+            "in": "path",
+            "name": "webinar_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Session key.",
+            "in": "path",
+            "name": "session_key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Details segment.",
+            "in": "path",
+            "name": "details",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoToWebinarObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "gotoOAuth2": []
+          }
+        ],
+        "summary": "Get session details"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.getgo.com/G2W/rest/v2"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "gotowebinar",
+    "source_note": "GoTo publishes human GoTo Webinar API documentation but no recorded stable public official OpenAPI document; this overlay covers selected webinar, session, registrant, attendee, panelist, and co-organizer endpoints.",
+    "source_refs": [
+      "https://developer.goto.com/GoToWebinarV2/",
+      "https://developer.goto.com/guides/Authentication/"
+    ]
+  }
+}

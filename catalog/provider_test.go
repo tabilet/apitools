@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 201; got != want {
+	if got, want := len(catalog.ListProviders()), 213; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -76,6 +76,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"facebook-lead-ads",
 		"figma",
 		"filemaker",
+		"flow",
 		"formio",
 		"formstack",
 		"freshdesk",
@@ -91,10 +92,12 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"google-drive",
 		"google-sheets",
 		"gotify",
+		"gotowebinar",
 		"grafana",
 		"grist",
 		"gumroad",
 		"hackernews",
+		"halopsa",
 		"harvest",
 		"help-scout",
 		"highlevel",
@@ -111,10 +114,12 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"jotform",
 		"keap",
 		"kobotoolbox",
+		"lemlist",
 		"line",
 		"linear",
 		"lingvanex",
 		"linkedin",
+		"lonescale",
 		"magento",
 		"mailchimp",
 		"mailerlite",
@@ -147,6 +152,8 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"openai",
 		"openthesaurus",
 		"openweathermap",
+		"orbit",
+		"oura",
 		"paddle",
 		"pagerduty",
 		"paypal",
@@ -157,9 +164,11 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"plivo",
 		"posthog",
 		"postmark",
+		"profitwell",
 		"pushbullet",
 		"pushcut",
 		"pushover",
+		"quickbase",
 		"quickbooks",
 		"quickchart",
 		"raindrop",
@@ -187,6 +196,9 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"stripe",
 		"supabase",
 		"surveymonkey",
+		"syncromsp",
+		"taiga",
+		"tapfiliate",
 		"telegram",
 		"timesaved",
 		"todoist",

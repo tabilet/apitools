@@ -1,0 +1,262 @@
+{
+  "components": {
+    "schemas": {
+      "LoneScaleCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "LoneScaleError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "LoneScaleObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "lonescaleAPIKey": {
+        "description": "LoneScale API key carried in the X-API-KEY request header.",
+        "in": "header",
+        "name": "X-API-KEY",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official LoneScale human API documentation. This is not an official LoneScale OpenAPI document.",
+    "title": "LoneScale API Advisory Overlay",
+    "version": "2026-05-20"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/lists": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listLoneScaleLists",
+        "parameters": [
+          {
+            "description": "Entity type.",
+            "in": "query",
+            "name": "entity",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoneScaleCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lonescaleAPIKey": []
+          }
+        ],
+        "summary": "List lists"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createLoneScaleList",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoneScaleObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoneScaleObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lonescaleAPIKey": []
+          }
+        ],
+        "summary": "Create list"
+      }
+    },
+    "/lists/{list_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getLoneScaleList",
+        "parameters": [
+          {
+            "description": "List ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoneScaleObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lonescaleAPIKey": []
+          }
+        ],
+        "summary": "Get list"
+      }
+    },
+    "/lists/{list_id}/item": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "addLoneScaleListItem",
+        "parameters": [
+          {
+            "description": "List ID.",
+            "in": "path",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoneScaleObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoneScaleObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lonescaleAPIKey": []
+          }
+        ],
+        "summary": "Add list item"
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getLoneScaleCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoneScaleObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lonescaleAPIKey": []
+          }
+        ],
+        "summary": "Get current user"
+      }
+    },
+    "/workflows": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listLoneScaleWorkflows",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoneScaleCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "lonescaleAPIKey": []
+          }
+        ],
+        "summary": "List workflows"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://public-api.lonescale.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "lonescale",
+    "source_note": "LoneScale publishes public API help documentation but no recorded stable public official OpenAPI document; this overlay covers selected list, item, and workflow endpoints.",
+    "source_refs": [
+      "https://help-center.lonescale.com/en/articles/6454360-lonescale-public-api",
+      "https://public-api.lonescale.com/api"
+    ]
+  }
+}
