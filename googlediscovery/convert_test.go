@@ -137,6 +137,105 @@ func TestConvertOmitsMethodSecurityWhenOAuthSchemeUnavailable(t *testing.T) {
 	}
 }
 
+func TestConvertAppliesRootParametersToOperations(t *testing.T) {
+	doc, err := ConvertMap(map[string]any{
+		"parameters": map[string]any{
+			"fields": map[string]any{
+				"type":        "string",
+				"location":    "query",
+				"description": "Root fields selector",
+			},
+			"key": map[string]any{
+				"type":        "string",
+				"location":    "query",
+				"description": "API key",
+			},
+			"$.xgafv": map[string]any{
+				"type":     "string",
+				"location": "query",
+			},
+		},
+		"methods": map[string]any{
+			"list": map[string]any{
+				"id":         "examples.list",
+				"httpMethod": "GET",
+				"path":       "examples",
+				"parameters": map[string]any{
+					"fields": map[string]any{
+						"type":        "string",
+						"location":    "query",
+						"description": "Method fields selector",
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("ConvertMap failed: %v", err)
+	}
+	op := convertedOperation(t, doc, "/examples", "get")
+	params := op["parameters"].([]any)
+	if got, want := convertedParameter(t, params, "query", "fields")["description"], "Method fields selector"; got != want {
+		t.Fatalf("fields description = %v, want %v", got, want)
+	}
+	convertedParameter(t, params, "query", "key")
+	convertedParameter(t, params, "query", "x_.xgafv")
+}
+
+func TestConvertRejectsCollidingDiscoveryOperations(t *testing.T) {
+	_, err := ConvertMap(map[string]any{
+		"methods": map[string]any{
+			"alpha": map[string]any{
+				"id":         "things.alpha",
+				"httpMethod": "GET",
+				"path":       "things/{id}",
+			},
+			"beta": map[string]any{
+				"id":         "things.beta",
+				"httpMethod": "GET",
+				"path":       "things/{id}",
+			},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected collision error")
+	}
+	if !strings.Contains(err.Error(), "same OpenAPI path/method") {
+		t.Fatalf("error = %q, want collision message", err)
+	}
+}
+
+func TestConvertSimpleMediaUploadHonorsMultipartFlag(t *testing.T) {
+	doc, err := ConvertMap(map[string]any{
+		"methods": map[string]any{
+			"upload": map[string]any{
+				"id":         "things.upload",
+				"httpMethod": "POST",
+				"path":       "things/upload",
+				"mediaUpload": map[string]any{
+					"protocols": map[string]any{
+						"simple": map[string]any{
+							"multipart": false,
+							"path":      "/upload/things",
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("ConvertMap failed: %v", err)
+	}
+	op := convertedOperation(t, doc, "/upload/things", "post")
+	content := op["requestBody"].(map[string]any)["content"].(map[string]any)
+	if _, ok := content["application/octet-stream"]; !ok {
+		t.Fatalf("request content = %#v, want application/octet-stream", content)
+	}
+	if _, ok := content["multipart/related"]; ok {
+		t.Fatalf("request content = %#v, did not expect multipart/related", content)
+	}
+}
+
 func TestConvertRejectsMalformedOptionalMaps(t *testing.T) {
 	for _, tc := range []struct {
 		name string
@@ -311,6 +410,13 @@ func TestConvertDriveDiscoveryFullFixture(t *testing.T) {
 		t.Fatalf("Convert failed: %v", err)
 	}
 
+	doc := decodeConvertedDocument(t, out)
+	list := convertedOperation(t, doc, "/drive/v3/files", "get")
+	params := list["parameters"].([]any)
+	convertedParameter(t, params, "query", "fields")
+	convertedParameter(t, params, "query", "key")
+	convertedParameter(t, params, "query", "x_.xgafv")
+
 	inventory := mustInventory(t, out)
 	for _, tc := range []struct {
 		path   string
@@ -382,6 +488,32 @@ func decodeConvertedDocument(t *testing.T, content []byte) map[string]any {
 		t.Fatalf("unmarshal converted document: %v", err)
 	}
 	return out
+}
+
+func convertedOperation(t *testing.T, doc map[string]any, path, method string) map[string]any {
+	t.Helper()
+	paths := doc["paths"].(map[string]any)
+	item, ok := paths[path].(map[string]any)
+	if !ok {
+		t.Fatalf("missing path %q in %#v", path, paths)
+	}
+	op, ok := item[method].(map[string]any)
+	if !ok {
+		t.Fatalf("missing operation %s %s in %#v", method, path, item)
+	}
+	return op
+}
+
+func convertedParameter(t *testing.T, params []any, in, name string) map[string]any {
+	t.Helper()
+	for _, item := range params {
+		param := item.(map[string]any)
+		if param["in"] == in && param["name"] == name {
+			return param
+		}
+	}
+	t.Fatalf("missing %s parameter %q in %#v", in, name, params)
+	return nil
 }
 
 func serverURL(doc map[string]any) string {

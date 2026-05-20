@@ -189,18 +189,28 @@ func discoveryOAuthScopes(raw map[string]any) map[string]any {
 
 func (c *converter) convertPaths(pathPrefix string) (map[string]any, error) {
 	paths := map[string]any{}
+	var rootParams []map[string]any
+	if params, ok, err := optionalMapField(c.raw, "parameters", "discovery document"); err != nil {
+		return nil, err
+	} else if ok {
+		items, err := parameterListFromMap(params, "discovery document.parameters")
+		if err != nil {
+			return nil, err
+		}
+		rootParams = items
+	}
 
 	if methods, ok, err := optionalMapField(c.raw, "methods", "discovery document"); err != nil {
 		return nil, err
 	} else if ok {
-		if err := c.addMethods(paths, pathPrefix, nil, methods, nil); err != nil {
+		if err := c.addMethods(paths, pathPrefix, rootParams, methods, nil); err != nil {
 			return nil, err
 		}
 	}
 	if resources, ok, err := optionalMapField(c.raw, "resources", "discovery document"); err != nil {
 		return nil, err
 	} else if ok {
-		if err := c.addResources(paths, pathPrefix, nil, resources, nil); err != nil {
+		if err := c.addResources(paths, pathPrefix, rootParams, resources, nil); err != nil {
 			return nil, err
 		}
 	}
@@ -278,6 +288,13 @@ func (c *converter) addMethods(paths map[string]any, pathPrefix string, inherite
 		httpMethod := strings.ToLower(stringValue(method["httpMethod"]))
 		if httpMethod == "" {
 			return fmt.Errorf("discovery method %q missing httpMethod", stringValue(method["id"]))
+		}
+		if existing, _ := mapValue(pathItem[httpMethod]); existing != nil {
+			methodID := stringValue(method["id"])
+			if methodID == "" {
+				methodID = name
+			}
+			return fmt.Errorf("discovery methods %q and %q map to the same OpenAPI path/method %s %s", existing["x-discovery-id"], methodID, httpMethod, path)
 		}
 		pathItem[httpMethod] = op
 	}
@@ -372,19 +389,32 @@ func methodPath(pathPrefix string, method map[string]any) string {
 }
 
 func mediaUploadSimplePath(method map[string]any) string {
+	return mediaUploadSimpleProtocol(method).path
+}
+
+type mediaUploadProtocol struct {
+	path      string
+	multipart bool
+}
+
+func mediaUploadSimpleProtocol(method map[string]any) mediaUploadProtocol {
 	mediaUpload, ok := mapValue(method["mediaUpload"])
 	if !ok {
-		return ""
+		return mediaUploadProtocol{}
 	}
 	protocols, ok := mapValue(mediaUpload["protocols"])
 	if !ok {
-		return ""
+		return mediaUploadProtocol{}
 	}
 	simple, ok := mapValue(protocols["simple"])
 	if !ok {
-		return ""
+		return mediaUploadProtocol{}
 	}
-	return stringValue(simple["path"])
+	multipart, _ := boolValue(simple["multipart"])
+	return mediaUploadProtocol{
+		path:      stringValue(simple["path"]),
+		multipart: multipart,
+	}
 }
 
 func (c *converter) convertRequestBody(method map[string]any) (map[string]any, error) {
@@ -392,12 +422,25 @@ func (c *converter) convertRequestBody(method map[string]any) (map[string]any, e
 	if err != nil {
 		return nil, err
 	}
-	if requestSchema == "" && mediaUploadSimplePath(method) == "" {
+	upload := mediaUploadSimpleProtocol(method)
+	if requestSchema == "" && upload.path == "" {
 		return nil, nil
 	}
 
 	content := map[string]any{}
-	if uploadPath := mediaUploadSimplePath(method); uploadPath != "" {
+	if upload.path != "" {
+		if !upload.multipart {
+			content["application/octet-stream"] = map[string]any{
+				"schema": map[string]any{
+					"type":   "string",
+					"format": "binary",
+				},
+			}
+			return map[string]any{
+				"required": true,
+				"content":  content,
+			}, nil
+		}
 		content["multipart/related"] = map[string]any{
 			"schema": map[string]any{
 				"type": "object",
@@ -432,17 +475,7 @@ func (c *converter) convertRequestBody(method map[string]any) (map[string]any, e
 			"content":  content,
 		}, nil
 	}
-
-	content["application/octet-stream"] = map[string]any{
-		"schema": map[string]any{
-			"type":   "string",
-			"format": "binary",
-		},
-	}
-	return map[string]any{
-		"required": true,
-		"content":  content,
-	}, nil
+	return nil, nil
 }
 
 func (c *converter) requestSchemaRef(method map[string]any) (string, error) {
@@ -644,7 +677,7 @@ func convertParameters(params []map[string]any) ([]any, error) {
 		name string
 		in   string
 	}
-	seen := map[key]bool{}
+	indexes := map[key]int{}
 	out := make([]any, 0, len(params))
 	for _, p := range params {
 		name := sanitizeParameterName(stringValue(p["name"]))
@@ -653,10 +686,6 @@ func convertParameters(params []map[string]any) ([]any, error) {
 			continue
 		}
 		k := key{name: name, in: loc}
-		if seen[k] {
-			continue
-		}
-		seen[k] = true
 		param := map[string]any{
 			"name": name,
 			"in":   loc,
@@ -674,6 +703,11 @@ func convertParameters(params []map[string]any) ([]any, error) {
 		if schema != nil {
 			param["schema"] = schema
 		}
+		if idx, ok := indexes[k]; ok {
+			out[idx] = param
+			continue
+		}
+		indexes[k] = len(out)
 		out = append(out, param)
 	}
 	return out, nil
