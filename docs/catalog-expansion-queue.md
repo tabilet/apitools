@@ -32,6 +32,14 @@ local daemon API: catalog metadata may describe its document, but `apitools`
 must not open Docker sockets, contact daemon TCP endpoints, encode registry
 auth headers, or perform image/container operations.
 
+Cluster-published API metadata needs the same boundary. Kubernetes clusters
+publish Discovery and OpenAPI artifacts at `/api`, `/apis`, `/openapi/v2`, and
+`/openapi/v3`, but the exact API groups, versions, aggregated APIs, CRDs, and
+security posture are cluster-specific. Catalog rows may point to the official
+source model and expect user-exported local artifacts; they must not contact API
+servers, read kubeconfig or service-account credentials, perform discovery
+calls, watch resources, or claim runtime compatibility with any cluster.
+
 ## Source-First Batch Queue
 
 Freeze future batches only from provider-owned or protocol-owned evidence.

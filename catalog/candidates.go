@@ -379,6 +379,22 @@ var builtInCandidates = []Candidate{
 		},
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "kubernetes",
+		displayName: "Kubernetes",
+		aliases:     []string{"k8s", "k8s api", "kubernetes api", "kubernetes cluster api"},
+		category:    "container-orchestration",
+		relevance:   "Cluster-published API metadata for resources, API groups, versions, CRDs, workloads, services, RBAC, storage, and controller automation.",
+		userNeed:    UserOpenAPINeedLikely,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://kubernetes.io/docs/concepts/overview/kubernetes-api/",
+				Note:   "Official Kubernetes API overview documenting Discovery API and OpenAPI v2/v3 cluster metadata endpoints.",
+			},
+		},
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "discourse",
 		displayName: "Discourse",
 		aliases:     []string{"discourse api", "discourse forum api"},

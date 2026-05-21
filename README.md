@@ -153,6 +153,11 @@ Control-plane OpenAPI sources remain metadata-only. Catalog rows such as Docker
 Engine may describe local daemon APIs, but `apitools` must not open local
 sockets, contact daemon endpoints, encode registry auth headers, or execute
 image, container, network, volume, registry, or cluster operations.
+Kubernetes is treated the same way: catalog metadata may describe exported
+cluster Discovery and OpenAPI artifacts from `/api`, `/apis`, `/openapi/v2`,
+and `/openapi/v3`, but `apitools` must not read kubeconfig, service-account
+tokens, certificates, or cluster environment variables, and must not contact API
+servers.
 
 Overlay inspection views are metadata-only. `catalog overlay-view` reports how
 built-in security overlays would supplement catalog classifications, preserving

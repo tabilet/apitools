@@ -185,3 +185,4 @@ overlay would hide native operation semantics.
 | Strava | Official Swagger/OpenAPI is recorded from developers.strava.com, so no docs-derived endpoint overlay is needed. |
 | Zoho CRM | Official Zoho CRM v8.0 OpenAPI documents are recorded from the zoho/crm-oas repository, so no docs-derived endpoint overlay is needed. |
 | uProc | No endpoint overlay for now. Official uProc tool pages describe API use through generated examples and images, but M35 review did not find stable official text endpoint documentation or an official OpenAPI document for a reviewed REST subset. |
+| Kubernetes | No endpoint overlay for now. Kubernetes API metadata is cluster-published through Discovery and OpenAPI endpoints; a generic docs-derived overlay would hide cluster-specific API groups, versions, aggregated APIs, CRDs, and auth posture. |

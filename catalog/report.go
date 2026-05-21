@@ -207,6 +207,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "AWS SNS has an official Smithy JSON service model rather than OpenAPI; SigV4 signing requirements must be represented as advisory metadata only.",
 	},
 	{
+		ProviderID: "kubernetes",
+		SpecRefID:  "kubernetes-api-overview",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://kubernetes.io/docs/concepts/overview/kubernetes-api/", "https://kubernetes.io/docs/reference/access-authn-authz/authentication/", "https://kubernetes.io/docs/concepts/security/controlling-access/"},
+		SourceNote: "Kubernetes API authentication and authorization are cluster-configured; exported cluster OpenAPI/Discovery metadata has no portable provider-wide security scheme, and apitools must not read kubeconfig, resolve credentials, or contact API servers.",
+	},
+	{
 		ProviderID: "box",
 		SpecRefID:  "box-platform-openapi-v3",
 		Status:     AuthStatusComplete,

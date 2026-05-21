@@ -11,7 +11,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 272; got != want {
+	if got, want := len(candidates), 273; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -154,6 +154,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"jotform",
 		"keap",
 		"kobotoolbox",
+		"kubernetes",
 		"lemlist",
 		"line",
 		"linear",

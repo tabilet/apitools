@@ -324,6 +324,36 @@ func TestDockerAPISourceCoverageAdvisoryRows(t *testing.T) {
 	}
 }
 
+func TestKubernetesClusterAPISourceCoverageAdvisoryRow(t *testing.T) {
+	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{ProviderKey: "kubernetes"})
+	if err != nil {
+		t.Fatalf("BuiltInProviderAdvisoryReport() error = %v", err)
+	}
+	if got, want := len(report.Providers), 1; got != want {
+		t.Fatalf("providers len = %d, want %d", got, want)
+	}
+	row := report.Providers[0]
+	if row.OpenAPIAvailability != SpecAvailabilityUnavailable {
+		t.Fatalf("OpenAPI availability = %q, want %q", row.OpenAPIAvailability, SpecAvailabilityUnavailable)
+	}
+	if row.UserOpenAPINeed != UserOpenAPINeedLikely {
+		t.Fatalf("user OpenAPI need = %q, want %q", row.UserOpenAPINeed, UserOpenAPINeedLikely)
+	}
+	if row.AuthStatus != AuthStatusPresentIncomplete {
+		t.Fatalf("auth status = %q, want %q", row.AuthStatus, AuthStatusPresentIncomplete)
+	}
+	if !advisoryHasSpecKind(row, SpecKindHumanDocs) {
+		t.Fatalf("missing Kubernetes human docs reference: %#v", row.SpecReferences)
+	}
+	if row.ResolvedOpenAPI.Source != ResolutionSourceBuiltInSpecReference || row.ResolvedOpenAPI.SpecRefID != "kubernetes-api-overview" {
+		t.Fatalf("resolved OpenAPI = %#v", row.ResolvedOpenAPI)
+	}
+	if len(row.EndpointOverlays) != 0 {
+		t.Fatalf("endpoint overlays = %#v, want none", row.EndpointOverlays)
+	}
+	assertHasFollowUp(t, row.ManualFollowUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
+}
+
 func TestBuiltInProviderAdvisoryReportMissingCacheHasNoArtifactPath(t *testing.T) {
 	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{ProviderKey: "slack"})
 	if err != nil {

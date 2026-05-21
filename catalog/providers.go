@@ -696,6 +696,23 @@ var builtInProviders = []Provider{
 		quirks: []string{"The recorded OpenAPI document covers the Docker Hub-supported subset of Registry HTTP API V2 and explicitly does not cover the full OCI Distribution Specification or every registry implementation.", "Registry bearer tokens are obtained through a WWW-Authenticate challenge and token service flow; apitools records metadata only and must not request tokens, push layers, pull blobs, or delete manifests."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "kubernetes",
+		displayName:         "Kubernetes",
+		aliases:             []string{"k8s", "k8s api", "kubernetes api", "kubernetes cluster api"},
+		category:            "container-orchestration",
+		relevance:           "Cluster-published API metadata for resources, API groups, versions, CRDs, workloads, services, RBAC, storage, and controller automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			humanDocsRef20260521("kubernetes-api-overview", "https://kubernetes.io/docs/concepts/overview/kubernetes-api/", "Official Kubernetes API overview documenting Discovery API and OpenAPI v2/v3 cluster metadata endpoints."),
+			humanDocsRef20260521("kubernetes-api-concepts", "https://kubernetes.io/docs/reference/using-api/api-concepts/", "Official Kubernetes API concepts documentation for REST resources, API groups, versions, and discovery behavior."),
+			humanDocsRef20260521("kubernetes-authentication-docs", "https://kubernetes.io/docs/reference/access-authn-authz/authentication/", "Official Kubernetes API authentication documentation."),
+			humanDocsRef20260521("kubernetes-access-control-docs", "https://kubernetes.io/docs/concepts/security/controlling-access/", "Official Kubernetes API access-control overview."),
+		},
+		quirks: []string{"Kubernetes API metadata is cluster-published, not a static provider-wide spec; exported `/api`, `/apis`, `/openapi/v2`, and `/openapi/v3` artifacts must be supplied by the operator or downstream tooling.", "OpenAPI v3 is preferred for richer cluster schema fidelity, while `/openapi/v2` remains documented for compatibility.", "Enabled API groups, versions, aggregated APIs, and CRDs are cluster-specific; apitools records source guidance only and must not contact API servers or read kubeconfig, service-account tokens, certificates, or cluster environment variables."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "discourse",
 		displayName:         "Discourse",
 		aliases:             []string{"discourse api", "discourse forum api"},

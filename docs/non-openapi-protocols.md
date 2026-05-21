@@ -11,6 +11,7 @@ stance for each family.
 | Smithy JSON | Official AWS service model review artifact and native protocol metadata source. | Parsed explicitly through standalone `github.com/OpenUdon/awssmithy.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid losing protocol semantics. |
 | Google Discovery | Official Google REST API description artifact and native protocol metadata source. | Parsed explicitly through standalone `github.com/OpenUdon/googlediscovery.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid treating Discovery as an OpenAPI runtime contract. |
 | Dropbox Stone | Official Dropbox API model source and advisory overlay provenance. | Review-only source metadata; no native Stone parser or route lowering is currently planned. |
+| Kubernetes Discovery/OpenAPI | Cluster-published API metadata for enabled groups, versions, resources, aggregated APIs, and CRDs. | User-exported local metadata only for now; no live cluster discovery, kubeconfig reading, credential resolution, or native parser in M54. |
 | OpenAPI index | Provider-owned index of OpenAPI documents. | Review-only index; individual child OpenAPI documents still need explicit selection and validation. |
 | Human docs | Official documentation source for docs-derived advisory overlays. | Not importable by itself; endpoint overlays are advisory and source-backed, not provider truth. |
 | Generic protocol connectors | Workflow/runtime connectors for databases, brokers, mail, files, directories, generic HTTP, webhooks, or local execution. | Not provider catalog evidence by themselves; future native source work must start from provider-owned or protocol-owned metadata artifacts. |
@@ -50,6 +51,14 @@ stance for each family.
    provider-owned API-source evidence. Do not promote connector names into
    provider catalog rows, docs-derived OpenAPI overlays, or native parser work
    without an explicit provider-owned or protocol-owned source artifact.
+
+6. **Kubernetes cluster metadata no-parser decision.**
+   M54 records Kubernetes as a cluster-published source family rather than a
+   static provider-wide spec. `/api` and `/apis` Discovery outputs and
+   `/openapi/v2` or `/openapi/v3` OpenAPI outputs must be supplied as exported
+   local metadata by the operator or downstream tooling. No parser is added in
+   M54 because OpenAPI import already handles user-provided OpenAPI documents,
+   and live discovery would cross the `apitools` boundary.
 
 ## Generic Protocol Connector Families
 
