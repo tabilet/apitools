@@ -690,6 +690,62 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		"https://docs.aws.amazon.com/transcribe/latest/APIReference/Welcome.html",
 		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
 	}),
+	awsSigV4Overlay("aws-api-gateway-sigv4-auth-overlay", "aws-api-gateway", "aws-api-gateway-smithy-model", "Amazon API Gateway", []string{
+		"https://docs.aws.amazon.com/apigateway/latest/api/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-athena-sigv4-auth-overlay", "aws-athena", "aws-athena-smithy-model", "Amazon Athena", []string{
+		"https://docs.aws.amazon.com/athena/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-bedrock-sigv4-auth-overlay", "aws-bedrock", "aws-bedrock-smithy-model", "Amazon Bedrock", []string{
+		"https://docs.aws.amazon.com/bedrock/latest/APIReference/welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-cloudwatch-sigv4-auth-overlay", "aws-cloudwatch", "aws-cloudwatch-smithy-model", "Amazon CloudWatch", []string{
+		"https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-ec2-sigv4-auth-overlay", "aws-ec2", "aws-ec2-smithy-model", "Amazon EC2", []string{
+		"https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-glue-sigv4-auth-overlay", "aws-glue", "aws-glue-smithy-model", "AWS Glue", []string{
+		"https://docs.aws.amazon.com/glue/latest/webapi/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-guardduty-sigv4-auth-overlay", "aws-guardduty", "aws-guardduty-smithy-model", "Amazon GuardDuty", []string{
+		"https://docs.aws.amazon.com/guardduty/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-inspector2-sigv4-auth-overlay", "aws-inspector2", "aws-inspector2-smithy-model", "Amazon Inspector2", []string{
+		"https://docs.aws.amazon.com/inspector/v2/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-kinesis-sigv4-auth-overlay", "aws-kinesis", "aws-kinesis-smithy-model", "Amazon Kinesis", []string{
+		"https://docs.aws.amazon.com/kinesis/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-kms-sigv4-auth-overlay", "aws-kms", "aws-kms-smithy-model", "AWS Key Management Service", []string{
+		"https://docs.aws.amazon.com/kms/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-rds-sigv4-auth-overlay", "aws-rds", "aws-rds-smithy-model", "Amazon RDS", []string{
+		"https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-sagemaker-sigv4-auth-overlay", "aws-sagemaker", "aws-sagemaker-smithy-model", "Amazon SageMaker", []string{
+		"https://docs.aws.amazon.com/sagemaker/latest/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-secrets-manager-sigv4-auth-overlay", "aws-secrets-manager", "aws-secrets-manager-smithy-model", "AWS Secrets Manager", []string{
+		"https://docs.aws.amazon.com/secretsmanager/latest/apireference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
+	awsSigV4Overlay("aws-securityhub-sigv4-auth-overlay", "aws-securityhub", "aws-securityhub-smithy-model", "AWS Security Hub", []string{
+		"https://docs.aws.amazon.com/securityhub/1.0/APIReference/Welcome.html",
+		"https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html",
+	}),
 	parseableSpecAuthReviewOverlay(
 		"bitbucket-cloud-swagger-v2-auth-review",
 		"bitbucket",

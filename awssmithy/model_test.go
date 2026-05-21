@@ -225,6 +225,20 @@ func TestCatalogAWSArtifactsRemainSmithyReviewArtifacts(t *testing.T) {
 		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-sqs-smithy-model.json"),
 		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-textract-smithy-model.json"),
 		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-transcribe-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-api-gateway-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-athena-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-bedrock-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-cloudwatch-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-ec2-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-glue-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-guardduty-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-inspector2-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-kinesis-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-kms-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-rds-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-sagemaker-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-secrets-manager-smithy-model.json"),
+		filepath.Join("..", "catalog-openapi-cache", "openapi", "aws-securityhub-smithy-model.json"),
 	} {
 		t.Run(filepath.Base(path), func(t *testing.T) {
 			data, err := os.ReadFile(path)

@@ -11,7 +11,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 303; got != want {
+	if got, want := len(candidates), 317; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -43,15 +43,29 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"auth0",
 		"autopilot",
 		"aws-acm",
+		"aws-api-gateway",
+		"aws-athena",
+		"aws-bedrock",
+		"aws-cloudwatch",
 		"aws-cognito",
 		"aws-comprehend",
 		"aws-dynamodb",
+		"aws-ec2",
 		"aws-elb",
 		"aws-elbv2",
+		"aws-glue",
+		"aws-guardduty",
 		"aws-iam",
+		"aws-inspector2",
+		"aws-kinesis",
+		"aws-kms",
 		"aws-lambda",
+		"aws-rds",
 		"aws-rekognition",
 		"aws-s3",
+		"aws-sagemaker",
+		"aws-secrets-manager",
+		"aws-securityhub",
 		"aws-ses",
 		"aws-sns",
 		"aws-sqs",
@@ -368,15 +382,29 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "adyen payments api", id: "adyen"},
 		{key: "auth0 management api", id: "auth0"},
 		{key: "acm", id: "aws-acm"},
+		{key: "api gateway", id: "aws-api-gateway"},
+		{key: "athena", id: "aws-athena"},
+		{key: "bedrock", id: "aws-bedrock"},
+		{key: "cloudwatch", id: "aws-cloudwatch"},
 		{key: "cognito-idp", id: "aws-cognito"},
 		{key: "comprehend", id: "aws-comprehend"},
 		{key: "dynamodb", id: "aws-dynamodb"},
+		{key: "ec2", id: "aws-ec2"},
 		{key: "elb", id: "aws-elb"},
 		{key: "elbv2", id: "aws-elbv2"},
+		{key: "glue", id: "aws-glue"},
+		{key: "guardduty", id: "aws-guardduty"},
 		{key: "aws iam api", id: "aws-iam"},
+		{key: "inspector2", id: "aws-inspector2"},
+		{key: "kinesis", id: "aws-kinesis"},
+		{key: "kms", id: "aws-kms"},
 		{key: "lambda", id: "aws-lambda"},
+		{key: "rds", id: "aws-rds"},
 		{key: "rekognition", id: "aws-rekognition"},
 		{key: "s3", id: "aws-s3"},
+		{key: "sagemaker", id: "aws-sagemaker"},
+		{key: "secretsmanager", id: "aws-secrets-manager"},
+		{key: "securityhub", id: "aws-securityhub"},
 		{key: "ses", id: "aws-ses"},
 		{key: "sns", id: "aws-sns"},
 		{key: "sqs", id: "aws-sqs"},
@@ -549,15 +577,29 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"affinity",
 		"agile-crm",
 		"aws-acm",
+		"aws-api-gateway",
+		"aws-athena",
+		"aws-bedrock",
+		"aws-cloudwatch",
 		"aws-cognito",
 		"aws-comprehend",
 		"aws-dynamodb",
+		"aws-ec2",
 		"aws-elb",
 		"aws-elbv2",
+		"aws-glue",
+		"aws-guardduty",
 		"aws-iam",
+		"aws-inspector2",
+		"aws-kinesis",
+		"aws-kms",
 		"aws-lambda",
+		"aws-rds",
 		"aws-rekognition",
 		"aws-s3",
+		"aws-sagemaker",
+		"aws-secrets-manager",
+		"aws-securityhub",
 		"aws-ses",
 		"aws-sns",
 		"aws-sqs",
@@ -706,7 +748,7 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 			t.Fatalf("%s auth review = %q, want %q", candidate.ID, candidate.AuthSecurityReview, AuthSecurityNotReviewed)
 		}
 	}
-	for _, id := range []string{"aws-acm", "aws-cognito", "aws-comprehend", "aws-dynamodb", "aws-elb", "aws-elbv2", "aws-iam", "aws-lambda", "aws-rekognition", "aws-s3", "aws-ses", "aws-sns", "aws-sqs", "aws-textract", "aws-transcribe", "gmail", "google-admin", "google-analytics", "google-bigquery", "google-books", "google-business-profile", "google-calendar", "google-chat", "google-cloud-language", "google-cloud-storage", "google-contacts", "google-docs", "google-drive", "google-firebase-realtime-database", "google-firestore", "google-perspective", "google-sheets", "google-slides", "google-tasks", "google-translate", "google-youtube"} {
+	for _, id := range []string{"aws-acm", "aws-api-gateway", "aws-athena", "aws-bedrock", "aws-cloudwatch", "aws-cognito", "aws-comprehend", "aws-dynamodb", "aws-ec2", "aws-elb", "aws-elbv2", "aws-glue", "aws-guardduty", "aws-iam", "aws-inspector2", "aws-kinesis", "aws-kms", "aws-lambda", "aws-rds", "aws-rekognition", "aws-s3", "aws-sagemaker", "aws-secrets-manager", "aws-securityhub", "aws-ses", "aws-sns", "aws-sqs", "aws-textract", "aws-transcribe", "gmail", "google-admin", "google-analytics", "google-bigquery", "google-books", "google-business-profile", "google-calendar", "google-chat", "google-cloud-language", "google-cloud-storage", "google-contacts", "google-docs", "google-drive", "google-firebase-realtime-database", "google-firestore", "google-perspective", "google-sheets", "google-slides", "google-tasks", "google-translate", "google-youtube"} {
 		candidate, ok := FindBuiltInCandidate(id)
 		if !ok {
 			t.Fatalf("missing %s", id)
@@ -715,7 +757,7 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 			t.Fatalf("%s machine spec status = %q, want %q", id, candidate.OfficialMachineSpecStatus, SpecStatusNeedsVerification)
 		}
 		wantKind := "google-discovery"
-		if id == "aws-acm" || id == "aws-cognito" || id == "aws-comprehend" || id == "aws-dynamodb" || id == "aws-elb" || id == "aws-elbv2" || id == "aws-iam" || id == "aws-lambda" || id == "aws-rekognition" || id == "aws-s3" || id == "aws-ses" || id == "aws-sns" || id == "aws-sqs" || id == "aws-textract" || id == "aws-transcribe" {
+		if strings.HasPrefix(id, "aws-") {
 			wantKind = string(SpecKindSmithyJSON)
 		}
 		if candidate.OfficialMachineSpecKind != wantKind {

@@ -13,8 +13,8 @@ func TestBuiltInCatalogSecurityAuditClassifiesEveryProvider(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if report.Summary.ProviderCount != 302 {
-		t.Fatalf("provider count = %d, want 302", report.Summary.ProviderCount)
+	if report.Summary.ProviderCount != 316 {
+		t.Fatalf("provider count = %d, want 316", report.Summary.ProviderCount)
 	}
 	if countAuditDisposition(report, SecurityAuditDispositionQueuedSourceReReview) != 0 {
 		t.Fatalf("queued source re-review count = %d, want 0", countAuditDisposition(report, SecurityAuditDispositionQueuedSourceReReview))
