@@ -1237,6 +1237,29 @@ var builtInCandidates = []Candidate{
 		userNeed:    UserOpenAPINeedNotExpected,
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "n8n",
+		displayName: "n8n",
+		aliases:     []string{"n8n api", "n8n public api", "n8n rest api"},
+		category:    "workflow-automation",
+		n8nNode:     "N8n",
+		relevance:   "Popular workflow automation platform API for workflows, executions, credentials, users, projects, variables, data tables, and instance administration.",
+		userNeed:    UserOpenAPINeedNotExpected,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://docs.n8n.io/api/",
+				Note:   "Official n8n public REST API documentation; self-hosted instances expose an API playground and OpenAPI document at the configured public API path.",
+			},
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/cli/src/public-api/v1/openapi.yml",
+				Note:   "Official n8n Public API OpenAPI 3.0 source in the n8n repository.",
+			},
+		},
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "nasa",
 		displayName: "NASA",
 		aliases:     []string{"nasa api", "api.nasa.gov"},

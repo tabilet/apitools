@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 269; got != want {
+	if got, want := len(catalog.ListProviders()), 270; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -185,6 +185,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"monday-com",
 		"monica-crm",
 		"msg91",
+		"n8n",
 		"nasa",
 		"netlify",
 		"netscaler",
@@ -431,6 +432,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "bird messaging api", id: "messagebird"},
 		{key: "monday graphql", id: "monday-com"},
 		{key: "monica crm", id: "monica-crm"},
+		{key: "n8n public api", id: "n8n"},
 		{key: "nasa api", id: "nasa"},
 		{key: "netlify api", id: "netlify"},
 		{key: "nvidia dsx air api", id: "nvidia-dsx-air"},
@@ -676,6 +678,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "monica-crm", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "mistral-ai", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "msg91", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "n8n", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "nasa", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "netlify", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "nocodb", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},

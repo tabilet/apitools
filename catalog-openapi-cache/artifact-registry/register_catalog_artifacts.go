@@ -888,6 +888,16 @@ var specArtifacts = []specArtifact{
 		openapi:    "3.0.0",
 	},
 	{
+		providerID: "n8n",
+		artifactID: "n8n-public-api-openapi-v1",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/cli/src/public-api/v1/openapi.yml",
+		path:       "openapi/n8n-public-api-openapi-v1.yml",
+		title:      "n8n Public API",
+		openapi:    "3.0.0",
+		status:     apitools.CatalogRefreshInvalid,
+	},
+	{
 		providerID: "nocodb",
 		artifactID: "nocodb-api-v2-openapi",
 		kind:       "openapi",

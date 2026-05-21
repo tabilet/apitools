@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 270; got != want {
+	if got, want := len(candidates), 271; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -186,6 +186,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"monday-com",
 		"monica-crm",
 		"msg91",
+		"n8n",
 		"nasa",
 		"netlify",
 		"netscaler",
@@ -421,6 +422,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "mautic api", id: "mautic"},
 		{key: "messagebird api", id: "messagebird"},
 		{key: "monica crm api", id: "monica-crm"},
+		{key: "n8n public api", id: "n8n"},
 		{key: "api.nasa.gov", id: "nasa"},
 		{key: "netlify api", id: "netlify"},
 		{key: "nvidia air api", id: "nvidia-dsx-air"},

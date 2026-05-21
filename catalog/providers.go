@@ -1406,6 +1406,22 @@ var builtInProviders = []Provider{
 		quirks: []string{"Monday.com's API is GraphQL with a single endpoint, so OpenAPI-only workflows need a user-provided or generated OpenAPI document if REST-shaped operation metadata is required."},
 	}),
 	providerCatalogEntry(providerSeed{
+		id:                  "n8n",
+		displayName:         "n8n",
+		aliases:             []string{"n8n api", "n8n public api", "n8n rest api"},
+		category:            "workflow-automation",
+		relevance:           "Popular workflow automation platform API for workflows, executions, credentials, users, projects, variables, data tables, and instance administration.",
+		openAPIAvailability: SpecAvailabilityKnown,
+		machineAvailability: SpecAvailabilityUnknown,
+		userNeed:            UserOpenAPINeedNotExpected,
+		specs: []SpecReference{
+			officialOpenAPIRef20260521("n8n-public-api-openapi-v1", "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/cli/src/public-api/v1/openapi.yml", SourceAuthorityOfficialGitHub, "3.0.0 / n8n Public API 1.1.1", `github:ef4963d2de20fd25f434d9ceb1ebd13ad4adbb18 sha256:b174af523ec4f529bcecc9f107eb45ae8e594ad66fdaf151cc4fae45aea6ea00 content-length:6085`, "n8n OpenAPI document declares Sustainable Use License metadata; n8n documentation terms apply to docs content.", "Official n8n Public API OpenAPI 3.0 YAML source from the n8n repository."),
+			humanDocsRef20260521("n8n-public-api-docs", "https://docs.n8n.io/api/", "Official n8n public REST API documentation."),
+			humanDocsRef20260521("n8n-api-reference-docs", "https://docs.n8n.io/api/api-reference/", "Official n8n public API endpoint reference."),
+		},
+		quirks: []string{"The repository OpenAPI root is an unbundled document with relative $ref entries; the saved artifact is an official review artifact and may need bundling before strict OpenAPI import.", "n8n public API hosts are deployment-specific, and public API availability depends on instance configuration and plan. apitools records source metadata only and does not choose instances, API keys, bearer tokens, users, projects, or workflows."},
+	}),
+	providerCatalogEntry(providerSeed{
 		id:                  "netlify",
 		displayName:         "Netlify",
 		aliases:             []string{"netlify api"},
@@ -4779,6 +4795,20 @@ func officialOpenAPIRef20260520(id, url string, authority SourceAuthority, versi
 		SourceAuthority: authority,
 		Version:         version,
 		VerifiedAt:      "2026-05-20",
+		Revision:        revision,
+		LicenseNote:     licenseNote,
+		SourceNote:      sourceNote,
+	}
+}
+
+func officialOpenAPIRef20260521(id, url string, authority SourceAuthority, version, revision, licenseNote, sourceNote string) SpecReference {
+	return SpecReference{
+		ID:              id,
+		Kind:            SpecKindOpenAPI,
+		URL:             url,
+		SourceAuthority: authority,
+		Version:         version,
+		VerifiedAt:      "2026-05-21",
 		Revision:        revision,
 		LicenseNote:     licenseNote,
 		SourceNote:      sourceNote,
