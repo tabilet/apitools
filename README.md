@@ -169,6 +169,15 @@ enterprise tenants, resolve OAuth clients, fetch tokens, call metadata
 endpoints, infer enabled modules, or lower OData/WSDL/SOAP into OpenAPI in this
 catalog step.
 
+OpenAPI-first provider rows follow the same metadata-only rule even when a
+durable provider-owned spec is available. Adyen, DocuSign, Auth0, Confluence
+Cloud, BigCommerce, Cisco Meraki, and Confluent Cloud are cataloged from
+official OpenAPI/Swagger documents or provider repositories; Acumatica is
+cataloged as tenant-generated Swagger/OpenAPI metadata that must be supplied by
+the operator. `apitools` does not create API keys, request OAuth consent, submit
+payments, send envelopes, administer networks, inspect stores, choose tenants,
+or call streaming/control-plane endpoints.
+
 Overlay inspection views are metadata-only. `catalog overlay-view` reports how
 built-in security overlays would supplement catalog classifications, preserving
 provenance for schemes and security requirements and surfacing review conflicts

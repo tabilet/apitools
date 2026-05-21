@@ -14,7 +14,7 @@ stance for each family.
 | Kubernetes Discovery/OpenAPI | Cluster-published API metadata for enabled groups, versions, resources, aggregated APIs, and CRDs. | User-exported local metadata only for now; no live cluster discovery, kubeconfig reading, credential resolution, or native parser in M54. |
 | OData | Enterprise application source family used by SAP S/4HANA and SAP SuccessFactors surfaces. | User-exported or provider metadata only for now; no OData parser, lowering, or generic REST-shaped overlay in M55. |
 | WSDL/SOAP | Enterprise application source family used by Workday WWS and some SAP surfaces. | Review-only source metadata for now; no WSDL/SOAP parser, credential resolution, tenant calls, or OpenAPI lowering in M55. |
-| Tenant describe and metadata catalogs | Account-specific metadata catalogs such as NetSuite SuiteTalk REST OpenAPI 3.0 metadata and Oracle Fusion `/describe` responses. | User-provided exported metadata only for now; no live tenant metadata calls or native describe parser in M55. |
+| Tenant describe and metadata catalogs | Account-specific metadata catalogs such as NetSuite SuiteTalk REST OpenAPI 3.0 metadata, Oracle Fusion `/describe` responses, and Acumatica endpoint Swagger/OpenAPI. | User-provided exported metadata only for now; no live tenant metadata calls, ERP login, or native describe parser in M55/M56. |
 | OpenAPI index | Provider-owned index of OpenAPI documents. | Review-only index; individual child OpenAPI documents still need explicit selection and validation. |
 | Human docs | Official documentation source for docs-derived advisory overlays. | Not importable by itself; endpoint overlays are advisory and source-backed, not provider truth. |
 | Generic protocol connectors | Workflow/runtime connectors for databases, brokers, mail, files, directories, generic HTTP, webhooks, or local execution. | Not provider catalog evidence by themselves; future native source work must start from provider-owned or protocol-owned metadata artifacts. |
@@ -71,6 +71,14 @@ stance for each family.
    WSDL/SOAP semantics that should not be hidden inside generic endpoint
    overlays. Future parser work should start from exported local metadata and
    preserve native protocol fields.
+
+8. **Tenant-generated OpenAPI metadata.**
+   M56 records Acumatica as an OpenAPI-adjacent source family but not as a
+   built-in downloadable provider spec. Useful Acumatica Swagger/OpenAPI is
+   generated per ERP instance, endpoint, tenant, version, and customization, so
+   operators or downstream tooling must supply exported local metadata before
+   import. `apitools` must not log in to ERP tenants or call endpoint metadata
+   URLs.
 
 ## Generic Protocol Connector Families
 

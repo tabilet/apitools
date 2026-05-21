@@ -48,6 +48,14 @@ portable catalog row should stop at official source refs, auth posture, and
 user-provided metadata guidance unless a future milestone adds a local parser
 for exported artifacts.
 
+OpenAPI-first batches should still preserve provider-specific boundaries.
+M56 froze Adyen, DocuSign, Auth0, Confluence Cloud, Acumatica, BigCommerce,
+Cisco Meraki, and Confluent Cloud only from official provider docs,
+provider-hosted specs, or provider-owned source repositories. Acumatica remains
+a user-provided tenant metadata case because useful Swagger/OpenAPI is generated
+per ERP instance and endpoint rather than published as one portable provider
+artifact.
+
 ## Source-First Batch Queue
 
 Freeze future batches only from provider-owned or protocol-owned evidence.

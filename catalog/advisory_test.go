@@ -400,6 +400,77 @@ func TestEnterpriseApplicationSourceCoverageAdvisoryRows(t *testing.T) {
 	}
 }
 
+func TestOpenAPIFirstProviderBatchAdvisoryRows(t *testing.T) {
+	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{})
+	if err != nil {
+		t.Fatalf("BuiltInProviderAdvisoryReport() error = %v", err)
+	}
+	rows := map[string]ProviderAdvisory{}
+	for _, row := range report.Providers {
+		rows[row.ProviderID] = row
+	}
+	openAPITests := []struct {
+		provider      string
+		wantSpecRefID string
+	}{
+		{provider: "adyen", wantSpecRefID: "adyen-checkout-service-v72-openapi"},
+		{provider: "auth0", wantSpecRefID: "auth0-management-api-openapi"},
+		{provider: "bigcommerce", wantSpecRefID: "bigcommerce-catalog-products-v3-openapi"},
+		{provider: "cisco-meraki", wantSpecRefID: "cisco-meraki-dashboard-api-v1-openapi"},
+		{provider: "confluence-cloud", wantSpecRefID: "confluence-cloud-rest-v2-openapi"},
+		{provider: "confluent-cloud", wantSpecRefID: "confluent-cloud-org-v2-openapi"},
+		{provider: "docusign", wantSpecRefID: "docusign-esignature-rest-v2-1-swagger"},
+	}
+	for _, test := range openAPITests {
+		row, ok := rows[test.provider]
+		if !ok {
+			t.Fatalf("missing M56 provider %s", test.provider)
+		}
+		if row.OpenAPIAvailability != SpecAvailabilityKnown {
+			t.Fatalf("%s OpenAPI availability = %q, want %q", test.provider, row.OpenAPIAvailability, SpecAvailabilityKnown)
+		}
+		if row.UserOpenAPINeed != UserOpenAPINeedNotExpected {
+			t.Fatalf("%s user OpenAPI need = %q, want %q", test.provider, row.UserOpenAPINeed, UserOpenAPINeedNotExpected)
+		}
+		if row.AuthStatus != AuthStatusPresentIncomplete {
+			t.Fatalf("%s auth status = %q, want %q", test.provider, row.AuthStatus, AuthStatusPresentIncomplete)
+		}
+		if !advisoryHasSpecKind(row, SpecKindOpenAPI) {
+			t.Fatalf("%s missing OpenAPI spec reference: %#v", test.provider, row.SpecReferences)
+		}
+		if row.ResolvedOpenAPI.Source != ResolutionSourceBuiltInSpecReference || row.ResolvedOpenAPI.SpecRefID != test.wantSpecRefID {
+			t.Fatalf("%s resolved OpenAPI = %#v", test.provider, row.ResolvedOpenAPI)
+		}
+		if len(row.EndpointOverlays) != 0 {
+			t.Fatalf("%s endpoint overlays = %#v, want none", test.provider, row.EndpointOverlays)
+		}
+	}
+
+	row, ok := rows["acumatica"]
+	if !ok {
+		t.Fatal("missing M56 provider acumatica")
+	}
+	if row.OpenAPIAvailability != SpecAvailabilityUnavailable {
+		t.Fatalf("acumatica OpenAPI availability = %q, want %q", row.OpenAPIAvailability, SpecAvailabilityUnavailable)
+	}
+	if row.UserOpenAPINeed != UserOpenAPINeedLikely {
+		t.Fatalf("acumatica user OpenAPI need = %q, want %q", row.UserOpenAPINeed, UserOpenAPINeedLikely)
+	}
+	if row.AuthStatus != AuthStatusPresentIncomplete {
+		t.Fatalf("acumatica auth status = %q, want %q", row.AuthStatus, AuthStatusPresentIncomplete)
+	}
+	if !advisoryHasSpecKind(row, SpecKindHumanDocs) {
+		t.Fatalf("acumatica missing human docs reference: %#v", row.SpecReferences)
+	}
+	if row.ResolvedOpenAPI.Source != ResolutionSourceBuiltInSpecReference || row.ResolvedOpenAPI.SpecRefID != "acumatica-rest-api-openapi-docs" {
+		t.Fatalf("acumatica resolved OpenAPI = %#v", row.ResolvedOpenAPI)
+	}
+	if len(row.EndpointOverlays) != 0 {
+		t.Fatalf("acumatica endpoint overlays = %#v, want none", row.EndpointOverlays)
+	}
+	assertHasFollowUp(t, row.ManualFollowUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
+}
+
 func TestBuiltInProviderAdvisoryReportMissingCacheHasNoArtifactPath(t *testing.T) {
 	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{ProviderKey: "slack"})
 	if err != nil {
