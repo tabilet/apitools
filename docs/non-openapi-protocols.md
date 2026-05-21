@@ -10,11 +10,11 @@ stance for each family.
 |---|---|---|
 | Smithy JSON | Official AWS service model review artifact and native protocol metadata source. | Parsed explicitly through standalone `github.com/OpenUdon/awssmithy.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid losing protocol semantics. |
 | Google Discovery | Official Google REST API description artifact and native protocol metadata source. | Parsed explicitly through standalone `github.com/OpenUdon/googlediscovery.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid treating Discovery as an OpenAPI runtime contract. |
-| Dropbox Stone | Official Dropbox API model source. | Review-only until Stone schema parsing and route lowering are implemented. |
+| Dropbox Stone | Official Dropbox API model source and advisory overlay provenance. | Review-only source metadata; no native Stone parser or route lowering is currently planned. |
 | OpenAPI index | Provider-owned index of OpenAPI documents. | Review-only index; individual child OpenAPI documents still need explicit selection and validation. |
 | Human docs | Official documentation source for docs-derived advisory overlays. | Not importable by itself; endpoint overlays are advisory and source-backed, not provider truth. |
 
-## Parser Priority
+## Parser Priority And Source Decisions
 
 1. **Google Discovery native parsing.**
    Discovery documents are structured JSON, already include method IDs and REST
@@ -31,9 +31,12 @@ stance for each family.
    and service/signing names for downstream protocol-aware generators without
    producing OpenAPI-shaped metadata.
 
-3. **Dropbox Stone parsing.**
-   Stone can provide useful route and schema metadata for Dropbox, but it needs
-   a dedicated parser or pinned upstream tooling review before durable lowering.
+3. **Dropbox Stone no-parser decision.**
+   M47 retained Dropbox Stone as official Dropbox machine-readable metadata and
+   advisory-overlay provenance, but did not open native parser work. Stone is
+   provider-specific, the current catalog value is served by the reviewed
+   advisory overlay, and n8n-comparison gaps are better handled as targeted
+   overlay expansion if needed.
 
 4. **GraphQL-aware classification.**
    Linear and Monday.com should not get REST-shaped endpoint overlays for now.

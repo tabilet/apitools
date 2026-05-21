@@ -37,6 +37,22 @@ func TestResolveProviderPrefersSmithyBeforeHumanDocs(t *testing.T) {
 	}
 }
 
+func TestResolveProviderPrefersDropboxStoneBeforeHumanDocs(t *testing.T) {
+	resolved, err := ResolveProvider(ResolveProviderOptions{ProviderKey: "dropbox"})
+	if err != nil {
+		t.Fatalf("ResolveProvider() error = %v", err)
+	}
+	if resolved.OpenAPI.Source != ResolutionSourceBuiltInSpecReference {
+		t.Fatalf("OpenAPI source = %q, want %q", resolved.OpenAPI.Source, ResolutionSourceBuiltInSpecReference)
+	}
+	if resolved.OpenAPI.SpecRefID != "dropbox-api-stone-spec" {
+		t.Fatalf("OpenAPI spec ref = %q, want dropbox-api-stone-spec", resolved.OpenAPI.SpecRefID)
+	}
+	if resolved.OpenAPI.Value != "https://github.com/dropbox/dropbox-api-spec" {
+		t.Fatalf("OpenAPI value = %q, want official Dropbox Stone repository", resolved.OpenAPI.Value)
+	}
+}
+
 func TestResolveProviderPreservesAuthoredHumanDocsPriority(t *testing.T) {
 	tests := []struct {
 		provider  string
