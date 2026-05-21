@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 292; got != want {
+	if got, want := len(catalog.ListProviders()), 302; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -32,9 +32,13 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"airtable",
 		"airtop",
 		"airwallex",
+		"amplitude",
+		"anthropic",
 		"apitemplate-io",
 		"apollo",
 		"asana",
+		"ashby",
+		"attio",
 		"auth0",
 		"autopilot",
 		"aws-acm",
@@ -64,10 +68,12 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"bitwarden",
 		"box",
 		"brandfetch",
+		"braze",
 		"brevo",
 		"bubble",
 		"cal",
 		"calendly",
+		"canva",
 		"chargebee",
 		"checkr",
 		"circleci",
@@ -111,6 +117,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"facebook-lead-ads",
 		"figma",
 		"filemaker",
+		"fivetran",
 		"flow",
 		"formio",
 		"formstack",
@@ -165,8 +172,10 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"jira-cloud",
 		"jotform",
 		"keap",
+		"klaviyo",
 		"kobotoolbox",
 		"kubernetes",
+		"launchdarkly",
 		"lemlist",
 		"line",
 		"linear",
@@ -234,6 +243,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"plivo",
 		"postbin",
 		"posthog",
+		"postman",
 		"postmark",
 		"profitwell",
 		"pushbullet",

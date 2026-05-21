@@ -552,6 +552,93 @@ func TestDocsOverlayProviderBatchAdvisoryRows(t *testing.T) {
 	assertHasFollowUp(t, row.ManualFollowUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
 }
 
+func TestWorkatoTraySignalProviderBatchAdvisoryRows(t *testing.T) {
+	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{})
+	if err != nil {
+		t.Fatalf("BuiltInProviderAdvisoryReport() error = %v", err)
+	}
+	rows := map[string]ProviderAdvisory{}
+	for _, row := range report.Providers {
+		rows[row.ProviderID] = row
+	}
+	openAPITests := []struct {
+		provider      string
+		specRefID     string
+		authStatus    AuthCompletenessStatus
+		sourceContain string
+	}{
+		{provider: "attio", specRefID: "attio-rest-api-openapi", authStatus: AuthStatusComplete, sourceContain: "api.attio.com/openapi/api"},
+		{provider: "canva", specRefID: "canva-connect-api-openapi", authStatus: AuthStatusComplete, sourceContain: "canva.dev/sources/connect/api"},
+		{provider: "fivetran", specRefID: "fivetran-rest-api-v1-openapi", authStatus: AuthStatusComplete, sourceContain: "fivetran.com/assets-docs/openapi/file_v1.json"},
+		{provider: "klaviyo", specRefID: "klaviyo-stable-api-openapi", authStatus: AuthStatusComplete, sourceContain: "klaviyo/openapi"},
+		{provider: "launchdarkly", specRefID: "launchdarkly-rest-api-openapi", authStatus: AuthStatusComplete, sourceContain: "app.launchdarkly.com/api/v2/openapi.json"},
+	}
+	for _, test := range openAPITests {
+		row, ok := rows[test.provider]
+		if !ok {
+			t.Fatalf("missing M59 provider %s", test.provider)
+		}
+		if row.OpenAPIAvailability != SpecAvailabilityKnown {
+			t.Fatalf("%s OpenAPI availability = %q, want %q", test.provider, row.OpenAPIAvailability, SpecAvailabilityKnown)
+		}
+		if row.UserOpenAPINeed != UserOpenAPINeedNotExpected {
+			t.Fatalf("%s user OpenAPI need = %q, want %q", test.provider, row.UserOpenAPINeed, UserOpenAPINeedNotExpected)
+		}
+		if row.AuthStatus != test.authStatus {
+			t.Fatalf("%s auth status = %q, want %q", test.provider, row.AuthStatus, test.authStatus)
+		}
+		if !advisoryHasSpecKind(row, SpecKindOpenAPI) {
+			t.Fatalf("%s missing OpenAPI spec reference: %#v", test.provider, row.SpecReferences)
+		}
+		if row.ResolvedOpenAPI.Source != ResolutionSourceBuiltInSpecReference || row.ResolvedOpenAPI.SpecRefID != test.specRefID || !strings.Contains(row.ResolvedOpenAPI.Value, test.sourceContain) {
+			t.Fatalf("%s resolved OpenAPI = %#v", test.provider, row.ResolvedOpenAPI)
+		}
+		if len(row.EndpointOverlays) != 0 {
+			t.Fatalf("%s endpoint overlays = %#v, want none", test.provider, row.EndpointOverlays)
+		}
+	}
+
+	docsOnlyTests := []struct {
+		provider  string
+		specRefID string
+		overlayID string
+	}{
+		{provider: "amplitude", specRefID: "amplitude-api-docs", overlayID: "amplitude-api-auth-overlay"},
+		{provider: "anthropic", specRefID: "anthropic-api-overview", overlayID: "anthropic-api-auth-overlay"},
+		{provider: "ashby", specRefID: "ashby-api-introduction", overlayID: "ashby-api-auth-overlay"},
+		{provider: "braze", specRefID: "braze-api-docs", overlayID: "braze-api-auth-overlay"},
+		{provider: "postman", specRefID: "postman-api-docs", overlayID: "postman-api-auth-overlay"},
+	}
+	for _, test := range docsOnlyTests {
+		row, ok := rows[test.provider]
+		if !ok {
+			t.Fatalf("missing M59 provider %s", test.provider)
+		}
+		if row.OpenAPIAvailability != SpecAvailabilityUnavailable {
+			t.Fatalf("%s OpenAPI availability = %q, want %q", test.provider, row.OpenAPIAvailability, SpecAvailabilityUnavailable)
+		}
+		if row.UserOpenAPINeed != UserOpenAPINeedLikely {
+			t.Fatalf("%s user OpenAPI need = %q, want %q", test.provider, row.UserOpenAPINeed, UserOpenAPINeedLikely)
+		}
+		if row.AuthStatus != AuthStatusOverlayRequired {
+			t.Fatalf("%s auth status = %q, want %q", test.provider, row.AuthStatus, AuthStatusOverlayRequired)
+		}
+		if !advisoryHasSpecKind(row, SpecKindHumanDocs) {
+			t.Fatalf("%s missing human docs reference: %#v", test.provider, row.SpecReferences)
+		}
+		if row.ResolvedOpenAPI.Source != ResolutionSourceBuiltInSpecReference || row.ResolvedOpenAPI.SpecRefID != test.specRefID {
+			t.Fatalf("%s resolved OpenAPI = %#v", test.provider, row.ResolvedOpenAPI)
+		}
+		if !containsString(row.SecurityOverlayIDs, test.overlayID) {
+			t.Fatalf("%s security overlay ids = %#v, want %q", test.provider, row.SecurityOverlayIDs, test.overlayID)
+		}
+		if len(row.EndpointOverlays) != 0 {
+			t.Fatalf("%s endpoint overlays = %#v, want none", test.provider, row.EndpointOverlays)
+		}
+		assertHasFollowUp(t, row.ManualFollowUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
+	}
+}
+
 func TestBuiltInProviderAdvisoryReportMissingCacheHasNoArtifactPath(t *testing.T) {
 	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{ProviderKey: "slack"})
 	if err != nil {

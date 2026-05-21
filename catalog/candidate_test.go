@@ -11,7 +11,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 293; got != want {
+	if got, want := len(candidates), 303; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -33,9 +33,13 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"airtable",
 		"airtop",
 		"airwallex",
+		"amplitude",
+		"anthropic",
 		"apitemplate-io",
 		"apollo",
 		"asana",
+		"ashby",
+		"attio",
 		"auth0",
 		"autopilot",
 		"aws-acm",
@@ -65,10 +69,12 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"bitwarden",
 		"box",
 		"brandfetch",
+		"braze",
 		"brevo",
 		"bubble",
 		"cal",
 		"calendly",
+		"canva",
 		"chargebee",
 		"checkr",
 		"circleci",
@@ -112,6 +118,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"facebook-lead-ads",
 		"figma",
 		"filemaker",
+		"fivetran",
 		"flow",
 		"formio",
 		"formstack",
@@ -167,8 +174,10 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"jira-cloud",
 		"jotform",
 		"keap",
+		"klaviyo",
 		"kobotoolbox",
 		"kubernetes",
+		"launchdarkly",
 		"lemlist",
 		"line",
 		"linear",
@@ -236,6 +245,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"plivo",
 		"postbin",
 		"posthog",
+		"postman",
 		"postmark",
 		"profitwell",
 		"pushbullet",

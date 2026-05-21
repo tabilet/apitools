@@ -199,3 +199,13 @@ overlay would hide native operation semantics.
 | SAP S/4HANA | No endpoint overlay for now. SAP Business Accelerator Hub surfaces include OpenAPI, OData, SOAP, and docs-only artifacts; a generic REST overlay would hide OData/SOAP semantics and tenant auth posture. |
 | SAP SuccessFactors | No endpoint overlay for now. SuccessFactors APIs are OData V2/V4 and SOAP oriented with tenant/module-specific semantics; useful coverage needs explicit OData or WSDL/SOAP source handling rather than a generic endpoint overlay. |
 | Workday | No endpoint overlay for now. Workday WWS WSDL/XSD and REST directories require future WSDL/SOAP or REST source handling; a generic docs overlay would hide tenant configuration and security context. |
+| Amplitude | No endpoint overlay for now. Amplitude exposes multiple API families with different credential forms, project contexts, and ingestion/export semantics; M59 records auth metadata only rather than a broad provider-wide docs overlay. |
+| Anthropic | No endpoint overlay for now. Anthropic operations can execute model and prompt behavior; M59 records source/auth metadata only and reserves endpoint modeling for a reviewed OpenAPI source or explicit AI-operation policy surface. |
+| Ashby | No endpoint overlay for now. Ashby APIs include recruiting PII and RPC-style operations; a generic docs-derived overlay would hide endpoint family and permission semantics without a narrow reviewed subset. |
+| Attio | Official OpenAPI is recorded from Attio documentation, so no docs-derived endpoint overlay is needed. |
+| Braze | No endpoint overlay for now. Braze APIs include profile mutation, messaging, export, region-specific hosts, and permission-sensitive customer engagement operations; M59 records auth metadata only. |
+| Canva | Official Connect API OpenAPI is recorded from Canva developer documentation, so no docs-derived endpoint overlay is needed. |
+| Fivetran | Official REST API V1 OpenAPI is recorded from Fivetran documentation, so no docs-derived endpoint overlay is needed. |
+| Klaviyo | Official stable OpenAPI is recorded from Klaviyo's official OpenAPI repository, so no docs-derived endpoint overlay is needed. |
+| LaunchDarkly | Official REST API v2 OpenAPI is recorded from LaunchDarkly API documentation, so no docs-derived endpoint overlay is needed. |
+| Postman | No endpoint overlay for now. Postman collections and public workspaces are not treated as provider-wide source truth, and a broad docs-derived overlay would hide workspace, collection, API, monitor, and governance mutation semantics. |
