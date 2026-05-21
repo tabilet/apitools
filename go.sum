@@ -1,3 +1,5 @@
+github.com/OpenUdon/awssmithy v0.0.0-20260520213111-549a060a5e28 h1:Xrv5Ccw2QVXfuswbTLP98vt5vyMIVmnsfX43TUHBo+Y=
+github.com/OpenUdon/awssmithy v0.0.0-20260520213111-549a060a5e28/go.mod h1:Wkg6qE+XUwzDCpw6gKoUhPQ03K0RhGbxnYpDMmGFStQ=
 github.com/OpenUdon/googlediscovery v0.0.0-20260520203137-c02129a009fc h1:drM11+jXvEjjpuWisSFurkQXvqrWO1o4PDIwLv1HqLI=
 github.com/OpenUdon/googlediscovery v0.0.0-20260520203137-c02129a009fc/go.mod h1:73PcwHRzHo5zNjGv4pKZqQVZWDStRk0NWs01DfL/vRU=
 github.com/OpenUdon/oas v0.0.0-20260507023120-7fb319711323 h1:IIS4CeB6dcbkAdcSInrBYcVUZum1fhVfInfB2+f0bxA=
