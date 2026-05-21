@@ -15,11 +15,18 @@
       }
     },
     "securitySchemes": {
-      "adobeAcrobatSignBearer": {
-        "bearerFormat": "OAuth access token",
-        "description": "Adobe Acrobat Sign OAuth access token carried in the Authorization bearer header.",
-        "scheme": "bearer",
-        "type": "http"
+      "adobeAcrobatSignOAuth2": {
+        "description": "Adobe Acrobat Sign OAuth 2.0 access token with operation-specific scopes.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://{acrobat_sign_web_access_point}/public/oauth",
+            "scopes": {
+              "agreement_read": "Read agreement metadata."
+            },
+            "tokenUrl": "https://{acrobat_sign_api_access_point}/oauth/token"
+          }
+        },
+        "type": "oauth2"
       }
     }
   },
@@ -62,7 +69,9 @@
         },
         "security": [
           {
-            "adobeAcrobatSignBearer": []
+            "adobeAcrobatSignOAuth2": [
+              "agreement_read"
+            ]
           }
         ],
         "summary": "Get agreements"
@@ -100,7 +109,9 @@
         },
         "security": [
           {
-            "adobeAcrobatSignBearer": []
+            "adobeAcrobatSignOAuth2": [
+              "agreement_read"
+            ]
           }
         ],
         "summary": "Get agreement"
@@ -127,7 +138,7 @@
         },
         "security": [
           {
-            "adobeAcrobatSignBearer": []
+            "adobeAcrobatSignOAuth2": []
           }
         ],
         "summary": "Get base URI"
@@ -136,7 +147,7 @@
   },
   "security": [
     {
-      "adobeAcrobatSignBearer": []
+      "adobeAcrobatSignOAuth2": []
     }
   ],
   "servers": [

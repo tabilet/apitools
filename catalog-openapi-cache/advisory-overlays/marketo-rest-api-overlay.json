@@ -39,7 +39,7 @@
             "description": "Comma-separated activity type IDs.",
             "in": "query",
             "name": "activityTypeIds",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -48,7 +48,7 @@
             "description": "Paging token returned by Marketo.",
             "in": "query",
             "name": "nextPageToken",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -160,7 +160,7 @@
             "description": "Lead field used for filtering.",
             "in": "query",
             "name": "filterType",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -169,7 +169,7 @@
             "description": "Comma-separated filter values.",
             "in": "query",
             "name": "filterValues",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "string"
             }

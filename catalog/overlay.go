@@ -214,18 +214,38 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SpecRefID:  "adobe-acrobat-sign-openapi-sdk-docs",
 		Status:     AuthStatusOverlayRequired,
 		SecuritySchemes: []SecurityScheme{{
-			Name:         "adobeAcrobatSignBearer",
-			Type:         SecuritySchemeHTTP,
-			Scheme:       "bearer",
-			BearerFormat: "OAuth access token",
-			Description:  "Adobe Acrobat Sign OAuth access token carried in the Authorization bearer header.",
+			Name:        "adobeAcrobatSignOAuth2",
+			Type:        SecuritySchemeOAuth2,
+			Description: "Adobe Acrobat Sign OAuth 2.0 access token carried in the Authorization bearer header with operation-specific scopes.",
+			Flows: []OAuthFlow{{
+				Type:             OAuthFlowAuthorizationCode,
+				AuthorizationURL: "https://{acrobat_sign_web_access_point}/public/oauth",
+				TokenURL:         "https://{acrobat_sign_api_access_point}/oauth/token",
+				Scopes:           []string{"agreement_read"},
+			}},
+			Scopes: []string{"agreement_read"},
 		}},
-		RootSecurity: []SecurityRequirement{{Scheme: "adobeAcrobatSignBearer"}},
+		RootSecurity: []SecurityRequirement{{Scheme: "adobeAcrobatSignOAuth2"}},
+		OperationSecurity: []OperationSecurity{
+			{
+				Match: OperationMatch{Method: "GET", Path: "/agreements"},
+				SecuritySets: []SecurityRequirementSet{{
+					Requirements: []SecurityRequirement{{Scheme: "adobeAcrobatSignOAuth2", Scopes: []string{"agreement_read"}}},
+				}},
+			},
+			{
+				Match: OperationMatch{Method: "GET", Path: "/agreements/{agreementId}"},
+				SecuritySets: []SecurityRequirementSet{{
+					Requirements: []SecurityRequirement{{Scheme: "adobeAcrobatSignOAuth2", Scopes: []string{"agreement_read"}}},
+				}},
+			},
+		},
 		SourceRefs: []string{
 			"https://developer.adobe.com/acrobat-sign/docs/overview/sdks/openapi",
 			"https://github.com/adobe/acrobat-sign/tree/main/sdks/AcrobatSign_OpenAPI_SDK",
+			"https://opensource.adobe.com/acrobat-sign/developer_guide/helloworld.html",
 		},
-		SourceNote: "Adobe Acrobat Sign publishes official SDK JSON files for V6 REST APIs but the reviewed files are Swagger 1.2-style rather than directly importable OpenAPI 2/3; OAuth bearer metadata comes from the official SDK docs.",
+		SourceNote: "Adobe Acrobat Sign publishes official SDK JSON files for V6 REST APIs but the reviewed files are Swagger 1.2-style rather than directly importable OpenAPI 2/3; selected agreement read operations require OAuth access tokens authorized with agreement_read scope.",
 	},
 	{
 		ID:         "aftership-tracking-api-auth-overlay",

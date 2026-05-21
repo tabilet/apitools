@@ -51,10 +51,10 @@ func marketoOverlay() overlaySpec {
 		Schemas:      []string{"MarketoObject", "MarketoCollection", "MarketoError"},
 		OutputPath:   "catalog-openapi-cache/advisory-overlays/marketo-rest-api-overlay.json",
 		Paths: map[string]map[string]any{
-			"/rest/v1/activities.json":       {"get": op("listMarketoActivities", "Get lead activities", params(query("activityTypeIds", "Comma-separated activity type IDs."), query("nextPageToken", "Paging token returned by Marketo.")), "", "#/components/schemas/MarketoCollection", securityReqs("marketoBearer"))},
+			"/rest/v1/activities.json":       {"get": op("listMarketoActivities", "Get lead activities", params(queryRequired("activityTypeIds", "Comma-separated activity type IDs."), queryRequired("nextPageToken", "Paging token returned by Marketo.")), "", "#/components/schemas/MarketoCollection", securityReqs("marketoBearer"))},
 			"/rest/v1/activities/types.json": {"get": op("listMarketoActivityTypes", "Get activity types", nil, "", "#/components/schemas/MarketoCollection", securityReqs("marketoBearer"))},
 			"/rest/v1/lead/{id}.json":        {"get": op("getMarketoLeadByID", "Get lead by ID", params(path("id", "Lead ID."), query("fields", "Comma-separated API field names.")), "", "#/components/schemas/MarketoObject", securityReqs("marketoBearer"))},
-			"/rest/v1/leads.json":            {"get": op("listMarketoLeadsByFilter", "Get leads by filter type", params(query("filterType", "Lead field used for filtering."), query("filterValues", "Comma-separated filter values."), query("fields", "Comma-separated API field names.")), "", "#/components/schemas/MarketoCollection", securityReqs("marketoBearer"))},
+			"/rest/v1/leads.json":            {"get": op("listMarketoLeadsByFilter", "Get leads by filter type", params(queryRequired("filterType", "Lead field used for filtering."), queryRequired("filterValues", "Comma-separated filter values."), query("fields", "Comma-separated API field names.")), "", "#/components/schemas/MarketoCollection", securityReqs("marketoBearer"))},
 			"/rest/v1/leads/describe.json":   {"get": op("describeMarketoLeads", "Describe lead fields", nil, "", "#/components/schemas/MarketoObject", securityReqs("marketoBearer"))},
 		},
 	}
@@ -135,8 +135,24 @@ func apolloOverlay() overlaySpec {
 		Schemas:      []string{"ApolloObject", "ApolloCollection", "ApolloError"},
 		OutputPath:   "catalog-openapi-cache/advisory-overlays/apollo-api-overlay.json",
 		Paths: map[string]map[string]any{
-			"/mixed_companies/search":  {"post": op("searchApolloOrganizations", "Organization search", nil, "#/components/schemas/ApolloObject", "#/components/schemas/ApolloCollection", reqs)},
-			"/mixed_people/api_search": {"post": op("searchApolloPeople", "People API search", nil, "#/components/schemas/ApolloObject", "#/components/schemas/ApolloCollection", reqs)},
+			"/mixed_companies/search": {"post": op("searchApolloOrganizations", "Organization search", params(
+				query("q_organization_domains_list[]", "Organization domains to include."),
+				query("organization_locations[]", "Organization headquarters locations."),
+				query("q_organization_name", "Organization name filter."),
+				query("organization_ids[]", "Apollo organization IDs to include."),
+				query("page", "Page number."),
+				query("per_page", "Results per page."),
+			), "", "#/components/schemas/ApolloCollection", reqs)},
+			"/mixed_people/api_search": {"post": op("searchApolloPeople", "People API search", params(
+				query("person_titles[]", "Job titles to include."),
+				query("q_keywords", "Keyword filter."),
+				query("person_locations[]", "Person locations to include."),
+				query("person_seniorities[]", "Person seniorities to include."),
+				query("organization_locations[]", "Employer headquarters locations."),
+				query("q_organization_domains_list[]", "Employer domains to include."),
+				query("page", "Page number."),
+				query("per_page", "Results per page."),
+			), "", "#/components/schemas/ApolloCollection", reqs)},
 		},
 	}
 }
@@ -166,8 +182,17 @@ func aftershipOverlay() overlaySpec {
 
 func acrobatSignOverlay() overlaySpec {
 	security := map[string]map[string]any{
-		"adobeAcrobatSignBearer": {"type": "http", "scheme": "bearer", "bearerFormat": "OAuth access token", "description": "Adobe Acrobat Sign OAuth access token carried in the Authorization bearer header."},
+		"adobeAcrobatSignOAuth2": {"type": "oauth2", "description": "Adobe Acrobat Sign OAuth 2.0 access token with operation-specific scopes.", "flows": map[string]any{
+			"authorizationCode": map[string]any{
+				"authorizationUrl": "https://{acrobat_sign_web_access_point}/public/oauth",
+				"tokenUrl":         "https://{acrobat_sign_api_access_point}/oauth/token",
+				"scopes": map[string]string{
+					"agreement_read": "Read agreement metadata.",
+				},
+			},
+		}},
 	}
+	agreementRead := securityReqsWithScopes("adobeAcrobatSignOAuth2", "agreement_read")
 	return overlaySpec{
 		ProviderID:   "adobe-acrobat-sign",
 		Title:        "Adobe Acrobat Sign REST API Advisory Overlay",
@@ -176,13 +201,13 @@ func acrobatSignOverlay() overlaySpec {
 		Sources:      []string{"https://developer.adobe.com/acrobat-sign/docs/overview/sdks/openapi", "https://github.com/adobe/acrobat-sign/tree/main/sdks/AcrobatSign_OpenAPI_SDK", "https://raw.githubusercontent.com/adobe/acrobat-sign/main/sdks/AcrobatSign_OpenAPI_SDK/json/agreements.json", "https://raw.githubusercontent.com/adobe/acrobat-sign/main/sdks/AcrobatSign_OpenAPI_SDK/json/baseUris.json"},
 		SourceNote:   "Adobe Acrobat Sign publishes official Swagger 1.2-style SDK JSON files rather than directly importable OpenAPI 2/3; this overlay covers selected base URI and agreement read endpoints.",
 		Security:     security,
-		SecurityReqs: securityReqs("adobeAcrobatSignBearer"),
+		SecurityReqs: securityReqs("adobeAcrobatSignOAuth2"),
 		Schemas:      []string{"AcrobatSignObject", "AcrobatSignCollection", "AcrobatSignError"},
 		OutputPath:   "catalog-openapi-cache/advisory-overlays/adobe-acrobat-sign-api-overlay.json",
 		Paths: map[string]map[string]any{
-			"/agreements":               {"get": op("listAcrobatSignAgreements", "Get agreements", params(query("userId", "Optional user ID.")), "", "#/components/schemas/AcrobatSignCollection", securityReqs("adobeAcrobatSignBearer"))},
-			"/agreements/{agreementId}": {"get": op("getAcrobatSignAgreement", "Get agreement", params(path("agreementId", "Agreement ID.")), "", "#/components/schemas/AcrobatSignObject", securityReqs("adobeAcrobatSignBearer"))},
-			"/baseUris":                 {"get": op("getAcrobatSignBaseUris", "Get base URI", nil, "", "#/components/schemas/AcrobatSignObject", securityReqs("adobeAcrobatSignBearer"))},
+			"/agreements":               {"get": op("listAcrobatSignAgreements", "Get agreements", params(query("userId", "Optional user ID.")), "", "#/components/schemas/AcrobatSignCollection", agreementRead)},
+			"/agreements/{agreementId}": {"get": op("getAcrobatSignAgreement", "Get agreement", params(path("agreementId", "Agreement ID.")), "", "#/components/schemas/AcrobatSignObject", agreementRead)},
+			"/baseUris":                 {"get": op("getAcrobatSignBaseUris", "Get base URI", nil, "", "#/components/schemas/AcrobatSignObject", securityReqs("adobeAcrobatSignOAuth2"))},
 		},
 	}
 }
@@ -251,12 +276,20 @@ func securityReqs(names ...string) []map[string][]string {
 	return []map[string][]string{requirement}
 }
 
+func securityReqsWithScopes(name string, scopes ...string) []map[string][]string {
+	return []map[string][]string{{name: scopes}}
+}
+
 func params(items ...map[string]any) []map[string]any { return items }
 
 func path(name, description string) map[string]any { return parameter(name, "path", description, true) }
 
 func query(name, description string) map[string]any {
 	return parameter(name, "query", description, false)
+}
+
+func queryRequired(name, description string) map[string]any {
+	return parameter(name, "query", description, true)
 }
 
 func parameter(name, in, description string, required bool) map[string]any {

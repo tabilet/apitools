@@ -246,9 +246,141 @@ func TestCopperAdvisoryOverlayCombinesRequiredHeaders(t *testing.T) {
 	}
 }
 
+func TestM57ReviewFindingRegressions(t *testing.T) {
+	t.Run("apollo search uses query parameters", func(t *testing.T) {
+		doc := loadOverlayDoc(t, "catalog-openapi-cache/advisory-overlays/apollo-api-overlay.json")
+		for path, wantParam := range map[string]string{
+			"/mixed_people/api_search": "q_keywords",
+			"/mixed_companies/search":  "q_organization_name",
+		} {
+			operation := doc.Paths[path]["post"]
+			if operation.RequestBody != nil {
+				t.Fatalf("%s has requestBody, want documented query parameters", path)
+			}
+			if !hasQueryParameter(operation.Parameters, wantParam, false) {
+				t.Fatalf("%s parameters = %#v, want optional query parameter %q", path, operation.Parameters, wantParam)
+			}
+		}
+	})
+
+	t.Run("marketo required parameters are modeled", func(t *testing.T) {
+		doc := loadOverlayDoc(t, "catalog-openapi-cache/advisory-overlays/marketo-rest-api-overlay.json")
+		leads := doc.Paths["/rest/v1/leads.json"]["get"]
+		for _, name := range []string{"filterType", "filterValues"} {
+			if !hasQueryParameter(leads.Parameters, name, true) {
+				t.Fatalf("Marketo leads parameters = %#v, want required query parameter %q", leads.Parameters, name)
+			}
+		}
+		activities := doc.Paths["/rest/v1/activities.json"]["get"]
+		for _, name := range []string{"activityTypeIds", "nextPageToken"} {
+			if !hasQueryParameter(activities.Parameters, name, true) {
+				t.Fatalf("Marketo activities parameters = %#v, want required query parameter %q", activities.Parameters, name)
+			}
+		}
+	})
+
+	t.Run("acrobat sign preserves agreement read scope", func(t *testing.T) {
+		doc := loadOverlayDoc(t, "catalog-openapi-cache/advisory-overlays/adobe-acrobat-sign-api-overlay.json")
+		scheme := doc.Components.SecuritySchemes["adobeAcrobatSignOAuth2"]
+		if len(scheme) == 0 || !strings.Contains(string(scheme), "agreement_read") {
+			t.Fatalf("Acrobat Sign security scheme = %s, want agreement_read scope", scheme)
+		}
+		for _, path := range []string{"/agreements", "/agreements/{agreementId}"} {
+			operation := doc.Paths[path]["get"]
+			if !hasSecurityScope(operation.Security, "adobeAcrobatSignOAuth2", "agreement_read") {
+				t.Fatalf("%s security = %#v, want adobeAcrobatSignOAuth2 agreement_read", path, operation.Security)
+			}
+		}
+
+		overlays := catalog.SecurityOverlaysForProvider("adobe-acrobat-sign")
+		if len(overlays) != 1 {
+			t.Fatalf("Acrobat Sign overlays = %#v, want one", overlays)
+		}
+		if !catalogOverlayHasOperationScope(overlays[0], "GET", "/agreements", "adobeAcrobatSignOAuth2", "agreement_read") {
+			t.Fatalf("Acrobat Sign catalog overlay missing GET /agreements agreement_read scope: %#v", overlays[0].OperationSecurity)
+		}
+	})
+}
+
 type endpointOverlayDecisions struct {
 	built     map[string]string
 	noOverlay map[string]struct{}
+}
+
+type overlayDoc struct {
+	Components struct {
+		SecuritySchemes map[string]json.RawMessage `json:"securitySchemes"`
+	} `json:"components"`
+	Paths map[string]map[string]struct {
+		OperationID string                `json:"operationId"`
+		Parameters  []overlayParameter    `json:"parameters"`
+		RequestBody json.RawMessage       `json:"requestBody"`
+		Security    []map[string][]string `json:"security"`
+	} `json:"paths"`
+}
+
+type overlayParameter struct {
+	Name     string `json:"name"`
+	In       string `json:"in"`
+	Required bool   `json:"required"`
+}
+
+func loadOverlayDoc(t *testing.T, path string) overlayDoc {
+	t.Helper()
+	content, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var doc overlayDoc
+	if err := json.Unmarshal(content, &doc); err != nil {
+		t.Fatalf("%s JSON parse error: %v", path, err)
+	}
+	return doc
+}
+
+func hasQueryParameter(parameters []overlayParameter, name string, required bool) bool {
+	for _, parameter := range parameters {
+		if parameter.Name == name && parameter.In == "query" && parameter.Required == required {
+			return true
+		}
+	}
+	return false
+}
+
+func hasSecurityScope(requirements []map[string][]string, scheme, scope string) bool {
+	for _, requirement := range requirements {
+		scopes, ok := requirement[scheme]
+		if !ok {
+			continue
+		}
+		for _, got := range scopes {
+			if got == scope {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func catalogOverlayHasOperationScope(overlay catalog.SecurityOverlay, method, path, scheme, scope string) bool {
+	for _, operation := range overlay.OperationSecurity {
+		if operation.Match.Method != method || operation.Match.Path != path {
+			continue
+		}
+		for _, set := range operation.SecuritySets {
+			for _, requirement := range set.Requirements {
+				if requirement.Scheme != scheme {
+					continue
+				}
+				for _, got := range requirement.Scopes {
+					if got == scope {
+						return true
+					}
+				}
+			}
+		}
+	}
+	return false
 }
 
 func loadHumanDocsEndpointOverlayDecisions(t *testing.T) endpointOverlayDecisions {

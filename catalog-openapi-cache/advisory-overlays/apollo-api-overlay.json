@@ -40,16 +40,62 @@
       "post": {
         "description": "Advisory operation derived from official human API documentation.",
         "operationId": "searchApolloOrganizations",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ApolloObject"
-              }
+        "parameters": [
+          {
+            "description": "Organization domains to include.",
+            "in": "query",
+            "name": "q_organization_domains_list[]",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           },
-          "required": true
-        },
+          {
+            "description": "Organization headquarters locations.",
+            "in": "query",
+            "name": "organization_locations[]",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Organization name filter.",
+            "in": "query",
+            "name": "q_organization_name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Apollo organization IDs to include.",
+            "in": "query",
+            "name": "organization_ids[]",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Results per page.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -80,16 +126,80 @@
       "post": {
         "description": "Advisory operation derived from official human API documentation.",
         "operationId": "searchApolloPeople",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ApolloObject"
-              }
+        "parameters": [
+          {
+            "description": "Job titles to include.",
+            "in": "query",
+            "name": "person_titles[]",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           },
-          "required": true
-        },
+          {
+            "description": "Keyword filter.",
+            "in": "query",
+            "name": "q_keywords",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Person locations to include.",
+            "in": "query",
+            "name": "person_locations[]",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Person seniorities to include.",
+            "in": "query",
+            "name": "person_seniorities[]",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Employer headquarters locations.",
+            "in": "query",
+            "name": "organization_locations[]",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Employer domains to include.",
+            "in": "query",
+            "name": "q_organization_domains_list[]",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Results per page.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
