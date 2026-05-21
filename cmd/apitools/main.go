@@ -67,6 +67,8 @@ func runCatalog(args []string, out, errOut io.Writer) int {
 		return runCatalogCheck(args[1:], out, errOut)
 	case "list":
 		return runCatalogList(args[1:], out, errOut)
+	case "n8n-gap-report":
+		return runCatalogN8nGapReport(args[1:], out, errOut)
 	case "specs":
 		return runCatalogSpecs(args[1:], out, errOut)
 	case "stats":
@@ -98,6 +100,7 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "  advisory         render provider advisory summaries")
 	fmt.Fprintln(out, "  check            run offline catalog quality checks")
 	fmt.Fprintln(out, "  list             list built-in provider catalog metadata")
+	fmt.Fprintln(out, "  n8n-gap-report   compare local n8n node roots to catalog coverage")
 	fmt.Fprintln(out, "  specs            list refreshable built-in spec references")
 	fmt.Fprintln(out, "  stats            summarize catalog protocol and artifact status")
 	fmt.Fprintln(out, "  refresh          refresh one selected built-in spec reference")
@@ -105,6 +108,65 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "  inspect          inspect one provider and resolution status")
 	fmt.Fprintln(out, "  overlay-view     inspect advisory security overlay effects")
 	fmt.Fprintln(out, "  security-report  report auth/security status across providers")
+}
+
+func runCatalogN8nGapReport(args []string, out, errOut io.Writer) int {
+	fs := flag.NewFlagSet("apitools catalog n8n-gap-report", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	nodesDir := fs.String("nodes-dir", "../n8n/packages/nodes-base/nodes", "n8n nodes-base/nodes directory")
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog n8n-gap-report [--nodes-dir ../n8n/packages/nodes-base/nodes] [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if fs.NArg() > 0 {
+		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
+		fs.Usage()
+		return 2
+	}
+	nodeRoots, err := readN8nNodeRoots(*nodesDir)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	report := catalogpkg.BuildN8nNodeGapReport(catalogpkg.N8nNodeGapReportOptions{NodeRoots: nodeRoots})
+	if *jsonOut {
+		if err := writeJSON(out, report); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	writeN8nNodeGapReport(out, report)
+	return 0
+}
+
+func readN8nNodeRoots(nodesDir string) ([]string, error) {
+	entries, err := os.ReadDir(nodesDir)
+	if err != nil {
+		return nil, fmt.Errorf("read n8n nodes dir: %w", err)
+	}
+	roots := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		if entry.Type()&os.ModeSymlink != 0 || !entry.IsDir() {
+			continue
+		}
+		roots = append(roots, entry.Name())
+	}
+	sort.Strings(roots)
+	return roots, nil
 }
 
 func runCatalogAdvisory(args []string, out, errOut io.Writer) int {
@@ -1527,6 +1589,28 @@ func runImport(args []string, out, errOut io.Writer) int {
 	}
 	fmt.Fprintf(out, "sha256: %s\n", imported.SHA256)
 	return 0
+}
+
+func writeN8nNodeGapReport(out io.Writer, report catalogpkg.N8nNodeGapReport) {
+	fmt.Fprintf(out, "n8n node roots: %d\n", report.TotalNodes)
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Summary:")
+	for _, row := range report.Summary {
+		fmt.Fprintf(out, "  %-48s %d\n", row.Classification, row.Count)
+	}
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Frozen source-review batch:")
+	for _, entry := range report.FrozenBatch {
+		fmt.Fprintf(out, "  %-16s %-18s %-42s %s\n", entry.NodeRoot, entry.ProviderID, entry.SourceExpectation, entry.Rationale)
+	}
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Unmatched or excluded node roots:")
+	for _, row := range report.Rows {
+		if row.Classification == catalogpkg.N8nNodeAlreadyCovered {
+			continue
+		}
+		fmt.Fprintf(out, "  %-28s %-48s %s\n", row.NodeRoot, row.Classification, row.Rationale)
+	}
 }
 
 func writeJSON(out io.Writer, value any) error {

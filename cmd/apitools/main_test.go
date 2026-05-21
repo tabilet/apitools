@@ -51,9 +51,57 @@ func TestCatalogHelpDocumentsSubcommands(t *testing.T) {
 		t.Fatalf("code = %d\n%s", code, out.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"Usage: apitools catalog", "advisory", "check", "list", "specs", "stats", "refresh-report", "inspect", "overlay-view", "security-report"} {
+	for _, expected := range []string{"Usage: apitools catalog", "advisory", "check", "list", "n8n-gap-report", "specs", "stats", "refresh-report", "inspect", "overlay-view", "security-report"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
+		}
+	}
+}
+
+func TestCatalogN8nGapReportOutputAndJSON(t *testing.T) {
+	dir := t.TempDir()
+	for _, name := range []string{"Slack", "MongoDb", "GraphQL", "Code", "MissingProvider"} {
+		if err := os.Mkdir(filepath.Join(dir, name), 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(filepath.Join(dir, "README.md"), []byte("ignored"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "n8n-gap-report", "--nodes-dir", dir}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	text := out.String()
+	for _, expected := range []string{
+		"n8n node roots: 5",
+		"generic-protocol-connector-excluded-m50",
+		"graphql-or-protocol-family-candidate",
+		"local-workflow-utility-excluded",
+		"provider-api-candidate",
+		"Frozen source-review batch:",
+		"Chargebee",
+	} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("n8n gap report missing %q:\n%s", expected, text)
+		}
+	}
+	if strings.Contains(text, "Slack") {
+		t.Fatalf("text report should omit already covered rows from unmatched/excluded section:\n%s", text)
+	}
+
+	out.Reset()
+	errOut.Reset()
+	code = run([]string{"catalog", "n8n-gap-report", "--nodes-dir", dir, "--json"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{`"total_nodes": 5`, `"node_root": "Slack"`, `"matched_provider_id": "slack"`, `"frozen_batch"`} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("n8n gap report json missing %q:\n%s", expected, out.String())
 		}
 	}
 }

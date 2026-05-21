@@ -104,6 +104,8 @@ go run ./cmd/apitools catalog inspect slack \
 go run ./cmd/apitools catalog overlay-view github --json
 go run ./cmd/apitools catalog security-report --json
 go run ./cmd/apitools catalog check --as-of 2026-05-18 --json
+go run ./cmd/apitools catalog n8n-gap-report \
+  --nodes-dir ../n8n/packages/nodes-base/nodes
 go run ./cmd/apitools catalog specs --cache catalog-openapi-cache/cache.sqlite
 go run ./cmd/apitools catalog stats \
   --cache-dir catalog-openapi-cache \
@@ -161,6 +163,15 @@ built-in providers, candidates, source notes, verification dates, security
 classifications, and overlay references without probing URLs or downloading
 provider documents. Error-level findings return a nonzero exit code; warning-only
 reports remain exit code 0 for inspection.
+
+Catalog n8n gap reports are offline. `catalog n8n-gap-report` compares local
+n8n node roots with built-in provider IDs, display names, aliases, and curated
+category coverage, then classifies non-covered roots as provider API
+candidates, M50 protocol-connector exclusions, local workflow utilities, or
+future protocol-family candidates. The report also carries the frozen
+source-review batch for the next catalog curation pass. It reads directory
+names only; it does not import n8n node behavior, execute workflows, probe
+provider APIs, or resolve credentials.
 
 Catalog stats are offline. `catalog stats` summarizes primary provider
 protocol classifications, local catalog artifact registry counts by kind, and
@@ -334,6 +345,7 @@ go run ./cmd/apitools catalog advisory slack
 go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog security-report
 go run ./cmd/apitools catalog stats
+go run ./cmd/apitools catalog n8n-gap-report --nodes-dir ../n8n/packages/nodes-base/nodes
 ```
 
 When changing exported APIs, run dependent checks in sibling consumers when
