@@ -536,6 +536,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Netlify's official OpenAPI document includes OAuth2 security metadata and root security requirements; official API docs describe bearer personal access tokens for manual requests.",
 	},
 	{
+		ProviderID: "netsuite",
+		SpecRefID:  "netsuite-suitetalk-rest-overview",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/chapter_1540391670.html", "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/chapter_1540810168.html", "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/article_0627022005.html"},
+		SourceNote: "NetSuite SuiteTalk REST authentication is account and integration-record configured; account-specific OpenAPI metadata must be user-provided, and apitools must not fetch tokens, sign TBA requests, or call metadata-catalog URLs.",
+	},
+	{
 		ProviderID: "notion",
 		SpecRefID:  "notion-api-openapi",
 		Status:     AuthStatusComplete,
@@ -555,6 +562,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		Status:     AuthStatusOverlayRequired,
 		SourceRefs: []string{"https://openweathermap.org/api"},
 		SourceNote: "OpenWeather has no recorded official OpenAPI document in the built-in catalog; API key placement is captured by advisory overlay metadata.",
+	},
+	{
+		ProviderID: "oracle-fusion-cloud-applications",
+		SpecRefID:  "oracle-fusion-common-rest-docs",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://docs.oracle.com/en/cloud/saas/applications-common/25b/farca/toc.htm", "https://docs.oracle.com/en/cloud/saas/applications-common/25b/farca/Access_Metadata.html", "https://docs.oracle.com/en/cloud/saas/human-resources/farws/rest-endpoints.html"},
+		SourceNote: "Oracle Fusion Cloud Applications REST auth and `/describe` metadata depend on tenant, product family, enabled modules, version, and security context; apitools records source guidance only and must not contact Fusion tenants or resolve credentials.",
 	},
 	{
 		ProviderID: "pagerduty",
@@ -949,6 +963,20 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Salesmate has official human API docs but no recorded stable public official OpenAPI document; sessionToken and x-linkname metadata comes from advisory overlay notes.",
 	},
 	{
+		ProviderID: "sap-s4hana",
+		SpecRefID:  "sap-s4hana-cloud-api-hub-docs",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://help.sap.com/docs/SAP_S4HANA_CLOUD/0f69f8fb28ac4bf48d2b57b9637e81fa/1e60f14bdc224c2c975c8fa8bcfd7f3f.html?locale=en-US", "https://developers.sap.com/tutorials/hcp-abh-getting-started..html", "https://userapps.support.sap.com/sap/support/knowledge/en/3582906"},
+		SourceNote: "SAP S/4HANA APIs span Business Accelerator Hub OpenAPI/OData/SOAP source families and tenant/configuration-specific auth contexts; apitools must not hide OData or SOAP semantics in a generic overlay or resolve SAP credentials.",
+	},
+	{
+		ProviderID: "sap-successfactors",
+		SpecRefID:  "sap-successfactors-available-apis",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://userapps.support.sap.com/sap/support/knowledge/en/2613670", "https://help.sap.com/docs/successfactors-platform/sap-successfactors-api-reference-guide-odata-v2/authentication?locale=en-US", "https://userapps.support.sap.com/sap/support/knowledge/en/3641488"},
+		SourceNote: "SAP SuccessFactors APIs are primarily OData and SOAP families with tenant/module-specific authentication; apitools records source metadata only and does not implement OData lowering or resolve SuccessFactors credentials in M55.",
+	},
+	{
 		ProviderID: "sendy",
 		SpecRefID:  "sendy-api-docs",
 		Status:     AuthStatusOverlayRequired,
@@ -1206,6 +1234,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		Status:     AuthStatusOverlayRequired,
 		SourceRefs: []string{"https://workable.readme.io/reference", "https://help.workable.com/hc/en-us/articles/115013356548-Workable-API-Documentation"},
 		SourceNote: "Workable has official human API docs but no recorded stable public official OpenAPI document; bearer access-token metadata comes from advisory overlay notes.",
+	},
+	{
+		ProviderID: "workday",
+		SpecRefID:  "workday-soap-api-reference",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://community-content.workday.com/en-us/public/products/platform-and-product-extensions/soap-api-reference.html", "https://community.workday.com/sites/default/files/file-hosting/productionapi/index.html", "https://community.workday.com/sites/default/files/file-hosting/restapi/index.html"},
+		SourceNote: "Workday API coverage spans WWS SOAP/WSDL and REST documentation, with tenant/security configuration outside public catalog metadata; apitools must not add WSDL/SOAP parsing or contact Workday tenants in M55.",
 	},
 	{
 		ProviderID: "bitwarden",

@@ -159,6 +159,16 @@ and `/openapi/v3`, but `apitools` must not read kubeconfig, service-account
 tokens, certificates, or cluster environment variables, and must not contact API
 servers.
 
+Enterprise application metadata is also source-first and tenant-safe. NetSuite,
+SAP S/4HANA, SAP SuccessFactors, Oracle Fusion Cloud Applications, and Workday
+are cataloged from official provider documentation as high-value source
+families, but account-specific OpenAPI metadata catalogs, Fusion `/describe`
+responses, SAP OData/SOAP artifacts, and Workday WWS/REST metadata must be
+user-provided or exported by downstream tooling. `apitools` does not sign in to
+enterprise tenants, resolve OAuth clients, fetch tokens, call metadata
+endpoints, infer enabled modules, or lower OData/WSDL/SOAP into OpenAPI in this
+catalog step.
+
 Overlay inspection views are metadata-only. `catalog overlay-view` reports how
 built-in security overlays would supplement catalog classifications, preserving
 provenance for schemes and security requirements and surfacing review conflicts

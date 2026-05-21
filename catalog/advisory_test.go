@@ -354,6 +354,52 @@ func TestKubernetesClusterAPISourceCoverageAdvisoryRow(t *testing.T) {
 	assertHasFollowUp(t, row.ManualFollowUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
 }
 
+func TestEnterpriseApplicationSourceCoverageAdvisoryRows(t *testing.T) {
+	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{})
+	if err != nil {
+		t.Fatalf("BuiltInProviderAdvisoryReport() error = %v", err)
+	}
+	rows := map[string]ProviderAdvisory{}
+	for _, row := range report.Providers {
+		rows[row.ProviderID] = row
+	}
+	tests := []struct {
+		provider      string
+		wantSpecRefID string
+	}{
+		{provider: "netsuite", wantSpecRefID: "netsuite-suitetalk-rest-overview"},
+		{provider: "oracle-fusion-cloud-applications", wantSpecRefID: "oracle-fusion-common-rest-docs"},
+		{provider: "sap-s4hana", wantSpecRefID: "sap-s4hana-cloud-api-hub-docs"},
+		{provider: "sap-successfactors", wantSpecRefID: "sap-successfactors-available-apis"},
+		{provider: "workday", wantSpecRefID: "workday-soap-api-reference"},
+	}
+	for _, test := range tests {
+		row, ok := rows[test.provider]
+		if !ok {
+			t.Fatalf("missing enterprise application provider %s", test.provider)
+		}
+		if row.OpenAPIAvailability != SpecAvailabilityUnavailable {
+			t.Fatalf("%s OpenAPI availability = %q, want %q", test.provider, row.OpenAPIAvailability, SpecAvailabilityUnavailable)
+		}
+		if row.UserOpenAPINeed != UserOpenAPINeedLikely {
+			t.Fatalf("%s user OpenAPI need = %q, want %q", test.provider, row.UserOpenAPINeed, UserOpenAPINeedLikely)
+		}
+		if row.AuthStatus != AuthStatusPresentIncomplete {
+			t.Fatalf("%s auth status = %q, want %q", test.provider, row.AuthStatus, AuthStatusPresentIncomplete)
+		}
+		if !advisoryHasSpecKind(row, SpecKindHumanDocs) {
+			t.Fatalf("%s missing human docs reference: %#v", test.provider, row.SpecReferences)
+		}
+		if row.ResolvedOpenAPI.Source != ResolutionSourceBuiltInSpecReference || row.ResolvedOpenAPI.SpecRefID != test.wantSpecRefID {
+			t.Fatalf("%s resolved OpenAPI = %#v", test.provider, row.ResolvedOpenAPI)
+		}
+		if len(row.EndpointOverlays) != 0 {
+			t.Fatalf("%s endpoint overlays = %#v, want none", test.provider, row.EndpointOverlays)
+		}
+		assertHasFollowUp(t, row.ManualFollowUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
+	}
+}
+
 func TestBuiltInProviderAdvisoryReportMissingCacheHasNoArtifactPath(t *testing.T) {
 	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{ProviderKey: "slack"})
 	if err != nil {

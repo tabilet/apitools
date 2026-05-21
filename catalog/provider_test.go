@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 272; got != want {
+	if got, want := len(catalog.ListProviders()), 277; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -192,6 +192,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"nasa",
 		"netlify",
 		"netscaler",
+		"netsuite",
 		"nextcloud",
 		"nocodb",
 		"notion",
@@ -204,6 +205,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"openai",
 		"openthesaurus",
 		"openweathermap",
+		"oracle-fusion-cloud-applications",
 		"orbit",
 		"oura",
 		"paddle",
@@ -231,6 +233,8 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"rundeck",
 		"salesforce",
 		"salesmate",
+		"sap-s4hana",
+		"sap-successfactors",
 		"seatable",
 		"securityscorecard",
 		"segment",
@@ -282,6 +286,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"woocommerce",
 		"wordpress",
 		"workable",
+		"workday",
 		"wufoo",
 		"xero",
 		"yourls",
@@ -436,6 +441,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "monica crm", id: "monica-crm"},
 		{key: "nasa api", id: "nasa"},
 		{key: "netlify api", id: "netlify"},
+		{key: "suitetalk rest", id: "netsuite"},
 		{key: "nvidia dsx air api", id: "nvidia-dsx-air"},
 		{key: "noco db", id: "nocodb"},
 		{key: "notion api", id: "notion"},
@@ -444,6 +450,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "onesimpleapi api", id: "onesimpleapi"},
 		{key: "onfleet api", id: "onfleet"},
 		{key: "openthesaurus api", id: "openthesaurus"},
+		{key: "oracle fusion rest api", id: "oracle-fusion-cloud-applications"},
 		{key: "paddle api", id: "paddle"},
 		{key: "paypal checkout", id: "paypal"},
 		{key: "pipedrive crm", id: "pipedrive"},
@@ -455,6 +462,8 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "rocketchat", id: "rocket-chat"},
 		{key: "salesforce rest api", id: "salesforce"},
 		{key: "salesmate crm", id: "salesmate"},
+		{key: "sap s/4hana api", id: "sap-s4hana"},
+		{key: "successfactors odata", id: "sap-successfactors"},
 		{key: "sea table", id: "seatable"},
 		{key: "twilio sendgrid", id: "sendgrid"},
 		{key: "twilio segment", id: "segment"},
@@ -485,6 +494,7 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "wise api", id: "wise"},
 		{key: "wc rest api", id: "woocommerce"},
 		{key: "workable api", id: "workable"},
+		{key: "workday wws", id: "workday"},
 		{key: "xero accounting", id: "xero"},
 		{key: "zoom meetings", id: "zoom"},
 		{key: "zendesk support", id: "zendesk"},
@@ -684,6 +694,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "msg91", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "nasa", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "netlify", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
+		{id: "netsuite", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "nocodb", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "notion", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "npm", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
@@ -694,6 +705,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "openai", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "openthesaurus", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "openweathermap", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "oracle-fusion-cloud-applications", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "paddle", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "paypal", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "peekalink", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
@@ -713,6 +725,8 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "rocket-chat", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "salesforce", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "salesmate", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "sap-s4hana", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "sap-successfactors", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "seatable", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "segment", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindHumanDocs},
 		{id: "sendgrid", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
@@ -756,6 +770,7 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "woocommerce", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "wordpress", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "workable", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
+		{id: "workday", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "wufoo", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "xero", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindOpenAPI},
 		{id: "yourls", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},

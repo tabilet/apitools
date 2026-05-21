@@ -40,6 +40,14 @@ source model and expect user-exported local artifacts; they must not contact API
 servers, read kubeconfig or service-account credentials, perform discovery
 calls, watch resources, or claim runtime compatibility with any cluster.
 
+Enterprise application metadata needs account and tenant boundaries even when
+official docs describe OpenAPI-shaped metadata. NetSuite metadata catalogs,
+Oracle Fusion `/describe` responses, SAP Business Accelerator Hub OData/SOAP
+surfaces, and Workday WWS/REST metadata are useful source families, but the
+portable catalog row should stop at official source refs, auth posture, and
+user-provided metadata guidance unless a future milestone adds a local parser
+for exported artifacts.
+
 ## Source-First Batch Queue
 
 Freeze future batches only from provider-owned or protocol-owned evidence.

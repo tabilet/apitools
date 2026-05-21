@@ -11,7 +11,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 273; got != want {
+	if got, want := len(candidates), 278; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -194,6 +194,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"nasa",
 		"netlify",
 		"netscaler",
+		"netsuite",
 		"nextcloud",
 		"nocodb",
 		"notion",
@@ -206,6 +207,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"openai",
 		"openthesaurus",
 		"openweathermap",
+		"oracle-fusion-cloud-applications",
 		"orbit",
 		"oura",
 		"paddle",
@@ -233,6 +235,8 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"rundeck",
 		"salesforce",
 		"salesmate",
+		"sap-s4hana",
+		"sap-successfactors",
 		"seatable",
 		"securityscorecard",
 		"segment",
@@ -284,6 +288,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"woocommerce",
 		"wordpress",
 		"workable",
+		"workday",
 		"wufoo",
 		"xero",
 		"yourls",
@@ -427,6 +432,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "monica crm api", id: "monica-crm"},
 		{key: "api.nasa.gov", id: "nasa"},
 		{key: "netlify api", id: "netlify"},
+		{key: "oracle netsuite", id: "netsuite"},
 		{key: "nvidia air api", id: "nvidia-dsx-air"},
 		{key: "nocodb api", id: "nocodb"},
 		{key: "odoo xml-rpc api", id: "odoo"},
@@ -436,10 +442,13 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "postmark api", id: "postmark"},
 		{key: "one simple api", id: "onesimpleapi"},
 		{key: "open thesaurus", id: "openthesaurus"},
+		{key: "oracle fusion cloud applications api", id: "oracle-fusion-cloud-applications"},
 		{key: "quick chart", id: "quickchart"},
 		{key: "reddit api", id: "reddit"},
 		{key: "rocket.chat api", id: "rocket-chat"},
 		{key: "salesmate crm", id: "salesmate"},
+		{key: "sap s4hana api", id: "sap-s4hana"},
+		{key: "sap successfactors api", id: "sap-successfactors"},
 		{key: "sendy api", id: "sendy"},
 		{key: "seatable api", id: "seatable"},
 		{key: "sentry.io", id: "sentry"},
@@ -460,6 +469,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "wise platform api", id: "wise"},
 		{key: "woocommerce rest api", id: "woocommerce"},
 		{key: "workable recruiting api", id: "workable"},
+		{key: "workday rest api", id: "workday"},
 	}
 	for _, test := range tests {
 		candidate, ok := FindBuiltInCandidate(test.key)

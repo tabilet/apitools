@@ -12,6 +12,9 @@ stance for each family.
 | Google Discovery | Official Google REST API description artifact and native protocol metadata source. | Parsed explicitly through standalone `github.com/OpenUdon/googlediscovery.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid treating Discovery as an OpenAPI runtime contract. |
 | Dropbox Stone | Official Dropbox API model source and advisory overlay provenance. | Review-only source metadata; no native Stone parser or route lowering is currently planned. |
 | Kubernetes Discovery/OpenAPI | Cluster-published API metadata for enabled groups, versions, resources, aggregated APIs, and CRDs. | User-exported local metadata only for now; no live cluster discovery, kubeconfig reading, credential resolution, or native parser in M54. |
+| OData | Enterprise application source family used by SAP S/4HANA and SAP SuccessFactors surfaces. | User-exported or provider metadata only for now; no OData parser, lowering, or generic REST-shaped overlay in M55. |
+| WSDL/SOAP | Enterprise application source family used by Workday WWS and some SAP surfaces. | Review-only source metadata for now; no WSDL/SOAP parser, credential resolution, tenant calls, or OpenAPI lowering in M55. |
+| Tenant describe and metadata catalogs | Account-specific metadata catalogs such as NetSuite SuiteTalk REST OpenAPI 3.0 metadata and Oracle Fusion `/describe` responses. | User-provided exported metadata only for now; no live tenant metadata calls or native describe parser in M55. |
 | OpenAPI index | Provider-owned index of OpenAPI documents. | Review-only index; individual child OpenAPI documents still need explicit selection and validation. |
 | Human docs | Official documentation source for docs-derived advisory overlays. | Not importable by itself; endpoint overlays are advisory and source-backed, not provider truth. |
 | Generic protocol connectors | Workflow/runtime connectors for databases, brokers, mail, files, directories, generic HTTP, webhooks, or local execution. | Not provider catalog evidence by themselves; future native source work must start from provider-owned or protocol-owned metadata artifacts. |
@@ -59,6 +62,15 @@ stance for each family.
    local metadata by the operator or downstream tooling. No parser is added in
    M54 because OpenAPI import already handles user-provided OpenAPI documents,
    and live discovery would cross the `apitools` boundary.
+
+7. **Enterprise application metadata no-parser decision.**
+   M55 records NetSuite, SAP S/4HANA, SAP SuccessFactors, Oracle Fusion Cloud
+   Applications, and Workday as official source families without adding parser
+   code. NetSuite and Oracle Fusion can expose OpenAPI-shaped metadata only
+   through account or tenant endpoints; SAP and Workday include OData and
+   WSDL/SOAP semantics that should not be hidden inside generic endpoint
+   overlays. Future parser work should start from exported local metadata and
+   preserve native protocol fields.
 
 ## Generic Protocol Connector Families
 

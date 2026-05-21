@@ -786,6 +786,14 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular web hosting platform for sites, deploys, forms, DNS, hooks, and build automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "netsuite",
+		displayName: "NetSuite",
+		aliases:     []string{"netsuite api", "netsuite rest api", "oracle netsuite", "suitetalk rest"},
+		category:    "erp",
+		relevance:   "High-value ERP and business application API for records, transactions, customers, vendors, items, SuiteQL, custom records, and account-specific automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "nocodb",
 		displayName: "NocoDB",
 		aliases:     []string{"nocodb api", "noco db"},
@@ -813,6 +821,14 @@ var builtInCandidates = []Candidate{
 		aliases:     []string{"open weather map", "openweathermap api"},
 		category:    "weather",
 		relevance:   "Common workflow data source for current weather and forecast enrichment.",
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "oracle-fusion-cloud-applications",
+		displayName: "Oracle Fusion Cloud Applications",
+		aliases:     []string{"oracle fusion", "oracle fusion api", "oracle fusion cloud applications api", "oracle fusion rest api"},
+		category:    "erp",
+		relevance:   "High-value Oracle SaaS application API family for Fusion HCM, Financials, SCM, CX, common application resources, object metadata, and tenant-specific enterprise automation.",
+		userNeed:    UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{
 		id:          "pagerduty",
@@ -1276,6 +1292,22 @@ var builtInCandidates = []Candidate{
 		userNeed:    UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "sap-s4hana",
+		displayName: "SAP S/4HANA",
+		aliases:     []string{"sap s4hana", "sap s/4hana api", "sap s4 hana api", "sap s4hana api", "s/4hana api"},
+		category:    "erp",
+		relevance:   "High-value SAP ERP application API family for business objects, finance, procurement, sales, manufacturing, master data, and enterprise workflow automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "sap-successfactors",
+		displayName: "SAP SuccessFactors",
+		aliases:     []string{"sap successfactors", "successfactors api", "sap successfactors api", "successfactors odata"},
+		category:    "hr",
+		relevance:   "High-value SAP HCM application API family for employee, workforce, recruiting, performance, learning, and people operations automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "sendy",
 		displayName: "Sendy",
 		aliases:     []string{"sendy api"},
@@ -1569,6 +1601,14 @@ var builtInCandidates = []Candidate{
 		aliases:     []string{"workable api", "workable recruiting api"},
 		category:    "hr",
 		relevance:   "Popular recruiting platform for jobs, candidates, applications, members, recruiters, stages, requisitions, and hiring automation.",
+		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "workday",
+		displayName: "Workday",
+		aliases:     []string{"workday api", "workday rest api", "workday soap api", "workday web services", "workday wws"},
+		category:    "enterprise-apps",
+		relevance:   "High-value enterprise application API family for human capital management, finance, workforce, recruiting, and tenant-specific business process automation.",
 		userNeed:    UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{
