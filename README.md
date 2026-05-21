@@ -357,12 +357,20 @@ and `.yml` files that parse but are not OpenAPI or Swagger are still ignored by
   implementation for the core `Cache` interface.
 - `github.com/OpenUdon/apitools/openapidisco`: compatibility wrapper around
   local OpenAPI discovery and primary-candidate selection.
+- `github.com/OpenUdon/apitools/googlediscovery`: deprecated compatibility
+  wrapper around the standalone `github.com/OpenUdon/googlediscovery` native
+  Google Discovery parser.
+- `github.com/OpenUdon/apitools/awssmithy`: deprecated compatibility wrapper
+  around the standalone `github.com/OpenUdon/awssmithy` native AWS Smithy JSON
+  parser.
 
 ## Development
 
 ```bash
 go test ./...
 go vet ./...
+GOWORK=off go test ./...
+GOWORK=off go vet ./...
 git diff --check
 go run ./cmd/apitools search --help
 go run ./cmd/apitools import --help
