@@ -1,6 +1,7 @@
 package apitools
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
@@ -136,6 +137,7 @@ func BuildCatalogSecurityAuditReport(opts CatalogSecurityAuditOptions) (CatalogS
 		securityByProvider[row.ProviderID] = row
 	}
 	artifactsByProvider := catalogSecurityArtifactsByProvider(opts.Artifacts)
+	overlaysByProvider := catalogSecurityAuditOverlaysByProvider(cat.ListSecurityOverlays())
 
 	var rows []CatalogSecurityAuditRow
 	for _, provider := range cat.ListProviders() {
@@ -148,9 +150,9 @@ func BuildCatalogSecurityAuditReport(opts CatalogSecurityAuditOptions) (CatalogS
 			SpecRefIDs:       append([]string(nil), security.SpecRefIDs...),
 			OverlayIDs:       append([]string(nil), security.OverlayIDs...),
 			SourceNotes:      append([]string(nil), security.SourceNotes...),
-			ArtifactSecurity: auditProviderSecurityArtifacts(provider, artifactsByProvider[provider.ID], opts),
+			ArtifactSecurity: auditProviderSecurityArtifacts(provider, artifactsByProvider[provider.ID], overlaysByProvider[provider.ID], opts),
 		}
-		row.Disposition, row.Reasons, row.ManualFollowUps = catalogSecurityDisposition(provider, security, row.ArtifactSecurity)
+		row.Disposition, row.Reasons, row.ManualFollowUps = catalogSecurityDisposition(security, row.ArtifactSecurity)
 		rows = append(rows, row)
 	}
 	sort.SliceStable(rows, func(i, j int) bool { return rows[i].ProviderID < rows[j].ProviderID })
@@ -202,7 +204,23 @@ func catalogSecurityArtifactsByProvider(artifacts []catalog.CatalogSpecArtifact)
 	return out
 }
 
-func auditProviderSecurityArtifacts(provider catalog.Provider, artifacts []catalog.CatalogSpecArtifact, opts CatalogSecurityAuditOptions) []CatalogSecurityArtifactAuditRow {
+func catalogSecurityAuditOverlaysByProvider(overlays []catalog.SecurityOverlay) map[string][]catalog.SecurityOverlay {
+	out := map[string][]catalog.SecurityOverlay{}
+	for _, overlay := range overlays {
+		if strings.TrimSpace(overlay.ProviderID) == "" {
+			continue
+		}
+		out[overlay.ProviderID] = append(out[overlay.ProviderID], overlay)
+	}
+	for providerID := range out {
+		sort.SliceStable(out[providerID], func(i, j int) bool {
+			return out[providerID][i].ID < out[providerID][j].ID
+		})
+	}
+	return out
+}
+
+func auditProviderSecurityArtifacts(provider catalog.Provider, artifacts []catalog.CatalogSpecArtifact, overlays []catalog.SecurityOverlay, opts CatalogSecurityAuditOptions) []CatalogSecurityArtifactAuditRow {
 	var rows []CatalogSecurityArtifactAuditRow
 	for _, ref := range provider.SpecReferences {
 		protocol := ref.ProtocolClassification().Protocol
@@ -222,7 +240,9 @@ func auditProviderSecurityArtifacts(provider catalog.Provider, artifacts []catal
 			})
 			continue
 		}
-		rows = append(rows, auditOpenAPISecurityArtifact(provider.ID, ref.ID, artifact, opts))
+		row := auditOpenAPISecurityArtifact(provider.ID, ref.ID, artifact, opts)
+		applyCoveredSecurityArtifactFollowUp(&row, ref, overlays)
+		rows = append(rows, row)
 	}
 	return rows
 }
@@ -313,6 +333,46 @@ func auditOpenAPISecurityArtifact(providerID, specRefID string, artifact catalog
 	return row
 }
 
+func applyCoveredSecurityArtifactFollowUp(row *CatalogSecurityArtifactAuditRow, ref catalog.SpecReference, overlays []catalog.SecurityOverlay) {
+	switch row.Status {
+	case SecurityAuditArtifactMissingSecurityMetadata,
+		SecurityAuditArtifactMissingSecuritySchemes,
+		SecurityAuditArtifactMissingSecurityRequirements,
+		SecurityAuditArtifactUndeclaredSecuritySchemes:
+	default:
+		return
+	}
+	overlayIDs := coveringSecurityOverlayIDs(ref, overlays)
+	if len(overlayIDs) == 0 {
+		return
+	}
+	row.ManualFollowUps = []string{
+		fmt.Sprintf("Reviewed by catalog security overlay(s) %s; upstream artifact still reports %s for source review.", strings.Join(overlayIDs, ", "), row.Status),
+	}
+}
+
+func coveringSecurityOverlayIDs(ref catalog.SpecReference, overlays []catalog.SecurityOverlay) []string {
+	specRefID := strings.TrimSpace(ref.ID)
+	specURL := strings.TrimSpace(ref.URL)
+	var out []string
+	for _, overlay := range overlays {
+		if strings.TrimSpace(overlay.SpecRefID) == specRefID {
+			out = append(out, overlay.ID)
+			continue
+		}
+		if specURL == "" {
+			continue
+		}
+		for _, sourceRef := range overlay.SourceRefs {
+			if strings.TrimSpace(sourceRef) == specURL {
+				out = append(out, overlay.ID)
+				break
+			}
+		}
+	}
+	return sortedUniqueStrings(out)
+}
+
 func securityRequirementNames(value any) []string {
 	var out []string
 	for _, requirementValue := range sliceValue(value) {
@@ -354,7 +414,7 @@ func undeclaredSecurityRequirementNames(names []string, schemes map[string]Secur
 	return out
 }
 
-func catalogSecurityDisposition(provider catalog.Provider, security catalog.ProviderSecurityReport, artifacts []CatalogSecurityArtifactAuditRow) (string, []string, []string) {
+func catalogSecurityDisposition(security catalog.ProviderSecurityReport, artifacts []CatalogSecurityArtifactAuditRow) (string, []string, []string) {
 	var reasons []string
 	var followUps []string
 	switch {

@@ -3,6 +3,7 @@ package apitools
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/OpenUdon/apitools/catalog"
@@ -142,6 +143,81 @@ func TestCatalogSecurityAuditDetectsMissingOpenAPISecurityMetadata(t *testing.T)
 	row := report.Providers[0].ArtifactSecurity[0]
 	if row.Status != SecurityAuditArtifactMissingSecurityMetadata {
 		t.Fatalf("artifact status = %q, want %q", row.Status, SecurityAuditArtifactMissingSecurityMetadata)
+	}
+}
+
+func TestCatalogSecurityAuditNamesCoveringOverlayForArtifactFinding(t *testing.T) {
+	dir := t.TempDir()
+	openAPIDir := filepath.Join(dir, "openapi")
+	if err := os.MkdirAll(openAPIDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	specPath := filepath.Join("openapi", "public.json")
+	content := []byte(`{
+  "openapi": "3.0.3",
+  "info": {"title": "Example", "version": "1.0.0"},
+  "paths": {"/status": {"get": {"operationId": "getStatus"}}}
+}`)
+	if err := os.WriteFile(filepath.Join(dir, filepath.FromSlash(specPath)), content, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	report, err := BuildCatalogSecurityAuditReport(CatalogSecurityAuditOptions{
+		Catalog: catalog.Catalog{
+			Providers: []catalog.Provider{testSecurityAuditProvider()},
+			SecurityOverlays: []catalog.SecurityOverlay{{
+				ID:         "example-auth-overlay",
+				ProviderID: "example",
+				SpecRefID:  "example-openapi",
+				Status:     catalog.AuthStatusOverlayRequired,
+				SecuritySchemes: []catalog.SecurityScheme{{
+					Name:         "exampleBearer",
+					Type:         catalog.SecuritySchemeHTTP,
+					Scheme:       "bearer",
+					BearerFormat: "example token",
+				}},
+				RootSecurity: []catalog.SecurityRequirement{{Scheme: "exampleBearer"}},
+				SourceRefs:   []string{"https://example.com/openapi.json", "https://example.com/docs"},
+				SourceNote:   "test overlay",
+			}},
+		},
+		Artifacts: []catalog.CatalogSpecArtifact{{
+			ProviderID: "example",
+			SpecRefID:  "example-openapi",
+			Kind:       "openapi",
+			Path:       specPath,
+		}},
+		CacheDir: dir,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	row := report.Providers[0].ArtifactSecurity[0]
+	if row.Status != SecurityAuditArtifactMissingSecurityMetadata {
+		t.Fatalf("artifact status = %q, want %q", row.Status, SecurityAuditArtifactMissingSecurityMetadata)
+	}
+	if len(row.ManualFollowUps) != 1 || !strings.Contains(row.ManualFollowUps[0], "example-auth-overlay") {
+		t.Fatalf("artifact follow-ups = %#v, want covering overlay id", row.ManualFollowUps)
+	}
+	if strings.Contains(row.ManualFollowUps[0], "add a source-backed security overlay") {
+		t.Fatalf("artifact follow-up still asks for another overlay: %#v", row.ManualFollowUps)
+	}
+}
+
+func TestCoveringSecurityOverlayIDsMatchSpecURL(t *testing.T) {
+	ref := catalog.SpecReference{
+		ID:  "example-openapi",
+		URL: "https://example.com/openapi.json",
+	}
+	ids := coveringSecurityOverlayIDs(ref, []catalog.SecurityOverlay{
+		{
+			ID:         "example-source-overlay",
+			ProviderID: "example",
+			SpecRefID:  "example-auth-docs",
+			SourceRefs: []string{"https://example.com/openapi.json"},
+		},
+	})
+	if len(ids) != 1 || ids[0] != "example-source-overlay" {
+		t.Fatalf("covering overlay ids = %#v, want source-ref match", ids)
 	}
 }
 

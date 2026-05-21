@@ -312,6 +312,20 @@ quality := catalog.BuiltInCatalogQualityReport(catalog.CatalogQualityOptions{})
 _ = quality
 ```
 
+Catalog security audits are available from the root package:
+
+```go
+audit, err := apitools.BuiltInCatalogSecurityAuditReport(apitools.CatalogSecurityAuditOptions{
+	CacheDir: "catalog-openapi-cache",
+})
+_, _ = audit, err
+```
+
+Non-built-in catalog consumers can use the lower-level `Build*` report APIs,
+including `catalog.BuildSecurityReport`, `catalog.BuildProviderAdvisoryReport`,
+`catalog.BuildCatalogQualityReport`, and
+`apitools.BuildCatalogSecurityAuditReport`.
+
 Caching is optional through `github.com/OpenUdon/apitools/sqlitecache` or the
 CLI `--cache` flag. Cache modes include `read-write`, `refresh`, `offline`, and
 `bypass`.
