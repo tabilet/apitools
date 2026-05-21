@@ -156,6 +156,7 @@ go vet ./...
 git diff --check
 go run ./cmd/apitools catalog list
 go run ./cmd/apitools catalog security-report
+go run ./cmd/apitools catalog security-audit
 ```
 
 For each generated overlay, also run a structural check such as:

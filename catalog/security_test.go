@@ -106,7 +106,7 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 224; got != want {
+	if got, want := len(overlays), 228; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
@@ -158,6 +158,33 @@ func TestOpenAPIFirstSecurityOverlays(t *testing.T) {
 			schemeName:      "docusignBearer",
 			operationCount:  0,
 			rootRequirement: "docusignBearer",
+		},
+		{
+			id:             "matrix-client-server-signed-request-auth-review",
+			providerID:     "matrix",
+			status:         AuthStatusComplete,
+			schemeName:     "signedRequest",
+			operationCount: 1,
+		},
+		{
+			id:             "syncromsp-api-auth-review",
+			providerID:     "syncromsp",
+			status:         AuthStatusComplete,
+			schemeName:     "apiKey",
+			operationCount: 1,
+		},
+		{
+			id:         "thehive-project-api-v5-auth-review",
+			providerID: "thehive-project",
+			status:     AuthStatusComplete,
+			schemeName: "ApiKey",
+		},
+		{
+			id:              "zulip-rest-api-basic-auth-review",
+			providerID:      "zulip",
+			status:          AuthStatusComplete,
+			schemeName:      "basicAuth",
+			rootRequirement: "basicAuth",
 		},
 	}
 	for _, test := range tests {

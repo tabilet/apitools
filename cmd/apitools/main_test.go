@@ -51,7 +51,7 @@ func TestCatalogHelpDocumentsSubcommands(t *testing.T) {
 		t.Fatalf("code = %d\n%s", code, out.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"Usage: apitools catalog", "advisory", "check", "list", "specs", "stats", "refresh-report", "inspect", "overlay-view", "security-report"} {
+	for _, expected := range []string{"Usage: apitools catalog", "advisory", "check", "list", "specs", "stats", "refresh-report", "inspect", "overlay-view", "security-audit", "security-report"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
 		}
@@ -690,6 +690,41 @@ func TestCatalogSecurityReportJSON(t *testing.T) {
 	text := out.String()
 	if !strings.Contains(text, `"provider_id": "airtable"`) || !strings.Contains(text, `"status": "overlay-required"`) {
 		t.Fatalf("security report json missing expected metadata:\n%s", text)
+	}
+}
+
+func TestCatalogSecurityAuditOutputAndJSON(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "security-audit"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	text := out.String()
+	for _, expected := range []string{
+		"Catalog security audit: 292 provider(s)",
+		"Disposition:",
+		"Auth status:",
+		"Queued source re-review: none",
+	} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("security audit output missing %q:\n%s", expected, text)
+		}
+	}
+
+	out.Reset()
+	errOut.Reset()
+	code = run([]string{"catalog", "security-audit", "--json"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{`"provider_count": 292`, `"disposition": "complete-via-overlay"`, `"provider_id": "github"`} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("security audit json missing %q:\n%s", expected, out.String())
+		}
+	}
+	if strings.Contains(out.String(), `"disposition": "queued-source-re-review"`) {
+		t.Fatalf("security audit json has queued source re-review rows:\n%s", out.String())
 	}
 }
 

@@ -49,6 +49,7 @@ go run ./cmd/apitools catalog list
 go run ./cmd/apitools catalog advisory slack
 go run ./cmd/apitools catalog inspect slack
 go run ./cmd/apitools catalog overlay-view github
+go run ./cmd/apitools catalog security-audit
 go run ./cmd/apitools catalog security-report
 go run ./cmd/apitools catalog check
 go run ./cmd/apitools catalog stats
@@ -102,6 +103,7 @@ go run ./cmd/apitools catalog inspect slack \
   --openapi ./openapi/slack.yaml \
   --security-overlay ./openapi/slack-security.json
 go run ./cmd/apitools catalog overlay-view github --json
+go run ./cmd/apitools catalog security-audit --json
 go run ./cmd/apitools catalog security-report --json
 go run ./cmd/apitools catalog check --as-of 2026-05-18 --json
 go run ./cmd/apitools catalog specs --cache catalog-openapi-cache/cache.sqlite
@@ -190,6 +192,13 @@ built-in providers, candidates, source notes, verification dates, security
 classifications, and overlay references without probing URLs or downloading
 provider documents. Error-level findings return a nonzero exit code; warning-only
 reports remain exit code 0 for inspection.
+
+Catalog security audits are offline. `catalog security-audit` classifies each
+durable provider by effective auth/security disposition and, when local cache
+artifacts are registered, inspects OpenAPI/Swagger `securitySchemes` or
+`securityDefinitions` plus root and operation-level `security` requirements.
+It reports missing, incomplete, or internally inconsistent artifact security
+metadata without fetching provider documents or applying credentials.
 
 Catalog stats are offline. `catalog stats` summarizes primary provider
 protocol classifications, local catalog artifact registry counts by kind, and
@@ -361,6 +370,7 @@ go run ./cmd/apitools catalog check
 go run ./cmd/apitools catalog list
 go run ./cmd/apitools catalog advisory slack
 go run ./cmd/apitools catalog inspect slack
+go run ./cmd/apitools catalog security-audit
 go run ./cmd/apitools catalog security-report
 go run ./cmd/apitools catalog stats
 ```

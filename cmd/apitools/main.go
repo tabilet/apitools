@@ -79,6 +79,8 @@ func runCatalog(args []string, out, errOut io.Writer) int {
 		return runCatalogInspect(args[1:], out, errOut)
 	case "overlay-view":
 		return runCatalogOverlayView(args[1:], out, errOut)
+	case "security-audit":
+		return runCatalogSecurityAudit(args[1:], out, errOut)
 	case "security-report":
 		return runCatalogSecurityReport(args[1:], out, errOut)
 	case "-h", "--help", "help":
@@ -104,6 +106,7 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "  refresh-report   review saved refresh artifacts offline")
 	fmt.Fprintln(out, "  inspect          inspect one provider and resolution status")
 	fmt.Fprintln(out, "  overlay-view     inspect advisory security overlay effects")
+	fmt.Fprintln(out, "  security-audit   audit catalog auth metadata and local artifacts")
 	fmt.Fprintln(out, "  security-report  report auth/security status across providers")
 }
 
@@ -751,6 +754,60 @@ func runCatalogSecurityReport(args []string, out, errOut io.Writer) int {
 	return 0
 }
 
+func runCatalogSecurityAudit(args []string, out, errOut io.Writer) int {
+	fs := flag.NewFlagSet("apitools catalog security-audit", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory containing saved review artifacts")
+	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
+	maxBytes := fs.Int64("max-bytes", apitools.CatalogRefreshReviewDefaultMaxBytes, "Maximum bytes to read from each saved artifact")
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog security-audit [--cache-dir catalog-openapi-cache] [--cache catalog-openapi-cache/cache.sqlite] [--max-bytes N] [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if fs.NArg() > 0 {
+		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
+		fs.Usage()
+		return 2
+	}
+	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	defer closeCache()
+	report, err := apitools.BuiltInCatalogSecurityAuditReport(apitools.CatalogSecurityAuditOptions{
+		Artifacts: artifacts,
+		CacheDir:  *cacheDir,
+		MaxBytes:  *maxBytes,
+	})
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	if *jsonOut {
+		if err := writeJSON(out, report); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	writeCatalogSecurityAuditReport(out, report)
+	return 0
+}
+
 func runCatalogOverlayView(args []string, out, errOut io.Writer) int {
 	var provider string
 	parseArgs := args
@@ -1081,6 +1138,45 @@ func writeCatalogStatsReport(out io.Writer, report catalogStatsReport) {
 		for _, bucket := range report.Refresh.ValidationStatuses {
 			fmt.Fprintf(out, "%-28s %-7d %s\n", bucket.Status, bucket.Count, strings.Join(bucket.SpecRefIDs, ", "))
 		}
+	}
+}
+
+func writeCatalogSecurityAuditReport(out io.Writer, report apitools.CatalogSecurityAuditReport) {
+	fmt.Fprintf(out, "Catalog security audit: %d provider(s)\n", report.Summary.ProviderCount)
+	fmt.Fprintln(out)
+	writeCatalogSecurityAuditCounts(out, "Disposition", report.Summary.Dispositions)
+	fmt.Fprintln(out)
+	writeCatalogSecurityAuditCounts(out, "Auth status", report.Summary.AuthStatuses)
+	if len(report.Summary.Artifacts) > 0 {
+		fmt.Fprintln(out)
+		fmt.Fprintln(out, "Artifact security:")
+		fmt.Fprintf(out, "%-36s %-7s %s\n", "STATUS", "COUNT", "SPEC_REFS")
+		for _, bucket := range report.Summary.Artifacts {
+			fmt.Fprintf(out, "%-36s %-7d %s\n", bucket.Status, bucket.Count, strings.Join(bucket.SpecRefIDs, ", "))
+		}
+	}
+	var queued []apitools.CatalogSecurityAuditRow
+	for _, row := range report.Providers {
+		if row.Disposition == apitools.SecurityAuditDispositionQueuedSourceReReview {
+			queued = append(queued, row)
+		}
+	}
+	fmt.Fprintln(out)
+	if len(queued) == 0 {
+		fmt.Fprintln(out, "Queued source re-review: none")
+		return
+	}
+	fmt.Fprintln(out, "Queued source re-review:")
+	for _, row := range queued {
+		fmt.Fprintf(out, "- %s (%s): %s\n", row.DisplayName, row.ProviderID, strings.Join(row.ManualFollowUps, " "))
+	}
+}
+
+func writeCatalogSecurityAuditCounts(out io.Writer, title string, buckets []apitools.CatalogSecurityAuditCount) {
+	fmt.Fprintln(out, title+":")
+	fmt.Fprintf(out, "%-36s %-7s %s\n", "NAME", "COUNT", "PROVIDERS")
+	for _, bucket := range buckets {
+		fmt.Fprintf(out, "%-36s %-7d %s\n", bucket.Name, bucket.Count, strings.Join(bucket.ProviderIDs, ", "))
 	}
 }
 
