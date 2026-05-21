@@ -139,7 +139,9 @@ security-overlay metadata when needed, and, when no official OpenAPI document
 exists but official API docs expose usable endpoint instructions, generate a
 service-specific docs-derived endpoint overlay asset in addition to any
 auth/security overlay metadata. The detailed workflow lives in
-[docs/catalog-curation.md](docs/catalog-curation.md). Downloaded specs
+[docs/catalog-curation.md](docs/catalog-curation.md). Non-OpenAPI source-family
+and protocol-connector boundaries live in
+[docs/non-openapi-protocols.md](docs/non-openapi-protocols.md). Downloaded specs
 and local SQLite caches stay ignored under `catalog-openapi-cache/`; generated
 advisory overlays and service-specific overlay builders are tracked catalog
 assets. For catalog curation, `cache.sqlite` records file paths for saved
