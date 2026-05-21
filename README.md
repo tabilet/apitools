@@ -149,6 +149,11 @@ documents and overlay artifacts rather than duplicating already-saved document
 bodies; the local manifest registration program lives under
 `catalog-openapi-cache/artifact-registry/`.
 
+Control-plane OpenAPI sources remain metadata-only. Catalog rows such as Docker
+Engine may describe local daemon APIs, but `apitools` must not open local
+sockets, contact daemon endpoints, encode registry auth headers, or execute
+image, container, network, volume, registry, or cluster operations.
+
 Overlay inspection views are metadata-only. `catalog overlay-view` reports how
 built-in security overlays would supplement catalog classifications, preserving
 provenance for schemes and security requirements and surfacing review conflicts

@@ -26,6 +26,12 @@ Avoid broad platform surfaces until there is a clear source and validation
 strategy. GraphQL-first services should wait for GraphQL protocol support
 instead of being forced into REST-shaped overlays.
 
+Control-plane API sources need an explicit local-safety boundary even when they
+publish normal OpenAPI or Swagger documents. For example, Docker Engine is a
+local daemon API: catalog metadata may describe its document, but `apitools`
+must not open Docker sockets, contact daemon TCP endpoints, encode registry
+auth headers, or perform image/container operations.
+
 ## Source-First Batch Queue
 
 Freeze future batches only from provider-owned or protocol-owned evidence.

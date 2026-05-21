@@ -331,6 +331,54 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular workflow service for community messaging, channels, and notification automation.",
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "docker-engine",
+		displayName: "Docker Engine",
+		aliases:     []string{"docker daemon api", "docker engine api", "moby engine api"},
+		category:    "container-runtime",
+		relevance:   "Container daemon control-plane API for images, containers, networks, volumes, builds, exec sessions, and Swarm resources.",
+		userNeed:    UserOpenAPINeedNotExpected,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://docs.docker.com/reference/api/engine/version/v1.54.yaml",
+				Note:   "Official Docker Engine API v1.54 Swagger/OpenAPI specification downloaded from Docker Docs.",
+			},
+		},
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "docker-hub",
+		displayName: "Docker Hub",
+		aliases:     []string{"docker hub api", "dockerhub", "hub.docker.com"},
+		category:    "container-registry",
+		relevance:   "Docker's hosted registry and collaboration service for repositories, images, namespaces, teams, access tokens, and organization automation.",
+		userNeed:    UserOpenAPINeedNotExpected,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://docs.docker.com/reference/api/hub/latest.yaml",
+				Note:   "Official Docker Hub API Swagger/OpenAPI specification downloaded from Docker Docs.",
+			},
+		},
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "docker-registry",
+		displayName: "Docker Registry",
+		aliases:     []string{"docker distribution api", "docker registry api", "docker registry http api v2", "registry-1.docker.io"},
+		category:    "container-registry",
+		relevance:   "Docker Registry HTTP API metadata for Docker Hub-supported image manifest, blob, tag, upload, and delete operations.",
+		userNeed:    UserOpenAPINeedPossible,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://docs.docker.com/reference/api/registry/latest.yaml",
+				Note:   "Official Docker Docs OpenAPI specification for the Docker Hub-supported subset of the Registry HTTP API V2.",
+			},
+		},
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "discourse",
 		displayName: "Discourse",
 		aliases:     []string{"discourse api", "discourse forum api"},

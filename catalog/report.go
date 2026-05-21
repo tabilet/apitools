@@ -277,6 +277,27 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Discord's official OpenAPI v10 preview document includes BotToken and OAuth2 security schemes with operation-level security requirements.",
 	},
 	{
+		ProviderID: "docker-engine",
+		SpecRefID:  "docker-engine-api-v1-54-openapi",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://docs.docker.com/reference/api/engine/version/v1.54.yaml", "https://docs.docker.com/reference/api/engine/"},
+		SourceNote: "Docker Engine's official Swagger document describes local daemon operations but does not declare a portable OpenAPI security scheme; socket/TLS/SSH access and X-Registry-Auth handling are deployment-specific metadata only.",
+	},
+	{
+		ProviderID: "docker-hub",
+		SpecRefID:  "docker-hub-api-openapi",
+		Status:     AuthStatusComplete,
+		SourceRefs: []string{"https://docs.docker.com/reference/api/hub/latest.yaml", "https://docs.docker.com/security/access-tokens/"},
+		SourceNote: "Docker Hub's official OpenAPI document includes bearer JWT security metadata and documents access-token creation; apitools records token requirements without logging in or creating tokens.",
+	},
+	{
+		ProviderID: "docker-registry",
+		SpecRefID:  "docker-registry-hub-supported-openapi",
+		Status:     AuthStatusPresentIncomplete,
+		SourceRefs: []string{"https://docs.docker.com/reference/api/registry/latest.yaml", "https://docs.docker.com/reference/api/registry/auth/"},
+		SourceNote: "Docker's registry OpenAPI document models Authorization bearer headers as endpoint parameters for the Docker Hub-supported subset; the challenge/token exchange flow is documented separately and remains metadata only.",
+	},
+	{
 		ProviderID: "discourse",
 		SpecRefID:  "discourse-api-openapi",
 		Status:     AuthStatusOverlayRequired,

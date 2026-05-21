@@ -263,6 +263,67 @@ func TestHighValueSaaSCurationSetAdvisoryCoverage(t *testing.T) {
 	}
 }
 
+func TestDockerAPISourceCoverageAdvisoryRows(t *testing.T) {
+	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{})
+	if err != nil {
+		t.Fatalf("BuiltInProviderAdvisoryReport() error = %v", err)
+	}
+	rows := map[string]ProviderAdvisory{}
+	for _, row := range report.Providers {
+		rows[row.ProviderID] = row
+	}
+	tests := []struct {
+		provider        string
+		wantNeed        UserOpenAPINeed
+		wantAuth        AuthCompletenessStatus
+		wantSpecRefID   string
+		wantSourceValue string
+	}{
+		{
+			provider:        "docker-engine",
+			wantNeed:        UserOpenAPINeedNotExpected,
+			wantAuth:        AuthStatusPresentIncomplete,
+			wantSpecRefID:   "docker-engine-api-v1-54-openapi",
+			wantSourceValue: "https://docs.docker.com/reference/api/engine/version/v1.54.yaml",
+		},
+		{
+			provider:        "docker-hub",
+			wantNeed:        UserOpenAPINeedNotExpected,
+			wantAuth:        AuthStatusComplete,
+			wantSpecRefID:   "docker-hub-api-openapi",
+			wantSourceValue: "https://docs.docker.com/reference/api/hub/latest.yaml",
+		},
+		{
+			provider:        "docker-registry",
+			wantNeed:        UserOpenAPINeedPossible,
+			wantAuth:        AuthStatusPresentIncomplete,
+			wantSpecRefID:   "docker-registry-hub-supported-openapi",
+			wantSourceValue: "https://docs.docker.com/reference/api/registry/latest.yaml",
+		},
+	}
+	for _, test := range tests {
+		row, ok := rows[test.provider]
+		if !ok {
+			t.Fatalf("missing Docker provider %s", test.provider)
+		}
+		if row.OpenAPIAvailability != SpecAvailabilityKnown {
+			t.Fatalf("%s OpenAPI availability = %q, want %q", test.provider, row.OpenAPIAvailability, SpecAvailabilityKnown)
+		}
+		if row.UserOpenAPINeed != test.wantNeed {
+			t.Fatalf("%s user OpenAPI need = %q, want %q", test.provider, row.UserOpenAPINeed, test.wantNeed)
+		}
+		if row.AuthStatus != test.wantAuth {
+			t.Fatalf("%s auth status = %q, want %q", test.provider, row.AuthStatus, test.wantAuth)
+		}
+		if !advisoryHasSpecKind(row, SpecKindOpenAPI) {
+			t.Fatalf("%s missing OpenAPI spec reference", test.provider)
+		}
+		if row.ResolvedOpenAPI.SpecRefID != test.wantSpecRefID || row.ResolvedOpenAPI.Value != test.wantSourceValue {
+			t.Fatalf("%s resolved OpenAPI = %#v", test.provider, row.ResolvedOpenAPI)
+		}
+	}
+}
+
 func TestBuiltInProviderAdvisoryReportMissingCacheHasNoArtifactPath(t *testing.T) {
 	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{ProviderKey: "slack"})
 	if err != nil {

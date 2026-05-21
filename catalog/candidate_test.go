@@ -11,7 +11,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 269; got != want {
+	if got, want := len(candidates), 272; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -83,6 +83,9 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"discord",
 		"discourse",
 		"disqus",
+		"docker-engine",
+		"docker-hub",
+		"docker-registry",
 		"drift",
 		"dropbox",
 		"dropcontact",
