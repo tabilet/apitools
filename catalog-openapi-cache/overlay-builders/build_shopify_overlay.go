@@ -29,7 +29,7 @@ func main() {
 			"derived_from_docs": true,
 			"source_refs": []string{
 				"https://shopify.dev/docs/api/admin-rest",
-				"https://shopify.dev/api/admin-rest/usage/access-scopes",
+				"https://shopify.dev/docs/api/admin-rest/usage/access-scopes",
 				"https://shopify.dev/docs/api/admin-rest/usage/versioning",
 			},
 			"source_note": "Shopify publishes REST Admin API human documentation, but no official downloadable OpenAPI document is recorded in the apitools catalog.",
