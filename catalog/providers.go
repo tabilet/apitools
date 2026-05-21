@@ -800,6 +800,19 @@ var builtInProviders = []Provider{
 		},
 		quirks: []string{googleDiscoveryNativeQuirk},
 	}),
+	googleDiscoveryProvider20260521(googleDiscoveryProviderSeed{
+		id:          "google-contacts",
+		displayName: "Google Contacts / People API",
+		aliases:     []string{"google contacts", "google contacts api", "google people api", "people api"},
+		category:    "contacts",
+		relevance:   "Popular Google contact API for contacts, contact groups, other contacts, profile fields, and address book automation.",
+		specID:      "people-discovery-v1",
+		specURL:     "https://people.googleapis.com/$discovery/rest?version=v1",
+		version:     "v1",
+		revision:    "20260519",
+		serviceName: "People API",
+		apiDocsURL:  "https://developers.google.com/people/api/rest",
+	}),
 	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
 		id:          "google-admin",
 		displayName: "Google Admin SDK",
@@ -922,6 +935,22 @@ var builtInProviders = []Provider{
 		serviceName: "Google Docs API",
 		apiDocsURL:  "https://developers.google.com/workspace/docs/api/reference/rest",
 	}),
+	providerCatalogEntry(providerSeed{
+		id:                  "google-firebase-realtime-database",
+		displayName:         "Google Firebase Realtime Database",
+		aliases:             []string{"firebase realtime database", "google firebase realtime database", "realtime database api"},
+		category:            "database",
+		relevance:           "Popular Firebase JSON database API for realtime app data and project/database automation.",
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityKnown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			googleDiscoveryRef20260521("firebasedatabase-discovery-v1beta", "https://firebasedatabase.googleapis.com/$discovery/rest?version=v1beta", "v1beta", "20260517", "Firebase Realtime Database Management API"),
+			humanDocsRef20260521("google-firebase-realtime-database-rest-docs", "https://firebase.google.com/docs/reference/rest/database", "Official Firebase Realtime Database REST API documentation for instance data paths."),
+			humanDocsRef20260521("google-firebase-management-rest-docs", "https://firebase.google.com/docs/projects/api/reference/rest", "Official Firebase Management API REST reference documentation."),
+		},
+		quirks: []string{googleDiscoveryNativeQuirk, "The official Discovery document covers Firebase Realtime Database management resources; n8n's data operations also use instance-specific JSON paths documented by Firebase REST docs, so OpenAPI-only workflows may need downstream lowering or a user-provided document for arbitrary data paths."},
+	}),
 	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
 		id:          "google-firestore",
 		displayName: "Google Firestore",
@@ -934,6 +963,19 @@ var builtInProviders = []Provider{
 		revision:    "20260517",
 		serviceName: "Cloud Firestore API",
 		apiDocsURL:  "https://cloud.google.com/firestore/docs/reference/rest",
+	}),
+	googleDiscoveryProvider20260521(googleDiscoveryProviderSeed{
+		id:          "google-perspective",
+		displayName: "Google Perspective",
+		aliases:     []string{"google perspective api", "perspective api", "comment analyzer api", "commentanalyzer api"},
+		category:    "ai-nlp",
+		relevance:   "Popular text moderation API for comment toxicity and attribute scoring automation.",
+		specID:      "commentanalyzer-discovery-v1alpha1",
+		specURL:     "https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+		version:     "v1alpha1",
+		revision:    "20260504",
+		serviceName: "Perspective Comment Analyzer API",
+		apiDocsURL:  "https://developers.perspectiveapi.com/s/about-the-api-methods",
 	}),
 	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
 		id:          "google-slides",
@@ -4629,14 +4671,40 @@ func googleDiscoveryProvider20260520(seed googleDiscoveryProviderSeed) Provider 
 	})
 }
 
+func googleDiscoveryProvider20260521(seed googleDiscoveryProviderSeed) Provider {
+	return providerCatalogEntry(providerSeed{
+		id:                  seed.id,
+		displayName:         seed.displayName,
+		aliases:             seed.aliases,
+		category:            seed.category,
+		relevance:           seed.relevance,
+		openAPIAvailability: SpecAvailabilityUnavailable,
+		machineAvailability: SpecAvailabilityKnown,
+		userNeed:            UserOpenAPINeedLikely,
+		specs: []SpecReference{
+			googleDiscoveryRef20260521(seed.specID, seed.specURL, seed.version, seed.revision, seed.serviceName),
+			humanDocsRef20260521(seed.id+"-rest-docs", seed.apiDocsURL, "Official "+seed.serviceName+" REST reference documentation."),
+		},
+		quirks: []string{googleDiscoveryNativeQuirk},
+	})
+}
+
 func googleDiscoveryRef20260520(id, url, version, revision, serviceName string) SpecReference {
+	return googleDiscoveryRefAt(id, url, version, revision, serviceName, "2026-05-20")
+}
+
+func googleDiscoveryRef20260521(id, url, version, revision, serviceName string) SpecReference {
+	return googleDiscoveryRefAt(id, url, version, revision, serviceName, "2026-05-21")
+}
+
+func googleDiscoveryRefAt(id, url, version, revision, serviceName, verifiedAt string) SpecReference {
 	return SpecReference{
 		ID:              id,
 		Kind:            SpecKindGoogleDiscovery,
 		URL:             url,
 		SourceAuthority: SourceAuthorityOfficialProvider,
 		Version:         version,
-		VerifiedAt:      "2026-05-20",
+		VerifiedAt:      verifiedAt,
 		Revision:        "revision:" + revision,
 		LicenseNote:     "Google Developers Site Policies apply to documentation and code samples.",
 		SourceNote:      "Official " + serviceName + " Google Discovery document; it is machine-readable but not OpenAPI.",
@@ -4671,6 +4739,10 @@ func humanDocsRef20260519(id, url, note string) SpecReference {
 
 func humanDocsRef20260520(id, url, note string) SpecReference {
 	return humanDocsRefAt(id, url, note, "2026-05-20")
+}
+
+func humanDocsRef20260521(id, url, note string) SpecReference {
+	return humanDocsRefAt(id, url, note, "2026-05-21")
 }
 
 func humanDocsRefAt(id, url, note, verifiedAt string) SpecReference {

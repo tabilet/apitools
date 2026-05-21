@@ -10,7 +10,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 266; got != want {
+	if got, want := len(candidates), 270; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -107,6 +107,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"gmail",
 		"gong",
 		"google-admin",
+		"google-ads",
 		"google-analytics",
 		"google-bigquery",
 		"google-books",
@@ -115,9 +116,12 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"google-chat",
 		"google-cloud-language",
 		"google-cloud-storage",
+		"google-contacts",
 		"google-docs",
 		"google-drive",
+		"google-firebase-realtime-database",
 		"google-firestore",
+		"google-perspective",
 		"google-sheets",
 		"google-slides",
 		"google-tasks",
@@ -342,6 +346,7 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "textract", id: "aws-textract"},
 		{key: "transcribe", id: "aws-transcribe"},
 		{key: "google admin sdk", id: "google-admin"},
+		{key: "google ads api", id: "google-ads"},
 		{key: "ga4 api", id: "google-analytics"},
 		{key: "bigquery", id: "google-bigquery"},
 		{key: "books api", id: "google-books"},
@@ -349,8 +354,11 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "google chat api", id: "google-chat"},
 		{key: "cloud natural language api", id: "google-cloud-language"},
 		{key: "gcs", id: "google-cloud-storage"},
+		{key: "people api", id: "google-contacts"},
 		{key: "google docs api", id: "google-docs"},
+		{key: "realtime database api", id: "google-firebase-realtime-database"},
 		{key: "firebase firestore", id: "google-firestore"},
+		{key: "perspective api", id: "google-perspective"},
 		{key: "slides api", id: "google-slides"},
 		{key: "tasks api", id: "google-tasks"},
 		{key: "cloud translation api", id: "google-translate"},
@@ -570,6 +578,7 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"mailerlite",
 		"mailjet",
 		"google-admin",
+		"google-ads",
 		"google-analytics",
 		"google-bigquery",
 		"google-books",
@@ -578,8 +587,11 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"google-chat",
 		"google-cloud-language",
 		"google-cloud-storage",
+		"google-contacts",
 		"google-docs",
+		"google-firebase-realtime-database",
 		"google-firestore",
+		"google-perspective",
 		"google-sheets",
 		"google-slides",
 		"google-tasks",
@@ -659,7 +671,7 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 			t.Fatalf("%s auth review = %q, want %q", candidate.ID, candidate.AuthSecurityReview, AuthSecurityNotReviewed)
 		}
 	}
-	for _, id := range []string{"aws-acm", "aws-cognito", "aws-comprehend", "aws-dynamodb", "aws-elb", "aws-elbv2", "aws-iam", "aws-lambda", "aws-rekognition", "aws-s3", "aws-ses", "aws-sns", "aws-sqs", "aws-textract", "aws-transcribe", "gmail", "google-admin", "google-analytics", "google-bigquery", "google-books", "google-business-profile", "google-calendar", "google-chat", "google-cloud-language", "google-cloud-storage", "google-docs", "google-drive", "google-firestore", "google-sheets", "google-slides", "google-tasks", "google-translate", "google-youtube"} {
+	for _, id := range []string{"aws-acm", "aws-cognito", "aws-comprehend", "aws-dynamodb", "aws-elb", "aws-elbv2", "aws-iam", "aws-lambda", "aws-rekognition", "aws-s3", "aws-ses", "aws-sns", "aws-sqs", "aws-textract", "aws-transcribe", "gmail", "google-admin", "google-analytics", "google-bigquery", "google-books", "google-business-profile", "google-calendar", "google-chat", "google-cloud-language", "google-cloud-storage", "google-contacts", "google-docs", "google-drive", "google-firebase-realtime-database", "google-firestore", "google-perspective", "google-sheets", "google-slides", "google-tasks", "google-translate", "google-youtube"} {
 		candidate, ok := FindBuiltInCandidate(id)
 		if !ok {
 			t.Fatalf("missing %s", id)

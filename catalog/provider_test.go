@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 266; got != want {
+	if got, want := len(catalog.ListProviders()), 269; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -115,9 +115,12 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"google-chat",
 		"google-cloud-language",
 		"google-cloud-storage",
+		"google-contacts",
 		"google-docs",
 		"google-drive",
+		"google-firebase-realtime-database",
 		"google-firestore",
+		"google-perspective",
 		"google-sheets",
 		"google-slides",
 		"google-tasks",
@@ -390,8 +393,11 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "google chat api", id: "google-chat"},
 		{key: "cloud natural language api", id: "google-cloud-language"},
 		{key: "gcs", id: "google-cloud-storage"},
+		{key: "people api", id: "google-contacts"},
 		{key: "google docs api", id: "google-docs"},
+		{key: "realtime database api", id: "google-firebase-realtime-database"},
 		{key: "firebase firestore", id: "google-firestore"},
+		{key: "perspective api", id: "google-perspective"},
 		{key: "google sheets api", id: "google-sheets"},
 		{key: "slides api", id: "google-slides"},
 		{key: "tasks api", id: "google-tasks"},
@@ -609,9 +615,12 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "google-chat", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-cloud-language", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-cloud-storage", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
+		{id: "google-contacts", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-docs", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-drive", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
+		{id: "google-firebase-realtime-database", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-firestore", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
+		{id: "google-perspective", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-sheets", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-slides", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},
 		{id: "google-tasks", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityKnown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindGoogleDiscovery},

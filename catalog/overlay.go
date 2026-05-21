@@ -964,6 +964,25 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 	),
 	googleDiscoveryOAuthOverlay(
+		"google-contacts-discovery-auth-overlay",
+		"google-contacts",
+		"people-discovery-v1",
+		"People API",
+		[]string{
+			"https://www.googleapis.com/auth/contacts.readonly",
+			"https://www.googleapis.com/auth/contacts",
+			"https://www.googleapis.com/auth/contacts.other.readonly",
+			"https://www.googleapis.com/auth/directory.readonly",
+			"https://www.googleapis.com/auth/userinfo.email",
+			"https://www.googleapis.com/auth/userinfo.profile",
+		},
+		"https://www.googleapis.com/auth/contacts.readonly",
+		[]string{
+			"https://people.googleapis.com/$discovery/rest?version=v1",
+			"https://developers.google.com/people/api/rest",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
 		"google-docs-discovery-auth-overlay",
 		"google-docs",
 		"docs-discovery-v1",
@@ -980,6 +999,24 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		},
 	),
 	googleDiscoveryOAuthOverlay(
+		"google-firebase-realtime-database-discovery-auth-overlay",
+		"google-firebase-realtime-database",
+		"firebasedatabase-discovery-v1beta",
+		"Firebase Realtime Database Management API",
+		[]string{
+			"https://www.googleapis.com/auth/firebase.readonly",
+			"https://www.googleapis.com/auth/firebase",
+			"https://www.googleapis.com/auth/cloud-platform",
+			"https://www.googleapis.com/auth/cloud-platform.read-only",
+		},
+		"https://www.googleapis.com/auth/firebase.readonly",
+		[]string{
+			"https://firebasedatabase.googleapis.com/$discovery/rest?version=v1beta",
+			"https://firebase.google.com/docs/reference/rest/database",
+			"https://firebase.google.com/docs/projects/api/reference/rest",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
 		"google-firestore-discovery-auth-overlay",
 		"google-firestore",
 		"firestore-discovery-v1",
@@ -992,6 +1029,18 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		[]string{
 			"https://firestore.googleapis.com/$discovery/rest?version=v1",
 			"https://cloud.google.com/firestore/docs/security/get-started-roles",
+		},
+	),
+	googleDiscoveryOAuthOverlay(
+		"google-perspective-discovery-auth-overlay",
+		"google-perspective",
+		"commentanalyzer-discovery-v1alpha1",
+		"Perspective Comment Analyzer API",
+		[]string{"https://www.googleapis.com/auth/userinfo.email"},
+		"https://www.googleapis.com/auth/userinfo.email",
+		[]string{
+			"https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+			"https://developers.perspectiveapi.com/s/about-the-api-methods",
 		},
 	),
 	googleDiscoveryOAuthOverlay(

@@ -668,12 +668,28 @@ var specArtifacts = []specArtifact{
 		title:      "Cloud Storage JSON API",
 	},
 	{
+		providerID: "google-contacts",
+		artifactID: "people-discovery-v1",
+		kind:       "google-discovery",
+		url:        "https://people.googleapis.com/$discovery/rest?version=v1",
+		path:       "google-discovery/google-people-discovery-v1.json",
+		title:      "People API",
+	},
+	{
 		providerID: "google-docs",
 		artifactID: "docs-discovery-v1",
 		kind:       "google-discovery",
 		url:        "https://docs.googleapis.com/$discovery/rest?version=v1",
 		path:       "google-discovery/google-docs-discovery-v1.json",
 		title:      "Google Docs API",
+	},
+	{
+		providerID: "google-firebase-realtime-database",
+		artifactID: "firebasedatabase-discovery-v1beta",
+		kind:       "google-discovery",
+		url:        "https://firebasedatabase.googleapis.com/$discovery/rest?version=v1beta",
+		path:       "google-discovery/google-firebasedatabase-discovery-v1beta.json",
+		title:      "Firebase Realtime Database Management API",
 	},
 	{
 		providerID: "google-drive",
@@ -689,6 +705,14 @@ var specArtifacts = []specArtifact{
 		url:        "https://firestore.googleapis.com/$discovery/rest?version=v1",
 		path:       "google-discovery/google-firestore-discovery-v1.json",
 		title:      "Cloud Firestore API",
+	},
+	{
+		providerID: "google-perspective",
+		artifactID: "commentanalyzer-discovery-v1alpha1",
+		kind:       "google-discovery",
+		url:        "https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+		path:       "google-discovery/google-commentanalyzer-discovery-v1alpha1.json",
+		title:      "Perspective Comment Analyzer API",
 	},
 	{
 		providerID: "google-sheets",

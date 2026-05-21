@@ -441,6 +441,23 @@ var builtInCandidates = []Candidate{
 		machineStatus:   SpecStatusNeedsVerification,
 		userNeed:        UserOpenAPINeedLikely,
 	}),
+	workflowCandidate(candidateSeed{
+		id:          "google-ads",
+		displayName: "Google Ads",
+		aliases:     []string{"google ads api", "google adwords api", "google ads"},
+		category:    "advertising",
+		n8nNode:     "Google/Ads",
+		relevance:   "Popular Google advertising API for campaign reporting, accessible customers, GAQL searches, and advertising account automation.",
+		userNeed:    UserOpenAPINeedLikely,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://developers.google.com/google-ads/api/rest/overview",
+				Note:   "Official Google Ads REST overview says the API is available over gRPC or REST; no Google Discovery document was found in the public Discovery directory during M48 review.",
+			},
+		},
+	}),
 	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
 		id:          "google-admin",
 		displayName: "Google Admin SDK",
@@ -517,6 +534,14 @@ var builtInCandidates = []Candidate{
 		relevance:   "Popular Google Cloud object storage API for buckets, objects, ACLs, IAM, uploads, and file automation.",
 	}),
 	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-contacts",
+		displayName: "Google Contacts / People API",
+		aliases:     []string{"google contacts", "google contacts api", "google people api", "people api"},
+		category:    "contacts",
+		n8nNode:     "Google/Contacts",
+		relevance:   "Popular Google contact API for contacts, contact groups, other contacts, profile fields, and address book automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
 		id:          "google-docs",
 		displayName: "Google Docs",
 		aliases:     []string{"google docs api", "docs api", "google documents api"},
@@ -535,6 +560,14 @@ var builtInCandidates = []Candidate{
 		machineSpecKind: "google-discovery",
 		machineStatus:   SpecStatusNeedsVerification,
 		userNeed:        UserOpenAPINeedLikely,
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-firebase-realtime-database",
+		displayName: "Google Firebase Realtime Database",
+		aliases:     []string{"firebase realtime database", "google firebase realtime database", "realtime database api"},
+		category:    "database",
+		n8nNode:     "Google/Firebase/RealtimeDatabase",
+		relevance:   "Popular Firebase JSON database API for realtime app data and project/database automation.",
 	}),
 	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
 		id:          "google-firestore",
@@ -562,6 +595,14 @@ var builtInCandidates = []Candidate{
 		category:    "presentations",
 		n8nNode:     "Google/Slides",
 		relevance:   "Popular Google Workspace presentation API for presentations, pages, shapes, images, text, and deck automation.",
+	}),
+	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
+		id:          "google-perspective",
+		displayName: "Google Perspective",
+		aliases:     []string{"google perspective api", "perspective api", "comment analyzer api", "commentanalyzer api"},
+		category:    "ai-nlp",
+		n8nNode:     "Google/Perspective",
+		relevance:   "Popular text moderation API for comment toxicity and attribute scoring automation.",
 	}),
 	googleDiscoveryCandidate(googleDiscoveryCandidateSeed{
 		id:          "google-tasks",
