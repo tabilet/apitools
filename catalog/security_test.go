@@ -106,11 +106,80 @@ func TestClassifyAuthCompleteness(t *testing.T) {
 
 func TestBuiltInSecurityOverlaysValidate(t *testing.T) {
 	overlays := BuiltInSecurityOverlays()
-	if got, want := len(overlays), 213; got != want {
+	if got, want := len(overlays), 224; got != want {
 		t.Fatalf("len(BuiltInSecurityOverlays()) = %d, want %d", got, want)
 	}
 	if err := ValidateSecurityOverlays(overlays, BuiltInProviders()); err != nil {
 		t.Fatalf("ValidateSecurityOverlays() error = %v", err)
+	}
+}
+
+func TestOpenAPIFirstSecurityOverlays(t *testing.T) {
+	overlaysByID := map[string]SecurityOverlay{}
+	for _, overlay := range BuiltInSecurityOverlays() {
+		overlaysByID[overlay.ID] = overlay
+	}
+	tests := []struct {
+		id              string
+		providerID      string
+		status          AuthCompletenessStatus
+		schemeName      string
+		operationCount  int
+		rootRequirement string
+	}{
+		{
+			id:              "adyen-checkout-v72-auth-overlay",
+			providerID:      "adyen",
+			status:          AuthStatusComplete,
+			schemeName:      "ApiKeyAuth",
+			operationCount:  1,
+			rootRequirement: "",
+		},
+		{
+			id:              "confluence-cloud-rest-v2-auth-overlay",
+			providerID:      "confluence-cloud",
+			status:          AuthStatusComplete,
+			schemeName:      "oAuthDefinitions",
+			operationCount:  5,
+			rootRequirement: "",
+		},
+		{
+			id:              "docker-registry-bearer-auth-overlay",
+			providerID:      "docker-registry",
+			status:          AuthStatusPresentIncomplete,
+			schemeName:      "dockerRegistryBearer",
+			operationCount:  0,
+			rootRequirement: "dockerRegistryBearer",
+		},
+		{
+			id:              "docusign-esignature-rest-v2-1-auth-overlay",
+			providerID:      "docusign",
+			status:          AuthStatusComplete,
+			schemeName:      "docusignBearer",
+			operationCount:  0,
+			rootRequirement: "docusignBearer",
+		},
+	}
+	for _, test := range tests {
+		overlay, ok := overlaysByID[test.id]
+		if !ok {
+			t.Fatalf("missing overlay %s", test.id)
+		}
+		if overlay.ProviderID != test.providerID {
+			t.Fatalf("%s provider = %q, want %q", test.id, overlay.ProviderID, test.providerID)
+		}
+		if overlay.Status != test.status {
+			t.Fatalf("%s status = %q, want %q", test.id, overlay.Status, test.status)
+		}
+		if !securityOverlayHasScheme(overlay, test.schemeName) {
+			t.Fatalf("%s missing security scheme %q", test.id, test.schemeName)
+		}
+		if len(overlay.OperationSecurity) != test.operationCount {
+			t.Fatalf("%s operation security len = %d, want %d", test.id, len(overlay.OperationSecurity), test.operationCount)
+		}
+		if test.rootRequirement != "" && !securityOverlayHasRootRequirement(overlay, test.rootRequirement) {
+			t.Fatalf("%s missing root security requirement %q", test.id, test.rootRequirement)
+		}
 	}
 }
 
@@ -207,12 +276,17 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"acuity-scheduling",
 		"acumatica",
 		"adalo",
+		"adobe-acrobat-sign",
 		"adyen",
 		"affinity",
+		"aftership",
 		"agile-crm",
+		"aircall",
 		"airtable",
 		"airtop",
+		"airwallex",
 		"apitemplate-io",
+		"apollo",
 		"asana",
 		"auth0",
 		"autopilot",
@@ -248,6 +322,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"cal",
 		"calendly",
 		"chargebee",
+		"checkr",
 		"circleci",
 		"cisco-meraki",
 		"cisco-webex",
@@ -358,6 +433,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"mailgun",
 		"mailjet",
 		"mandrill",
+		"marketo",
 		"marketstack",
 		"matrix",
 		"mattermost",
@@ -496,14 +572,19 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"action-network":                    AuthStatusOverlayRequired,
 		"acumatica":                         AuthStatusPresentIncomplete,
 		"adalo":                             AuthStatusOverlayRequired,
-		"adyen":                             AuthStatusPresentIncomplete,
+		"adobe-acrobat-sign":                AuthStatusOverlayRequired,
+		"adyen":                             AuthStatusComplete,
 		"affinity":                          AuthStatusOverlayRequired,
+		"aftership":                         AuthStatusOverlayRequired,
 		"agile-crm":                         AuthStatusOverlayRequired,
 		"acuity-scheduling":                 AuthStatusOverlayRequired,
+		"aircall":                           AuthStatusOverlayRequired,
 		"airtable":                          AuthStatusOverlayRequired,
 		"airtop":                            AuthStatusPresentIncomplete,
+		"airwallex":                         AuthStatusOverlayRequired,
+		"apollo":                            AuthStatusOverlayRequired,
 		"asana":                             AuthStatusPresentIncomplete,
-		"auth0":                             AuthStatusPresentIncomplete,
+		"auth0":                             AuthStatusComplete,
 		"autopilot":                         AuthStatusOverlayRequired,
 		"aws-acm":                           AuthStatusOverlayRequired,
 		"aws-cognito":                       AuthStatusOverlayRequired,
@@ -526,7 +607,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"bannerbear":                        AuthStatusOverlayRequired,
 		"baserow":                           AuthStatusComplete,
 		"beeminder":                         AuthStatusOverlayRequired,
-		"bigcommerce":                       AuthStatusPresentIncomplete,
+		"bigcommerce":                       AuthStatusComplete,
 		"bitbucket":                         AuthStatusPresentIncomplete,
 		"bitly":                             AuthStatusComplete,
 		"bitwarden":                         AuthStatusOverlayRequired,
@@ -537,8 +618,9 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"cal":                               AuthStatusPresentIncomplete,
 		"calendly":                          AuthStatusOverlayRequired,
 		"chargebee":                         AuthStatusPresentIncomplete,
+		"checkr":                            AuthStatusOverlayRequired,
 		"circleci":                          AuthStatusPresentIncomplete,
-		"cisco-meraki":                      AuthStatusPresentIncomplete,
+		"cisco-meraki":                      AuthStatusComplete,
 		"cisco-webex":                       AuthStatusOverlayRequired,
 		"clearbit":                          AuthStatusOverlayRequired,
 		"clickup":                           AuthStatusPresentIncomplete,
@@ -547,8 +629,8 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"coda":                              AuthStatusComplete,
 		"cockpit":                           AuthStatusOverlayRequired,
 		"coingecko":                         AuthStatusOverlayRequired,
-		"confluence-cloud":                  AuthStatusPresentIncomplete,
-		"confluent-cloud":                   AuthStatusPresentIncomplete,
+		"confluence-cloud":                  AuthStatusComplete,
+		"confluent-cloud":                   AuthStatusComplete,
 		"contentful":                        AuthStatusOverlayRequired,
 		"convertkit":                        AuthStatusComplete,
 		"copper":                            AuthStatusOverlayRequired,
@@ -563,7 +645,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"docker-hub":                        AuthStatusComplete,
 		"docker-registry":                   AuthStatusPresentIncomplete,
 		"disqus":                            AuthStatusOverlayRequired,
-		"docusign":                          AuthStatusPresentIncomplete,
+		"docusign":                          AuthStatusComplete,
 		"drift":                             AuthStatusOverlayRequired,
 		"dropbox":                           AuthStatusOverlayRequired,
 		"dropcontact":                       AuthStatusOverlayRequired,
@@ -637,6 +719,7 @@ func TestBuiltInSecurityReportDeterministic(t *testing.T) {
 		"mailerlite":                        AuthStatusOverlayRequired,
 		"mailgun":                           AuthStatusPresentIncomplete,
 		"mailjet":                           AuthStatusOverlayRequired,
+		"marketo":                           AuthStatusOverlayRequired,
 		"marketstack":                       AuthStatusComplete,
 		"matrix":                            AuthStatusComplete,
 		"mattermost":                        AuthStatusComplete,
@@ -848,6 +931,24 @@ func bearerScheme(name string) SecurityScheme {
 		Type:   SecuritySchemeHTTP,
 		Scheme: "bearer",
 	}
+}
+
+func securityOverlayHasScheme(overlay SecurityOverlay, want string) bool {
+	for _, scheme := range overlay.SecuritySchemes {
+		if scheme.Name == want {
+			return true
+		}
+	}
+	return false
+}
+
+func securityOverlayHasRootRequirement(overlay SecurityOverlay, want string) bool {
+	for _, requirement := range overlay.RootSecurity {
+		if requirement.Scheme == want {
+			return true
+		}
+	}
+	return false
 }
 
 func containsString(values []string, want string) bool {

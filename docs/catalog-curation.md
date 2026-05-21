@@ -68,10 +68,15 @@ For each service, use the same four-step review loop.
 2. Review auth/security completeness.
 
    Inspect official docs and the machine-readable document, when one exists.
-   If the upstream spec has missing, stale, ambiguous, or incomplete security
-   metadata, keep the upstream document unchanged and add catalog security
-   overlay metadata with source references. Security overlays must contain only
-   credential shape metadata, never credential values.
+   For every OpenAPI or Swagger artifact, inspect both reusable security
+   definitions (`components.securitySchemes` or Swagger `securityDefinitions`)
+   and root/operation security requirements (`security` at the document and
+   operation levels). If schemes are missing, requirements are missing,
+   requirements reference undeclared schemes, documented auth is not represented
+   in the artifact, or only some protected operations carry requirements, keep
+   the upstream document unchanged and add catalog security overlay metadata
+   with source references. Security overlays must contain only credential shape
+   metadata, never credential values.
 
 3. Build a docs-derived endpoint overlay when no official OpenAPI exists.
 

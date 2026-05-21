@@ -1,0 +1,176 @@
+{
+  "components": {
+    "schemas": {
+      "AfterShipCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AfterShipError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AfterShipObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "aftershipAPIKey": {
+        "description": "AfterShip Tracking API key carried in the as-api-key request header.",
+        "in": "header",
+        "name": "as-api-key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official AfterShip Tracking API human documentation. This is not an official AfterShip OpenAPI document.",
+    "title": "AfterShip Tracking API Advisory Overlay",
+    "version": "2026-05-21"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/couriers": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAfterShipCouriers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AfterShipCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aftershipAPIKey": []
+          }
+        ],
+        "summary": "Get couriers"
+      }
+    },
+    "/trackings": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAfterShipTrackings",
+        "parameters": [
+          {
+            "description": "Number of trackings per page.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated tracking numbers.",
+            "in": "query",
+            "name": "tracking_numbers",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AfterShipCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aftershipAPIKey": []
+          }
+        ],
+        "summary": "Get trackings"
+      }
+    },
+    "/trackings/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAfterShipTracking",
+        "parameters": [
+          {
+            "description": "Tracking ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AfterShipObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aftershipAPIKey": []
+          }
+        ],
+        "summary": "Get tracking by ID"
+      }
+    }
+  },
+  "security": [
+    {
+      "aftershipAPIKey": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.aftership.com/tracking/2026-01"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "aftership",
+    "source_note": "AfterShip Tracking docs advertise an OAS export, but M57 direct artifact probes were not usable as a durable unauthenticated catalog fetch; this overlay covers selected read-oriented tracking and courier endpoints.",
+    "source_refs": [
+      "https://www.aftership.com/docs/tracking",
+      "https://www.aftership.com/docs/tracking/fcd9acb5f448a-api-overview",
+      "https://www.aftership.com/docs/tracking/jh865r66gc6hi-get-trackings"
+    ]
+  }
+}

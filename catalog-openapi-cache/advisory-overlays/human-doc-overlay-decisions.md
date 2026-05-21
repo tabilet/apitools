@@ -26,8 +26,12 @@ overlay would hide native operation semantics.
 | Acuity Scheduling | `acuity-scheduling-api-v1-overlay.json` | REST-shaped API v1 docs support a focused appointments, availability, appointment-types, calendars, and clients subset. |
 | ActiveCampaign | `activecampaign-api-v3-overlay.json` | REST-shaped API v3 docs support a focused contacts, lists, campaigns, and deals subset; account host remains operator supplied. |
 | Adalo | `adalo-api-overlay.json` | API docs support a focused app collections, records, and push notification subset; app, collection, and field schemas remain operator supplied. |
+| Adobe Acrobat Sign | `adobe-acrobat-sign-api-overlay.json` | Official SDK JSON is Swagger 1.2-style rather than directly importable OpenAPI 2/3; source docs support a focused base URI and agreement read subset. |
 | Affinity | `affinity-v1-api-overlay.json` | V1 API docs support a focused lists, fields, field values, people, organizations, opportunities, interactions, notes, files, and webhooks subset. |
+| AfterShip | `aftership-tracking-api-overlay.json` | Tracking docs advertise an OAS export, but direct artifact probes were not usable as durable unauthenticated catalog fetches; docs support a focused tracking and courier subset. |
 | Agile CRM | `agile-crm-rest-api-overlay.json` | REST API docs support a focused contacts, companies, deals, tasks, events, tracks, campaigns, and help desk subset; account subdomain remains operator supplied. |
+| Aircall | `aircall-public-api-overlay.json` | Public API docs support a focused read-oriented users, availability, calls, and contacts subset with Basic Auth or partner OAuth metadata. |
+| Apollo.io | `apollo-api-overlay.json` | Official docs expose endpoint-level OpenAPI fragments but no single provider-wide artifact; fragments support a focused people and organization search subset. |
 | APITemplate.io | `apitemplate-io-api-overlay.json` | API docs support a focused v1 PDF/image creation and template listing subset with X-API-KEY auth. |
 | Airtable | `airtable-web-api-overlay.json` | REST-shaped official Web API docs support a focused table/record subset. |
 | Autopilot | `autopilot-api-overlay.json` | API Blueprint-style docs and help docs support a focused contacts and lists subset with the documented API-key header. |
@@ -36,6 +40,7 @@ overlay would hide native operation semantics.
 | Beeminder | `beeminder-api-v1-overlay.json` | REST-shaped API v1 docs support a focused users, goals, archived goals, datapoints, charges, and selected goal action subset. |
 | Bubble | `bubble-api-overlay.json` | API docs and app-specific Swagger metadata support a generic Data API and Workflow API subset; app host and object schemas remain operator supplied. |
 | Calendly | `calendly-public-api-overlay.json` | REST-shaped official public API docs support event type, event, webhook, and user endpoints. |
+| Checkr | `checkr-api-overlay.json` | Redoc-rendered official API docs support a conservative read-oriented account, candidate, package, and report subset for metadata review. |
 | Clearbit | `clearbit-api-overlay.json` | API support docs support a narrow Prospector people search and Person Combined enrichment subset; broader legacy APIs and account access remain review-sensitive. |
 | Clockify | `clockify-api-v1-overlay.json` | REST-shaped API v1 docs support a focused users, workspaces, projects, clients, tags, and time-entries subset. |
 | Cockpit | `cockpit-api-overlay.json` | Self-hosted API docs support a focused collections, singletons, assets, and content subset; host and content model names remain operator supplied. |
@@ -81,6 +86,7 @@ overlay would hide native operation semantics.
 | Mailchimp | `mailchimp-marketing-api-overlay.json` | REST-shaped Marketing API docs support a focused lists, campaigns, and reports subset. |
 | MailerLite | `mailerlite-api-overlay.json` | REST-shaped current API docs support a focused subscribers, groups, campaigns, and forms subset; Classic auth remains security metadata. |
 | Mailjet | `mailjet-rest-api-overlay.json` | REST-shaped REST API docs support a focused contacts, list-recipients, campaigns, messages, and send subset. |
+| Adobe Marketo Engage | `marketo-rest-api-overlay.json` | REST docs support a focused lead metadata, lead retrieval, and activity retrieval subset; subscription endpoint host remains operator supplied. |
 | Mandrill | `mandrill-transactional-api-overlay.json` | Transactional API docs support a focused messages, templates, users, and webhooks subset; API key is modeled as advisory credential placement because it is sent in each request payload. |
 | Mautic | `mautic-api-overlay.json` | Instance-hosted REST API docs support a focused contacts, companies, segments, campaigns, and emails subset; host remains operator supplied. |
 | MessageBird | `messagebird-api-overlay.json` | REST-shaped API docs support a focused balance, messages, contacts, voice calls, and HLR subset with AccessKey auth. |
@@ -187,6 +193,7 @@ overlay would hide native operation semantics.
 | uProc | No endpoint overlay for now. Official uProc tool pages describe API use through generated examples and images, but M35 review did not find stable official text endpoint documentation or an official OpenAPI document for a reviewed REST subset. |
 | Kubernetes | No endpoint overlay for now. Kubernetes API metadata is cluster-published through Discovery and OpenAPI endpoints; a generic docs-derived overlay would hide cluster-specific API groups, versions, aggregated APIs, CRDs, and auth posture. |
 | Acumatica | No endpoint overlay for now. Acumatica REST Swagger/OpenAPI is generated per ERP instance, endpoint, tenant, version, and customization; user-provided exported metadata is required for useful operation coverage. |
+| Airwallex | No endpoint overlay for now. Airwallex API docs cover financial movement, account, payout, issuing, and embedded finance operations without a stable provider-wide OpenAPI artifact; a generic docs-derived overlay would hide product, region, account, permission, and money-movement semantics. |
 | NetSuite | No endpoint overlay for now. SuiteTalk REST metadata catalogs are account-specific OpenAPI 3.0 and JSON Schema metadata sources; a generic docs-derived overlay would hide standard/custom record availability and tenant integration-record auth. |
 | Oracle Fusion Cloud Applications | No endpoint overlay for now. Fusion `/describe` and object metadata are tenant, product-family, customization, version, and security-context specific; user-provided exported metadata is required for useful operation coverage. |
 | SAP S/4HANA | No endpoint overlay for now. SAP Business Accelerator Hub surfaces include OpenAPI, OData, SOAP, and docs-only artifacts; a generic REST overlay would hide OData/SOAP semantics and tenant auth posture. |

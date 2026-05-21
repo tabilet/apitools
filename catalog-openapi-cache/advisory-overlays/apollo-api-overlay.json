@@ -1,0 +1,145 @@
+{
+  "components": {
+    "schemas": {
+      "ApolloCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ApolloError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ApolloObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "apolloAPIKey": {
+        "description": "Apollo API key carried in the x-api-key request header.",
+        "in": "header",
+        "name": "x-api-key",
+        "type": "apiKey"
+      },
+      "apolloBearer": {
+        "bearerFormat": "OAuth access token",
+        "description": "Apollo OAuth access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Apollo human API documentation and endpoint-level OpenAPI fragments. This is not a provider-wide official Apollo OpenAPI document.",
+    "title": "Apollo.io API Advisory Overlay",
+    "version": "2026-05-21"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/mixed_companies/search": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchApolloOrganizations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApolloObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApolloCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "apolloAPIKey": []
+          },
+          {
+            "apolloBearer": []
+          }
+        ],
+        "summary": "Organization search"
+      }
+    },
+    "/mixed_people/api_search": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchApolloPeople",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApolloObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApolloCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "apolloAPIKey": []
+          },
+          {
+            "apolloBearer": []
+          }
+        ],
+        "summary": "People API search"
+      }
+    }
+  },
+  "security": [
+    {
+      "apolloAPIKey": []
+    },
+    {
+      "apolloBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.apollo.io/api/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "apollo",
+    "source_note": "Apollo publishes endpoint-level OpenAPI fragments in official docs but no recorded stable provider-wide OpenAPI artifact; this overlay covers selected search endpoints.",
+    "source_refs": [
+      "https://docs.apollo.io/llms.txt",
+      "https://docs.apollo.io/reference/authentication.md",
+      "https://docs.apollo.io/reference/people-api-search.md",
+      "https://docs.apollo.io/reference/organization-search.md"
+    ]
+  }
+}

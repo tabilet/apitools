@@ -1,0 +1,159 @@
+{
+  "components": {
+    "schemas": {
+      "AcrobatSignCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AcrobatSignError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AcrobatSignObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "adobeAcrobatSignBearer": {
+        "bearerFormat": "OAuth access token",
+        "description": "Adobe Acrobat Sign OAuth access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Adobe Acrobat Sign SDK JSON and REST documentation. This is not an official Adobe OpenAPI 2/3 document.",
+    "title": "Adobe Acrobat Sign REST API Advisory Overlay",
+    "version": "2026-05-21"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/agreements": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAcrobatSignAgreements",
+        "parameters": [
+          {
+            "description": "Optional user ID.",
+            "in": "query",
+            "name": "userId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcrobatSignCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "adobeAcrobatSignBearer": []
+          }
+        ],
+        "summary": "Get agreements"
+      }
+    },
+    "/agreements/{agreementId}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAcrobatSignAgreement",
+        "parameters": [
+          {
+            "description": "Agreement ID.",
+            "in": "path",
+            "name": "agreementId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcrobatSignObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "adobeAcrobatSignBearer": []
+          }
+        ],
+        "summary": "Get agreement"
+      }
+    },
+    "/baseUris": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAcrobatSignBaseUris",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcrobatSignObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "adobeAcrobatSignBearer": []
+          }
+        ],
+        "summary": "Get base URI"
+      }
+    }
+  },
+  "security": [
+    {
+      "adobeAcrobatSignBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://{acrobat_sign_api_host}/api/rest/v6"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "adobe-acrobat-sign",
+    "source_note": "Adobe Acrobat Sign publishes official Swagger 1.2-style SDK JSON files rather than directly importable OpenAPI 2/3; this overlay covers selected base URI and agreement read endpoints.",
+    "source_refs": [
+      "https://developer.adobe.com/acrobat-sign/docs/overview/sdks/openapi",
+      "https://github.com/adobe/acrobat-sign/tree/main/sdks/AcrobatSign_OpenAPI_SDK",
+      "https://raw.githubusercontent.com/adobe/acrobat-sign/main/sdks/AcrobatSign_OpenAPI_SDK/json/agreements.json",
+      "https://raw.githubusercontent.com/adobe/acrobat-sign/main/sdks/AcrobatSign_OpenAPI_SDK/json/baseUris.json"
+    ]
+  }
+}

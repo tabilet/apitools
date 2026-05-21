@@ -1,0 +1,259 @@
+{
+  "components": {
+    "schemas": {
+      "MarketoCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MarketoError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "MarketoObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "marketoBearer": {
+        "bearerFormat": "Marketo access token",
+        "description": "Marketo REST API access token carried in the Authorization bearer header.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Adobe Marketo Engage REST API human documentation. This is not an official Adobe OpenAPI document.",
+    "title": "Adobe Marketo Engage REST API Advisory Overlay",
+    "version": "2026-05-21"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/rest/v1/activities.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMarketoActivities",
+        "parameters": [
+          {
+            "description": "Comma-separated activity type IDs.",
+            "in": "query",
+            "name": "activityTypeIds",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Paging token returned by Marketo.",
+            "in": "query",
+            "name": "nextPageToken",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "marketoBearer": []
+          }
+        ],
+        "summary": "Get lead activities"
+      }
+    },
+    "/rest/v1/activities/types.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMarketoActivityTypes",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "marketoBearer": []
+          }
+        ],
+        "summary": "Get activity types"
+      }
+    },
+    "/rest/v1/lead/{id}.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMarketoLeadByID",
+        "parameters": [
+          {
+            "description": "Lead ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated API field names.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "marketoBearer": []
+          }
+        ],
+        "summary": "Get lead by ID"
+      }
+    },
+    "/rest/v1/leads.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMarketoLeadsByFilter",
+        "parameters": [
+          {
+            "description": "Lead field used for filtering.",
+            "in": "query",
+            "name": "filterType",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated filter values.",
+            "in": "query",
+            "name": "filterValues",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated API field names.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketoCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "marketoBearer": []
+          }
+        ],
+        "summary": "Get leads by filter type"
+      }
+    },
+    "/rest/v1/leads/describe.json": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "describeMarketoLeads",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketoObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "marketoBearer": []
+          }
+        ],
+        "summary": "Describe lead fields"
+      }
+    }
+  },
+  "security": [
+    {
+      "marketoBearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://{marketo_endpoint_host}"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "marketo",
+    "source_note": "Adobe Marketo Engage publishes human REST documentation but no recorded stable public official OpenAPI document; this overlay covers selected lead metadata, lead retrieval, and activity retrieval endpoints.",
+    "source_refs": [
+      "https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/rest-api",
+      "https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/lead-database/leads",
+      "https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/lead-database/activities"
+    ]
+  }
+}

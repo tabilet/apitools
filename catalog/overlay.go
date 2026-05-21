@@ -209,6 +209,45 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Adalo has human API docs in this catalog entry but no recorded official OpenAPI document; docs describe app API-key authentication and push notification requests with Authorization: Bearer.",
 	},
 	{
+		ID:         "adobe-acrobat-sign-api-auth-overlay",
+		ProviderID: "adobe-acrobat-sign",
+		SpecRefID:  "adobe-acrobat-sign-openapi-sdk-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:         "adobeAcrobatSignBearer",
+			Type:         SecuritySchemeHTTP,
+			Scheme:       "bearer",
+			BearerFormat: "OAuth access token",
+			Description:  "Adobe Acrobat Sign OAuth access token carried in the Authorization bearer header.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "adobeAcrobatSignBearer"}},
+		SourceRefs: []string{
+			"https://developer.adobe.com/acrobat-sign/docs/overview/sdks/openapi",
+			"https://github.com/adobe/acrobat-sign/tree/main/sdks/AcrobatSign_OpenAPI_SDK",
+		},
+		SourceNote: "Adobe Acrobat Sign publishes official SDK JSON files for V6 REST APIs but the reviewed files are Swagger 1.2-style rather than directly importable OpenAPI 2/3; OAuth bearer metadata comes from the official SDK docs.",
+	},
+	{
+		ID:         "aftership-tracking-api-auth-overlay",
+		ProviderID: "aftership",
+		SpecRefID:  "aftership-tracking-api-overview",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:          "aftershipAPIKey",
+			Type:          SecuritySchemeAPIKey,
+			In:            APIKeyInHeader,
+			ParameterName: "as-api-key",
+			Description:   "AfterShip Tracking API key carried in the as-api-key request header for current API versions.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "aftershipAPIKey"}},
+		SourceRefs: []string{
+			"https://www.aftership.com/docs/tracking",
+			"https://www.aftership.com/docs/tracking/fcd9acb5f448a-api-overview",
+			"https://www.aftership.com/docs/tracking/2024-07/quickstart/authentication",
+		},
+		SourceNote: "AfterShip Tracking docs describe API-key security with the as-api-key header for current versions; legacy aftership-api-key headers are not modeled for new overlay coverage.",
+	},
+	{
 		ID:         "clearbit-api-auth-overlay",
 		ProviderID: "clearbit",
 		SpecRefID:  "clearbit-prospector-zapier-docs",
@@ -253,6 +292,60 @@ var builtInSecurityOverlays = []SecurityOverlay{
 		SourceNote: "Affinity has human V1 API docs in this catalog entry but no recorded official OpenAPI document; docs describe HTTP Basic and bearer API-key authentication alternatives.",
 	},
 	{
+		ID:         "aircall-public-api-auth-overlay",
+		ProviderID: "aircall",
+		SpecRefID:  "aircall-public-api-reference",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "aircallBasic",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Aircall customer api_id and api_token supplied with HTTP Basic authentication.",
+			},
+			{
+				Name:        "aircallOAuth2",
+				Type:        SecuritySchemeOAuth2,
+				Description: "Aircall partner OAuth 2.0 authorization-code flow for public_api access.",
+				Flows: []OAuthFlow{{
+					Type:             OAuthFlowAuthorizationCode,
+					AuthorizationURL: "https://dashboard.aircall.io/oauth/authorize",
+					TokenURL:         "https://api.aircall.io/v1/oauth/token",
+					Scopes:           []string{"public_api"},
+				}},
+				Scopes: []string{"public_api"},
+			},
+		},
+		RootSecuritySets: []SecurityRequirementSet{
+			{Requirements: []SecurityRequirement{{Scheme: "aircallBasic"}}},
+			{Requirements: []SecurityRequirement{{Scheme: "aircallOAuth2", Scopes: []string{"public_api"}}}},
+		},
+		SourceRefs: []string{
+			"https://developer.aircall.io/api-references/",
+		},
+		SourceNote: "Aircall Public API docs describe Basic Auth for customer-only integrations and OAuth 2.0 authorization-code flow with scope public_api for technology partners.",
+	},
+	{
+		ID:         "airwallex-api-auth-overlay",
+		ProviderID: "airwallex",
+		SpecRefID:  "airwallex-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:         "airwallexBearer",
+			Type:         SecuritySchemeHTTP,
+			Scheme:       "bearer",
+			BearerFormat: "Airwallex access token",
+			Description:  "Airwallex access token obtained through the Authentication API using a Client ID and API key, then carried as an Authorization bearer token.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "airwallexBearer"}},
+		SourceRefs: []string{
+			"https://www.airwallex.com/docs/developer-tools/api",
+			"https://www.airwallex.com/docs/api/authentication/api_access/login",
+			"https://www.airwallex.com/docs/developer-tools/api/manage-api-keys",
+		},
+		SourceNote: "Airwallex developer docs state that callers obtain an access token through the Authentication API using a Client ID and API key; token issuance and financial operation authorization remain downstream.",
+	},
+	{
 		ID:         "agile-crm-api-auth-overlay",
 		ProviderID: "agile-crm",
 		SpecRefID:  "agile-crm-rest-api-github",
@@ -269,6 +362,73 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			"https://github.com/agilecrm/rest-api",
 		},
 		SourceNote: "Agile CRM has official human/GitHub REST API docs in this catalog entry but no recorded official OpenAPI document; docs describe email plus API key using HTTP Basic authentication.",
+	},
+	{
+		ID:         "apollo-api-auth-overlay",
+		ProviderID: "apollo",
+		SpecRefID:  "apollo-authentication-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "apolloAPIKey",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "x-api-key",
+				Description:   "Apollo API key carried in the x-api-key request header.",
+			},
+			{
+				Name:         "apolloBearer",
+				Type:         SecuritySchemeHTTP,
+				Scheme:       "bearer",
+				BearerFormat: "OAuth access token",
+				Description:  "Apollo OAuth access token carried in the Authorization bearer header for partner integrations.",
+			},
+		},
+		RootSecuritySets: []SecurityRequirementSet{
+			{Requirements: []SecurityRequirement{{Scheme: "apolloAPIKey"}}},
+			{Requirements: []SecurityRequirement{{Scheme: "apolloBearer"}}},
+		},
+		SourceRefs: []string{
+			"https://docs.apollo.io/reference/authentication.md",
+			"https://docs.apollo.io/reference/people-api-search.md",
+			"https://docs.apollo.io/reference/organization-search.md",
+		},
+		SourceNote: "Apollo docs state API keys are supplied in request headers and endpoint-level OpenAPI fragments define x-api-key plus bearer auth alternatives.",
+	},
+	{
+		ID:         "checkr-api-auth-overlay",
+		ProviderID: "checkr",
+		SpecRefID:  "checkr-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:        "checkrBasic",
+			Type:        SecuritySchemeHTTP,
+			Scheme:      "basic",
+			Description: "Checkr API key supplied with HTTP Basic authentication.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "checkrBasic"}},
+		SourceRefs: []string{
+			"https://docs.checkr.com/",
+		},
+		SourceNote: "Checkr public API docs are rendered with basic_auth authorizations and curl examples using HTTP Basic credentials; endpoint execution and regulated workflow compliance remain outside apitools.",
+	},
+	{
+		ID:         "marketo-rest-api-auth-overlay",
+		ProviderID: "marketo",
+		SpecRefID:  "marketo-rest-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SecuritySchemes: []SecurityScheme{{
+			Name:         "marketoBearer",
+			Type:         SecuritySchemeHTTP,
+			Scheme:       "bearer",
+			BearerFormat: "Marketo access token",
+			Description:  "Marketo REST API access token carried in the Authorization bearer header.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "marketoBearer"}},
+		SourceRefs: []string{
+			"https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/rest-api",
+		},
+		SourceNote: "Adobe Marketo REST docs describe Authorization bearer header authentication and state that access_token query parameter support is removed; the query-token form is intentionally not modeled.",
 	},
 	{
 		ID:         "copper-api-auth-overlay",
@@ -4359,6 +4519,161 @@ var builtInSecurityOverlays = []SecurityOverlay{
 			"https://developers.meethue.com/terms-of-use-and-conditions/",
 		},
 		SourceNote: "Philips Hue official API docs are login-gated and no stable public official OpenAPI document was recorded; OAuth2 remote API metadata comes from advisory overlay notes.",
+	},
+	{
+		ID:         "adyen-checkout-v72-auth-overlay",
+		ProviderID: "adyen",
+		SpecRefID:  "adyen-checkout-service-v72-openapi",
+		Status:     AuthStatusComplete,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:          "ApiKeyAuth",
+				Type:          SecuritySchemeAPIKey,
+				In:            APIKeyInHeader,
+				ParameterName: "X-API-Key",
+				Description:   "Adyen API key carried in the X-API-Key request header.",
+			},
+			{
+				Name:        "BasicAuth",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Adyen basic authentication for API credential username/password flows.",
+			},
+		},
+		OperationSecurity: []OperationSecurity{
+			{
+				Match: OperationMatch{
+					OperationID: "post-validateShopperId",
+					Method:      "POST",
+					Path:        "/validateShopperId",
+				},
+				Security: []SecurityRequirement{{Scheme: "ApiKeyAuth"}, {Scheme: "BasicAuth"}},
+			},
+		},
+		SourceRefs: []string{
+			"https://raw.githubusercontent.com/Adyen/adyen-openapi/main/json/CheckoutService-v72.json",
+			"https://docs.adyen.com/development-resources/api-credentials/",
+		},
+		SourceNote: "Adyen Checkout Service v72 defines ApiKeyAuth and BasicAuth and secures most operations, but post-validateShopperId lacks operation-level security. This overlay records the reviewed credential-placement alternatives only; merchant account, role, and payment-operation permission choices remain downstream.",
+	},
+	{
+		ID:         "confluence-cloud-rest-v2-auth-overlay",
+		ProviderID: "confluence-cloud",
+		SpecRefID:  "confluence-cloud-rest-v2-openapi",
+		Status:     AuthStatusComplete,
+		SecuritySchemes: []SecurityScheme{
+			{
+				Name:        "basicAuth",
+				Type:        SecuritySchemeHTTP,
+				Scheme:      "basic",
+				Description: "Confluence Cloud basic authentication for API token based access.",
+			},
+			{
+				Name: "oAuthDefinitions",
+				Type: SecuritySchemeOAuth2,
+				Flows: []OAuthFlow{
+					{
+						Type:             OAuthFlowAuthorizationCode,
+						AuthorizationURL: "https://auth.atlassian.com/authorize",
+						TokenURL:         "https://auth.atlassian.com/oauth/token",
+						Scopes: []string{
+							"manage:confluence-configuration",
+							"read:email-address:confluence",
+						},
+					},
+				},
+				Scopes: []string{
+					"manage:confluence-configuration",
+					"read:email-address:confluence",
+				},
+				Description: "Atlassian OAuth 2.0 authorization-code flow for Confluence Cloud REST API access.",
+			},
+		},
+		OperationSecurity: []OperationSecurity{
+			{
+				Match: OperationMatch{
+					OperationID: "getPrivacyUnsafeUserEmail",
+					Method:      "GET",
+					Path:        "/wiki/rest/api/user/email",
+				},
+				Security: []SecurityRequirement{{Scheme: "basicAuth"}, {Scheme: "oAuthDefinitions", Scopes: []string{"read:email-address:confluence"}}},
+			},
+			{
+				Match: OperationMatch{
+					OperationID: "getPrivacyUnsafeUserEmailBulk",
+					Method:      "GET",
+					Path:        "/wiki/rest/api/user/email/bulk",
+				},
+				Security: []SecurityRequirement{{Scheme: "basicAuth"}, {Scheme: "oAuthDefinitions", Scopes: []string{"read:email-address:confluence"}}},
+			},
+			{
+				Match: OperationMatch{
+					OperationID: "getModules",
+					Method:      "GET",
+					Path:        "/wiki/rest/atlassian-connect/1/app/module/dynamic",
+				},
+				Security: []SecurityRequirement{{Scheme: "basicAuth"}, {Scheme: "oAuthDefinitions", Scopes: []string{"manage:confluence-configuration"}}},
+			},
+			{
+				Match: OperationMatch{
+					OperationID: "registerModules",
+					Method:      "POST",
+					Path:        "/wiki/rest/atlassian-connect/1/app/module/dynamic",
+				},
+				Security: []SecurityRequirement{{Scheme: "basicAuth"}, {Scheme: "oAuthDefinitions", Scopes: []string{"manage:confluence-configuration"}}},
+			},
+			{
+				Match: OperationMatch{
+					OperationID: "removeModules",
+					Method:      "DELETE",
+					Path:        "/wiki/rest/atlassian-connect/1/app/module/dynamic",
+				},
+				Security: []SecurityRequirement{{Scheme: "basicAuth"}, {Scheme: "oAuthDefinitions", Scopes: []string{"manage:confluence-configuration"}}},
+			},
+		},
+		SourceRefs: []string{
+			"https://developer.atlassian.com/cloud/confluence/swagger.v3.json",
+			"https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/",
+			"https://developer.atlassian.com/cloud/confluence/rest/v2/intro/",
+		},
+		SourceNote: "Confluence Cloud REST v2 defines basicAuth and oAuthDefinitions and secures most operations, but user-email and Atlassian Connect dynamic-module operations lack operation security. This overlay records reviewed operation-level credential placement; Atlassian site, app, consent, and permission choices remain downstream.",
+	},
+	{
+		ID:         "docker-registry-bearer-auth-overlay",
+		ProviderID: "docker-registry",
+		SpecRefID:  "docker-registry-hub-supported-openapi",
+		Status:     AuthStatusPresentIncomplete,
+		SecuritySchemes: []SecurityScheme{{
+			Name:        "dockerRegistryBearer",
+			Type:        SecuritySchemeHTTP,
+			Scheme:      "bearer",
+			Description: "Docker Registry bearer token carried in the Authorization header after registry challenge/token service flow.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "dockerRegistryBearer"}},
+		SourceRefs: []string{
+			"https://docs.docker.com/reference/api/registry/latest.yaml",
+			"https://docs.docker.com/reference/api/registry/auth/",
+		},
+		SourceNote: "Docker's Hub-supported Registry OpenAPI omits reusable security schemes while examples and auth docs describe Authorization bearer tokens and a WWW-Authenticate challenge/token flow. This overlay records bearer placement only; registry token-service discovery, scopes, and credential resolution remain downstream.",
+	},
+	{
+		ID:         "docusign-esignature-rest-v2-1-auth-overlay",
+		ProviderID: "docusign",
+		SpecRefID:  "docusign-esignature-rest-v2-1-swagger",
+		Status:     AuthStatusComplete,
+		SecuritySchemes: []SecurityScheme{{
+			Name:        "docusignBearer",
+			Type:        SecuritySchemeHTTP,
+			Scheme:      "bearer",
+			Description: "DocuSign OAuth access token carried in the Authorization bearer header.",
+		}},
+		RootSecurity: []SecurityRequirement{{Scheme: "docusignBearer"}},
+		SourceRefs: []string{
+			"https://raw.githubusercontent.com/docusign/OpenAPI-Specifications/master/esignature.rest.swagger-v2.1.json",
+			"https://developers.docusign.com/platform/auth/",
+			"https://developers.docusign.com/docs/esign-rest-api/",
+		},
+		SourceNote: "DocuSign eSignature REST v2.1 Swagger omits security definitions, root security, and operation security. Official platform auth docs describe OAuth access tokens in the Authorization bearer header; account, environment, consent, and token issuance remain downstream.",
 	},
 	{
 		ID:         "nvidia-dsx-air-auth-overlay",

@@ -42,6 +42,22 @@ var builtInCandidates = []Candidate{
 		userNeed:    UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "adobe-acrobat-sign",
+		displayName: "Adobe Acrobat Sign",
+		aliases:     []string{"acrobat sign api", "adobe acrobat sign api", "adobe sign api"},
+		category:    "e-signature",
+		relevance:   "High-value e-signature platform for agreements, documents, users, library documents, widgets, and signing workflow automation.",
+		userNeed:    UserOpenAPINeedLikely,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://developer.adobe.com/acrobat-sign/docs/overview/sdks/openapi",
+				Note:   "Official Acrobat Sign OpenAPI SDK documentation points to resource JSON files that are Swagger 1.2-style rather than directly importable OpenAPI 2/3 artifacts.",
+			},
+		},
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "adyen",
 		displayName: "Adyen",
 		aliases:     []string{"adyen api", "adyen checkout api", "adyen payments api"},
@@ -66,12 +82,60 @@ var builtInCandidates = []Candidate{
 		userNeed:    UserOpenAPINeedLikely,
 	}),
 	workflowCandidate(candidateSeed{
+		id:          "aftership",
+		displayName: "AfterShip",
+		aliases:     []string{"aftership api", "aftership tracking api", "aftership tracking"},
+		category:    "shipping",
+		relevance:   "High-value shipment tracking platform for trackings, couriers, checkpoints, delivery status, and ecommerce notification automation.",
+		userNeed:    UserOpenAPINeedLikely,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://www.aftership.com/docs/tracking",
+				Note:   "Official AfterShip Tracking docs advertise an OAS export, but M57 direct artifact probes were not usable as a durable unauthenticated catalog fetch.",
+			},
+		},
+	}),
+	workflowCandidate(candidateSeed{
 		id:          "agile-crm",
 		displayName: "Agile CRM",
 		aliases:     []string{"agile crm", "agilecrm", "agilecrm api"},
 		category:    "crm",
 		relevance:   "Popular CRM and marketing automation service for contacts, companies, deals, tasks, events, campaigns, and help desk records.",
 		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "aircall",
+		displayName: "Aircall",
+		aliases:     []string{"aircall api", "aircall public api"},
+		category:    "telephony",
+		relevance:   "High-value cloud telephony API for calls, users, numbers, contacts, teams, availability, and call-center workflow automation.",
+		userNeed:    UserOpenAPINeedLikely,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://developer.aircall.io/api-references/",
+				Note:   "Official Aircall API references expose REST endpoint and auth metadata but no recorded stable downloadable OpenAPI artifact.",
+			},
+		},
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "airwallex",
+		displayName: "Airwallex",
+		aliases:     []string{"airwallex api", "airwallex payments api", "airwallex financial api"},
+		category:    "payments",
+		relevance:   "High-value financial platform for payments, global accounts, payouts, issuing, transfers, and embedded finance automation.",
+		userNeed:    UserOpenAPINeedLikely,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://www.airwallex.com/docs/developer-tools/api",
+				Note:   "Official Airwallex docs describe API authentication and product references, but no stable provider-wide OpenAPI artifact was recorded.",
+			},
+		},
 	}),
 	workflowCandidate(candidateSeed{
 		id:          "asana",
@@ -397,6 +461,22 @@ var builtInCandidates = []Candidate{
 		category:    "billing",
 		relevance:   "Popular subscription billing platform for customers, subscriptions, invoices, payments, and revenue automation.",
 		userNeed:    UserOpenAPINeedNotExpected,
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "checkr",
+		displayName: "Checkr",
+		aliases:     []string{"checkr api", "checkr background check api"},
+		category:    "background-checks",
+		relevance:   "High-value background-check platform for candidates, reports, packages, screenings, invitations, and compliance-sensitive hiring workflows.",
+		userNeed:    UserOpenAPINeedLikely,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://docs.checkr.com/",
+				Note:   "Official Checkr Redoc documentation exposes endpoint and basic-auth metadata, but M57 did not record a stable public OpenAPI JSON URL.",
+			},
+		},
 	}),
 	workflowCandidate(candidateSeed{
 		id:          "circleci",
@@ -811,6 +891,22 @@ var builtInCandidates = []Candidate{
 		category:    "email-marketing",
 		relevance:   "Popular workflow service for audiences, contacts, campaigns, templates, reports, and marketing automation.",
 		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "marketo",
+		displayName: "Adobe Marketo Engage",
+		aliases:     []string{"marketo api", "marketo engage api", "adobe marketo api"},
+		category:    "marketing-automation",
+		relevance:   "High-value marketing automation API for leads, activities, campaigns, programs, assets, lists, and revenue workflow automation.",
+		userNeed:    UserOpenAPINeedLikely,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/rest-api",
+				Note:   "Official Adobe Marketo Engage REST docs describe endpoint, auth, and lead/activity APIs, but no durable downloadable OpenAPI artifact was recorded.",
+			},
+		},
 	}),
 	workflowCandidate(candidateSeed{
 		id:          "mailgun",
@@ -2242,6 +2338,22 @@ var builtInCandidates = []Candidate{
 		category:    "documents",
 		relevance:   "Document generation API for creating PDFs, images, and template-driven rendering assets from JSON data.",
 		userNeed:    UserOpenAPINeedLikely,
+	}),
+	workflowCandidate(candidateSeed{
+		id:          "apollo",
+		displayName: "Apollo.io",
+		aliases:     []string{"apollo api", "apollo.io api", "apollo sales intelligence"},
+		category:    "sales-intelligence",
+		relevance:   "High-value sales intelligence API for people search, organization search, enrichment, contacts, accounts, and go-to-market automation.",
+		userNeed:    UserOpenAPINeedLikely,
+		evidence: []CandidateEvidence{
+			{
+				Source: EvidenceOfficialDocs,
+				Use:    EvidenceUseReview,
+				Ref:    "https://docs.apollo.io/llms.txt",
+				Note:   "Official Apollo docs expose endpoint-level OpenAPI fragments and authentication metadata but no recorded single durable provider-wide OpenAPI artifact.",
+			},
+		},
 	}),
 	workflowCandidate(candidateSeed{
 		id:          "currents",

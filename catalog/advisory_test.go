@@ -278,6 +278,7 @@ func TestDockerAPISourceCoverageAdvisoryRows(t *testing.T) {
 		wantAuth        AuthCompletenessStatus
 		wantSpecRefID   string
 		wantSourceValue string
+		wantOverlayID   string
 	}{
 		{
 			provider:        "docker-engine",
@@ -299,6 +300,7 @@ func TestDockerAPISourceCoverageAdvisoryRows(t *testing.T) {
 			wantAuth:        AuthStatusPresentIncomplete,
 			wantSpecRefID:   "docker-registry-hub-supported-openapi",
 			wantSourceValue: "https://docs.docker.com/reference/api/registry/latest.yaml",
+			wantOverlayID:   "docker-registry-bearer-auth-overlay",
 		},
 	}
 	for _, test := range tests {
@@ -320,6 +322,9 @@ func TestDockerAPISourceCoverageAdvisoryRows(t *testing.T) {
 		}
 		if row.ResolvedOpenAPI.SpecRefID != test.wantSpecRefID || row.ResolvedOpenAPI.Value != test.wantSourceValue {
 			t.Fatalf("%s resolved OpenAPI = %#v", test.provider, row.ResolvedOpenAPI)
+		}
+		if test.wantOverlayID != "" && !containsString(row.SecurityOverlayIDs, test.wantOverlayID) {
+			t.Fatalf("%s security overlay ids = %#v, want %q", test.provider, row.SecurityOverlayIDs, test.wantOverlayID)
 		}
 	}
 }
@@ -412,14 +417,16 @@ func TestOpenAPIFirstProviderBatchAdvisoryRows(t *testing.T) {
 	openAPITests := []struct {
 		provider      string
 		wantSpecRefID string
+		wantAuth      AuthCompletenessStatus
+		wantOverlayID string
 	}{
-		{provider: "adyen", wantSpecRefID: "adyen-checkout-service-v72-openapi"},
-		{provider: "auth0", wantSpecRefID: "auth0-management-api-openapi"},
-		{provider: "bigcommerce", wantSpecRefID: "bigcommerce-catalog-products-v3-openapi"},
-		{provider: "cisco-meraki", wantSpecRefID: "cisco-meraki-dashboard-api-v1-openapi"},
-		{provider: "confluence-cloud", wantSpecRefID: "confluence-cloud-rest-v2-openapi"},
-		{provider: "confluent-cloud", wantSpecRefID: "confluent-cloud-org-v2-openapi"},
-		{provider: "docusign", wantSpecRefID: "docusign-esignature-rest-v2-1-swagger"},
+		{provider: "adyen", wantSpecRefID: "adyen-checkout-service-v72-openapi", wantAuth: AuthStatusComplete, wantOverlayID: "adyen-checkout-v72-auth-overlay"},
+		{provider: "auth0", wantSpecRefID: "auth0-management-api-openapi", wantAuth: AuthStatusComplete},
+		{provider: "bigcommerce", wantSpecRefID: "bigcommerce-catalog-products-v3-openapi", wantAuth: AuthStatusComplete},
+		{provider: "cisco-meraki", wantSpecRefID: "cisco-meraki-dashboard-api-v1-openapi", wantAuth: AuthStatusComplete},
+		{provider: "confluence-cloud", wantSpecRefID: "confluence-cloud-rest-v2-openapi", wantAuth: AuthStatusComplete, wantOverlayID: "confluence-cloud-rest-v2-auth-overlay"},
+		{provider: "confluent-cloud", wantSpecRefID: "confluent-cloud-org-v2-openapi", wantAuth: AuthStatusComplete},
+		{provider: "docusign", wantSpecRefID: "docusign-esignature-rest-v2-1-swagger", wantAuth: AuthStatusComplete, wantOverlayID: "docusign-esignature-rest-v2-1-auth-overlay"},
 	}
 	for _, test := range openAPITests {
 		row, ok := rows[test.provider]
@@ -432,14 +439,17 @@ func TestOpenAPIFirstProviderBatchAdvisoryRows(t *testing.T) {
 		if row.UserOpenAPINeed != UserOpenAPINeedNotExpected {
 			t.Fatalf("%s user OpenAPI need = %q, want %q", test.provider, row.UserOpenAPINeed, UserOpenAPINeedNotExpected)
 		}
-		if row.AuthStatus != AuthStatusPresentIncomplete {
-			t.Fatalf("%s auth status = %q, want %q", test.provider, row.AuthStatus, AuthStatusPresentIncomplete)
+		if row.AuthStatus != test.wantAuth {
+			t.Fatalf("%s auth status = %q, want %q", test.provider, row.AuthStatus, test.wantAuth)
 		}
 		if !advisoryHasSpecKind(row, SpecKindOpenAPI) {
 			t.Fatalf("%s missing OpenAPI spec reference: %#v", test.provider, row.SpecReferences)
 		}
 		if row.ResolvedOpenAPI.Source != ResolutionSourceBuiltInSpecReference || row.ResolvedOpenAPI.SpecRefID != test.wantSpecRefID {
 			t.Fatalf("%s resolved OpenAPI = %#v", test.provider, row.ResolvedOpenAPI)
+		}
+		if test.wantOverlayID != "" && !containsString(row.SecurityOverlayIDs, test.wantOverlayID) {
+			t.Fatalf("%s security overlay ids = %#v, want %q", test.provider, row.SecurityOverlayIDs, test.wantOverlayID)
 		}
 		if len(row.EndpointOverlays) != 0 {
 			t.Fatalf("%s endpoint overlays = %#v, want none", test.provider, row.EndpointOverlays)
@@ -467,6 +477,77 @@ func TestOpenAPIFirstProviderBatchAdvisoryRows(t *testing.T) {
 	}
 	if len(row.EndpointOverlays) != 0 {
 		t.Fatalf("acumatica endpoint overlays = %#v, want none", row.EndpointOverlays)
+	}
+	assertHasFollowUp(t, row.ManualFollowUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
+}
+
+func TestDocsOverlayProviderBatchAdvisoryRows(t *testing.T) {
+	report, err := BuiltInProviderAdvisoryReport(ProviderAdvisoryOptions{
+		Artifacts: []CatalogSpecArtifact{
+			m57EndpointOverlayArtifact("adobe-acrobat-sign", "adobe-acrobat-sign-api-overlay"),
+			m57EndpointOverlayArtifact("aftership", "aftership-tracking-api-overlay"),
+			m57EndpointOverlayArtifact("aircall", "aircall-public-api-overlay"),
+			m57EndpointOverlayArtifact("apollo", "apollo-api-overlay"),
+			m57EndpointOverlayArtifact("checkr", "checkr-api-overlay"),
+			m57EndpointOverlayArtifact("marketo", "marketo-rest-api-overlay"),
+		},
+	})
+	if err != nil {
+		t.Fatalf("BuiltInProviderAdvisoryReport() error = %v", err)
+	}
+	rows := map[string]ProviderAdvisory{}
+	for _, row := range report.Providers {
+		rows[row.ProviderID] = row
+	}
+	tests := []struct {
+		provider        string
+		specRefID       string
+		endpointOverlay string
+	}{
+		{provider: "adobe-acrobat-sign", specRefID: "adobe-acrobat-sign-openapi-sdk-docs", endpointOverlay: "adobe-acrobat-sign-api-overlay"},
+		{provider: "aftership", specRefID: "aftership-tracking-docs", endpointOverlay: "aftership-tracking-api-overlay"},
+		{provider: "aircall", specRefID: "aircall-public-api-reference", endpointOverlay: "aircall-public-api-overlay"},
+		{provider: "apollo", specRefID: "apollo-api-docs-index", endpointOverlay: "apollo-api-overlay"},
+		{provider: "checkr", specRefID: "checkr-api-docs", endpointOverlay: "checkr-api-overlay"},
+		{provider: "marketo", specRefID: "marketo-rest-api-docs", endpointOverlay: "marketo-rest-api-overlay"},
+	}
+	for _, test := range tests {
+		row, ok := rows[test.provider]
+		if !ok {
+			t.Fatalf("missing M57 provider %s", test.provider)
+		}
+		if row.OpenAPIAvailability != SpecAvailabilityUnavailable {
+			t.Fatalf("%s OpenAPI availability = %q, want %q", test.provider, row.OpenAPIAvailability, SpecAvailabilityUnavailable)
+		}
+		if row.UserOpenAPINeed != UserOpenAPINeedLikely {
+			t.Fatalf("%s user OpenAPI need = %q, want %q", test.provider, row.UserOpenAPINeed, UserOpenAPINeedLikely)
+		}
+		if row.AuthStatus != AuthStatusOverlayRequired {
+			t.Fatalf("%s auth status = %q, want %q", test.provider, row.AuthStatus, AuthStatusOverlayRequired)
+		}
+		if !advisoryHasSpecKind(row, SpecKindHumanDocs) {
+			t.Fatalf("%s missing human docs reference: %#v", test.provider, row.SpecReferences)
+		}
+		if row.ResolvedOpenAPI.Source != ResolutionSourceBuiltInSpecReference || row.ResolvedOpenAPI.SpecRefID != test.specRefID {
+			t.Fatalf("%s resolved OpenAPI = %#v", test.provider, row.ResolvedOpenAPI)
+		}
+		if !advisoryHasEndpointOverlay(row, test.endpointOverlay) {
+			t.Fatalf("%s missing endpoint overlay %q", test.provider, test.endpointOverlay)
+		}
+	}
+
+	row, ok := rows["airwallex"]
+	if !ok {
+		t.Fatal("missing M57 provider airwallex")
+	}
+	if row.OpenAPIAvailability != SpecAvailabilityUnavailable {
+		t.Fatalf("airwallex OpenAPI availability = %q, want %q", row.OpenAPIAvailability, SpecAvailabilityUnavailable)
+	}
+	if row.AuthStatus != AuthStatusOverlayRequired {
+		t.Fatalf("airwallex auth status = %q, want %q", row.AuthStatus, AuthStatusOverlayRequired)
+	}
+	if len(row.EndpointOverlays) != 0 {
+		t.Fatalf("airwallex endpoint overlays = %#v, want none", row.EndpointOverlays)
 	}
 	assertHasFollowUp(t, row.ManualFollowUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
 }
@@ -558,6 +639,12 @@ func m46EndpointOverlayArtifact(providerID, artifactID string) CatalogSpecArtifa
 		BuilderPath: "overlay-builders/build_" + providerID + "_overlay.go",
 		Metadata:    map[string]string{"derived_from_docs": "true", "official_openapi": "false"},
 	}
+}
+
+func m57EndpointOverlayArtifact(providerID, artifactID string) CatalogSpecArtifact {
+	artifact := m46EndpointOverlayArtifact(providerID, artifactID)
+	artifact.BuilderPath = "overlay-builders/build_m57_human_docs_overlays.go"
+	return artifact
 }
 
 func advisoryHasSpecKind(row ProviderAdvisory, kind SpecKind) bool {

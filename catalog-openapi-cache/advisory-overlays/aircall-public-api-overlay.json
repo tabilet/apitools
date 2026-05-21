@@ -1,0 +1,281 @@
+{
+  "components": {
+    "schemas": {
+      "AircallCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AircallError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "AircallObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "aircallBasic": {
+        "description": "Aircall api_id and api_token supplied with HTTP Basic authentication.",
+        "scheme": "basic",
+        "type": "http"
+      },
+      "aircallOAuth2": {
+        "description": "Aircall partner OAuth 2.0 authorization-code flow for public_api access.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://dashboard.aircall.io/oauth/authorize",
+            "scopes": {
+              "public_api": "Access Aircall Public API resources."
+            },
+            "tokenUrl": "https://api.aircall.io/v1/oauth/token"
+          }
+        },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Aircall Public API human documentation. This is not an official Aircall OpenAPI document.",
+    "title": "Aircall Public API Advisory Overlay",
+    "version": "2026-05-21"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/calls": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAircallCalls",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Items per page.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircallCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aircallBasic": []
+          },
+          {
+            "aircallOAuth2": [
+              "public_api"
+            ]
+          }
+        ],
+        "summary": "List calls"
+      }
+    },
+    "/contacts": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAircallContacts",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Items per page.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircallCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aircallBasic": []
+          },
+          {
+            "aircallOAuth2": [
+              "public_api"
+            ]
+          }
+        ],
+        "summary": "List contacts"
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAircallUsers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircallCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aircallBasic": []
+          },
+          {
+            "aircallOAuth2": [
+              "public_api"
+            ]
+          }
+        ],
+        "summary": "List users"
+      }
+    },
+    "/users/availabilities": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAircallUserAvailabilities",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircallCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aircallBasic": []
+          },
+          {
+            "aircallOAuth2": [
+              "public_api"
+            ]
+          }
+        ],
+        "summary": "Retrieve users availability"
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAircallUser",
+        "parameters": [
+          {
+            "description": "User ID or email.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircallObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aircallBasic": []
+          },
+          {
+            "aircallOAuth2": [
+              "public_api"
+            ]
+          }
+        ],
+        "summary": "Retrieve user"
+      }
+    }
+  },
+  "security": [
+    {
+      "aircallBasic": []
+    },
+    {
+      "aircallOAuth2": [
+        "public_api"
+      ]
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.aircall.io/v1"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "aircall",
+    "source_note": "Aircall publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected read-oriented users, availability, calls, and contacts endpoints.",
+    "source_refs": [
+      "https://developer.aircall.io/api-references/"
+    ]
+  }
+}

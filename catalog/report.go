@@ -144,6 +144,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Adalo has official API human docs and app-specific generated collection docs but no recorded stable public official OpenAPI document; bearer API-key metadata comes from advisory overlay notes.",
 	},
 	{
+		ProviderID: "adobe-acrobat-sign",
+		SpecRefID:  "adobe-acrobat-sign-openapi-sdk-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://developer.adobe.com/acrobat-sign/docs/overview/sdks/openapi", "https://github.com/adobe/acrobat-sign/tree/main/sdks/AcrobatSign_OpenAPI_SDK"},
+		SourceNote: "Adobe Acrobat Sign official SDK JSON files are Swagger 1.2-style rather than directly importable OpenAPI 2/3; OAuth bearer metadata comes from advisory overlay notes.",
+	},
+	{
 		ProviderID: "adyen",
 		SpecRefID:  "adyen-checkout-service-v72-openapi",
 		Status:     AuthStatusPresentIncomplete,
@@ -158,11 +165,39 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Affinity has official V1 API human docs but no recorded stable public official OpenAPI document; basic and bearer API-key metadata comes from advisory overlay notes.",
 	},
 	{
+		ProviderID: "aftership",
+		SpecRefID:  "aftership-tracking-api-overview",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://www.aftership.com/docs/tracking", "https://www.aftership.com/docs/tracking/fcd9acb5f448a-api-overview", "https://www.aftership.com/docs/tracking/2024-07/quickstart/authentication"},
+		SourceNote: "AfterShip Tracking docs advertise an OAS export, but M57 direct artifact probes were not usable as a durable unauthenticated catalog fetch; as-api-key header metadata comes from advisory overlay notes.",
+	},
+	{
 		ProviderID: "agile-crm",
 		SpecRefID:  "agile-crm-rest-api-github",
 		Status:     AuthStatusOverlayRequired,
 		SourceRefs: []string{"https://www.agilecrm.com/api", "https://github.com/agilecrm/rest-api"},
 		SourceNote: "Agile CRM has official API human docs and REST API GitHub documentation but no recorded stable public official OpenAPI document; email/API-key basic auth metadata comes from advisory overlay notes.",
+	},
+	{
+		ProviderID: "aircall",
+		SpecRefID:  "aircall-public-api-reference",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://developer.aircall.io/api-references/"},
+		SourceNote: "Aircall has official Public API human docs but no recorded stable public official OpenAPI document; Basic Auth and OAuth2 public_api metadata comes from advisory overlay notes.",
+	},
+	{
+		ProviderID: "airwallex",
+		SpecRefID:  "airwallex-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://www.airwallex.com/docs/developer-tools/api", "https://www.airwallex.com/docs/api/authentication/api_access/login", "https://www.airwallex.com/docs/developer-tools/api/manage-api-keys"},
+		SourceNote: "Airwallex has official API human docs but no recorded stable provider-wide OpenAPI document; access-token bearer metadata comes from advisory overlay notes, with endpoint overlay deferred for financial movement safety.",
+	},
+	{
+		ProviderID: "apollo",
+		SpecRefID:  "apollo-authentication-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://docs.apollo.io/reference/authentication.md", "https://docs.apollo.io/reference/people-api-search.md", "https://docs.apollo.io/reference/organization-search.md"},
+		SourceNote: "Apollo docs expose endpoint-level OpenAPI fragments and API-key/OAuth metadata but no recorded stable provider-wide OpenAPI document; x-api-key and bearer metadata comes from advisory overlay notes.",
 	},
 	{
 		ProviderID: "asana",
@@ -174,9 +209,9 @@ var builtInSecurityClassifications = []SecurityClassification{
 	{
 		ProviderID: "auth0",
 		SpecRefID:  "auth0-management-api-openapi",
-		Status:     AuthStatusPresentIncomplete,
+		Status:     AuthStatusComplete,
 		SourceRefs: []string{"https://auth0.com/docs/api/management/openapi.json", "https://auth0.com/docs/secure/tokens/access-tokens/management-api-access-tokens"},
-		SourceNote: "Auth0 Management API publishes an official OpenAPI schema, but tenant domains, scopes, API clients, and access-token issuance are environment-specific and must stay downstream.",
+		SourceNote: "Auth0 Management API publishes an official OpenAPI schema with bearer and OAuth2 client-credentials security metadata. Tenant domains, scopes, API clients, and access-token issuance remain downstream.",
 	},
 	{
 		ProviderID: "airtable",
@@ -184,6 +219,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		Status:     AuthStatusOverlayRequired,
 		SourceRefs: []string{"https://airtable.com/developers/web/api/introduction"},
 		SourceNote: "Airtable has no recorded official OpenAPI document in the built-in catalog; security metadata must come from advisory overlay notes when importing a user-provided spec.",
+	},
+	{
+		ProviderID: "checkr",
+		SpecRefID:  "checkr-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://docs.checkr.com/"},
+		SourceNote: "Checkr has official Redoc-rendered human API docs but no recorded stable public OpenAPI JSON URL; basic_auth metadata comes from advisory overlay notes.",
 	},
 	{
 		ProviderID: "bannerbear",
@@ -209,9 +251,9 @@ var builtInSecurityClassifications = []SecurityClassification{
 	{
 		ProviderID: "bigcommerce",
 		SpecRefID:  "bigcommerce-catalog-products-v3-openapi",
-		Status:     AuthStatusPresentIncomplete,
+		Status:     AuthStatusComplete,
 		SourceRefs: []string{"https://raw.githubusercontent.com/bigcommerce/api-specs/main/reference/catalog/products_catalog.v3.yml", "https://docs.bigcommerce.com/docs/start/authentication"},
-		SourceNote: "BigCommerce publishes official OpenAPI specs, but store hashes, OAuth/private-app credentials, scopes, and channel availability are store-specific and require downstream binding.",
+		SourceNote: "BigCommerce publishes official OpenAPI specs with X-Auth-Token API-key security metadata. Store hashes, OAuth/private-app credentials, scopes, and channel availability remain downstream.",
 	},
 	{
 		ProviderID: "aws-s3",
@@ -307,9 +349,9 @@ var builtInSecurityClassifications = []SecurityClassification{
 	{
 		ProviderID: "cisco-meraki",
 		SpecRefID:  "cisco-meraki-dashboard-api-v1-openapi",
-		Status:     AuthStatusPresentIncomplete,
+		Status:     AuthStatusComplete,
 		SourceRefs: []string{"https://raw.githubusercontent.com/meraki/openapi/master/openapi/spec3.json", "https://developer.cisco.com/meraki/api-v1/"},
-		SourceNote: "Cisco Meraki publishes an official Dashboard API OpenAPI document, but organization/network permissions and API-key handling are dashboard-account specific.",
+		SourceNote: "Cisco Meraki publishes an official Dashboard API OpenAPI document with API-key and bearer security metadata. Organization/network permissions and API-key handling remain dashboard-account specific.",
 	},
 	{
 		ProviderID: "confluence-cloud",
@@ -321,9 +363,9 @@ var builtInSecurityClassifications = []SecurityClassification{
 	{
 		ProviderID: "confluent-cloud",
 		SpecRefID:  "confluent-cloud-org-v2-openapi",
-		Status:     AuthStatusPresentIncomplete,
+		Status:     AuthStatusComplete,
 		SourceRefs: []string{"https://raw.githubusercontent.com/confluentinc/ccloud-sdk-go-v2/master/org/v2/api/openapi.yaml", "https://docs.confluent.io/cloud/current/api.html/"},
-		SourceNote: "Confluent Cloud publishes official OpenAPI documents, but environments, clusters, API keys, service accounts, and data-plane endpoint selection are tenant-specific.",
+		SourceNote: "Confluent Cloud publishes official OpenAPI documents with Basic API-key and OAuth2 security metadata. Environments, clusters, API keys, service accounts, and data-plane endpoint selection remain tenant-specific.",
 	},
 	{
 		ProviderID: "discord",
@@ -499,6 +541,13 @@ var builtInSecurityClassifications = []SecurityClassification{
 		Status:     AuthStatusOverlayRequired,
 		SourceRefs: []string{"https://mailchimp.com/developer/marketing/api/", "https://mailchimp.com/developer/marketing/guides/quick-start/"},
 		SourceNote: "Mailchimp's official Marketing API docs describe OpenAPI-backed endpoint documentation and API-key authentication, but no stable public downloadable OpenAPI document is recorded in this catalog entry; security metadata must come from advisory overlay notes.",
+	},
+	{
+		ProviderID: "marketo",
+		SpecRefID:  "marketo-rest-api-docs",
+		Status:     AuthStatusOverlayRequired,
+		SourceRefs: []string{"https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/rest-api", "https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/lead-database/leads", "https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/lead-database/activities"},
+		SourceNote: "Adobe Marketo Engage has official REST human docs but no recorded stable public official OpenAPI document; Authorization bearer metadata comes from advisory overlay notes.",
 	},
 	{
 		ProviderID: "microsoft-graph",

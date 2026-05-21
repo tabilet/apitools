@@ -1,0 +1,202 @@
+{
+  "components": {
+    "schemas": {
+      "CheckrCollection": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CheckrError": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CheckrObject": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "checkrBasic": {
+        "description": "Checkr API key supplied with HTTP Basic authentication.",
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Advisory OpenAPI overlay derived from official Checkr human API documentation. This is not an official Checkr OpenAPI document.",
+    "title": "Checkr API Advisory Overlay",
+    "version": "2026-05-21"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/v1/account": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCheckrAccount",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckrObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "checkrBasic": []
+          }
+        ],
+        "summary": "Get account"
+      }
+    },
+    "/v1/candidates/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCheckrCandidate",
+        "parameters": [
+          {
+            "description": "Candidate ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckrObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "checkrBasic": []
+          }
+        ],
+        "summary": "Get candidate"
+      }
+    },
+    "/v1/packages": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listCheckrPackages",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Items per page.",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckrCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "checkrBasic": []
+          }
+        ],
+        "summary": "List packages"
+      }
+    },
+    "/v1/reports/{id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getCheckrReport",
+        "parameters": [
+          {
+            "description": "Report ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckrObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "checkrBasic": []
+          }
+        ],
+        "summary": "Get report"
+      }
+    }
+  },
+  "security": [
+    {
+      "checkrBasic": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.checkr.com"
+    }
+  ],
+  "x-apitools-overlay": {
+    "derived_from_docs": true,
+    "official_openapi": false,
+    "provider_id": "checkr",
+    "source_note": "Checkr publishes Redoc-rendered human API documentation but no recorded stable public official OpenAPI JSON URL; this overlay covers a conservative read-oriented account, candidate, package, and report subset.",
+    "source_refs": [
+      "https://docs.checkr.com/"
+    ]
+  }
+}

@@ -11,7 +11,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 286; got != want {
+	if got, want := len(candidates), 293; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -24,12 +24,17 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"acuity-scheduling",
 		"acumatica",
 		"adalo",
+		"adobe-acrobat-sign",
 		"adyen",
 		"affinity",
+		"aftership",
 		"agile-crm",
+		"aircall",
 		"airtable",
 		"airtop",
+		"airwallex",
 		"apitemplate-io",
+		"apollo",
 		"asana",
 		"auth0",
 		"autopilot",
@@ -65,6 +70,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"cal",
 		"calendly",
 		"chargebee",
+		"checkr",
 		"circleci",
 		"cisco-meraki",
 		"cisco-webex",
@@ -176,6 +182,7 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"mailgun",
 		"mailjet",
 		"mandrill",
+		"marketo",
 		"marketstack",
 		"matrix",
 		"mattermost",

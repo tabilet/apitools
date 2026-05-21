@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 285; got != want {
+	if got, want := len(catalog.ListProviders()), 292; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -23,12 +23,17 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"acuity-scheduling",
 		"acumatica",
 		"adalo",
+		"adobe-acrobat-sign",
 		"adyen",
 		"affinity",
+		"aftership",
 		"agile-crm",
+		"aircall",
 		"airtable",
 		"airtop",
+		"airwallex",
 		"apitemplate-io",
+		"apollo",
 		"asana",
 		"auth0",
 		"autopilot",
@@ -64,6 +69,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"cal",
 		"calendly",
 		"chargebee",
+		"checkr",
 		"circleci",
 		"cisco-meraki",
 		"cisco-webex",
@@ -174,6 +180,7 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"mailgun",
 		"mailjet",
 		"mandrill",
+		"marketo",
 		"marketstack",
 		"matrix",
 		"mattermost",
