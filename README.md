@@ -46,8 +46,11 @@ go run ./cmd/apitools search --query slack --json
 go run ./cmd/apitools search --query slack --cache ~/.cache/apitools/cache.sqlite
 go run ./cmd/apitools import --url https://example.com/openapi.yaml --dir ./openapi --name example
 go run ./cmd/apitools catalog list
+go run ./cmd/apitools catalog resolve gmail openweathermap
 go run ./cmd/apitools catalog advisory slack
 go run ./cmd/apitools catalog inspect slack
+go run ./cmd/apitools catalog materialize slack --out ./api-artifacts
+go run ./cmd/apitools catalog export slack --workflow-dir ../openudon/examples/demo
 go run ./cmd/apitools catalog overlay-view github
 go run ./cmd/apitools catalog security-audit
 go run ./cmd/apitools catalog security-report
@@ -96,6 +99,8 @@ credentials, or claiming runtime compatibility:
 
 ```bash
 go run ./cmd/apitools catalog list
+go run ./cmd/apitools catalog resolve gmail openweathermap \
+  --cache catalog-openapi-cache/cache.sqlite
 go run ./cmd/apitools catalog advisory slack \
   --cache catalog-openapi-cache/cache.sqlite
 go run ./cmd/apitools catalog inspect slack
@@ -103,6 +108,14 @@ go run ./cmd/apitools catalog inspect slack \
   --openapi ./openapi/slack.yaml \
   --security-overlay ./openapi/slack-security.json
 go run ./cmd/apitools catalog overlay-view github --json
+go run ./cmd/apitools catalog materialize slack \
+  --out ./api-artifacts \
+  --cache-dir catalog-openapi-cache \
+  --cache catalog-openapi-cache/cache.sqlite
+go run ./cmd/apitools catalog export slack openai \
+  --workflow-dir ../openudon/examples/demo \
+  --cache-dir catalog-openapi-cache \
+  --cache catalog-openapi-cache/cache.sqlite
 go run ./cmd/apitools catalog security-audit --json
 go run ./cmd/apitools catalog security-report --json
 go run ./cmd/apitools catalog check --as-of 2026-05-18 --json
@@ -204,6 +217,15 @@ Catalog stats are offline. `catalog stats` summarizes primary provider
 protocol classifications, local catalog artifact registry counts by kind, and
 refresh artifact validation buckets without probing URLs or executing provider
 operations.
+
+Catalog materialization is offline and copy-only. `catalog resolve` reports
+provider IDs, protocol capability, registered local artifacts, and security
+overlay IDs. `catalog materialize` copies existing cache-registered artifacts
+for one provider into a target directory and emits catalog security overlays as
+separate JSON metadata with provenance. `catalog export` writes the same
+provider-scoped artifacts under a workflow directory. These commands do not
+download missing files, apply overlays into OpenAPI documents, lower Discovery
+or Smithy into OpenAPI, execute operations, or resolve credentials.
 
 Catalog spec refresh is opt-in and selected. `catalog specs` lists known
 machine-readable built-in spec references without network access, optionally
@@ -310,6 +332,20 @@ _, _ = advisory, err
 
 quality := catalog.BuiltInCatalogQualityReport(catalog.CatalogQualityOptions{})
 _ = quality
+
+resolutions, err := catalog.ResolveProvidersWithOptions(catalog.ProviderResolutionOptions{
+	ProviderKeys: []string{"slack"},
+})
+_, _ = resolutions, err
+
+materialized, err := catalog.MaterializeProvider(ctx, catalog.MaterializeOptions{
+	ProviderKey:             "slack",
+	TargetDir:               "./api-artifacts",
+	CacheDir:                "catalog-openapi-cache",
+	// Artifacts: existing CatalogSpecArtifact rows, usually loaded from sqlitecache.
+	IncludeSecurityOverlays: true,
+})
+_, _ = materialized, err
 ```
 
 Catalog security audits are available from the root package:
@@ -390,8 +426,11 @@ go run ./cmd/apitools search --help
 go run ./cmd/apitools import --help
 go run ./cmd/apitools catalog check
 go run ./cmd/apitools catalog list
+go run ./cmd/apitools catalog resolve slack
 go run ./cmd/apitools catalog advisory slack
 go run ./cmd/apitools catalog inspect slack
+go run ./cmd/apitools catalog materialize --help
+go run ./cmd/apitools catalog export --help
 go run ./cmd/apitools catalog security-audit
 go run ./cmd/apitools catalog security-report
 go run ./cmd/apitools catalog stats

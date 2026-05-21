@@ -65,10 +65,16 @@ func runCatalog(args []string, out, errOut io.Writer) int {
 		return runCatalogAdvisory(args[1:], out, errOut)
 	case "check":
 		return runCatalogCheck(args[1:], out, errOut)
+	case "export":
+		return runCatalogExport(args[1:], out, errOut)
 	case "list":
 		return runCatalogList(args[1:], out, errOut)
+	case "materialize":
+		return runCatalogMaterialize(args[1:], out, errOut)
 	case "specs":
 		return runCatalogSpecs(args[1:], out, errOut)
+	case "resolve":
+		return runCatalogResolve(args[1:], out, errOut)
 	case "stats":
 		return runCatalogStats(args[1:], out, errOut)
 	case "refresh":
@@ -99,7 +105,10 @@ func catalogUsage(out io.Writer) {
 	fmt.Fprintln(out, "Commands:")
 	fmt.Fprintln(out, "  advisory         render provider advisory summaries")
 	fmt.Fprintln(out, "  check            run offline catalog quality checks")
+	fmt.Fprintln(out, "  export           copy selected provider artifacts into a workflow directory")
 	fmt.Fprintln(out, "  list             list built-in provider catalog metadata")
+	fmt.Fprintln(out, "  materialize      copy one provider's registered artifacts with provenance")
+	fmt.Fprintln(out, "  resolve          resolve provider names to catalog artifact metadata")
 	fmt.Fprintln(out, "  specs            list refreshable built-in spec references")
 	fmt.Fprintln(out, "  stats            summarize catalog protocol and artifact status")
 	fmt.Fprintln(out, "  refresh          refresh one selected built-in spec reference")
@@ -180,6 +189,216 @@ func runCatalogCheck(args []string, out, errOut io.Writer) int {
 	return runCatalogCheckWithReport(args, out, errOut, func(options catalogpkg.CatalogQualityOptions) catalogpkg.CatalogQualityReport {
 		return catalogpkg.BuiltInCatalogQualityReport(options)
 	})
+}
+
+func runCatalogResolve(args []string, out, errOut io.Writer) int {
+	positionals, flagArgs, splitOK := splitCatalogProviderFlags(args, map[string]struct{}{
+		"--cache": {},
+	}, map[string]struct{}{
+		"--json": {},
+	})
+	if !splitOK {
+		return 2
+	}
+	fs := flag.NewFlagSet("apitools catalog resolve", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog resolve <provider>... [--cache catalog-openapi-cache/cache.sqlite] [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(flagArgs); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if len(positionals) == 0 {
+		fmt.Fprintln(errOut, "at least one provider is required")
+		fs.Usage()
+		return 2
+	}
+	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	defer closeCache()
+	resolutions, err := catalogpkg.ResolveProvidersWithOptions(catalogpkg.ProviderResolutionOptions{
+		ProviderKeys: positionals,
+		Artifacts:    artifacts,
+	})
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	if *jsonOut {
+		if err := writeJSON(out, resolutions); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	writeCatalogResolveReport(out, resolutions)
+	return 0
+}
+
+func runCatalogMaterialize(args []string, out, errOut io.Writer) int {
+	positionals, flagArgs, splitOK := splitCatalogProviderFlags(args, map[string]struct{}{
+		"--cache":     {},
+		"--cache-dir": {},
+		"--out":       {},
+	}, map[string]struct{}{
+		"--json":                 {},
+		"--no-security-overlays": {},
+	})
+	if !splitOK {
+		return 2
+	}
+	fs := flag.NewFlagSet("apitools catalog materialize", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory containing saved review artifacts")
+	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
+	outDir := fs.String("out", "", "Directory to receive provider artifacts")
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	noSecurityOverlays := fs.Bool("no-security-overlays", false, "Do not emit catalog security overlay JSON files")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog materialize <provider> --out <dir> [--cache-dir catalog-openapi-cache] [--cache catalog-openapi-cache/cache.sqlite] [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(flagArgs); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if len(positionals) != 1 {
+		fmt.Fprintln(errOut, "exactly one provider is required")
+		fs.Usage()
+		return 2
+	}
+	if strings.TrimSpace(*outDir) == "" {
+		fmt.Fprintln(errOut, "--out is required")
+		fs.Usage()
+		return 2
+	}
+	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	defer closeCache()
+	report, err := catalogpkg.MaterializeProvider(context.Background(), catalogpkg.MaterializeOptions{
+		ProviderKey:             positionals[0],
+		TargetDir:               *outDir,
+		CacheDir:                *cacheDir,
+		Artifacts:               artifacts,
+		IncludeSecurityOverlays: !*noSecurityOverlays,
+		WriteManifest:           true,
+	})
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	if *jsonOut {
+		if err := writeJSON(out, report); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	writeCatalogMaterializeReport(out, report)
+	return 0
+}
+
+func runCatalogExport(args []string, out, errOut io.Writer) int {
+	positionals, flagArgs, splitOK := splitCatalogProviderFlags(args, map[string]struct{}{
+		"--artifact-dir": {},
+		"--cache":        {},
+		"--cache-dir":    {},
+		"--workflow-dir": {},
+	}, map[string]struct{}{
+		"--json":                 {},
+		"--no-security-overlays": {},
+	})
+	if !splitOK {
+		return 2
+	}
+	fs := flag.NewFlagSet("apitools catalog export", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory containing saved review artifacts")
+	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
+	workflowDir := fs.String("workflow-dir", "", "Workflow directory to receive exported API artifacts")
+	artifactDir := fs.String("artifact-dir", "api-artifacts", "Subdirectory under the workflow directory for exported artifacts")
+	jsonOut := fs.Bool("json", false, "Write JSON output")
+	noSecurityOverlays := fs.Bool("no-security-overlays", false, "Do not emit catalog security overlay JSON files")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog export <provider>... --workflow-dir <dir> [--artifact-dir api-artifacts] [--cache-dir catalog-openapi-cache] [--cache catalog-openapi-cache/cache.sqlite] [--json]")
+		fmt.Fprintln(fs.Output())
+		fs.PrintDefaults()
+	}
+	if hasHelpFlag(args) {
+		fs.SetOutput(out)
+		fs.Usage()
+		return 0
+	}
+	if err := fs.Parse(flagArgs); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if len(positionals) == 0 {
+		fmt.Fprintln(errOut, "at least one provider is required")
+		fs.Usage()
+		return 2
+	}
+	if strings.TrimSpace(*workflowDir) == "" {
+		fmt.Fprintln(errOut, "--workflow-dir is required")
+		fs.Usage()
+		return 2
+	}
+	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	defer closeCache()
+	report, err := catalogpkg.ExportWorkflowArtifacts(context.Background(), catalogpkg.ExportWorkflowArtifactsOptions{
+		ProviderKeys:            positionals,
+		WorkflowDir:             *workflowDir,
+		ArtifactDir:             *artifactDir,
+		CacheDir:                *cacheDir,
+		Artifacts:               artifacts,
+		IncludeSecurityOverlays: !*noSecurityOverlays,
+		WriteManifest:           true,
+	})
+	if err != nil {
+		fmt.Fprintln(errOut, err)
+		return 1
+	}
+	if *jsonOut {
+		if err := writeJSON(out, report); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	writeCatalogExportReport(out, report)
+	return 0
 }
 
 func runCatalogCheckWithReport(args []string, out, errOut io.Writer, build func(catalogpkg.CatalogQualityOptions) catalogpkg.CatalogQualityReport) int {
@@ -1240,6 +1459,66 @@ func writeCatalogAdvisoryReport(out io.Writer, report catalogpkg.ProviderAdvisor
 	}
 }
 
+func writeCatalogResolveReport(out io.Writer, resolutions []catalogpkg.ProviderResolution) {
+	fmt.Fprintf(out, "Provider resolutions: %d provider(s)\n", len(resolutions))
+	for _, resolution := range resolutions {
+		fmt.Fprintf(out, "- %s (%s): %s\n", resolution.DisplayName, resolution.ProviderID, resolution.Capability)
+		if len(resolution.Artifacts) > 0 {
+			fmt.Fprintln(out, "  artifacts:")
+			for _, artifact := range resolution.Artifacts {
+				fmt.Fprintf(out, "  - %s [%s/%s] %s\n", artifact.ArtifactID, artifact.Kind, artifact.Protocol, artifact.Path)
+			}
+		}
+		if len(resolution.SecurityOverlayIDs) > 0 {
+			fmt.Fprintf(out, "  security overlays: %s\n", strings.Join(resolution.SecurityOverlayIDs, ", "))
+		}
+		if len(resolution.ManualFollowUps) > 0 {
+			for _, followUp := range resolution.ManualFollowUps {
+				fmt.Fprintf(out, "  follow-up: %s\n", followUp)
+			}
+		}
+	}
+}
+
+func writeCatalogMaterializeReport(out io.Writer, report catalogpkg.MaterializationReport) {
+	fmt.Fprintf(out, "Materialized provider: %s (%s)\n", report.DisplayName, report.ProviderID)
+	fmt.Fprintf(out, "Capability: %s\n", report.Capability)
+	fmt.Fprintf(out, "Target dir: %s\n", report.TargetDir)
+	if len(report.Artifacts) > 0 {
+		fmt.Fprintln(out, "Artifacts:")
+		for _, artifact := range report.Artifacts {
+			fmt.Fprintf(out, "- %s [%s] %s\n", artifact.ArtifactID, artifact.Kind, artifact.TargetPath)
+		}
+	}
+	if len(report.SecurityOverlays) > 0 {
+		fmt.Fprintln(out, "Security overlays:")
+		for _, overlay := range report.SecurityOverlays {
+			fmt.Fprintf(out, "- %s [%s] %s\n", overlay.OverlayID, overlay.Status, overlay.TargetPath)
+		}
+	}
+	if report.ManifestPath != "" {
+		fmt.Fprintf(out, "Manifest: %s\n", report.ManifestPath)
+	}
+	if len(report.ManualFollowUps) > 0 {
+		fmt.Fprintln(out, "Manual follow-ups:")
+		for _, followUp := range report.ManualFollowUps {
+			fmt.Fprintf(out, "- %s\n", followUp)
+		}
+	}
+}
+
+func writeCatalogExportReport(out io.Writer, report catalogpkg.ExportReport) {
+	fmt.Fprintf(out, "Exported workflow artifacts: %d provider(s)\n", len(report.Providers))
+	fmt.Fprintf(out, "Workflow dir: %s\n", report.WorkflowDir)
+	fmt.Fprintf(out, "Artifact dir: %s\n", report.ArtifactDir)
+	if report.ManifestPath != "" {
+		fmt.Fprintf(out, "Manifest: %s\n", report.ManifestPath)
+	}
+	for _, provider := range report.Providers {
+		fmt.Fprintf(out, "- %s (%s): %d artifact(s), %d security overlay(s)\n", provider.DisplayName, provider.ProviderID, len(provider.Artifacts), len(provider.SecurityOverlays))
+	}
+}
+
 func writeCatalogInspect(out io.Writer, resolved catalogpkg.ResolvedProvider) {
 	provider := resolved.Provider
 	fmt.Fprintf(out, "Provider: %s (%s)\n", provider.DisplayName, provider.ID)
@@ -1664,8 +1943,11 @@ func catalogSpecArtifactsFromCache(path string) ([]catalogpkg.CatalogSpecArtifac
 			ArtifactID:  artifact.ArtifactID,
 			Kind:        artifact.Kind,
 			Path:        artifact.Path,
+			SourceURL:   artifact.SourceURL,
 			OverlayPath: artifact.OverlayPath,
 			BuilderPath: artifact.BuilderPath,
+			SHA256:      artifact.SHA256,
+			Bytes:       artifact.Bytes,
 			Metadata:    artifact.Metadata,
 		})
 	}
@@ -1729,4 +2011,38 @@ func hasHelpFlag(args []string) bool {
 		}
 	}
 	return false
+}
+
+func splitCatalogProviderFlags(args []string, valueFlags, boolFlags map[string]struct{}) ([]string, []string, bool) {
+	var positionals []string
+	var flagArgs []string
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+		if !strings.HasPrefix(arg, "-") {
+			positionals = append(positionals, arg)
+			continue
+		}
+		name := arg
+		if eq := strings.Index(arg, "="); eq >= 0 {
+			name = arg[:eq]
+		}
+		if _, ok := boolFlags[name]; ok {
+			flagArgs = append(flagArgs, arg)
+			continue
+		}
+		if _, ok := valueFlags[name]; ok {
+			flagArgs = append(flagArgs, arg)
+			if strings.Contains(arg, "=") {
+				continue
+			}
+			if i+1 >= len(args) {
+				return positionals, flagArgs, false
+			}
+			i++
+			flagArgs = append(flagArgs, args[i])
+			continue
+		}
+		flagArgs = append(flagArgs, arg)
+	}
+	return positionals, flagArgs, true
 }

@@ -288,6 +288,79 @@ func TestCatalogSpecsShowsRegisteredArtifactPath(t *testing.T) {
 	}
 }
 
+func TestCatalogResolveMaterializeAndExport(t *testing.T) {
+	dir := t.TempDir()
+	cacheDir := filepath.Join(dir, "catalog-openapi-cache")
+	cachePath := filepath.Join(cacheDir, "cache.sqlite")
+	artifactPath := filepath.Join("openapi", "slack-web-openapi-v2.json")
+	if err := os.MkdirAll(filepath.Join(cacheDir, "openapi"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(cacheDir, filepath.FromSlash(artifactPath)), []byte(`{"swagger":"2.0","info":{"title":"Slack","version":"1.0.0"},"paths":{}}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	cache, err := sqlitecache.Open(cachePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.StoreCatalogArtifact(context.Background(), sqlitecache.CatalogArtifact{
+		ProviderID: "slack",
+		ArtifactID: "slack-web-openapi-v2",
+		Kind:       "openapi",
+		Path:       artifactPath,
+		SourceURL:  "https://example.com/slack.json",
+		Metadata:   map[string]string{"validation_status": "valid-swagger"},
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{"catalog", "resolve", "slack", "--cache", cachePath}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("resolve code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{"Provider resolutions: 1 provider(s)", "Slack (slack): executable-openapi", artifactPath} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("resolve output missing %q:\n%s", expected, out.String())
+		}
+	}
+
+	out.Reset()
+	errOut.Reset()
+	materializeDir := filepath.Join(dir, "materialized")
+	code = run([]string{"catalog", "materialize", "slack", "--out", materializeDir, "--cache-dir", cacheDir, "--cache", cachePath}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("materialize code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if !strings.Contains(out.String(), "Materialized provider: Slack (slack)") || !strings.Contains(out.String(), "slack-web-openapi-v2.json") {
+		t.Fatalf("materialize output missing expected text:\n%s", out.String())
+	}
+	if _, err := os.Stat(filepath.Join(materializeDir, "slack", "artifacts", "slack-web-openapi-v2.json")); err != nil {
+		t.Fatalf("missing materialized artifact: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(materializeDir, "slack", "provenance.json")); err != nil {
+		t.Fatalf("missing materialized provenance: %v", err)
+	}
+
+	out.Reset()
+	errOut.Reset()
+	workflowDir := filepath.Join(dir, "workflow")
+	code = run([]string{"catalog", "export", "slack", "--workflow-dir", workflowDir, "--cache-dir", cacheDir, "--cache", cachePath}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("export code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	if !strings.Contains(out.String(), "Exported workflow artifacts: 1 provider(s)") {
+		t.Fatalf("export output missing summary:\n%s", out.String())
+	}
+	if _, err := os.Stat(filepath.Join(workflowDir, "api-artifacts", "provenance.json")); err != nil {
+		t.Fatalf("missing export provenance: %v", err)
+	}
+}
+
 func TestCatalogStatsOutputAndJSON(t *testing.T) {
 	dir := t.TempDir()
 	cacheDir := filepath.Join(dir, "catalog-openapi-cache")

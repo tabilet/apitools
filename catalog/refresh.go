@@ -13,8 +13,11 @@ type CatalogSpecArtifact struct {
 	ArtifactID  string            `json:"artifact_id,omitempty"`
 	Kind        string            `json:"kind,omitempty"`
 	Path        string            `json:"path,omitempty"`
+	SourceURL   string            `json:"source_url,omitempty"`
 	OverlayPath string            `json:"overlay_path,omitempty"`
 	BuilderPath string            `json:"builder_path,omitempty"`
+	SHA256      string            `json:"sha256,omitempty"`
+	Bytes       int64             `json:"bytes,omitempty"`
 	Metadata    map[string]string `json:"metadata,omitempty"`
 }
 
