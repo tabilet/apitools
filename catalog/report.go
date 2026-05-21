@@ -501,13 +501,6 @@ var builtInSecurityClassifications = []SecurityClassification{
 		SourceNote: "Monday.com's official API is GraphQL and no OpenAPI document is recorded in this catalog entry; Authorization-header token metadata must come from advisory overlay notes.",
 	},
 	{
-		ProviderID: "n8n",
-		SpecRefID:  "n8n-public-api-openapi-v1",
-		Status:     AuthStatusComplete,
-		SourceRefs: []string{"https://docs.n8n.io/api/", "https://docs.n8n.io/api/api-reference/", "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/cli/src/public-api/v1/openapi.yml"},
-		SourceNote: "n8n's official Public API OpenAPI root declares X-N8N-API-KEY API-key auth and bearer JWT auth as alternative root security requirements. apitools records this as metadata only and must not choose instances, API keys, bearer tokens, users, projects, or workflows.",
-	},
-	{
 		ProviderID: "netlify",
 		SpecRefID:  "netlify-api-openapi",
 		Status:     AuthStatusComplete,
@@ -1010,13 +1003,6 @@ var builtInSecurityClassifications = []SecurityClassification{
 		Status:     AuthStatusPresentIncomplete,
 		SourceRefs: []string{"https://docs.airtop.ai/openapi.json", "https://docs.airtop.ai/api-reference/airtop-api"},
 		SourceNote: "Airtop's official OpenAPI document declares bearer metadata and repeated Authorization header parameters; bearer metadata is carried as a present-incomplete review overlay.",
-	},
-	{
-		ProviderID: "timesaved",
-		SpecRefID:  "timesaved-n8n-docs",
-		Status:     AuthStatusIntentionallyAnonymous,
-		SourceRefs: []string{"https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.savedTime/"},
-		SourceNote: "TimeSaved is an n8n workflow metadata helper, not an external provider API; there is no credential or auth surface to model.",
 	},
 	{
 		ProviderID: "filemaker",

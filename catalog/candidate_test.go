@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -10,7 +11,7 @@ func TestBuiltInCandidatesValidate(t *testing.T) {
 	if err := ValidateCandidates(candidates); err != nil {
 		t.Fatalf("ValidateCandidates() error = %v", err)
 	}
-	if got, want := len(candidates), 271; got != want {
+	if got, want := len(candidates), 269; got != want {
 		t.Fatalf("len(BuiltInCandidates()) = %d, want %d", got, want)
 	}
 }
@@ -186,7 +187,6 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"monday-com",
 		"monica-crm",
 		"msg91",
-		"n8n",
 		"nasa",
 		"netlify",
 		"netscaler",
@@ -256,7 +256,6 @@ func TestBuiltInCandidateIDsAreDeterministic(t *testing.T) {
 		"telegram",
 		"thehive",
 		"thehive-project",
-		"timesaved",
 		"todoist",
 		"toggl",
 		"travis-ci",
@@ -422,7 +421,6 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "mautic api", id: "mautic"},
 		{key: "messagebird api", id: "messagebird"},
 		{key: "monica crm api", id: "monica-crm"},
-		{key: "n8n public api", id: "n8n"},
 		{key: "api.nasa.gov", id: "nasa"},
 		{key: "netlify api", id: "netlify"},
 		{key: "nvidia air api", id: "nvidia-dsx-air"},
@@ -446,7 +444,6 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 		{key: "stackby database", id: "stackby"},
 		{key: "supabase management api", id: "supabase"},
 		{key: "survey monkey", id: "surveymonkey"},
-		{key: "track time saved", id: "timesaved"},
 		{key: "todoist api", id: "todoist"},
 		{key: "twake developers api", id: "twake"},
 		{key: "twist v3 api", id: "twist"},
@@ -471,21 +468,17 @@ func TestFindBuiltInCandidateMatchesAliases(t *testing.T) {
 	}
 }
 
-func TestBuiltInCandidatesCaptureFixtureAndPriorityEvidence(t *testing.T) {
+func TestBuiltInCandidatesAvoidRuntimeNodeEvidence(t *testing.T) {
 	for _, candidate := range BuiltInCandidates() {
-		if candidate.LocalOpenAPIFixture != "" && !candidate.HasEvidence(EvidenceTryN8nLocalFixture) {
-			t.Fatalf("%s has local fixture but missing try-n8n fixture evidence", candidate.ID)
+		if candidate.LocalOpenAPIFixture != "" || candidate.HasEvidence(EvidenceLocalOpenAPIFixture) {
+			t.Fatalf("%s should not claim local fixture evidence in built-in source-first candidates: %#v", candidate.ID, candidate)
 		}
-		var foundN8n bool
 		var foundOfficialDocsReview bool
 		for _, evidence := range candidate.Evidence {
-			switch evidence.Source {
-			case EvidenceN8nNodeDirectory:
-				foundN8n = true
-				if evidence.Use != EvidenceUsePriority {
-					t.Fatalf("%s n8n evidence use = %q, want %q", candidate.ID, evidence.Use, EvidenceUsePriority)
-				}
-			case EvidenceOfficialDocs:
+			if strings.Contains(strings.ToLower(evidence.Ref), "n8n") || strings.Contains(strings.ToLower(evidence.Ref), "nodes-base") {
+				t.Fatalf("%s should not use n8n-derived evidence: %#v", candidate.ID, evidence)
+			}
+			if evidence.Source == EvidenceOfficialDocs {
 				if evidence.Use == EvidenceUseReview {
 					foundOfficialDocsReview = true
 				}
@@ -496,9 +489,6 @@ func TestBuiltInCandidatesCaptureFixtureAndPriorityEvidence(t *testing.T) {
 				t.Fatalf("%s missing official-docs review evidence", candidate.ID)
 			}
 			continue
-		}
-		if !foundN8n {
-			t.Fatalf("%s missing n8n priority evidence", candidate.ID)
 		}
 	}
 }
@@ -642,7 +632,6 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		"supabase",
 		"surveymonkey",
 		"telegram",
-		"timesaved",
 		"twilio",
 		"typeform",
 		"uptimerobot",
@@ -655,11 +644,8 @@ func TestM6CandidatesAreFixtureFreeUntilSourceReview(t *testing.T) {
 		if !ok {
 			t.Fatalf("missing candidate %s", id)
 		}
-		if candidate.LocalOpenAPIFixture != "" || candidate.HasEvidence(EvidenceTryN8nLocalFixture) {
+		if candidate.LocalOpenAPIFixture != "" || candidate.HasEvidence(EvidenceLocalOpenAPIFixture) {
 			t.Fatalf("%s should not claim local fixture evidence before source review: %#v", id, candidate)
-		}
-		if !candidate.HasEvidence(EvidenceN8nNodeDirectory) {
-			t.Fatalf("%s missing priority-only n8n evidence", id)
 		}
 	}
 }
@@ -697,13 +683,23 @@ func TestBuiltInCandidateClassificationValues(t *testing.T) {
 func TestBuiltInCandidatesReturnCopies(t *testing.T) {
 	candidates := BuiltInCandidates()
 	candidates[0].Aliases[0] = "mutated"
-	candidates[0].Evidence[0].Ref = "mutated"
+	evidenceIndex := -1
+	for i, candidate := range candidates {
+		if len(candidate.Evidence) > 0 {
+			evidenceIndex = i
+			break
+		}
+	}
+	if evidenceIndex == -1 {
+		t.Fatalf("BuiltInCandidates has no evidence-backed candidates")
+	}
+	candidates[evidenceIndex].Evidence[0].Ref = "mutated"
 
 	fresh := BuiltInCandidates()
 	if fresh[0].Aliases[0] == "mutated" {
 		t.Fatalf("BuiltInCandidates leaked alias slice")
 	}
-	if fresh[0].Evidence[0].Ref == "mutated" {
+	if fresh[evidenceIndex].Evidence[0].Ref == "mutated" {
 		t.Fatalf("BuiltInCandidates leaked evidence slice")
 	}
 }
@@ -736,7 +732,7 @@ func TestValidateCandidatesRejectsDuplicateLookupKeys(t *testing.T) {
 
 func TestValidateCandidatesRejectsMismatchedFixtureEvidence(t *testing.T) {
 	candidate := BuiltInCandidates()[0]
-	candidate.LocalOpenAPIFixture = "../try-n8n/reducibility/specs/other.json"
+	candidate.LocalOpenAPIFixture = "testdata/openapi-fixtures/other.json"
 	if err := ValidateCandidates([]Candidate{candidate}); err == nil {
 		t.Fatalf("ValidateCandidates() expected mismatched fixture evidence error")
 	}

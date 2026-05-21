@@ -949,7 +949,7 @@ var builtInProviders = []Provider{
 			humanDocsRef20260521("google-firebase-realtime-database-rest-docs", "https://firebase.google.com/docs/reference/rest/database", "Official Firebase Realtime Database REST API documentation for instance data paths."),
 			humanDocsRef20260521("google-firebase-management-rest-docs", "https://firebase.google.com/docs/projects/api/reference/rest", "Official Firebase Management API REST reference documentation."),
 		},
-		quirks: []string{googleDiscoveryNativeQuirk, "The official Discovery document covers Firebase Realtime Database management resources; n8n's data operations also use instance-specific JSON paths documented by Firebase REST docs, so OpenAPI-only workflows may need downstream lowering or a user-provided document for arbitrary data paths."},
+		quirks: []string{googleDiscoveryNativeQuirk, "The official Discovery document covers Firebase Realtime Database management resources; arbitrary instance data paths are documented separately by Firebase REST docs, so OpenAPI-only workflows may need downstream lowering or a user-provided document for arbitrary data paths."},
 	}),
 	googleDiscoveryProvider20260520(googleDiscoveryProviderSeed{
 		id:          "google-firestore",
@@ -1404,22 +1404,6 @@ var builtInProviders = []Provider{
 			humanDocsRef("monday-api-support-docs", "https://support.monday.com/hc/en-us/articles/360005144659-Does-monday-com-have-an-API", "Official Monday.com support article describing the GraphQL API and token authentication."),
 		},
 		quirks: []string{"Monday.com's API is GraphQL with a single endpoint, so OpenAPI-only workflows need a user-provided or generated OpenAPI document if REST-shaped operation metadata is required."},
-	}),
-	providerCatalogEntry(providerSeed{
-		id:                  "n8n",
-		displayName:         "n8n",
-		aliases:             []string{"n8n api", "n8n public api", "n8n rest api"},
-		category:            "workflow-automation",
-		relevance:           "Popular workflow automation platform API for workflows, executions, credentials, users, projects, variables, data tables, and instance administration.",
-		openAPIAvailability: SpecAvailabilityKnown,
-		machineAvailability: SpecAvailabilityUnknown,
-		userNeed:            UserOpenAPINeedNotExpected,
-		specs: []SpecReference{
-			officialOpenAPIRef20260521("n8n-public-api-openapi-v1", "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/cli/src/public-api/v1/openapi.yml", SourceAuthorityOfficialGitHub, "3.0.0 / n8n Public API 1.1.1", `github:ef4963d2de20fd25f434d9ceb1ebd13ad4adbb18 sha256:b174af523ec4f529bcecc9f107eb45ae8e594ad66fdaf151cc4fae45aea6ea00 content-length:6085`, "n8n OpenAPI document declares Sustainable Use License metadata; n8n documentation terms apply to docs content.", "Official n8n Public API OpenAPI 3.0 YAML source from the n8n repository."),
-			humanDocsRef20260521("n8n-public-api-docs", "https://docs.n8n.io/api/", "Official n8n public REST API documentation."),
-			humanDocsRef20260521("n8n-api-reference-docs", "https://docs.n8n.io/api/api-reference/", "Official n8n public API endpoint reference."),
-		},
-		quirks: []string{"The repository OpenAPI root is an unbundled document with relative $ref entries; the saved artifact is an official review artifact and may need bundling before strict OpenAPI import.", "n8n public API hosts are deployment-specific, and public API availability depends on instance configuration and plan. apitools records source metadata only and does not choose instances, API keys, bearer tokens, users, projects, or workflows."},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "netlify",
@@ -2949,20 +2933,6 @@ var builtInProviders = []Provider{
 		quirks: []string{"Airtop publishes an official OpenAPI 3.1 document from its docs site.", "The saved OpenAPI document is parseable but strict-invalid for the current importer; it declares bearer auth metadata but many operations also model Authorization as a required header parameter, so the catalog keeps a present-incomplete auth review overlay for downstream inspection."},
 	}),
 	providerCatalogEntry(providerSeed{
-		id:                  "timesaved",
-		displayName:         "TimeSaved",
-		aliases:             []string{"time saved", "track time saved", "saved time"},
-		category:            "workflow-metadata",
-		relevance:           "n8n workflow metadata helper for tracking estimated time saved during workflow execution; not an external provider API.",
-		openAPIAvailability: SpecAvailabilityUnavailable,
-		machineAvailability: SpecAvailabilityUnavailable,
-		userNeed:            UserOpenAPINeedPossible,
-		specs: []SpecReference{
-			humanDocsRef20260519("timesaved-n8n-docs", "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.savedTime/", "Official n8n Time Saved node documentation describing a local workflow metadata helper, not an external provider API."),
-		},
-		quirks: []string{"TimeSaved is included because it is in the frozen M26 node batch, but source review shows it is an n8n workflow metadata helper and not an external API provider.", "There is no external OpenAPI, machine spec, auth surface, endpoint overlay, or credential handling to record for this row."},
-	}),
-	providerCatalogEntry(providerSeed{
 		id:                  "filemaker",
 		displayName:         "FileMaker",
 		aliases:             []string{"filemaker data api", "claris filemaker", "filemaker api"},
@@ -3857,7 +3827,7 @@ var builtInProviders = []Provider{
 			humanDocsRef20260520("vonage-messages-api-docs", "https://developer.vonage.com/en/api/messages", "Official Vonage Messages API reference documentation."),
 			humanDocsRef20260520("vonage-openapi-concepts", "https://developer.vonage.com/en/getting-started/concepts/openapi", "Official Vonage OpenAPI concepts documentation describing downloadable API specifications."),
 		},
-		quirks: []string{"The n8n Vonage node targets the legacy rest.nexmo.com SMS endpoint, while M31 records the current official Vonage Messages API OpenAPI export as the durable public machine-readable source.", "Vonage supports multiple authentication styles by API; consumers must preserve operation-level auth metadata and avoid generating JWTs in apitools."},
+		quirks: []string{"M31 records the current official Vonage Messages API OpenAPI export as the durable public machine-readable source; legacy Nexmo SMS endpoints are not used as provider truth.", "Vonage supports multiple authentication styles by API; consumers must preserve operation-level auth metadata and avoid generating JWTs in apitools."},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "zulip",
@@ -4179,7 +4149,7 @@ var builtInProviders = []Provider{
 		userNeed:            UserOpenAPINeedLikely,
 		specs: []SpecReference{
 			humanDocsRef20260520("orbit-api-docs", "https://docs.orbit.love/reference", "Official Orbit API reference documentation endpoint; returned a Cloudflare origin error during M33 review."),
-			humanDocsRef20260520("orbit-shutdown-notice", "https://orbit.love/blog/orbit-is-joining-postman", "Official Orbit shutdown/post-acquisition notice referenced by the n8n credential deprecation notice."),
+			humanDocsRef20260520("orbit-shutdown-notice", "https://orbit.love/blog/orbit-is-joining-postman", "Official Orbit shutdown/post-acquisition notice."),
 		},
 		quirks: []string{"M33 review did not find a stable public official OpenAPI document for Orbit.", "Orbit has been shut down; apitools records historical metadata only and does not generate endpoint overlays for a defunct API surface."},
 	}),
@@ -4287,7 +4257,7 @@ var builtInProviders = []Provider{
 			officialOpenAPIRef20260520("thehive-api-v4-openapi", "https://raw.githubusercontent.com/TheHive-Project/api-docs/master/thehive.yaml", SourceAuthorityOfficialGitHub, "3.0.0 / 4.0.0-RC3", `sha256:d527dd16c85b1275d61bfbe6a84abafe3f9bdc09c3cb47055ad5f28838df93e0 content-length:46722`, "TheHive Project repository license and documentation terms apply to the official TheHive 4 OpenAPI document.", "Official TheHive Project API documentation repository OpenAPI 3.0 YAML for TheHive 4 API v1 resources."),
 			humanDocsRef20260520("thehive-api-v4-docs", "https://github.com/TheHive-Project/api-docs", "Official TheHive Project API documentation repository for TheHive 4 API docs."),
 		},
-		quirks: []string{"The legacy n8n TheHive node covers TheHive 3 and TheHive 4-era API surfaces; this catalog row records the official TheHive 4 API documentation artifact and leaves TheHive 3/v0 behavior as legacy metadata.", "TheHive deployments are self-hosted or hosted by an operator, so downstream credential binding must preserve the operator-supplied instance URL."},
+		quirks: []string{"This catalog row records the official TheHive 4 API documentation artifact and leaves TheHive 3/v0 behavior as legacy metadata.", "TheHive deployments are self-hosted or hosted by an operator, so downstream credential binding must preserve the operator-supplied instance URL."},
 	}),
 	providerCatalogEntry(providerSeed{
 		id:                  "thehive-project",

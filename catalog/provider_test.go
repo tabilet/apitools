@@ -10,7 +10,7 @@ func TestBuiltInCatalogValidates(t *testing.T) {
 	if err := catalog.Validate(); err != nil {
 		t.Fatalf("BuiltInCatalog().Validate() error = %v", err)
 	}
-	if got, want := len(catalog.ListProviders()), 270; got != want {
+	if got, want := len(catalog.ListProviders()), 268; got != want {
 		t.Fatalf("len(ListProviders()) = %d, want %d", got, want)
 	}
 }
@@ -185,7 +185,6 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"monday-com",
 		"monica-crm",
 		"msg91",
-		"n8n",
 		"nasa",
 		"netlify",
 		"netscaler",
@@ -255,7 +254,6 @@ func TestBuiltInProviderIDsAreDeterministic(t *testing.T) {
 		"telegram",
 		"thehive",
 		"thehive-project",
-		"timesaved",
 		"todoist",
 		"toggl",
 		"travis-ci",
@@ -432,7 +430,6 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "bird messaging api", id: "messagebird"},
 		{key: "monday graphql", id: "monday-com"},
 		{key: "monica crm", id: "monica-crm"},
-		{key: "n8n public api", id: "n8n"},
 		{key: "nasa api", id: "nasa"},
 		{key: "netlify api", id: "netlify"},
 		{key: "nvidia dsx air api", id: "nvidia-dsx-air"},
@@ -469,7 +466,6 @@ func TestFindBuiltInProviderMatchesAliases(t *testing.T) {
 		{key: "supabase api", id: "supabase"},
 		{key: "surveymonkey api", id: "surveymonkey"},
 		{key: "telegram bot api", id: "telegram"},
-		{key: "saved time", id: "timesaved"},
 		{key: "todoist api", id: "todoist"},
 		{key: "twake api", id: "twake"},
 		{key: "twilio sms", id: "twilio"},
@@ -678,7 +674,6 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "monica-crm", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "mistral-ai", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "msg91", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
-		{id: "n8n", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "nasa", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "netlify", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "nocodb", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
@@ -732,7 +727,6 @@ func TestProviderSpecAvailabilityClassifications(t *testing.T) {
 		{id: "supabase", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "surveymonkey", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "telegram", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
-		{id: "timesaved", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnavailable, userOpenAPINeed: UserOpenAPINeedPossible, specKind: SpecKindHumanDocs},
 		{id: "todoist", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},
 		{id: "toggl", openAPI: SpecAvailabilityKnown, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedNotExpected, specKind: SpecKindOpenAPI},
 		{id: "travis-ci", openAPI: SpecAvailabilityUnavailable, machine: SpecAvailabilityUnknown, userOpenAPINeed: UserOpenAPINeedLikely, specKind: SpecKindHumanDocs},

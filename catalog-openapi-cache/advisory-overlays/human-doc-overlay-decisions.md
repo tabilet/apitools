@@ -164,9 +164,8 @@ overlay would hide native operation semantics.
 | Linear | No OpenAPI-shaped endpoint overlay for now. Linear's public API is GraphQL with introspection; a single `POST /graphql` wrapper would hide operation semantics rather than improve OpenAPI-like metadata. |
 | Monday.com | No OpenAPI-shaped endpoint overlay for now. Monday.com's platform API is GraphQL at a single endpoint; useful operation coverage should come from a GraphQL-aware classifier or schema/introspection workflow, not a REST-shaped overlay. |
 | Odoo | No OpenAPI-shaped endpoint overlay for now. Odoo's official external API is model-oriented XML-RPC/JSON-RPC; a generic RPC wrapper would hide model semantics rather than improve REST-shaped metadata. |
-| TimeSaved | No OpenAPI-shaped endpoint overlay. The frozen M26 item is an n8n workflow metadata helper, not an external provider API with HTTP endpoints. |
 | SIGNL4 | Official OpenAPI is recorded for SIGNL4 API V1, so no docs-derived endpoint overlay is needed; auth overlay metadata records the reviewed X-S4-Api-Key requirement. |
-| Vonage | Official Messages API OpenAPI is recorded, so no docs-derived endpoint overlay is needed. The n8n legacy SMS endpoint is not used as provider truth. |
+| Vonage | Official Messages API OpenAPI is recorded, so no docs-derived endpoint overlay is needed. |
 | Zulip | Official REST API OpenAPI is recorded from the Zulip repository, so no docs-derived endpoint overlay is needed. |
 | Gotify | Official Swagger/OpenAPI is recorded from the Gotify server repository, so no docs-derived endpoint overlay is needed. |
 | Emelia | No OpenAPI-shaped endpoint overlay for now. Emelia's public API is GraphQL at a single endpoint; a generic `POST /graphql` wrapper would hide operation semantics rather than improve OpenAPI-like metadata. |

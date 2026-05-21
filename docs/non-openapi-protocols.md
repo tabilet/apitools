@@ -13,7 +13,7 @@ stance for each family.
 | Dropbox Stone | Official Dropbox API model source and advisory overlay provenance. | Review-only source metadata; no native Stone parser or route lowering is currently planned. |
 | OpenAPI index | Provider-owned index of OpenAPI documents. | Review-only index; individual child OpenAPI documents still need explicit selection and validation. |
 | Human docs | Official documentation source for docs-derived advisory overlays. | Not importable by itself; endpoint overlays are advisory and source-backed, not provider truth. |
-| n8n protocol connector nodes | n8n node roots that indicate common protocol families rather than provider-owned API-description sources. | Priority signal only; not catalog provider rows, OpenAPI overlays, native source parsers, or runtime compatibility evidence. |
+| Generic protocol connectors | Workflow/runtime connectors for databases, brokers, mail, files, directories, generic HTTP, webhooks, or local execution. | Not provider catalog evidence by themselves; future native source work must start from provider-owned or protocol-owned metadata artifacts. |
 
 ## Parser Priority And Source Decisions
 
@@ -35,9 +35,9 @@ stance for each family.
 3. **Dropbox Stone no-parser decision.**
    M47 retained Dropbox Stone as official Dropbox machine-readable metadata and
    advisory-overlay provenance, but did not open native parser work. Stone is
-   provider-specific, the current catalog value is served by the reviewed
-   advisory overlay, and n8n-comparison gaps are better handled as targeted
-   overlay expansion if needed.
+   provider-specific, and the current catalog value is served by the reviewed
+   advisory overlay. Future expansion should be targeted source-backed overlay
+   work if needed.
 
 4. **GraphQL-aware classification.**
    Linear and Monday.com should not get REST-shaped endpoint overlays for now.
@@ -45,32 +45,30 @@ stance for each family.
    schema/introspection workflow rather than a single `POST /graphql` wrapper
    that hides operation semantics.
 
-5. **n8n protocol connector boundary.**
-   The n8n tree includes generic protocol connectors and local execution
-   utilities that are valuable workflow signals but not provider API-source
-   evidence. Do not promote those nodes into provider catalog rows, docs-derived
-   OpenAPI overlays, or native parser work just because the node directory
-   exists.
+5. **Generic protocol connector boundary.**
+   Runtime workflow connectors and local execution utilities are not
+   provider-owned API-source evidence. Do not promote connector names into
+   provider catalog rows, docs-derived OpenAPI overlays, or native parser work
+   without an explicit provider-owned or protocol-owned source artifact.
 
-## n8n Protocol Connector Nodes
+## Generic Protocol Connector Families
 
-The following n8n node roots are currently classified as protocol or generic
-connector signals, not first-class provider OpenAPI/Smithy/Discovery catalog
-targets:
+The following connector families are not first-class provider
+OpenAPI/Smithy/Discovery catalog targets by name alone:
 
-| Family | n8n node roots | Current stance |
+| Family | Examples | Current stance |
 |---|---|---|
-| Database and key-value protocols | `CrateDb`, `MongoDb`, `MySql`, `Oracle`, `Postgres`, `QuestDb`, `Redis`, `TimescaleDb` | Do not map protocol clients to provider API entries or docs-derived OpenAPI overlays. Service-specific admin APIs, such as a hosted database control-plane API, need their own source-backed milestone. |
-| Message and broker protocols | `Amqp`, `Kafka`, `Mqtt`, `RabbitMQ` | Do not model broker operations as OpenAPI provider metadata. Future support should start from a stable machine-readable protocol or event contract source, not from n8n runtime node behavior. |
-| Mail, file, and directory protocols | `EmailReadImap`, `EmailSend`, `Ftp`, `Ldap` | Keep outside the provider catalog unless a future source-family milestone defines metadata-only protocol documents and boundary checks. |
-| Generic execution and HTTP utility nodes | `Code`, `ExecuteCommand`, `GraphQL`, `HttpRequest`, `Webhook` | Treat as workflow construction tools, not provider sources. GraphQL remains a possible future protocol family when backed by schema artifacts, not by a generic n8n node. |
+| Database and key-value protocols | PostgreSQL, MySQL, Oracle, Redis, MongoDB wire clients | Do not map protocol clients to provider API entries or docs-derived OpenAPI overlays. Service-specific admin APIs, such as a hosted database control-plane API, need their own source-backed milestone. |
+| Message and broker protocols | AMQP, Kafka, MQTT, RabbitMQ wire clients | Do not model broker operations as OpenAPI provider metadata. Future support should start from a stable machine-readable protocol or event contract source. |
+| Mail, file, and directory protocols | IMAP, SMTP, FTP/SFTP, LDAP | Keep outside the provider catalog unless a future source-family milestone defines metadata-only protocol documents and boundary checks. |
+| Generic execution and HTTP utility connectors | Local command execution, generic HTTP clients, webhooks, GraphQL wrappers | Treat as workflow construction tools, not provider sources. GraphQL remains a possible future protocol family when backed by schema artifacts, not by a generic connector. |
 
 This boundary is intentionally separate from provider-specific API curation.
-For example, the `MongoDb` node is not evidence for the MongoDB Atlas Admin
-API, and the `RabbitMQ` node is not evidence for the RabbitMQ Management HTTP
-API. Those APIs can still be reviewed in a future catalog milestone if they
-have provider-owned OpenAPI, official human docs suitable for a reviewed
-advisory overlay, or another explicit source model.
+For example, a MongoDB wire-protocol connector is not evidence for the MongoDB
+Atlas Admin API, and an AMQP/RabbitMQ connector is not evidence for the
+RabbitMQ Management HTTP API. Those APIs can still be reviewed in a future
+catalog milestone if they have provider-owned OpenAPI, official human docs
+suitable for a reviewed advisory overlay, or another explicit source model.
 
 Future native protocol-family work should meet all of these criteria before it
 enters `apitools`:

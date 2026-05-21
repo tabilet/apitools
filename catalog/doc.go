@@ -3,6 +3,6 @@
 // overlays.
 //
 // Catalog data is evidence for later curation and downstream authoring. It is
-// not a runtime contract, does not imply provider or n8n compatibility, and must
+// not a runtime contract, does not imply provider runtime compatibility, and must
 // not be used to execute API operations or resolve credentials.
 package catalog

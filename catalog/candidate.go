@@ -11,11 +11,10 @@ import (
 type CandidateEvidenceSource string
 
 const (
-	EvidenceTryN8nLocalFixture CandidateEvidenceSource = "try-n8n-local-fixture"
-	EvidenceN8nNodeDirectory   CandidateEvidenceSource = "n8n-node-directory"
-	EvidencePublicCatalog      CandidateEvidenceSource = "public-catalog"
-	EvidenceOfficialDocs       CandidateEvidenceSource = "official-docs"
-	EvidenceUserReport         CandidateEvidenceSource = "user-report"
+	EvidenceLocalOpenAPIFixture CandidateEvidenceSource = "local-openapi-fixture"
+	EvidencePublicCatalog       CandidateEvidenceSource = "public-catalog"
+	EvidenceOfficialDocs        CandidateEvidenceSource = "official-docs"
+	EvidenceUserReport          CandidateEvidenceSource = "user-report"
 )
 
 // CandidateEvidenceUse describes how evidence may be used during inventory
@@ -178,8 +177,8 @@ func validateCandidate(candidate Candidate) error {
 	if !validAuthSecurityReviewState(candidate.AuthSecurityReview) {
 		return fmt.Errorf("candidate %q: invalid auth/security review state %q", candidate.ID, candidate.AuthSecurityReview)
 	}
-	if fixture := strings.TrimSpace(candidate.LocalOpenAPIFixture); fixture != "" && !candidate.hasEvidenceRef(EvidenceTryN8nLocalFixture, fixture) {
-		return fmt.Errorf("candidate %q: local fixture path requires matching try-n8n fixture evidence", candidate.ID)
+	if fixture := strings.TrimSpace(candidate.LocalOpenAPIFixture); fixture != "" && !candidate.hasEvidenceRef(EvidenceLocalOpenAPIFixture, fixture) {
+		return fmt.Errorf("candidate %q: local fixture path requires matching local fixture evidence", candidate.ID)
 	}
 	if strings.TrimSpace(candidate.OfficialMachineSpecKind) != "" && candidate.OfficialMachineSpecStatus == SpecStatusUnknown {
 		return fmt.Errorf("candidate %q: machine spec kind requires a non-unknown machine spec status", candidate.ID)
@@ -210,9 +209,6 @@ func validateEvidence(candidateID string, evidence CandidateEvidence) error {
 	}
 	if strings.TrimSpace(evidence.Note) == "" {
 		return fmt.Errorf("missing note")
-	}
-	if evidence.Source == EvidenceN8nNodeDirectory && evidence.Use != EvidenceUsePriority {
-		return fmt.Errorf("n8n node evidence for %q must be priority-only", candidateID)
 	}
 	return nil
 }
@@ -279,7 +275,7 @@ func validID(id string) bool {
 
 func validEvidenceSource(value CandidateEvidenceSource) bool {
 	switch value {
-	case EvidenceTryN8nLocalFixture, EvidenceN8nNodeDirectory, EvidencePublicCatalog, EvidenceOfficialDocs, EvidenceUserReport:
+	case EvidenceLocalOpenAPIFixture, EvidencePublicCatalog, EvidenceOfficialDocs, EvidenceUserReport:
 		return true
 	default:
 		return false
