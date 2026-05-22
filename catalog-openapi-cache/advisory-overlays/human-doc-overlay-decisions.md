@@ -30,7 +30,7 @@ overlay would hide native operation semantics.
 | Affinity | `affinity-v1-api-overlay.json` | V1 API docs support a focused lists, fields, field values, people, organizations, opportunities, interactions, notes, files, and webhooks subset. |
 | AfterShip | `aftership-tracking-api-overlay.json` | Tracking docs advertise an OAS export, but direct artifact probes were not usable as durable unauthenticated catalog fetches; docs support a focused tracking and courier subset. |
 | Agile CRM | `agile-crm-rest-api-overlay.json` | REST API docs support a focused contacts, companies, deals, tasks, events, tracks, campaigns, and help desk subset; account subdomain remains operator supplied. |
-| Aircall | `aircall-public-api-overlay.json` | Public API docs support a focused read-oriented users, availability, calls, and contacts subset with Basic Auth or partner OAuth metadata. |
+| Aircall | `aircall-public-api-overlay.json` | Public API docs support a focused users, availability, calls, contacts, and webhooks subset with Basic Auth or partner OAuth metadata. |
 | Apollo.io | `apollo-api-overlay.json` | Official docs expose endpoint-level OpenAPI fragments but no single provider-wide artifact; fragments support a focused people and organization search subset. |
 | APITemplate.io | `apitemplate-io-api-overlay.json` | API docs support a focused v1 PDF/image creation and template listing subset with X-API-KEY auth. |
 | Airtable | `airtable-web-api-overlay.json` | REST-shaped official Web API and Webhooks API docs support a focused table/record/base-schema and webhook subset. |
@@ -42,7 +42,7 @@ overlay would hide native operation semantics.
 | Calendly | `calendly-public-api-overlay.json` | REST-shaped official public API docs support event type, event, webhook, and user endpoints. |
 | Checkr | `checkr-api-overlay.json` | Redoc-rendered official API docs support a conservative read-oriented account, candidate, package, and report subset for metadata review. |
 | Clearbit | `clearbit-api-overlay.json` | API support docs support a narrow Prospector people search and Person Combined enrichment subset; broader legacy APIs and account access remain review-sensitive. |
-| Clockify | `clockify-api-v1-overlay.json` | REST-shaped API v1 docs support a focused users, workspaces, projects, clients, tags, and time-entries subset. |
+| Clockify | `clockify-api-v1-overlay.json` | REST-shaped API v1 docs support a focused users, workspaces, projects, clients, tags, time-entries, and webhooks subset. |
 | Cockpit | `cockpit-api-overlay.json` | Self-hosted API docs support a focused collections, singletons, assets, and content subset; host and content model names remain operator supplied. |
 | CoinGecko | `coingecko-api-v3-overlay.json` | API reference docs support a focused public v3 price, coin, market, and exchange subset; Demo and Pro auth variants remain catalog security metadata. |
 | Contentful | `contentful-management-api-overlay.json` | REST-shaped Content Management API docs support a focused spaces, environments, entries, assets, and content-types subset. |

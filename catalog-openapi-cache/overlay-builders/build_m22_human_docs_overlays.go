@@ -80,7 +80,7 @@ func clockifyOverlay() overlaySpec {
 		Description: "Advisory OpenAPI overlay derived from official Clockify API human documentation. This is not an official Clockify OpenAPI document.",
 		ServerURL:   "https://api.clockify.me/api",
 		Sources:     []string{"https://docs.clockify.me/", "https://clockify.me/help/getting-started/clockify-api-overview"},
-		SourceNote:  "Clockify publishes REST-shaped API v1 docs with X-Api-Key or X-Addon-Token authentication; this overlay covers users, workspaces, projects, clients, tags, and time entries.",
+		SourceNote:  "Clockify publishes REST-shaped API v1 docs with X-Api-Key or X-Addon-Token authentication; this overlay covers users, workspaces, projects, clients, tags, time entries, and webhooks.",
 		Security:    security,
 		Schemas:     []string{"ClockifyObject", "ClockifyCollection", "ClockifyError"},
 		OutputPath:  "catalog-openapi-cache/advisory-overlays/clockify-api-v1-overlay.json",
@@ -101,6 +101,15 @@ func clockifyOverlay() overlaySpec {
 			},
 			"/v1/workspaces/{workspace_id}/clients": {"get": op("listClockifyClients", "List clients", params(path("workspace_id", "Clockify workspace ID.")), "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey", "clockifyAddonToken")},
 			"/v1/workspaces/{workspace_id}/tags":    {"get": op("listClockifyTags", "List tags", params(path("workspace_id", "Clockify workspace ID.")), "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey", "clockifyAddonToken")},
+			"/v1/workspaces/{workspace_id}/webhooks": {
+				"get":  op("listClockifyWebhooks", "List webhooks", params(path("workspace_id", "Clockify workspace ID.")), "", "#/components/schemas/ClockifyCollection", "clockifyAPIKey", "clockifyAddonToken"),
+				"post": op("createClockifyWebhook", "Create a webhook", params(path("workspace_id", "Clockify workspace ID.")), "#/components/schemas/ClockifyObject", "#/components/schemas/ClockifyObject", "clockifyAPIKey", "clockifyAddonToken"),
+			},
+			"/v1/workspaces/{workspace_id}/webhooks/{webhook_id}": {
+				"get":    op("getClockifyWebhook", "Get a webhook", params(path("workspace_id", "Clockify workspace ID."), path("webhook_id", "Clockify webhook ID.")), "", "#/components/schemas/ClockifyObject", "clockifyAPIKey", "clockifyAddonToken"),
+				"put":    op("updateClockifyWebhook", "Update a webhook", params(path("workspace_id", "Clockify workspace ID."), path("webhook_id", "Clockify webhook ID.")), "#/components/schemas/ClockifyObject", "#/components/schemas/ClockifyObject", "clockifyAPIKey", "clockifyAddonToken"),
+				"delete": op("deleteClockifyWebhook", "Delete a webhook", params(path("workspace_id", "Clockify workspace ID."), path("webhook_id", "Clockify webhook ID.")), "", "#/components/schemas/ClockifyObject", "clockifyAPIKey", "clockifyAddonToken"),
+			},
 		},
 	}
 }

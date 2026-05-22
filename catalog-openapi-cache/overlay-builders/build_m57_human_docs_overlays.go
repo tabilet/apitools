@@ -78,7 +78,7 @@ func aircallOverlay() overlaySpec {
 		Description:  "Advisory OpenAPI overlay derived from official Aircall Public API human documentation. This is not an official Aircall OpenAPI document.",
 		ServerURL:    "https://api.aircall.io/v1",
 		Sources:      []string{"https://developer.aircall.io/api-references/"},
-		SourceNote:   "Aircall publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected read-oriented users, availability, calls, and contacts endpoints.",
+		SourceNote:   "Aircall publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected users, availability, calls, contacts, and webhook endpoints.",
 		Security:     security,
 		SecurityReqs: reqs,
 		Schemas:      []string{"AircallObject", "AircallCollection", "AircallError"},
@@ -89,6 +89,15 @@ func aircallOverlay() overlaySpec {
 			"/users":                {"get": op("listAircallUsers", "List users", nil, "", "#/components/schemas/AircallCollection", reqs)},
 			"/users/{id}":           {"get": op("getAircallUser", "Retrieve user", params(path("id", "User ID or email.")), "", "#/components/schemas/AircallObject", reqs)},
 			"/users/availabilities": {"get": op("listAircallUserAvailabilities", "Retrieve users availability", nil, "", "#/components/schemas/AircallCollection", reqs)},
+			"/webhooks": {
+				"get":  op("listAircallWebhooks", "List webhooks", nil, "", "#/components/schemas/AircallCollection", reqs),
+				"post": op("createAircallWebhook", "Create a webhook", nil, "#/components/schemas/AircallObject", "#/components/schemas/AircallObject", reqs),
+			},
+			"/webhooks/{id}": {
+				"get":    op("getAircallWebhook", "Retrieve webhook", params(path("id", "Aircall webhook ID.")), "", "#/components/schemas/AircallObject", reqs),
+				"put":    op("updateAircallWebhook", "Update webhook", params(path("id", "Aircall webhook ID.")), "#/components/schemas/AircallObject", "#/components/schemas/AircallObject", reqs),
+				"delete": op("deleteAircallWebhook", "Delete webhook", params(path("id", "Aircall webhook ID.")), "", "#/components/schemas/AircallObject", reqs),
+			},
 		},
 	}
 }

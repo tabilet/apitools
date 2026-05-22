@@ -252,6 +252,213 @@
         ],
         "summary": "Retrieve user"
       }
+    },
+    "/webhooks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listAircallWebhooks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircallCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aircallBasic": []
+          },
+          {
+            "aircallOAuth2": [
+              "public_api"
+            ]
+          }
+        ],
+        "summary": "List webhooks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createAircallWebhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AircallObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircallObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aircallBasic": []
+          },
+          {
+            "aircallOAuth2": [
+              "public_api"
+            ]
+          }
+        ],
+        "summary": "Create a webhook"
+      }
+    },
+    "/webhooks/{id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteAircallWebhook",
+        "parameters": [
+          {
+            "description": "Aircall webhook ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircallObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aircallBasic": []
+          },
+          {
+            "aircallOAuth2": [
+              "public_api"
+            ]
+          }
+        ],
+        "summary": "Delete webhook"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getAircallWebhook",
+        "parameters": [
+          {
+            "description": "Aircall webhook ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircallObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aircallBasic": []
+          },
+          {
+            "aircallOAuth2": [
+              "public_api"
+            ]
+          }
+        ],
+        "summary": "Retrieve webhook"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateAircallWebhook",
+        "parameters": [
+          {
+            "description": "Aircall webhook ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AircallObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircallObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "aircallBasic": []
+          },
+          {
+            "aircallOAuth2": [
+              "public_api"
+            ]
+          }
+        ],
+        "summary": "Update webhook"
+      }
     }
   },
   "security": [
@@ -273,7 +480,7 @@
     "derived_from_docs": true,
     "official_openapi": false,
     "provider_id": "aircall",
-    "source_note": "Aircall publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected read-oriented users, availability, calls, and contacts endpoints.",
+    "source_note": "Aircall publishes human API documentation but no recorded stable public official OpenAPI document; this overlay covers selected users, availability, calls, contacts, and webhook endpoints.",
     "source_refs": [
       "https://developer.aircall.io/api-references/"
     ]

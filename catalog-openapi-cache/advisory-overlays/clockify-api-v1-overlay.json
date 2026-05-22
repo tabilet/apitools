@@ -482,6 +482,252 @@
         ],
         "summary": "Get a time entry"
       }
+    },
+    "/v1/workspaces/{workspace_id}/webhooks": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listClockifyWebhooks",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
+          }
+        ],
+        "summary": "List webhooks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createClockifyWebhook",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClockifyObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
+          }
+        ],
+        "summary": "Create a webhook"
+      }
+    },
+    "/v1/workspaces/{workspace_id}/webhooks/{webhook_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteClockifyWebhook",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Clockify webhook ID.",
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
+          }
+        ],
+        "summary": "Delete a webhook"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getClockifyWebhook",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Clockify webhook ID.",
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
+          }
+        ],
+        "summary": "Get a webhook"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateClockifyWebhook",
+        "parameters": [
+          {
+            "description": "Clockify workspace ID.",
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Clockify webhook ID.",
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClockifyObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockifyObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "clockifyAPIKey": []
+          },
+          {
+            "clockifyAddonToken": []
+          }
+        ],
+        "summary": "Update a webhook"
+      }
     }
   },
   "security": [
@@ -502,7 +748,7 @@
     "official_openapi": false,
     "overlay_id": "clockify-api-v1-advisory-overlay",
     "provider_id": "clockify",
-    "source_note": "Clockify publishes REST-shaped API v1 docs with X-Api-Key or X-Addon-Token authentication; this overlay covers users, workspaces, projects, clients, tags, and time entries.",
+    "source_note": "Clockify publishes REST-shaped API v1 docs with X-Api-Key or X-Addon-Token authentication; this overlay covers users, workspaces, projects, clients, tags, time entries, and webhooks.",
     "source_refs": [
       "https://docs.clockify.me/",
       "https://clockify.me/help/getting-started/clockify-api-overview"
