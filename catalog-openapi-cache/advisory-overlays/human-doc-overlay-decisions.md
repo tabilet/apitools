@@ -33,7 +33,7 @@ overlay would hide native operation semantics.
 | Aircall | `aircall-public-api-overlay.json` | Public API docs support a focused read-oriented users, availability, calls, and contacts subset with Basic Auth or partner OAuth metadata. |
 | Apollo.io | `apollo-api-overlay.json` | Official docs expose endpoint-level OpenAPI fragments but no single provider-wide artifact; fragments support a focused people and organization search subset. |
 | APITemplate.io | `apitemplate-io-api-overlay.json` | API docs support a focused v1 PDF/image creation and template listing subset with X-API-KEY auth. |
-| Airtable | `airtable-web-api-overlay.json` | REST-shaped official Web API docs support a focused table/record subset. |
+| Airtable | `airtable-web-api-overlay.json` | REST-shaped official Web API and Webhooks API docs support a focused table/record/base-schema and webhook subset. |
 | Autopilot | `autopilot-api-overlay.json` | API Blueprint-style docs and help docs support a focused contacts and lists subset with the documented API-key header. |
 | BambooHR | `bamboohr-api-v1-overlay.json` | REST-shaped API docs support a focused employees, directory, fields, reports, and time-off subset; customer subdomain remains operator supplied. |
 | Bannerbear | `bannerbear-api-v2-overlay.json` | REST-shaped API v2 docs support a focused auth, images, collections, videos, screenshots, templates, and projects subset. |

@@ -24,10 +24,16 @@ func main() {
 			"source_refs": []string{
 				"https://airtable.com/developers/web/api/introduction",
 				"https://airtable.com/developers/web/api/oauth-integration",
+				"https://airtable.com/developers/web/api/webhooks-overview",
+				"https://airtable.com/developers/web/api/create-a-webhook",
+				"https://airtable.com/developers/web/api/list-webhooks",
+				"https://airtable.com/developers/web/api/list-webhook-payloads",
+				"https://airtable.com/developers/web/api/delete-a-webhook",
+				"https://airtable.com/developers/web/api/refresh-a-webhook",
 				"https://support.airtable.com/docs/getting-started-with-airtables-web-api",
 				"https://support.airtable.com/docs/airtable-webhooks-api-overview",
 			},
-			"source_note": "Airtable publishes official Web API human documentation and client libraries, but no official OpenAPI document is recorded in the apitools catalog.",
+			"source_note": "Airtable publishes official Web API and Webhooks API human documentation and client libraries, but no official OpenAPI document is recorded in the apitools catalog.",
 		},
 		"components": map[string]any{
 			"securitySchemes": map[string]any{
@@ -69,6 +75,40 @@ func main() {
 					"type":                 "object",
 					"additionalProperties": true,
 				},
+				"AirtableWebhook": map[string]any{
+					"type":        "object",
+					"description": "Advisory schema for an Airtable webhook registration.",
+					"properties": map[string]any{
+						"id":                      map[string]any{"type": "string"},
+						"areNotificationsEnabled": map[string]any{"type": "boolean"},
+						"cursorForNextPayload":    map[string]any{"type": "integer"},
+						"expirationTime":          map[string]any{"type": "string", "format": "date-time"},
+						"specification":           map[string]any{"type": "object", "additionalProperties": true},
+					},
+				},
+				"AirtableWebhookList": map[string]any{
+					"type": "object",
+					"properties": map[string]any{
+						"webhooks": map[string]any{"type": "array", "items": map[string]any{"$ref": "#/components/schemas/AirtableWebhook"}},
+					},
+				},
+				"AirtableWebhookRequest": map[string]any{
+					"type":        "object",
+					"description": "Advisory schema for creating an Airtable webhook. The notification URL and specification options are workflow-specific.",
+					"properties": map[string]any{
+						"notificationUrl": map[string]any{"type": "string", "format": "uri"},
+						"specification":   map[string]any{"type": "object", "additionalProperties": true},
+					},
+				},
+				"AirtableWebhookPayloads": map[string]any{
+					"type":        "object",
+					"description": "Advisory schema for Airtable webhook payload retrieval.",
+					"properties": map[string]any{
+						"payloads":      map[string]any{"type": "array", "items": map[string]any{"type": "object", "additionalProperties": true}},
+						"cursor":        map[string]any{"type": "integer"},
+						"mightHaveMore": map[string]any{"type": "boolean"},
+					},
+				},
 				"AirtableError": map[string]any{
 					"type":                 "object",
 					"additionalProperties": true,
@@ -91,6 +131,19 @@ func main() {
 			"/v0/{baseId}/{tableIdOrName}/{recordId}": map[string]any{
 				"get":    operation("getAirtableRecord", "Get an Airtable record", append(recordPathParams(), pathParam("recordId", "Airtable record ID.")), "", "#/components/schemas/AirtableRecord"),
 				"delete": operation("deleteAirtableRecord", "Delete an Airtable record", append(recordPathParams(), pathParam("recordId", "Airtable record ID.")), "", "#/components/schemas/AirtableRecord"),
+			},
+			"/v0/bases/{baseId}/webhooks": map[string]any{
+				"get":  operation("listAirtableWebhooks", "List Airtable webhooks", []map[string]any{pathParam("baseId", "Airtable base ID.")}, "", "#/components/schemas/AirtableWebhookList"),
+				"post": operation("createAirtableWebhook", "Create an Airtable webhook", []map[string]any{pathParam("baseId", "Airtable base ID.")}, "#/components/schemas/AirtableWebhookRequest", "#/components/schemas/AirtableWebhook"),
+			},
+			"/v0/bases/{baseId}/webhooks/{webhookId}": map[string]any{
+				"delete": operation("deleteAirtableWebhook", "Delete an Airtable webhook", []map[string]any{pathParam("baseId", "Airtable base ID."), pathParam("webhookId", "Airtable webhook ID.")}, "", "#/components/schemas/AirtableWebhook"),
+			},
+			"/v0/bases/{baseId}/webhooks/{webhookId}/payloads": map[string]any{
+				"get": operation("listAirtableWebhookPayloads", "List Airtable webhook payloads", []map[string]any{pathParam("baseId", "Airtable base ID."), pathParam("webhookId", "Airtable webhook ID."), queryParam("cursor", "Cursor for retrieving webhook payloads after a previous response.")}, "", "#/components/schemas/AirtableWebhookPayloads"),
+			},
+			"/v0/bases/{baseId}/webhooks/{webhookId}/refresh": map[string]any{
+				"post": operation("refreshAirtableWebhook", "Refresh an Airtable webhook", []map[string]any{pathParam("baseId", "Airtable base ID."), pathParam("webhookId", "Airtable webhook ID.")}, "", "#/components/schemas/AirtableWebhook"),
 			},
 		},
 	}
@@ -136,9 +189,19 @@ func recordPathParams() []map[string]any {
 func listRecordQueryParams() []map[string]any {
 	return []map[string]any{
 		{"name": "pageSize", "in": "query", "required": false, "schema": map[string]any{"type": "integer", "minimum": 1, "maximum": 100}, "description": "Maximum number of records per page. Airtable documents 100 as the maximum."},
-		{"name": "offset", "in": "query", "required": false, "schema": map[string]any{"type": "string"}, "description": "Pagination offset from a previous response."},
-		{"name": "view", "in": "query", "required": false, "schema": map[string]any{"type": "string"}, "description": "View name or ID."},
-		{"name": "filterByFormula", "in": "query", "required": false, "schema": map[string]any{"type": "string"}, "description": "Airtable formula used to filter records."},
+		queryParam("offset", "Pagination offset from a previous response."),
+		queryParam("view", "View name or ID."),
+		queryParam("filterByFormula", "Airtable formula used to filter records."),
+	}
+}
+
+func queryParam(name, description string) map[string]any {
+	return map[string]any{
+		"name":        name,
+		"in":          "query",
+		"required":    false,
+		"schema":      map[string]any{"type": "string"},
+		"description": description,
 	}
 }
 

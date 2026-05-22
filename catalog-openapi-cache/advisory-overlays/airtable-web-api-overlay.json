@@ -65,6 +65,73 @@
       "AirtableTableList": {
         "additionalProperties": true,
         "type": "object"
+      },
+      "AirtableWebhook": {
+        "description": "Advisory schema for an Airtable webhook registration.",
+        "properties": {
+          "areNotificationsEnabled": {
+            "type": "boolean"
+          },
+          "cursorForNextPayload": {
+            "type": "integer"
+          },
+          "expirationTime": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "specification": {
+            "additionalProperties": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "AirtableWebhookList": {
+        "properties": {
+          "webhooks": {
+            "items": {
+              "$ref": "#/components/schemas/AirtableWebhook"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "AirtableWebhookPayloads": {
+        "description": "Advisory schema for Airtable webhook payload retrieval.",
+        "properties": {
+          "cursor": {
+            "type": "integer"
+          },
+          "mightHaveMore": {
+            "type": "boolean"
+          },
+          "payloads": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "AirtableWebhookRequest": {
+        "description": "Advisory schema for creating an Airtable webhook. The notification URL and specification options are workflow-specific.",
+        "properties": {
+          "notificationUrl": {
+            "format": "uri",
+            "type": "string"
+          },
+          "specification": {
+            "additionalProperties": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -82,6 +149,275 @@
   },
   "openapi": "3.0.3",
   "paths": {
+    "/v0/bases/{baseId}/webhooks": {
+      "get": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "listAirtableWebhooks",
+        "parameters": [
+          {
+            "description": "Airtable base ID.",
+            "in": "path",
+            "name": "baseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableWebhookList"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "List Airtable webhooks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "createAirtableWebhook",
+        "parameters": [
+          {
+            "description": "Airtable base ID.",
+            "in": "path",
+            "name": "baseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AirtableWebhookRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableWebhook"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "Create an Airtable webhook"
+      }
+    },
+    "/v0/bases/{baseId}/webhooks/{webhookId}": {
+      "delete": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "deleteAirtableWebhook",
+        "parameters": [
+          {
+            "description": "Airtable base ID.",
+            "in": "path",
+            "name": "baseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Airtable webhook ID.",
+            "in": "path",
+            "name": "webhookId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableWebhook"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "Delete an Airtable webhook"
+      }
+    },
+    "/v0/bases/{baseId}/webhooks/{webhookId}/payloads": {
+      "get": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "listAirtableWebhookPayloads",
+        "parameters": [
+          {
+            "description": "Airtable base ID.",
+            "in": "path",
+            "name": "baseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Airtable webhook ID.",
+            "in": "path",
+            "name": "webhookId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Cursor for retrieving webhook payloads after a previous response.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableWebhookPayloads"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "List Airtable webhook payloads"
+      }
+    },
+    "/v0/bases/{baseId}/webhooks/{webhookId}/refresh": {
+      "post": {
+        "description": "Advisory operation derived from official Airtable human documentation.",
+        "operationId": "refreshAirtableWebhook",
+        "parameters": [
+          {
+            "description": "Airtable base ID.",
+            "in": "path",
+            "name": "baseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Airtable webhook ID.",
+            "in": "path",
+            "name": "webhookId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableWebhook"
+                }
+              }
+            },
+            "description": "Airtable response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirtableError"
+                }
+              }
+            },
+            "description": "Airtable error response."
+          }
+        },
+        "security": [
+          {
+            "airtableBearer": []
+          }
+        ],
+        "summary": "Refresh an Airtable webhook"
+      }
+    },
     "/v0/meta/bases": {
       "get": {
         "description": "Advisory operation derived from official Airtable human documentation.",
@@ -517,10 +853,16 @@
     "official_openapi": false,
     "overlay_id": "airtable-web-api-advisory-overlay",
     "provider_id": "airtable",
-    "source_note": "Airtable publishes official Web API human documentation and client libraries, but no official OpenAPI document is recorded in the apitools catalog.",
+    "source_note": "Airtable publishes official Web API and Webhooks API human documentation and client libraries, but no official OpenAPI document is recorded in the apitools catalog.",
     "source_refs": [
       "https://airtable.com/developers/web/api/introduction",
       "https://airtable.com/developers/web/api/oauth-integration",
+      "https://airtable.com/developers/web/api/webhooks-overview",
+      "https://airtable.com/developers/web/api/create-a-webhook",
+      "https://airtable.com/developers/web/api/list-webhooks",
+      "https://airtable.com/developers/web/api/list-webhook-payloads",
+      "https://airtable.com/developers/web/api/delete-a-webhook",
+      "https://airtable.com/developers/web/api/refresh-a-webhook",
       "https://support.airtable.com/docs/getting-started-with-airtables-web-api",
       "https://support.airtable.com/docs/airtable-webhooks-api-overview"
     ]
