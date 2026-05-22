@@ -9,6 +9,22 @@
         "additionalProperties": true,
         "type": "object"
       },
+      "Channel": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ChannelRequest": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "ChannelStop": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "EmptyResponse": {
+        "additionalProperties": true,
+        "type": "object"
+      },
       "Error": {
         "additionalProperties": true,
         "type": "object"
@@ -17,7 +33,19 @@
         "additionalProperties": true,
         "type": "object"
       },
+      "EventList": {
+        "additionalProperties": true,
+        "type": "object"
+      },
       "EventRequest": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FreeBusyRequest": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "FreeBusyResponse": {
         "additionalProperties": true,
         "type": "object"
       }
@@ -32,7 +60,9 @@
               "https://www.googleapis.com/auth/calendar.calendarlist.readonly": "Read calendar list entries.",
               "https://www.googleapis.com/auth/calendar.calendars": "Create and manage calendars.",
               "https://www.googleapis.com/auth/calendar.events": "Read and write calendar events.",
-              "https://www.googleapis.com/auth/calendar.events.readonly": "Read calendar events."
+              "https://www.googleapis.com/auth/calendar.events.freebusy": "Read free/busy information for calendar events.",
+              "https://www.googleapis.com/auth/calendar.events.readonly": "Read calendar events.",
+              "https://www.googleapis.com/auth/calendar.freebusy": "Read free/busy information."
             },
             "tokenUrl": "https://oauth2.googleapis.com/token"
           }
@@ -297,7 +327,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CalendarList"
+                  "$ref": "#/components/schemas/EventList"
                 }
               }
             },
@@ -377,6 +407,72 @@
           }
         ],
         "summary": "Create a Google Calendar event"
+      }
+    },
+    "/calendars/{calendarId}/events/watch": {
+      "post": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "watchGoogleCalendarEvents",
+        "parameters": [
+          {
+            "description": "Calendar identifier. Use primary for the signed-in user's primary calendar.",
+            "in": "path",
+            "name": "calendarId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Event type filter; this parameter can be repeated by callers that need multiple event types.",
+            "in": "query",
+            "name": "eventTypes",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChannelRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Channel"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.events.readonly"
+            ]
+          }
+        ],
+        "summary": "Watch Google Calendar event changes"
       }
     },
     "/calendars/{calendarId}/events/{eventId}": {
@@ -553,6 +649,98 @@
         "summary": "Patch a Google Calendar event"
       }
     },
+    "/channels/stop": {
+      "post": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "stopGoogleCalendarChannel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChannelStop"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.events.readonly"
+            ]
+          }
+        ],
+        "summary": "Stop a Google Calendar notification channel"
+      }
+    },
+    "/freeBusy": {
+      "post": {
+        "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
+        "operationId": "queryGoogleCalendarFreeBusy",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreeBusyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreeBusyResponse"
+                }
+              }
+            },
+            "description": "Google Calendar response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Google API error response."
+          }
+        },
+        "security": [
+          {
+            "googleOAuth2": [
+              "https://www.googleapis.com/auth/calendar.freebusy"
+            ]
+          }
+        ],
+        "summary": "Query Google Calendar free/busy information"
+      }
+    },
     "/users/me/calendarList": {
       "get": {
         "description": "Advisory operation derived from official Google Calendar Discovery and REST documentation.",
@@ -607,10 +795,13 @@
     "official_openapi": false,
     "overlay_id": "google-calendar-v3-advisory-overlay",
     "provider_id": "google-calendar",
-    "source_note": "Google Calendar publishes an official Discovery document, but no official OpenAPI document is recorded in the apitools catalog.",
+    "source_note": "Google Calendar publishes an official Discovery document, but no official OpenAPI document is recorded in the apitools catalog. The reviewed overlay includes calendar, event, free/busy, and event notification channel operations.",
     "source_refs": [
       "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
       "https://developers.google.com/workspace/calendar/api/v3/reference",
+      "https://developers.google.com/workspace/calendar/api/v3/reference/freebusy/query",
+      "https://developers.google.com/workspace/calendar/api/v3/reference/events/watch",
+      "https://developers.google.com/workspace/calendar/api/v3/reference/channels/stop",
       "https://developers.google.com/workspace/calendar/api/auth"
     ]
   }

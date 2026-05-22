@@ -67,6 +67,8 @@ overlay would hide native operation semantics.
 | GetResponse | `getresponse-api-v3-overlay.json` | REST-shaped API v3 docs support a focused campaigns, contacts, newsletters, and tags subset with API-key auth. |
 | Ghost | `ghost-admin-api-overlay.json` | REST-shaped Admin API docs support a focused posts, pages, tags, users, and members subset; admin host remains operator supplied. |
 | Gong | `gong-public-api-overlay.json` | Public help docs support a narrow users and call-upload subset; the full API reference remains account-session gated. |
+| Google Calendar | `google-calendar-v3-overlay.json` | Official Discovery and REST docs support a focused calendars, events, free/busy, and event notification channel subset. |
+| Google Sheets | `google-sheets-v4-overlay.json` | Official Discovery and REST docs support a focused spreadsheets and spreadsheet values subset. |
 | GoTo Webinar | `gotowebinar-api-overlay.json` | API v2 docs support a focused webinars, sessions, registrants, attendees, panelists, and co-organizers subset with OAuth2 bearer auth. |
 | Grist | `grist-rest-api-overlay.json` | REST API usage and reference docs support a focused organizations, workspaces, documents, tables, records, SQL queries, and webhooks subset; site host remains operator supplied. |
 | Gumroad | `gumroad-api-overlay.json` | API docs support a focused products, sales, offers, license verification, and resource-subscription subset. |
