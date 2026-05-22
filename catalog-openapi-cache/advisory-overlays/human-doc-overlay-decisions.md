@@ -75,7 +75,7 @@ overlay would hide native operation semantics.
 | Hacker News | `hackernews-firebase-api-overlay.json` | Official Firebase API docs support a focused public item, user, story-list, and updates subset. |
 | HaloPSA | `halopsa-api-overlay.json` | API docs support a focused tickets, clients, sites, and users subset; auth and resource hosts remain tenant supplied. |
 | Harvest | `harvest-api-v2-overlay.json` | REST-shaped API v2 docs support a focused users, company, clients, projects, time-entries, and invoices subset. |
-| Help Scout | `help-scout-inbox-api-v2-overlay.json` | REST-shaped Inbox API v2 docs support a focused conversations, customers, mailboxes, and threads subset. |
+| Help Scout | `help-scout-inbox-api-v2-overlay.json` | REST-shaped Inbox API v2 and Docs API docs support a focused conversations, customers, mailboxes, threads, Docs collections, categories, and article lookup subset. |
 | Iterable | `iterable-api-overlay.json` | REST-shaped API docs support a focused users, events, campaigns, lists, and templates subset. |
 | Invoice Ninja | `invoice-ninja-api-overlay.json` | API docs support a focused clients, invoices, quotes, payments, products, vendors, projects, and webhook-endpoints subset; host remains operator supplied for self-hosted installs. |
 | Jenkins | `jenkins-remote-api-overlay.json` | Official Remote Access API docs support a small generic controller/job/queue subset; instance and plugin coverage remains variable. |
@@ -87,7 +87,7 @@ overlay would hide native operation semantics.
 | Magento / Adobe Commerce | `magento-rest-api-overlay.json` | REST docs and local Swagger generation guidance support a focused products, categories, customers, orders, invoices, shipments, and token subset; Commerce host, store code, installed modules, and scopes remain operator supplied. |
 | Mailchimp | `mailchimp-marketing-api-overlay.json` | REST-shaped Marketing API docs support a focused lists, campaigns, and reports subset. |
 | MailerLite | `mailerlite-api-overlay.json` | REST-shaped current API docs support a focused subscribers, groups, campaigns, and forms subset; Classic auth remains security metadata. |
-| Mailjet | `mailjet-rest-api-overlay.json` | REST-shaped REST API docs support a focused contacts, list-recipients, campaigns, messages, and send subset. |
+| Mailjet | `mailjet-rest-api-overlay.json` | REST-shaped REST API docs support a focused contacts, list-recipients, campaigns, messages, templates, event callback webhooks, and send subset. |
 | Adobe Marketo Engage | `marketo-rest-api-overlay.json` | REST docs support a focused lead metadata, lead retrieval, and activity retrieval subset; subscription endpoint host remains operator supplied. |
 | Mandrill | `mandrill-transactional-api-overlay.json` | Transactional API docs support a focused messages, templates, users, and webhooks subset; API key is modeled as advisory credential placement because it is sent in each request payload. |
 | Mautic | `mautic-api-overlay.json` | Instance-hosted REST API docs support a focused contacts, companies, segments, campaigns, and emails subset; host remains operator supplied. |

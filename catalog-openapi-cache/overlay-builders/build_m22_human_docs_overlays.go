@@ -15,6 +15,7 @@ type overlaySpec struct {
 	Description string
 	ServerURL   string
 	ServerVars  map[string]map[string]any
+	Servers     []map[string]any
 	Sources     []string
 	SourceNote  string
 	Security    map[string]map[string]any
@@ -179,18 +180,30 @@ func harvestOverlay() overlaySpec {
 }
 
 func helpScoutOverlay() overlaySpec {
-	security := map[string]map[string]any{"helpScoutOAuth": {"type": "http", "scheme": "bearer", "description": "Help Scout Inbox API OAuth 2 access token carried as an Authorization bearer token."}}
+	security := map[string]map[string]any{
+		"helpScoutOAuth":     {"type": "http", "scheme": "bearer", "description": "Help Scout Inbox API OAuth 2 access token carried as an Authorization bearer token."},
+		"helpScoutDocsBasic": {"type": "http", "scheme": "basic", "description": "Help Scout Docs API key carried as the HTTP Basic username with a dummy password."},
+	}
 	return overlaySpec{
 		ProviderID:  "help-scout",
 		OverlayID:   "help-scout-inbox-api-v2-advisory-overlay",
 		Title:       "Help Scout Inbox API v2 Advisory Overlay",
 		Description: "Advisory OpenAPI overlay derived from official Help Scout Inbox API human documentation. This is not an official Help Scout OpenAPI document.",
 		ServerURL:   "https://api.helpscout.net/v2",
-		Sources:     []string{"https://developer.helpscout.com/", "https://developer.helpscout.com/mailbox-api/", "https://developer.helpscout.com/docs-api/"},
-		SourceNote:  "Help Scout publishes REST-shaped Inbox API v2 docs with OAuth bearer authentication; this overlay covers conversations, customers, mailboxes, and threads.",
-		Security:    security,
-		Schemas:     []string{"HelpScoutObject", "HelpScoutCollection", "HelpScoutError"},
-		OutputPath:  "catalog-openapi-cache/advisory-overlays/help-scout-inbox-api-v2-overlay.json",
+		Servers:     []map[string]any{{"url": "https://docsapi.helpscout.net/v1", "description": "Help Scout Docs API v1."}},
+		Sources: []string{
+			"https://developer.helpscout.com/",
+			"https://developer.helpscout.com/mailbox-api/",
+			"https://developer.helpscout.com/docs-api/",
+			"https://developer.helpscout.com/docs-api/collections/list/",
+			"https://developer.helpscout.com/docs-api/categories/list/",
+			"https://developer.helpscout.com/docs-api/articles/list/",
+			"https://developer.helpscout.com/docs-api/articles/search/",
+		},
+		SourceNote: "Help Scout publishes REST-shaped Inbox API v2 and Docs API docs; this overlay covers conversations, customers, mailboxes, threads, and a focused Docs collection/category/article lookup subset.",
+		Security:   security,
+		Schemas:    []string{"HelpScoutObject", "HelpScoutCollection", "HelpScoutError"},
+		OutputPath: "catalog-openapi-cache/advisory-overlays/help-scout-inbox-api-v2-overlay.json",
 		Paths: map[string]map[string]any{
 			"/conversations": {
 				"get":  op("listHelpScoutConversations", "List conversations", params(query("mailbox", "Mailbox ID filter."), query("status", "Conversation status filter.")), "", "#/components/schemas/HelpScoutCollection", "helpScoutOAuth"),
@@ -203,6 +216,21 @@ func helpScoutOverlay() overlaySpec {
 			"/customers":               {"get": op("listHelpScoutCustomers", "List customers", params(query("query", "Customer search query.")), "", "#/components/schemas/HelpScoutCollection", "helpScoutOAuth")},
 			"/customers/{customer_id}": {"get": op("getHelpScoutCustomer", "Get a customer", params(path("customer_id", "Help Scout customer ID.")), "", "#/components/schemas/HelpScoutObject", "helpScoutOAuth")},
 			"/mailboxes":               {"get": op("listHelpScoutMailboxes", "List mailboxes", nil, "", "#/components/schemas/HelpScoutCollection", "helpScoutOAuth")},
+			"/collections": {
+				"get": op("listHelpScoutDocsCollections", "List Docs collections", params(query("page", "Page number."), query("siteId", "Docs site ID filter."), query("visibility", "Collection visibility filter.")), "", "#/components/schemas/HelpScoutCollection", "helpScoutDocsBasic"),
+			},
+			"/collections/{collection_id}": {
+				"get": op("getHelpScoutDocsCollection", "Get Docs collection", params(path("collection_id", "Docs collection ID or number.")), "", "#/components/schemas/HelpScoutObject", "helpScoutDocsBasic"),
+			},
+			"/collections/{collection_id}/categories": {
+				"get": op("listHelpScoutDocsCollectionCategories", "List Docs collection categories", params(path("collection_id", "Docs collection ID."), query("page", "Page number.")), "", "#/components/schemas/HelpScoutCollection", "helpScoutDocsBasic"),
+			},
+			"/collections/{collection_id}/articles": {
+				"get": op("listHelpScoutDocsCollectionArticles", "List Docs collection articles", params(path("collection_id", "Docs collection ID."), query("page", "Page number."), query("status", "Article status filter.")), "", "#/components/schemas/HelpScoutCollection", "helpScoutDocsBasic"),
+			},
+			"/search/articles": {
+				"get": op("searchHelpScoutDocsArticles", "Search Docs articles", params(query("query", "Article search query."), query("page", "Page number."), query("collectionId", "Collection ID filter."), query("siteId", "Site ID filter."), query("status", "Article status filter."), query("visibility", "Collection visibility filter.")), "", "#/components/schemas/HelpScoutCollection", "helpScoutDocsBasic"),
+			},
 		},
 	}
 }
@@ -240,8 +268,8 @@ func mailjetOverlay() overlaySpec {
 		Title:       "Mailjet REST API Advisory Overlay",
 		Description: "Advisory OpenAPI overlay derived from official Mailjet API human documentation. This is not an official Mailjet OpenAPI document.",
 		ServerURL:   "https://api.mailjet.com",
-		Sources:     []string{"https://documentation.mailjet.com/hc/en-us/articles/360044088173-REST-API", "https://documentation.mailjet.com/hc/en-us/articles/360043225693-What-is-an-API-key", "https://documentation.mailjet.com/hc/en-us/articles/360043230093-What-are-the-endpoints-available-for-the-API", "https://github.com/mailjet/api-documentation"},
-		SourceNote:  "Mailjet publishes REST API docs and official documentation sources; this overlay covers contacts, list recipients, campaigns, messages, templates, and send API review endpoints.",
+		Sources:     []string{"https://documentation.mailjet.com/hc/en-us/articles/360044088173-REST-API", "https://documentation.mailjet.com/hc/en-us/articles/360043225693-What-is-an-API-key", "https://documentation.mailjet.com/hc/en-us/articles/360043230093-What-are-the-endpoints-available-for-the-API", "https://dev.mailjet.com/email/reference/", "https://github.com/mailjet/api-documentation"},
+		SourceNote:  "Mailjet publishes REST API docs and official documentation sources; this overlay covers contacts, list recipients, campaigns, messages, templates, event callback webhooks, and send API review endpoints.",
 		Security:    security,
 		Schemas:     []string{"MailjetObject", "MailjetCollection", "MailjetError"},
 		OutputPath:  "catalog-openapi-cache/advisory-overlays/mailjet-rest-api-overlay.json",
@@ -256,12 +284,37 @@ func mailjetOverlay() overlaySpec {
 			"/v3/REST/listrecipient": {"get": op("listMailjetListRecipients", "List recipients", nil, "", "#/components/schemas/MailjetCollection", "mailjetBasic")},
 			"/v3/REST/campaign":      {"get": op("listMailjetCampaigns", "List campaigns", nil, "", "#/components/schemas/MailjetCollection", "mailjetBasic")},
 			"/v3/REST/message":       {"get": op("listMailjetMessages", "List messages", nil, "", "#/components/schemas/MailjetCollection", "mailjetBasic")},
-			"/v3.1/send":             {"post": op("sendMailjetEmail", "Send email", nil, "#/components/schemas/MailjetObject", "#/components/schemas/MailjetObject", "mailjetBasic")},
+			"/v3/REST/template": {
+				"get":  op("listMailjetTemplates", "List email templates", params(query("Limit", "Maximum number of templates to return."), query("Offset", "Offset for pagination.")), "", "#/components/schemas/MailjetCollection", "mailjetBasic"),
+				"post": op("createMailjetTemplate", "Create email template", nil, "#/components/schemas/MailjetObject", "#/components/schemas/MailjetObject", "mailjetBasic"),
+			},
+			"/v3/REST/template/{template_id}": {
+				"get":    op("getMailjetTemplate", "Get email template settings", params(path("template_id", "Mailjet template ID.")), "", "#/components/schemas/MailjetObject", "mailjetBasic"),
+				"put":    op("updateMailjetTemplate", "Update email template settings", params(path("template_id", "Mailjet template ID.")), "#/components/schemas/MailjetObject", "#/components/schemas/MailjetObject", "mailjetBasic"),
+				"delete": op("deleteMailjetTemplate", "Delete email template", params(path("template_id", "Mailjet template ID.")), "", "#/components/schemas/MailjetObject", "mailjetBasic"),
+			},
+			"/v3/REST/template/{template_id}/detailcontent": {
+				"get":  op("getMailjetTemplateDetailContent", "Get email template content", params(path("template_id", "Mailjet template ID.")), "", "#/components/schemas/MailjetObject", "mailjetBasic"),
+				"post": op("createMailjetTemplateDetailContent", "Create email template content", params(path("template_id", "Mailjet template ID.")), "#/components/schemas/MailjetObject", "#/components/schemas/MailjetObject", "mailjetBasic"),
+				"put":  op("updateMailjetTemplateDetailContent", "Update email template content", params(path("template_id", "Mailjet template ID.")), "#/components/schemas/MailjetObject", "#/components/schemas/MailjetObject", "mailjetBasic"),
+			},
+			"/v3/REST/eventcallbackurl": {
+				"get":  op("listMailjetEventCallbackURLs", "List event callback URLs", nil, "", "#/components/schemas/MailjetCollection", "mailjetBasic"),
+				"post": op("createMailjetEventCallbackURL", "Create event callback URL", nil, "#/components/schemas/MailjetObject", "#/components/schemas/MailjetObject", "mailjetBasic"),
+			},
+			"/v3/REST/eventcallbackurl/{url_id}": {
+				"get":    op("getMailjetEventCallbackURL", "Get event callback URL", params(path("url_id", "Mailjet event callback URL ID.")), "", "#/components/schemas/MailjetObject", "mailjetBasic"),
+				"put":    op("updateMailjetEventCallbackURL", "Update event callback URL", params(path("url_id", "Mailjet event callback URL ID.")), "#/components/schemas/MailjetObject", "#/components/schemas/MailjetObject", "mailjetBasic"),
+				"delete": op("deleteMailjetEventCallbackURL", "Delete event callback URL", params(path("url_id", "Mailjet event callback URL ID.")), "", "#/components/schemas/MailjetObject", "mailjetBasic"),
+			},
+			"/v3.1/send": {"post": op("sendMailjetEmail", "Send email", nil, "#/components/schemas/MailjetObject", "#/components/schemas/MailjetObject", "mailjetBasic")},
 		},
 	}
 }
 
 func build(spec overlaySpec) map[string]any {
+	servers := []map[string]any{server(spec.ServerURL, spec.ServerVars)}
+	servers = append(servers, spec.Servers...)
 	doc := map[string]any{
 		"openapi": "3.0.3",
 		"info": map[string]any{
@@ -269,7 +322,7 @@ func build(spec overlaySpec) map[string]any {
 			"version":     "2026-05-19",
 			"description": spec.Description,
 		},
-		"servers": []map[string]any{server(spec.ServerURL, spec.ServerVars)},
+		"servers": servers,
 		"x-apitools-overlay": map[string]any{
 			"provider_id":       spec.ProviderID,
 			"overlay_id":        spec.OverlayID,

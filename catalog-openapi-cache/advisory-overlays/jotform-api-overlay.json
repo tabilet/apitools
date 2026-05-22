@@ -30,6 +30,163 @@
   },
   "openapi": "3.0.3",
   "paths": {
+    "/folder": {
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createJotFormFolder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JotFormObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "Create folder"
+      }
+    },
+    "/folder/{folder_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteJotFormFolder",
+        "parameters": [
+          {
+            "description": "JotForm folder ID.",
+            "in": "path",
+            "name": "folder_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "Delete folder"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getJotFormFolder",
+        "parameters": [
+          {
+            "description": "JotForm folder ID.",
+            "in": "path",
+            "name": "folder_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "Get folder"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateJotFormFolder",
+        "parameters": [
+          {
+            "description": "JotForm folder ID.",
+            "in": "path",
+            "name": "folder_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JotFormObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "Update folder"
+      }
+    },
     "/form/{form_id}": {
       "get": {
         "description": "Advisory operation derived from official human API documentation.",
@@ -104,6 +261,90 @@
           }
         ],
         "summary": "List form questions"
+      }
+    },
+    "/form/{form_id}/reports": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listJotFormFormReports",
+        "parameters": [
+          {
+            "description": "JotForm form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "List form reports"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createJotFormFormReport",
+        "parameters": [
+          {
+            "description": "JotForm form ID.",
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JotFormObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "Create form report"
       }
     },
     "/form/{form_id}/submissions": {
@@ -236,6 +477,80 @@
         "summary": "Create form webhook"
       }
     },
+    "/report/{report_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteJotFormReport",
+        "parameters": [
+          {
+            "description": "JotForm report ID.",
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "Delete report"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getJotFormReport",
+        "parameters": [
+          {
+            "description": "JotForm report ID.",
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "Get report"
+      }
+    },
     "/submission/{submission_id}": {
       "get": {
         "description": "Advisory operation derived from official human API documentation.",
@@ -301,6 +616,53 @@
         "summary": "Get user account details"
       }
     },
+    "/user/folders": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listJotFormFolders",
+        "parameters": [
+          {
+            "description": "Maximum number of folders.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "List user folders"
+      }
+    },
     "/user/forms": {
       "get": {
         "description": "Advisory operation derived from official human API documentation.",
@@ -346,6 +708,53 @@
           }
         ],
         "summary": "List user forms"
+      }
+    },
+    "/user/reports": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listJotFormReports",
+        "parameters": [
+          {
+            "description": "Maximum number of reports.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination offset.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JotFormCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "jotformAPIKey": []
+          }
+        ],
+        "summary": "List user reports"
       }
     }
   },

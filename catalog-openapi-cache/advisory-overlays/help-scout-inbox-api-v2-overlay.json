@@ -15,6 +15,11 @@
       }
     },
     "securitySchemes": {
+      "helpScoutDocsBasic": {
+        "description": "Help Scout Docs API key carried as the HTTP Basic username with a dummy password.",
+        "scheme": "basic",
+        "type": "http"
+      },
       "helpScoutOAuth": {
         "description": "Help Scout Inbox API OAuth 2 access token carried as an Authorization bearer token.",
         "scheme": "bearer",
@@ -29,6 +34,203 @@
   },
   "openapi": "3.0.3",
   "paths": {
+    "/collections": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHelpScoutDocsCollections",
+        "parameters": [
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Docs site ID filter.",
+            "in": "query",
+            "name": "siteId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Collection visibility filter.",
+            "in": "query",
+            "name": "visibility",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutDocsBasic": []
+          }
+        ],
+        "summary": "List Docs collections"
+      }
+    },
+    "/collections/{collection_id}": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getHelpScoutDocsCollection",
+        "parameters": [
+          {
+            "description": "Docs collection ID or number.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutDocsBasic": []
+          }
+        ],
+        "summary": "Get Docs collection"
+      }
+    },
+    "/collections/{collection_id}/articles": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHelpScoutDocsCollectionArticles",
+        "parameters": [
+          {
+            "description": "Docs collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Article status filter.",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutDocsBasic": []
+          }
+        ],
+        "summary": "List Docs collection articles"
+      }
+    },
+    "/collections/{collection_id}/categories": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listHelpScoutDocsCollectionCategories",
+        "parameters": [
+          {
+            "description": "Docs collection ID.",
+            "in": "path",
+            "name": "collection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutDocsBasic": []
+          }
+        ],
+        "summary": "List Docs collection categories"
+      }
+    },
     "/conversations": {
       "get": {
         "description": "Advisory operation derived from official human API documentation.",
@@ -299,9 +501,95 @@
         ],
         "summary": "List mailboxes"
       }
+    },
+    "/search/articles": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "searchHelpScoutDocsArticles",
+        "parameters": [
+          {
+            "description": "Article search query.",
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page number.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Collection ID filter.",
+            "in": "query",
+            "name": "collectionId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Site ID filter.",
+            "in": "query",
+            "name": "siteId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Article status filter.",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Collection visibility filter.",
+            "in": "query",
+            "name": "visibility",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpScoutCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "helpScoutDocsBasic": []
+          }
+        ],
+        "summary": "Search Docs articles"
+      }
     }
   },
   "security": [
+    {
+      "helpScoutDocsBasic": []
+    },
     {
       "helpScoutOAuth": []
     }
@@ -309,6 +597,10 @@
   "servers": [
     {
       "url": "https://api.helpscout.net/v2"
+    },
+    {
+      "description": "Help Scout Docs API v1.",
+      "url": "https://docsapi.helpscout.net/v1"
     }
   ],
   "x-apitools-overlay": {
@@ -316,11 +608,15 @@
     "official_openapi": false,
     "overlay_id": "help-scout-inbox-api-v2-advisory-overlay",
     "provider_id": "help-scout",
-    "source_note": "Help Scout publishes REST-shaped Inbox API v2 docs with OAuth bearer authentication; this overlay covers conversations, customers, mailboxes, and threads.",
+    "source_note": "Help Scout publishes REST-shaped Inbox API v2 and Docs API docs; this overlay covers conversations, customers, mailboxes, threads, and a focused Docs collection/category/article lookup subset.",
     "source_refs": [
       "https://developer.helpscout.com/",
       "https://developer.helpscout.com/mailbox-api/",
-      "https://developer.helpscout.com/docs-api/"
+      "https://developer.helpscout.com/docs-api/",
+      "https://developer.helpscout.com/docs-api/collections/list/",
+      "https://developer.helpscout.com/docs-api/categories/list/",
+      "https://developer.helpscout.com/docs-api/articles/list/",
+      "https://developer.helpscout.com/docs-api/articles/search/"
     ]
   }
 }

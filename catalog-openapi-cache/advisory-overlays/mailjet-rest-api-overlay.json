@@ -213,6 +213,188 @@
         "summary": "Get a contact"
       }
     },
+    "/v3/REST/eventcallbackurl": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMailjetEventCallbackURLs",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "List event callback URLs"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMailjetEventCallbackURL",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailjetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Create event callback URL"
+      }
+    },
+    "/v3/REST/eventcallbackurl/{url_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteMailjetEventCallbackURL",
+        "parameters": [
+          {
+            "description": "Mailjet event callback URL ID.",
+            "in": "path",
+            "name": "url_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Delete event callback URL"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMailjetEventCallbackURL",
+        "parameters": [
+          {
+            "description": "Mailjet event callback URL ID.",
+            "in": "path",
+            "name": "url_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Get event callback URL"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateMailjetEventCallbackURL",
+        "parameters": [
+          {
+            "description": "Mailjet event callback URL ID.",
+            "in": "path",
+            "name": "url_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailjetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Update event callback URL"
+      }
+    },
     "/v3/REST/listrecipient": {
       "get": {
         "description": "Advisory operation derived from official human API documentation.",
@@ -266,6 +448,338 @@
         ],
         "summary": "List messages"
       }
+    },
+    "/v3/REST/template": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listMailjetTemplates",
+        "parameters": [
+          {
+            "description": "Maximum number of templates to return.",
+            "in": "query",
+            "name": "Limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Offset for pagination.",
+            "in": "query",
+            "name": "Offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "List email templates"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMailjetTemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailjetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Create email template"
+      }
+    },
+    "/v3/REST/template/{template_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "deleteMailjetTemplate",
+        "parameters": [
+          {
+            "description": "Mailjet template ID.",
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Delete email template"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMailjetTemplate",
+        "parameters": [
+          {
+            "description": "Mailjet template ID.",
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Get email template settings"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateMailjetTemplate",
+        "parameters": [
+          {
+            "description": "Mailjet template ID.",
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailjetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Update email template settings"
+      }
+    },
+    "/v3/REST/template/{template_id}/detailcontent": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getMailjetTemplateDetailContent",
+        "parameters": [
+          {
+            "description": "Mailjet template ID.",
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Get email template content"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createMailjetTemplateDetailContent",
+        "parameters": [
+          {
+            "description": "Mailjet template ID.",
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailjetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Create email template content"
+      },
+      "put": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updateMailjetTemplateDetailContent",
+        "parameters": [
+          {
+            "description": "Mailjet template ID.",
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailjetObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailjetObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "mailjetBasic": []
+          }
+        ],
+        "summary": "Update email template content"
+      }
     }
   },
   "security": [
@@ -283,11 +797,12 @@
     "official_openapi": false,
     "overlay_id": "mailjet-rest-api-advisory-overlay",
     "provider_id": "mailjet",
-    "source_note": "Mailjet publishes REST API docs and official documentation sources; this overlay covers contacts, list recipients, campaigns, messages, templates, and send API review endpoints.",
+    "source_note": "Mailjet publishes REST API docs and official documentation sources; this overlay covers contacts, list recipients, campaigns, messages, templates, event callback webhooks, and send API review endpoints.",
     "source_refs": [
       "https://documentation.mailjet.com/hc/en-us/articles/360044088173-REST-API",
       "https://documentation.mailjet.com/hc/en-us/articles/360043225693-What-is-an-API-key",
       "https://documentation.mailjet.com/hc/en-us/articles/360043230093-What-are-the-endpoints-available-for-the-API",
+      "https://dev.mailjet.com/email/reference/",
       "https://github.com/mailjet/api-documentation"
     ]
   }

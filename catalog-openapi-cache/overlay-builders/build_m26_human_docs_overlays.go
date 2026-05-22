@@ -56,8 +56,17 @@ func jotFormOverlay() overlaySpec {
 			"/form/{form_id}":             {"get": op("getJotFormForm", "Get form", params(path("form_id", "JotForm form ID.")), "", "#/components/schemas/JotFormObject", "jotformAPIKey")},
 			"/form/{form_id}/submissions": {"get": op("listJotFormFormSubmissions", "List form submissions", params(path("form_id", "JotForm form ID."), query("limit", "Maximum number of submissions."), query("offset", "Pagination offset.")), "", "#/components/schemas/JotFormCollection", "jotformAPIKey")},
 			"/form/{form_id}/questions":   {"get": op("listJotFormFormQuestions", "List form questions", params(path("form_id", "JotForm form ID.")), "", "#/components/schemas/JotFormCollection", "jotformAPIKey")},
+			"/form/{form_id}/reports": {
+				"get":  op("listJotFormFormReports", "List form reports", params(path("form_id", "JotForm form ID.")), "", "#/components/schemas/JotFormCollection", "jotformAPIKey"),
+				"post": op("createJotFormFormReport", "Create form report", params(path("form_id", "JotForm form ID.")), "#/components/schemas/JotFormObject", "#/components/schemas/JotFormObject", "jotformAPIKey"),
+			},
 			"/form/{form_id}/webhooks":    {"get": op("listJotFormFormWebhooks", "List form webhooks", params(path("form_id", "JotForm form ID.")), "", "#/components/schemas/JotFormCollection", "jotformAPIKey"), "post": op("createJotFormFormWebhook", "Create form webhook", params(path("form_id", "JotForm form ID.")), "", "#/components/schemas/JotFormObject", "jotformAPIKey")},
+			"/folder":                     {"post": op("createJotFormFolder", "Create folder", nil, "#/components/schemas/JotFormObject", "#/components/schemas/JotFormObject", "jotformAPIKey")},
+			"/folder/{folder_id}":         {"get": op("getJotFormFolder", "Get folder", params(path("folder_id", "JotForm folder ID.")), "", "#/components/schemas/JotFormObject", "jotformAPIKey"), "put": op("updateJotFormFolder", "Update folder", params(path("folder_id", "JotForm folder ID.")), "#/components/schemas/JotFormObject", "#/components/schemas/JotFormObject", "jotformAPIKey"), "delete": op("deleteJotFormFolder", "Delete folder", params(path("folder_id", "JotForm folder ID.")), "", "#/components/schemas/JotFormObject", "jotformAPIKey")},
+			"/report/{report_id}":         {"get": op("getJotFormReport", "Get report", params(path("report_id", "JotForm report ID.")), "", "#/components/schemas/JotFormObject", "jotformAPIKey"), "delete": op("deleteJotFormReport", "Delete report", params(path("report_id", "JotForm report ID.")), "", "#/components/schemas/JotFormObject", "jotformAPIKey")},
 			"/submission/{submission_id}": {"get": op("getJotFormSubmission", "Get submission", params(path("submission_id", "Submission ID.")), "", "#/components/schemas/JotFormObject", "jotformAPIKey")},
+			"/user/folders":               {"get": op("listJotFormFolders", "List user folders", params(query("limit", "Maximum number of folders."), query("offset", "Pagination offset.")), "", "#/components/schemas/JotFormCollection", "jotformAPIKey")},
+			"/user/reports":               {"get": op("listJotFormReports", "List user reports", params(query("limit", "Maximum number of reports."), query("offset", "Pagination offset.")), "", "#/components/schemas/JotFormCollection", "jotformAPIKey")},
 		},
 	}
 }
