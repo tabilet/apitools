@@ -89,7 +89,7 @@ overlay would hide native operation semantics.
 | MailerLite | `mailerlite-api-overlay.json` | REST-shaped current API docs support a focused subscribers, groups, campaigns, and forms subset; Classic auth remains security metadata. |
 | Mailjet | `mailjet-rest-api-overlay.json` | REST-shaped REST API docs support a focused contacts, list-recipients, campaigns, messages, templates, event callback webhooks, and send subset. |
 | Adobe Marketo Engage | `marketo-rest-api-overlay.json` | REST docs support a focused lead metadata, lead retrieval, and activity retrieval subset; subscription endpoint host remains operator supplied. |
-| Mandrill | `mandrill-transactional-api-overlay.json` | Transactional API docs support a focused messages, templates, users, and webhooks subset; API key is modeled as advisory credential placement because it is sent in each request payload. |
+| Mandrill | `mandrill-transactional-api-overlay.json` | Transactional API docs support a focused messages, template management, users, and webhook management subset; API key is modeled as advisory credential placement because it is sent in each request payload. |
 | Mautic | `mautic-api-overlay.json` | Instance-hosted REST API docs support a focused contacts, companies, segments, campaigns, and emails subset; host remains operator supplied. |
 | MessageBird | `messagebird-api-overlay.json` | REST-shaped API docs support a focused balance, messages, contacts, voice calls, and HLR subset with AccessKey auth. |
 | Metabase | `metabase-api-overlay.json` | API docs and instance live-doc guidance support a focused session, current user, databases, questions, alerts, and metrics subset; host remains operator supplied. |
@@ -102,8 +102,8 @@ overlay would hide native operation semantics.
 | Onfleet | `onfleet-api-overlay.json` | API docs support a focused auth, tasks, workers, teams, hubs, destinations, recipients, admins, and webhooks subset. |
 | OneSimpleApi | `onesimpleapi-toolkit-overlay.json` | Official docs support a focused web metadata, page status, screenshot, PDF, and QR utility subset. |
 | OpenThesaurus | `openthesaurus-api-overlay.json` | Webservice docs support the documented anonymous synonym search endpoint with JSON/XML and lookup options. |
-| OpenWeatherMap | `openweathermap-one-call-3-overlay.json` | One Call 3.0 docs support a narrow weather endpoint overlay. |
-| Postmark | `postmark-api-overlay.json` | REST-shaped API docs and API Explorer support a focused email, template, bounce, and server subset with separate server/account token headers. |
+| OpenWeatherMap | `openweathermap-one-call-3-overlay.json` | One Call 3.0 and linked Geocoding API docs support a focused weather and coordinate lookup subset. |
+| Postmark | `postmark-api-overlay.json` | REST-shaped API docs and API Explorer support a focused email, template, bounce, message-stream, and server subset with separate server/account token headers. |
 | ProfitWell | `profitwell-api-v2-overlay.json` | API v2 docs support a focused company settings and metrics subset with Authorization header token auth. |
 | Quickbase | `quickbase-rest-api-overlay.json` | REST API docs support a focused fields, records, reports, and file subset with bearer user-token and realm-hostname headers. |
 | QuickBooks | `quickbooks-online-accounting-api-overlay.json` | REST-shaped Accounting API docs support a focused customer, invoice, payment, and company-info subset. |

@@ -175,6 +175,246 @@
         "summary": "Send a batch of emails"
       }
     },
+    "/message-streams": {
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "listPostmarkMessageStreams",
+        "parameters": [
+          {
+            "description": "Filter by message stream type.",
+            "in": "query",
+            "name": "MessageStreamType",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Whether archived streams should be included.",
+            "in": "query",
+            "name": "IncludeArchivedStreams",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkCollection"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "List message streams"
+      },
+      "post": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "createPostmarkMessageStream",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostmarkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Create a message stream"
+      }
+    },
+    "/message-streams/{stream_id}": {
+      "delete": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "archivePostmarkMessageStream",
+        "parameters": [
+          {
+            "description": "Postmark message stream ID.",
+            "in": "path",
+            "name": "stream_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Archive a message stream"
+      },
+      "get": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "getPostmarkMessageStream",
+        "parameters": [
+          {
+            "description": "Postmark message stream ID.",
+            "in": "path",
+            "name": "stream_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Get a message stream"
+      },
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "updatePostmarkMessageStream",
+        "parameters": [
+          {
+            "description": "Postmark message stream ID.",
+            "in": "path",
+            "name": "stream_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostmarkObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Update a message stream"
+      }
+    },
+    "/message-streams/{stream_id}/unarchive": {
+      "patch": {
+        "description": "Advisory operation derived from official human API documentation.",
+        "operationId": "unarchivePostmarkMessageStream",
+        "parameters": [
+          {
+            "description": "Postmark message stream ID.",
+            "in": "path",
+            "name": "stream_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostmarkObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "description": "Provider error response."
+          }
+        },
+        "security": [
+          {
+            "postmarkServerToken": []
+          }
+        ],
+        "summary": "Unarchive a message stream"
+      }
+    },
     "/servers": {
       "get": {
         "description": "Advisory operation derived from official human API documentation.",
@@ -415,14 +655,15 @@
     "official_openapi": false,
     "overlay_id": "postmark-api-advisory-overlay",
     "provider_id": "postmark",
-    "source_note": "Postmark publishes REST-shaped API docs and an API Explorer; this overlay models server-token email/template/bounce endpoints separately from account-token server endpoints.",
+    "source_note": "Postmark publishes REST-shaped API docs and an API Explorer; this overlay models server-token email/template/bounce/message-stream endpoints separately from account-token server endpoints.",
     "source_refs": [
       "https://postmarkapp.com/developer/api/overview",
       "https://postmarkapp.com/api-explorer",
       "https://postmarkapp.com/developer/api/email-api",
       "https://postmarkapp.com/developer/api/templates-api",
       "https://postmarkapp.com/developer/api/bounce-api",
-      "https://postmarkapp.com/developer/api/server-api"
+      "https://postmarkapp.com/developer/api/server-api",
+      "https://postmarkapp.com/developer/api/message-streams-api"
     ]
   }
 }

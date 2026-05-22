@@ -221,8 +221,8 @@ func postmarkOverlay() overlaySpec {
 		Title:       "Postmark API Advisory Overlay",
 		Description: "Advisory OpenAPI overlay derived from official Postmark API human documentation. This is not an official Postmark OpenAPI document.",
 		ServerURL:   "https://api.postmarkapp.com",
-		Sources:     []string{"https://postmarkapp.com/developer/api/overview", "https://postmarkapp.com/api-explorer", "https://postmarkapp.com/developer/api/email-api", "https://postmarkapp.com/developer/api/templates-api", "https://postmarkapp.com/developer/api/bounce-api", "https://postmarkapp.com/developer/api/server-api"},
-		SourceNote:  "Postmark publishes REST-shaped API docs and an API Explorer; this overlay models server-token email/template/bounce endpoints separately from account-token server endpoints.",
+		Sources:     []string{"https://postmarkapp.com/developer/api/overview", "https://postmarkapp.com/api-explorer", "https://postmarkapp.com/developer/api/email-api", "https://postmarkapp.com/developer/api/templates-api", "https://postmarkapp.com/developer/api/bounce-api", "https://postmarkapp.com/developer/api/server-api", "https://postmarkapp.com/developer/api/message-streams-api"},
+		SourceNote:  "Postmark publishes REST-shaped API docs and an API Explorer; this overlay models server-token email/template/bounce/message-stream endpoints separately from account-token server endpoints.",
 		SecurityAlt: security,
 		Schemas:     []string{"PostmarkObject", "PostmarkCollection", "PostmarkError"},
 		OutputPath:  "catalog-openapi-cache/advisory-overlays/postmark-api-overlay.json",
@@ -240,7 +240,19 @@ func postmarkOverlay() overlaySpec {
 			},
 			"/bounces":             {"get": op("listPostmarkBounces", "List bounces", nil, "", "#/components/schemas/PostmarkCollection", "postmarkServerToken")},
 			"/bounces/{bounce_id}": {"get": op("getPostmarkBounce", "Get a bounce", params(path("bounce_id", "Postmark bounce ID.")), "", "#/components/schemas/PostmarkObject", "postmarkServerToken")},
-			"/servers":             {"get": op("listPostmarkServers", "List servers", nil, "", "#/components/schemas/PostmarkCollection", "postmarkAccountToken")},
+			"/message-streams": {
+				"get":  op("listPostmarkMessageStreams", "List message streams", params(query("MessageStreamType", "Filter by message stream type."), query("IncludeArchivedStreams", "Whether archived streams should be included.")), "", "#/components/schemas/PostmarkCollection", "postmarkServerToken"),
+				"post": op("createPostmarkMessageStream", "Create a message stream", nil, "#/components/schemas/PostmarkObject", "#/components/schemas/PostmarkObject", "postmarkServerToken"),
+			},
+			"/message-streams/{stream_id}": {
+				"get":    op("getPostmarkMessageStream", "Get a message stream", params(path("stream_id", "Postmark message stream ID.")), "", "#/components/schemas/PostmarkObject", "postmarkServerToken"),
+				"patch":  op("updatePostmarkMessageStream", "Update a message stream", params(path("stream_id", "Postmark message stream ID.")), "#/components/schemas/PostmarkObject", "#/components/schemas/PostmarkObject", "postmarkServerToken"),
+				"delete": op("archivePostmarkMessageStream", "Archive a message stream", params(path("stream_id", "Postmark message stream ID.")), "", "#/components/schemas/PostmarkObject", "postmarkServerToken"),
+			},
+			"/message-streams/{stream_id}/unarchive": {
+				"patch": op("unarchivePostmarkMessageStream", "Unarchive a message stream", params(path("stream_id", "Postmark message stream ID.")), "", "#/components/schemas/PostmarkObject", "postmarkServerToken"),
+			},
+			"/servers": {"get": op("listPostmarkServers", "List servers", nil, "", "#/components/schemas/PostmarkCollection", "postmarkAccountToken")},
 		},
 	}
 }
