@@ -29,10 +29,12 @@ func main() {
 			"derived_from_docs": true,
 			"source_refs": []string{
 				"https://shopify.dev/docs/api/admin-rest",
+				"https://shopify.dev/docs/api/admin-rest/latest/resources/webhook",
+				"https://shopify.dev/docs/api/admin-rest/latest/resources/inventorylevel",
 				"https://shopify.dev/docs/api/admin-rest/usage/access-scopes",
 				"https://shopify.dev/docs/api/admin-rest/usage/versioning",
 			},
-			"source_note": "Shopify publishes REST Admin API human documentation, but no official downloadable OpenAPI document is recorded in the apitools catalog.",
+			"source_note": "Shopify publishes REST Admin API human documentation, but no official downloadable OpenAPI document is recorded in the apitools catalog. REST Admin API is legacy for new public apps, so this overlay remains a focused reviewed subset.",
 		},
 		"components": map[string]any{
 			"securitySchemes": map[string]any{
@@ -44,10 +46,12 @@ func main() {
 				},
 			},
 			"schemas": map[string]any{
-				"Product":  objectSchema(),
-				"Order":    objectSchema(),
-				"Customer": objectSchema(),
-				"Error":    objectSchema(),
+				"Product":        objectSchema(),
+				"Order":          objectSchema(),
+				"Customer":       objectSchema(),
+				"Webhook":        objectSchema(),
+				"InventoryLevel": objectSchema(),
+				"Error":          objectSchema(),
 			},
 		},
 		"security": []map[string]any{{"shopifyAccessToken": []string{}}},
@@ -75,6 +79,28 @@ func main() {
 				"get":    operation("getShopifyCustomer", "Get a Shopify customer", []map[string]any{pathParam("customerId", "Customer identifier.")}, "", "#/components/schemas/Customer"),
 				"put":    operation("updateShopifyCustomer", "Update a Shopify customer", []map[string]any{pathParam("customerId", "Customer identifier.")}, "#/components/schemas/Customer", "#/components/schemas/Customer"),
 				"delete": operation("deleteShopifyCustomer", "Delete a Shopify customer", []map[string]any{pathParam("customerId", "Customer identifier.")}, "", "#/components/schemas/Customer"),
+			},
+			"/webhooks.json": map[string]any{
+				"get":  operation("listShopifyWebhooks", "List Shopify webhooks", []map[string]any{queryParam("topic", "Webhook topic filter."), queryParam("address", "Webhook destination address filter."), queryParam("limit", "Maximum records to return."), queryParam("page_info", "Pagination cursor.")}, "", "#/components/schemas/Webhook"),
+				"post": operation("createShopifyWebhook", "Create a Shopify webhook", nil, "#/components/schemas/Webhook", "#/components/schemas/Webhook"),
+			},
+			"/webhooks/{webhookId}.json": map[string]any{
+				"get":    operation("getShopifyWebhook", "Get a Shopify webhook", []map[string]any{pathParam("webhookId", "Webhook identifier.")}, "", "#/components/schemas/Webhook"),
+				"put":    operation("updateShopifyWebhook", "Update a Shopify webhook", []map[string]any{pathParam("webhookId", "Webhook identifier.")}, "#/components/schemas/Webhook", "#/components/schemas/Webhook"),
+				"delete": operation("deleteShopifyWebhook", "Delete a Shopify webhook", []map[string]any{pathParam("webhookId", "Webhook identifier.")}, "", "#/components/schemas/Webhook"),
+			},
+			"/inventory_levels.json": map[string]any{
+				"get":    operation("listShopifyInventoryLevels", "List Shopify inventory levels", []map[string]any{queryParam("inventory_item_ids", "Comma-separated inventory item IDs."), queryParam("location_ids", "Comma-separated location IDs."), queryParam("limit", "Maximum records to return."), queryParam("page_info", "Pagination cursor.")}, "", "#/components/schemas/InventoryLevel"),
+				"delete": operation("deleteShopifyInventoryLevel", "Delete a Shopify inventory level", []map[string]any{queryParam("inventory_item_id", "Inventory item ID."), queryParam("location_id", "Location ID.")}, "", "#/components/schemas/InventoryLevel"),
+			},
+			"/inventory_levels/adjust.json": map[string]any{
+				"post": operation("adjustShopifyInventoryLevel", "Adjust a Shopify inventory level", nil, "#/components/schemas/InventoryLevel", "#/components/schemas/InventoryLevel"),
+			},
+			"/inventory_levels/connect.json": map[string]any{
+				"post": operation("connectShopifyInventoryLevel", "Connect a Shopify inventory item to a location", nil, "#/components/schemas/InventoryLevel", "#/components/schemas/InventoryLevel"),
+			},
+			"/inventory_levels/set.json": map[string]any{
+				"post": operation("setShopifyInventoryLevel", "Set a Shopify inventory level", nil, "#/components/schemas/InventoryLevel", "#/components/schemas/InventoryLevel"),
 			},
 		},
 	}

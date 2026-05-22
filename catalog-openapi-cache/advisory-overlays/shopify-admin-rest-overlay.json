@@ -9,11 +9,19 @@
         "additionalProperties": true,
         "type": "object"
       },
+      "InventoryLevel": {
+        "additionalProperties": true,
+        "type": "object"
+      },
       "Order": {
         "additionalProperties": true,
         "type": "object"
       },
       "Product": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "Webhook": {
         "additionalProperties": true,
         "type": "object"
       }
@@ -334,6 +342,327 @@
           }
         ],
         "summary": "Update a Shopify customer"
+      }
+    },
+    "/inventory_levels.json": {
+      "delete": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "deleteShopifyInventoryLevel",
+        "parameters": [
+          {
+            "description": "Inventory item ID.",
+            "in": "query",
+            "name": "inventory_item_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Location ID.",
+            "in": "query",
+            "name": "location_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryLevel"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryLevel"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Delete a Shopify inventory level"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "listShopifyInventoryLevels",
+        "parameters": [
+          {
+            "description": "Comma-separated inventory item IDs.",
+            "in": "query",
+            "name": "inventory_item_ids",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated location IDs.",
+            "in": "query",
+            "name": "location_ids",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "page_info",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryLevel"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryLevel"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "List Shopify inventory levels"
+      }
+    },
+    "/inventory_levels/adjust.json": {
+      "post": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "adjustShopifyInventoryLevel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryLevel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryLevel"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryLevel"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Adjust a Shopify inventory level"
+      }
+    },
+    "/inventory_levels/connect.json": {
+      "post": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "connectShopifyInventoryLevel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryLevel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryLevel"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryLevel"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Connect a Shopify inventory item to a location"
+      }
+    },
+    "/inventory_levels/set.json": {
+      "post": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "setShopifyInventoryLevel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryLevel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryLevel"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryLevel"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Set a Shopify inventory level"
       }
     },
     "/orders.json": {
@@ -771,6 +1100,326 @@
         ],
         "summary": "Update a Shopify product"
       }
+    },
+    "/webhooks.json": {
+      "get": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "listShopifyWebhooks",
+        "parameters": [
+          {
+            "description": "Webhook topic filter.",
+            "in": "query",
+            "name": "topic",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Webhook destination address filter.",
+            "in": "query",
+            "name": "address",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination cursor.",
+            "in": "query",
+            "name": "page_info",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "List Shopify webhooks"
+      },
+      "post": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "createShopifyWebhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Webhook"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Create a Shopify webhook"
+      }
+    },
+    "/webhooks/{webhookId}.json": {
+      "delete": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "deleteShopifyWebhook",
+        "parameters": [
+          {
+            "description": "Webhook identifier.",
+            "in": "path",
+            "name": "webhookId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Delete a Shopify webhook"
+      },
+      "get": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "getShopifyWebhook",
+        "parameters": [
+          {
+            "description": "Webhook identifier.",
+            "in": "path",
+            "name": "webhookId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Get a Shopify webhook"
+      },
+      "put": {
+        "description": "Advisory operation derived from official Shopify REST Admin API documentation.",
+        "operationId": "updateShopifyWebhook",
+        "parameters": [
+          {
+            "description": "Webhook identifier.",
+            "in": "path",
+            "name": "webhookId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Webhook"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Shopify response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Shopify resource created."
+          },
+          "204": {
+            "description": "Shopify request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Shopify error response."
+          }
+        },
+        "security": [
+          {
+            "shopifyAccessToken": []
+          }
+        ],
+        "summary": "Update a Shopify webhook"
+      }
     }
   },
   "security": [
@@ -796,9 +1445,11 @@
     "official_openapi": false,
     "overlay_id": "shopify-admin-rest-advisory-overlay",
     "provider_id": "shopify",
-    "source_note": "Shopify publishes REST Admin API human documentation, but no official downloadable OpenAPI document is recorded in the apitools catalog.",
+    "source_note": "Shopify publishes REST Admin API human documentation, but no official downloadable OpenAPI document is recorded in the apitools catalog. REST Admin API is legacy for new public apps, so this overlay remains a focused reviewed subset.",
     "source_refs": [
       "https://shopify.dev/docs/api/admin-rest",
+      "https://shopify.dev/docs/api/admin-rest/latest/resources/webhook",
+      "https://shopify.dev/docs/api/admin-rest/latest/resources/inventorylevel",
       "https://shopify.dev/docs/api/admin-rest/usage/access-scopes",
       "https://shopify.dev/docs/api/admin-rest/usage/versioning"
     ]
