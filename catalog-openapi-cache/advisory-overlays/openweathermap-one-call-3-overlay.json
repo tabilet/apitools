@@ -1,6 +1,39 @@
 {
   "components": {
     "schemas": {
+      "GeocodingLocation": {
+        "description": "Advisory schema for a documented OpenWeatherMap geocoding location result. Fields vary by country and location.",
+        "properties": {
+          "country": {
+            "description": "Country code of the found location.",
+            "type": "string"
+          },
+          "lat": {
+            "description": "Geographical coordinates of the found location: latitude.",
+            "type": "number"
+          },
+          "local_names": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Location names in available languages; keys are language codes or provider-specific internal keys.",
+            "type": "object"
+          },
+          "lon": {
+            "description": "Geographical coordinates of the found location: longitude.",
+            "type": "number"
+          },
+          "name": {
+            "description": "Name of the found location.",
+            "type": "string"
+          },
+          "state": {
+            "description": "State of the found location, where available.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "OneCallResponse": {
         "description": "Partial advisory schema for documented One Call API 3.0 top-level response fields.",
         "properties": {
@@ -54,6 +87,32 @@
       "OpenWeatherError": {
         "additionalProperties": true,
         "type": "object"
+      },
+      "ZipGeocodingResponse": {
+        "description": "Advisory schema for a documented OpenWeatherMap zip/post-code geocoding result.",
+        "properties": {
+          "country": {
+            "description": "Country code of the found zip/post code.",
+            "type": "string"
+          },
+          "lat": {
+            "description": "Geographical coordinates of the centroid of the found zip/post code: latitude.",
+            "type": "number"
+          },
+          "lon": {
+            "description": "Geographical coordinates of the centroid of the found zip/post code: longitude.",
+            "type": "number"
+          },
+          "name": {
+            "description": "Name of the found area.",
+            "type": "string"
+          },
+          "zip": {
+            "description": "Zip/post code specified in the API request.",
+            "type": "string"
+          }
+        },
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -66,8 +125,8 @@
     }
   },
   "info": {
-    "description": "Advisory OpenAPI overlay derived from official OpenWeatherMap human documentation. This is not an official OpenWeatherMap OpenAPI document.",
-    "title": "OpenWeatherMap One Call 3.0 Advisory Overlay",
+    "description": "Advisory OpenAPI overlay derived from official OpenWeatherMap One Call 3.0 and Geocoding API human documentation. This is not an official OpenWeatherMap OpenAPI document.",
+    "title": "OpenWeatherMap One Call 3.0 and Geocoding Advisory Overlay",
     "version": "2026-05-18"
   },
   "openapi": "3.0.3",
@@ -78,7 +137,7 @@
         "operationId": "getOpenWeatherMapOneCall3",
         "parameters": [
           {
-            "description": "Latitude.",
+            "description": "Latitude in decimal degrees, from -90 to 90. OpenWeatherMap directs callers that need to convert city names or zip codes to coordinates, or coordinates back to location names, to the Geocoding API.",
             "in": "query",
             "name": "lat",
             "required": true,
@@ -89,7 +148,7 @@
             }
           },
           {
-            "description": "Longitude.",
+            "description": "Longitude in decimal degrees, from -180 to 180. OpenWeatherMap directs callers that need to convert city names or zip codes to coordinates, or coordinates back to location names, to the Geocoding API.",
             "in": "query",
             "name": "lon",
             "required": true,
@@ -170,6 +229,204 @@
         ],
         "summary": "Get One Call API 3.0 weather data"
       }
+    },
+    "/geo/1.0/direct": {
+      "get": {
+        "description": "Advisory operation derived from official OpenWeatherMap Geocoding API documentation. Direct geocoding converts a city or area name to geographical coordinates.",
+        "operationId": "geocodeOpenWeatherMapLocationName",
+        "parameters": [
+          {
+            "description": "City name, optional US state code, and optional country code separated by commas. Use ISO 3166 country codes.",
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "OpenWeather API key.",
+            "in": "query",
+            "name": "appid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of matching locations to return, up to 5.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "maximum": 5,
+              "minimum": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GeocodingLocation"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "List of matching geocoding locations."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenWeatherError"
+                }
+              }
+            },
+            "description": "OpenWeather error response."
+          }
+        },
+        "security": [
+          {
+            "openWeatherAPIKey": []
+          }
+        ],
+        "summary": "Geocode location name"
+      }
+    },
+    "/geo/1.0/reverse": {
+      "get": {
+        "description": "Advisory operation derived from official OpenWeatherMap Geocoding API documentation. Reverse geocoding converts geographical coordinates to nearby location names.",
+        "operationId": "reverseGeocodeOpenWeatherMapCoordinates",
+        "parameters": [
+          {
+            "description": "Geographical coordinates: latitude.",
+            "in": "query",
+            "name": "lat",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "description": "Geographical coordinates: longitude.",
+            "in": "query",
+            "name": "lon",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "description": "OpenWeather API key.",
+            "in": "query",
+            "name": "appid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum number of location names to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GeocodingLocation"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "List of nearby geocoding locations."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenWeatherError"
+                }
+              }
+            },
+            "description": "OpenWeather error response."
+          }
+        },
+        "security": [
+          {
+            "openWeatherAPIKey": []
+          }
+        ],
+        "summary": "Reverse geocode coordinates"
+      }
+    },
+    "/geo/1.0/zip": {
+      "get": {
+        "description": "Advisory operation derived from official OpenWeatherMap Geocoding API documentation. Zip geocoding converts a zip/post code and country code to geographical coordinates.",
+        "operationId": "geocodeOpenWeatherMapZipCode",
+        "parameters": [
+          {
+            "description": "Zip/post code and country code separated by a comma. Use ISO 3166 country codes.",
+            "in": "query",
+            "name": "zip",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "OpenWeather API key.",
+            "in": "query",
+            "name": "appid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZipGeocodingResponse"
+                }
+              }
+            },
+            "description": "Zip or post-code geocoding result."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenWeatherError"
+                }
+              }
+            },
+            "description": "OpenWeather error response."
+          }
+        },
+        "security": [
+          {
+            "openWeatherAPIKey": []
+          }
+        ],
+        "summary": "Geocode zip or post code"
+      }
     }
   },
   "security": [
@@ -187,9 +444,10 @@
     "official_openapi": false,
     "overlay_id": "openweathermap-one-call-3-advisory-overlay",
     "provider_id": "openweathermap",
-    "source_note": "OpenWeatherMap publishes human documentation for One Call API 3.0 and API key usage, but no official OpenAPI document is recorded in the apitools catalog.",
+    "source_note": "OpenWeatherMap publishes human documentation for One Call API 3.0, Geocoding API coordinate lookup helpers, and API key usage, but no official OpenAPI document is recorded in the apitools catalog.",
     "source_refs": [
       "https://openweathermap.org/api/one-call-3?collection=one_call_api_3.0",
+      "https://openweathermap.org/api/geocoding-api",
       "https://openweathermap.org/appid"
     ]
   }
