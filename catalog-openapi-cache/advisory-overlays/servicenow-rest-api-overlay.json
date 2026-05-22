@@ -101,6 +101,179 @@
         "summary": "Upload an attachment"
       }
     },
+    "/api/now/import/{stagingTableName}": {
+      "post": {
+        "description": "Advisory operation derived from official ServiceNow human documentation.",
+        "operationId": "createServiceNowImportSetRecord",
+        "parameters": [
+          {
+            "description": "Import set staging table name.",
+            "in": "path",
+            "name": "stagingTableName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceNowObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowError"
+                }
+              }
+            },
+            "description": "ServiceNow error response."
+          }
+        },
+        "security": [
+          {
+            "servicenowBasic": []
+          },
+          {
+            "servicenowOAuth2": []
+          }
+        ],
+        "summary": "Insert an import set record and trigger transformation"
+      }
+    },
+    "/api/now/import/{stagingTableName}/insertMultiple": {
+      "post": {
+        "description": "Advisory operation derived from official ServiceNow human documentation.",
+        "operationId": "createServiceNowImportSetRecords",
+        "parameters": [
+          {
+            "description": "Import set staging table name.",
+            "in": "path",
+            "name": "stagingTableName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceNowObject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowError"
+                }
+              }
+            },
+            "description": "ServiceNow error response."
+          }
+        },
+        "security": [
+          {
+            "servicenowBasic": []
+          },
+          {
+            "servicenowOAuth2": []
+          }
+        ],
+        "summary": "Insert multiple import set records"
+      }
+    },
+    "/api/now/import/{stagingTableName}/{sys_id}": {
+      "get": {
+        "description": "Advisory operation derived from official ServiceNow human documentation.",
+        "operationId": "getServiceNowImportSetResult",
+        "parameters": [
+          {
+            "description": "Import set staging table name.",
+            "in": "path",
+            "name": "stagingTableName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Import staging record sys_id.",
+            "in": "path",
+            "name": "sys_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowObject"
+                }
+              }
+            },
+            "description": "Successful response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceNowError"
+                }
+              }
+            },
+            "description": "ServiceNow error response."
+          }
+        },
+        "security": [
+          {
+            "servicenowBasic": []
+          },
+          {
+            "servicenowOAuth2": []
+          }
+        ],
+        "summary": "Get an import set staging record and transformation result"
+      }
+    },
     "/api/now/table/{tableName}": {
       "get": {
         "description": "Advisory operation derived from official ServiceNow human documentation.",
@@ -446,7 +619,8 @@
     "source_note": "ServiceNow documents REST API Explorer and per-instance OpenAPI export, but no stable public downloadable OpenAPI document is recorded in the apitools catalog.",
     "source_refs": [
       "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/c_RESTAPI.html",
-      "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/export-openapi-specification.html"
+      "https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/export-openapi-specification.html",
+      "https://www.servicenow.com/docs/r/api-reference/rest-apis/c_ImportSetAPI.html"
     ]
   }
 }

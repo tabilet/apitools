@@ -1,6 +1,14 @@
 {
   "components": {
     "schemas": {
+      "CompositeRequest": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "CompositeResult": {
+        "additionalProperties": true,
+        "type": "object"
+      },
       "Error": {
         "additionalProperties": true,
         "type": "object"
@@ -82,6 +90,188 @@
           }
         ],
         "summary": "List Salesforce REST API resources"
+      }
+    },
+    "/composite": {
+      "post": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "runSalesforceCompositeRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompositeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompositeResult"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompositeResult"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "Run a Salesforce composite request"
+      }
+    },
+    "/composite/batch": {
+      "post": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "runSalesforceCompositeBatchRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompositeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompositeResult"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompositeResult"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "Run a Salesforce composite batch request"
+      }
+    },
+    "/composite/tree/{objectApiName}": {
+      "post": {
+        "description": "Advisory operation derived from official Salesforce REST API documentation.",
+        "operationId": "createSalesforceCompositeTree",
+        "parameters": [
+          {
+            "description": "Root Salesforce object API name.",
+            "in": "path",
+            "name": "objectApiName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompositeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompositeResult"
+                }
+              }
+            },
+            "description": "Salesforce response."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompositeResult"
+                }
+              }
+            },
+            "description": "Salesforce resource created."
+          },
+          "204": {
+            "description": "Salesforce request completed without response content."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Salesforce error response."
+          }
+        },
+        "security": [
+          {
+            "salesforceBearer": []
+          }
+        ],
+        "summary": "Create Salesforce records with a composite tree request"
       }
     },
     "/query": {
@@ -603,9 +793,12 @@
     "official_openapi": false,
     "overlay_id": "salesforce-rest-core-advisory-overlay",
     "provider_id": "salesforce",
-    "source_note": "Salesforce documents REST API resources and org-side OpenAPI generation, but no stable public downloadable OpenAPI document is recorded in the apitools catalog.",
+    "source_note": "Salesforce documents REST API resources, composite resources, and org-side OpenAPI generation, but no stable public downloadable OpenAPI document is recorded in the apitools catalog.",
     "source_refs": [
       "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm",
+      "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite.htm",
+      "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_batch.htm",
+      "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobject_tree.htm",
       "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm",
       "https://help.salesforce.com/s/articleView?id=release-notes.rn_api_rest.htm\u0026language=en_US\u0026release=236\u0026type=5"
     ]

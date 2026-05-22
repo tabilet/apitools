@@ -26,6 +26,7 @@ func main() {
 		"x-apitools-overlay": overlayMeta("servicenow", "servicenow-rest-api-overlay", []string{
 			"https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/c_RESTAPI.html",
 			"https://www.servicenow.com/docs/r/api-reference/rest-api-explorer/export-openapi-specification.html",
+			"https://www.servicenow.com/docs/r/api-reference/rest-apis/c_ImportSetAPI.html",
 		}, "ServiceNow documents REST API Explorer and per-instance OpenAPI export, but no stable public downloadable OpenAPI document is recorded in the apitools catalog."),
 		"components": map[string]any{
 			"securitySchemes": map[string]any{
@@ -47,6 +48,15 @@ func main() {
 			},
 			"/api/now/attachment/file": map[string]any{
 				"post": operation("uploadServiceNowAttachment", "Upload an attachment", attachmentParams(), "", "#/components/schemas/ServiceNowObject", "servicenowBasic", "servicenowOAuth2"),
+			},
+			"/api/now/import/{stagingTableName}": map[string]any{
+				"post": operation("createServiceNowImportSetRecord", "Insert an import set record and trigger transformation", importParams(), "#/components/schemas/ServiceNowObject", "#/components/schemas/ServiceNowObject", "servicenowBasic", "servicenowOAuth2"),
+			},
+			"/api/now/import/{stagingTableName}/{sys_id}": map[string]any{
+				"get": operation("getServiceNowImportSetResult", "Get an import set staging record and transformation result", importRecordParams(), "", "#/components/schemas/ServiceNowObject", "servicenowBasic", "servicenowOAuth2"),
+			},
+			"/api/now/import/{stagingTableName}/insertMultiple": map[string]any{
+				"post": operation("createServiceNowImportSetRecords", "Insert multiple import set records", importParams(), "#/components/schemas/ServiceNowObject", "#/components/schemas/ServiceNowObject", "servicenowBasic", "servicenowOAuth2"),
 			},
 		},
 	}
@@ -75,6 +85,19 @@ func attachmentParams() []map[string]any {
 		queryParam("table_name", "Target table name."),
 		queryParam("table_sys_id", "Target record sys_id."),
 		queryParam("file_name", "Attachment file name."),
+	}
+}
+
+func importParams() []map[string]any {
+	return []map[string]any{
+		pathParam("stagingTableName", "Import set staging table name."),
+	}
+}
+
+func importRecordParams() []map[string]any {
+	return []map[string]any{
+		pathParam("stagingTableName", "Import set staging table name."),
+		pathParam("sys_id", "Import staging record sys_id."),
 	}
 }
 

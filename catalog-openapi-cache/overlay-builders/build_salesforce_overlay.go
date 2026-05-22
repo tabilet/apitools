@@ -30,10 +30,13 @@ func main() {
 			"derived_from_docs": true,
 			"source_refs": []string{
 				"https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm",
+				"https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite.htm",
+				"https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_batch.htm",
+				"https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobject_tree.htm",
 				"https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm",
 				"https://help.salesforce.com/s/articleView?id=release-notes.rn_api_rest.htm&language=en_US&release=236&type=5",
 			},
-			"source_note": "Salesforce documents REST API resources and org-side OpenAPI generation, but no stable public downloadable OpenAPI document is recorded in the apitools catalog.",
+			"source_note": "Salesforce documents REST API resources, composite resources, and org-side OpenAPI generation, but no stable public downloadable OpenAPI document is recorded in the apitools catalog.",
 		},
 		"components": map[string]any{
 			"securitySchemes": map[string]any{
@@ -44,11 +47,13 @@ func main() {
 				},
 			},
 			"schemas": map[string]any{
-				"SObjectRecord": objectSchema(),
-				"SObjectList":   objectSchema(),
-				"QueryResult":   objectSchema(),
-				"SearchResult":  objectSchema(),
-				"Error":         objectSchema(),
+				"SObjectRecord":    objectSchema(),
+				"SObjectList":      objectSchema(),
+				"QueryResult":      objectSchema(),
+				"SearchResult":     objectSchema(),
+				"CompositeRequest": objectSchema(),
+				"CompositeResult":  objectSchema(),
+				"Error":            objectSchema(),
 			},
 		},
 		"security": []map[string]any{{"salesforceBearer": []string{}}},
@@ -73,6 +78,15 @@ func main() {
 			},
 			"/search": map[string]any{
 				"get": operation("searchSalesforce", "Run a Salesforce SOSL search", []map[string]any{queryParam("q", "SOSL search string.")}, "", "#/components/schemas/SearchResult"),
+			},
+			"/composite": map[string]any{
+				"post": operation("runSalesforceCompositeRequest", "Run a Salesforce composite request", nil, "#/components/schemas/CompositeRequest", "#/components/schemas/CompositeResult"),
+			},
+			"/composite/batch": map[string]any{
+				"post": operation("runSalesforceCompositeBatchRequest", "Run a Salesforce composite batch request", nil, "#/components/schemas/CompositeRequest", "#/components/schemas/CompositeResult"),
+			},
+			"/composite/tree/{objectApiName}": map[string]any{
+				"post": operation("createSalesforceCompositeTree", "Create Salesforce records with a composite tree request", []map[string]any{pathParam("objectApiName", "Root Salesforce object API name.")}, "#/components/schemas/CompositeRequest", "#/components/schemas/CompositeResult"),
 			},
 		},
 	}
