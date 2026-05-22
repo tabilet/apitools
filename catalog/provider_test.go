@@ -902,6 +902,29 @@ func TestSpecReferenceProtocolClassification(t *testing.T) {
 	}
 }
 
+func TestSpecProtocolClassificationUWSSourceType(t *testing.T) {
+	cases := []struct {
+		name string
+		ref  SpecReference
+		want string
+	}{
+		{name: "openapi", ref: SpecReference{Kind: SpecKindOpenAPI, Version: "3.1.0"}, want: "openapi"},
+		{name: "swagger", ref: SpecReference{ID: "legacy-swagger", Kind: SpecKindOpenAPI, Version: "Swagger 2.0"}, want: "openapi"},
+		{name: "google discovery", ref: SpecReference{Kind: SpecKindGoogleDiscovery}, want: "google-discovery"},
+		{name: "aws smithy", ref: SpecReference{Kind: SpecKindSmithyJSON}, want: "aws-smithy"},
+		{name: "openapi index", ref: SpecReference{Kind: SpecKindOpenAPIIndex}, want: ""},
+		{name: "stone", ref: SpecReference{Kind: SpecKindDropboxStone}, want: ""},
+		{name: "human docs", ref: SpecReference{Kind: SpecKindHumanDocs}, want: ""},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := tc.ref.ProtocolClassification().UWSSourceType(); got != tc.want {
+				t.Fatalf("UWSSourceType() = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
 func TestBuiltInRefreshableSpecReferences(t *testing.T) {
 	rows := BuiltInRefreshableSpecReferences([]CatalogSpecArtifact{
 		{ProviderID: "slack", SpecRefID: "slack-web-openapi-v2", Path: "openapi/slack-web-openapi-v2.json"},

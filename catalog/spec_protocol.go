@@ -25,6 +25,22 @@ type SpecProtocolClassification struct {
 	Version  string       `json:"version,omitempty"`
 }
 
+// UWSSourceType returns the first-class UWS sourceDescription.type for
+// protocols that can be represented directly in UWS 1.2. Empty means the
+// protocol is not a first-class UWS source type.
+func (c SpecProtocolClassification) UWSSourceType() string {
+	switch c.Protocol {
+	case SpecProtocolOpenAPI, SpecProtocolSwagger:
+		return "openapi"
+	case SpecProtocolGoogleDiscovery:
+		return "google-discovery"
+	case SpecProtocolSmithy:
+		return "aws-smithy"
+	default:
+		return ""
+	}
+}
+
 // ProtocolClassification returns the protocol/model family represented by a
 // spec reference without fetching or parsing the remote document.
 func (ref SpecReference) ProtocolClassification() SpecProtocolClassification {

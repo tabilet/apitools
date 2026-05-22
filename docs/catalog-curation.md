@@ -23,6 +23,7 @@ For each service, use the same four-step review loop.
 
    - `catalog-openapi-cache/openapi/` for OpenAPI or Swagger documents;
    - `catalog-openapi-cache/google-discovery/` for Google Discovery documents;
+   - `catalog-openapi-cache/aws-smithy/` for AWS Smithy JSON documents;
    - `catalog-openapi-cache/cache.sqlite` for optional local cache metadata.
 
    When the original document is already saved on disk, register the cache row
@@ -141,7 +142,7 @@ The private harness repository should track memory-bank milestone/status
 updates when the catalog process changes.
 
 The public repository should not track downloaded provider specs, Google
-Discovery documents, or SQLite caches. Those review artifacts live under
+Discovery documents, AWS Smithy JSON documents, or SQLite caches. Those review artifacts live under
 ignored paths in `catalog-openapi-cache/`. The SQLite cache should point at
 those files with paths instead of copying their document bodies into BLOB
 columns when a file-backed artifact exists.

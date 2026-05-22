@@ -345,8 +345,11 @@ func catalogRefreshArtifactPath(ref catalog.RefreshableSpecReference, content []
 		return cleanCatalogRefreshArtifactPath(path)
 	}
 	dir := "openapi"
-	if ref.Kind == catalog.SpecKindGoogleDiscovery {
+	switch ref.Kind {
+	case catalog.SpecKindGoogleDiscovery:
 		dir = "google-discovery"
+	case catalog.SpecKindSmithyJSON:
+		dir = "aws-smithy"
 	}
 	ext := catalogRefreshExtension(ref.URL, content)
 	return cleanCatalogRefreshArtifactPath(filepath.ToSlash(filepath.Join(dir, ref.SpecRefID+ext)))
@@ -375,8 +378,8 @@ func cleanCatalogRefreshArtifactPath(path string) (string, error) {
 	if filepath.IsAbs(cleaned) || strings.HasPrefix(cleaned, "../") || cleaned == ".." || strings.Contains(cleaned, "/../") {
 		return "", fmt.Errorf("artifact path %q must stay under catalog cache directory", path)
 	}
-	if !strings.HasPrefix(cleaned, "openapi/") && !strings.HasPrefix(cleaned, "google-discovery/") {
-		return "", fmt.Errorf("artifact path %q must be under openapi/ or google-discovery/", path)
+	if !strings.HasPrefix(cleaned, "openapi/") && !strings.HasPrefix(cleaned, "google-discovery/") && !strings.HasPrefix(cleaned, "aws-smithy/") {
+		return "", fmt.Errorf("artifact path %q must be under openapi/, google-discovery/, or aws-smithy/", path)
 	}
 	return cleaned, nil
 }

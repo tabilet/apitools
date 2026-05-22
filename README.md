@@ -6,8 +6,8 @@ validation, local file scanning, importing, caching, operation inventories,
 operation summaries, auth/security summaries, deterministic operation ranking,
 catalog protocol classification, and advisory endpoint overlays.
 
-The module is intentionally narrow. It handles OpenAPI and Swagger documents as
-untrusted data. It does not own workflow semantics, review handoff contracts,
+The module is intentionally narrow. It handles OpenAPI, Swagger, Google Discovery, and AWS Smithy
+source documents as untrusted data. It does not own workflow semantics, review handoff contracts,
 runtime policy, account selection, credential resolution, request signing, or
 execution. Downstream products keep those responsibilities in their own
 repositories.
@@ -16,14 +16,14 @@ repositories.
 
 Keep these responsibilities in `apitools`:
 
-- Discover OpenAPI documents from local project files, URLs, APIs.guru, and
-  public-apis probes.
-- Safely download OpenAPI or Swagger documents over HTTP(S), with unsafe host
+- Discover OpenAPI/Swagger documents from local project files, URLs, APIs.guru, and
+  public-apis probes, and classify catalog Google Discovery and AWS Smithy JSON artifacts.
+- Safely download OpenAPI, Swagger, and catalog-registered API source documents over HTTP(S), with unsafe host
   rejection, redirect limits, request timeouts, and response-size limits.
 - Validate OpenAPI 3.0, OpenAPI 3.1, and Swagger 2.0 roots well enough for
   import and authoring workflows.
-- Import documents into a local `openapi/` directory with deterministic file
-  names.
+- Import or materialize source-aligned documents into `openapi/`, `google-discovery/`, or
+  `aws-smithy/` directories with deterministic file names.
 - Build operation inventories, prompt-safe document summaries, auth/security
   summaries, and request-field summaries.
 - Rank operations deterministically from text and structured hints.
@@ -33,7 +33,7 @@ Keep these responsibilities downstream:
 
 - UWS workflow semantics and public workflow schema live in `../uws`.
 
-`apitools` may describe what an OpenAPI document requires. It must not decide
+`apitools` may describe what an API source document requires. It must not decide
 which production account to use, fetch secrets, sign live requests, or execute
 operations.
 
