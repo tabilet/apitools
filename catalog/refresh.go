@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -30,6 +31,7 @@ type RefreshableSpecReference struct {
 	Kind                   SpecKind        `json:"kind"`
 	Protocol               SpecProtocol    `json:"protocol"`
 	ProtocolVersion        string          `json:"protocol_version,omitempty"`
+	UWSSourceType          string          `json:"uws_source_type,omitempty"`
 	URL                    string          `json:"url"`
 	SourceAuthority        SourceAuthority `json:"source_authority"`
 	VerifiedAt             string          `json:"verified_at,omitempty"`
@@ -81,10 +83,11 @@ func RefreshableSpecReferences(providers []Provider, artifacts []CatalogSpecArti
 				Kind:                   ref.Kind,
 				Protocol:               protocol.Protocol,
 				ProtocolVersion:        protocol.Version,
+				UWSSourceType:          protocol.UWSSourceType(),
 				URL:                    ref.URL,
 				SourceAuthority:        ref.SourceAuthority,
 				VerifiedAt:             ref.VerifiedAt,
-				RegisteredArtifactPath: artifactPathByKey[provider.ID+"/"+ref.ID],
+				RegisteredArtifactPath: normalizeSourceAlignedRegisteredArtifactPath(protocol, artifactPathByKey[provider.ID+"/"+ref.ID]),
 			})
 		}
 	}
@@ -95,6 +98,25 @@ func RefreshableSpecReferences(providers []Provider, artifacts []CatalogSpecArti
 		return rows[i].ProviderID < rows[j].ProviderID
 	})
 	return rows
+}
+
+func normalizeSourceAlignedRegisteredArtifactPath(protocol SpecProtocolClassification, path string) string {
+	path = strings.TrimSpace(path)
+	if path == "" {
+		return ""
+	}
+	cleaned := filepath.ToSlash(filepath.Clean(path))
+	if cleaned == "." {
+		return ""
+	}
+	dir := protocol.SourceAlignedArtifactDir()
+	if dir == "" || dir == "openapi" {
+		return cleaned
+	}
+	if strings.HasPrefix(cleaned, "openapi/") {
+		return dir + strings.TrimPrefix(cleaned, "openapi")
+	}
+	return cleaned
 }
 
 func refreshableSpecKind(kind SpecKind) bool {

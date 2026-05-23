@@ -41,6 +41,22 @@ func (c SpecProtocolClassification) UWSSourceType() string {
 	}
 }
 
+// SourceAlignedArtifactDir returns the preferred local artifact directory for
+// first-class UWS source types. Empty means the protocol is not represented as a
+// source-aligned catalog artifact.
+func (c SpecProtocolClassification) SourceAlignedArtifactDir() string {
+	switch c.UWSSourceType() {
+	case "openapi":
+		return "openapi"
+	case "google-discovery":
+		return "google-discovery"
+	case "aws-smithy":
+		return "aws-smithy"
+	default:
+		return ""
+	}
+}
+
 // ProtocolClassification returns the protocol/model family represented by a
 // spec reference without fetching or parsing the remote document.
 func (ref SpecReference) ProtocolClassification() SpecProtocolClassification {

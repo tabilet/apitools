@@ -111,8 +111,11 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 			dir := t.TempDir()
 			ref := refreshReviewTestRef(tc.name, tc.kind)
 			ref.RegisteredArtifactPath = "openapi/" + tc.name + ".json"
-			if tc.kind == catalog.SpecKindGoogleDiscovery {
+			switch tc.kind {
+			case catalog.SpecKindGoogleDiscovery:
 				ref.RegisteredArtifactPath = "google-discovery/" + tc.name + ".json"
+			case catalog.SpecKindSmithyJSON:
+				ref.RegisteredArtifactPath = "aws-smithy/" + tc.name + ".json"
 			}
 			writeRefreshReviewArtifact(t, dir, ref.RegisteredArtifactPath, tc.body)
 
@@ -187,6 +190,29 @@ func TestCatalogSpecRefreshReviewDiscoversAlternateSavedFilename(t *testing.T) {
 		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshValidStructured)
 	}
 	if !strings.HasSuffix(filepath.ToSlash(result.SavedPath), "google-discovery/google-calendar-discovery-v3.json") {
+		t.Fatalf("saved path = %q", result.SavedPath)
+	}
+	if !hasRefreshReviewFollowUp(result, "Register the saved artifact path") {
+		t.Fatalf("missing registration follow-up: %#v", result.ManualFollowUps)
+	}
+}
+
+func TestCatalogSpecRefreshReviewDiscoversUnregisteredSmithySavedFile(t *testing.T) {
+	dir := t.TempDir()
+	ref := refreshReviewTestRef("aws-s3-smithy-model", catalog.SpecKindSmithyJSON)
+	ref.ProviderID = "aws-s3"
+	ref.ProviderName = "Amazon S3"
+	writeRefreshReviewArtifact(t, dir, "aws-smithy/aws-s3-smithy-model.json", `{"smithy":"2.0","shapes":{}}`)
+
+	report, err := BuildCatalogSpecRefreshReviewReport([]catalog.RefreshableSpecReference{ref}, CatalogSpecRefreshReviewOptions{CacheDir: dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := singleRefreshReviewResult(t, report)
+	if result.ValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshValidStructured)
+	}
+	if !strings.HasSuffix(filepath.ToSlash(result.SavedPath), "aws-smithy/aws-s3-smithy-model.json") {
 		t.Fatalf("saved path = %q", result.SavedPath)
 	}
 	if !hasRefreshReviewFollowUp(result, "Register the saved artifact path") {

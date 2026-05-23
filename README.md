@@ -22,8 +22,9 @@ Keep these responsibilities in `apitools`:
   rejection, redirect limits, request timeouts, and response-size limits.
 - Validate OpenAPI 3.0, OpenAPI 3.1, and Swagger 2.0 roots well enough for
   import and authoring workflows.
-- Import or materialize source-aligned documents into `openapi/`, `google-discovery/`, or
-  `aws-smithy/` directories with deterministic file names.
+- Import or materialize source-aligned documents into `openapi/`,
+  `google-discovery/`, or `aws-smithy/` directories with deterministic file
+  names.
 - Build operation inventories, prompt-safe document summaries, auth/security
   summaries, and request-field summaries.
 - Rank operations deterministically from text and structured hints.
@@ -143,17 +144,17 @@ baseline only; it does not override a team's local API contract.
 Provider advisory output is a read-only summary for operators and downstream
 authoring integrations. `catalog advisory [provider]` combines provider
 metadata, spec references, user OpenAPI need, auth/security status, overlay IDs,
-source notes, manual follow-ups, and optional registered artifact paths from an
-existing `cache.sqlite`. It does not create a cache when the file is missing,
-fetch remote documents, apply overlays, execute API operations, or resolve
-credentials.
+source notes, manual follow-ups, optional registered artifact paths, protocol
+classifications, and UWS source type labels from an existing `cache.sqlite`.
+It does not create a cache when the file is missing, fetch remote documents,
+apply overlays, execute API operations, or resolve credentials.
 
-Catalog curation follows a fixed per-service workflow: try official
-OpenAPI/Swagger/Discovery sources first, review auth/security completeness, add
-security-overlay metadata when needed, and, when no official OpenAPI document
-exists but official API docs expose usable endpoint instructions, generate a
-service-specific docs-derived endpoint overlay asset in addition to any
-auth/security overlay metadata. The detailed workflow lives in
+Catalog curation follows a fixed per-service workflow: try official OpenAPI,
+Swagger, Google Discovery, and AWS Smithy sources first, review auth/security
+completeness, add security-overlay metadata when needed, and, when no official
+OpenAPI document exists but official API docs expose usable endpoint
+instructions, generate a service-specific docs-derived endpoint overlay asset
+in addition to any auth/security overlay metadata. The detailed workflow lives in
 [docs/catalog-curation.md](docs/catalog-curation.md). Non-OpenAPI source-family
 and protocol-connector boundaries live in
 [docs/non-openapi-protocols.md](docs/non-openapi-protocols.md). Downloaded specs
@@ -220,12 +221,14 @@ operations.
 
 Catalog materialization is offline and copy-only. `catalog resolve` reports
 provider IDs, protocol capability, registered local artifacts, and security
-overlay IDs. `catalog materialize` copies existing cache-registered artifacts
-for one provider into a target directory and emits catalog security overlays as
-separate JSON metadata with provenance. `catalog export` writes the same
-provider-scoped artifacts under a workflow directory. These commands do not
-download missing files, apply overlays into OpenAPI documents, lower Discovery
-or Smithy into OpenAPI, execute operations, or resolve credentials.
+overlay IDs. JSON reports include protocol classifications and
+`uws_source_type` for first-class UWS API sources. `catalog materialize` copies
+existing cache-registered artifacts for one provider into source-aligned
+directories and emits catalog security overlays as separate JSON metadata with
+provenance. `catalog export` writes the same provider-scoped artifacts under a
+workflow directory. These commands do not download missing files, apply
+overlays into OpenAPI documents, lower Discovery or Smithy into OpenAPI,
+execute operations, or resolve credentials.
 
 Catalog spec refresh is opt-in and selected. `catalog specs` lists known
 machine-readable built-in spec references without network access, optionally
@@ -239,8 +242,12 @@ saved artifacts with a bounded local file limit and rejects symlinked artifact
 paths. `catalog refresh`
 downloads only the selected provider/spec reference using the same safe HTTP(S)
 download limits as imports, saves the artifact under ignored
-`catalog-openapi-cache/openapi/` or `catalog-openapi-cache/google-discovery/`,
-and registers file paths in SQLite instead of storing duplicate document blobs.
+`catalog-openapi-cache/openapi/`, `catalog-openapi-cache/google-discovery/`, or
+`catalog-openapi-cache/aws-smithy/`, and registers file paths in SQLite instead
+of storing duplicate document blobs.
+Legacy Google Discovery or AWS Smithy cache rows that still point under
+`openapi/` are normalized to `google-discovery/` or `aws-smithy/` in catalog
+outputs; rerun the artifact registry when accepting those source-aligned paths.
 Refresh reports are review inputs only: they do not edit provider metadata,
 verified dates, tracked advisory overlays, or security classifications.
 

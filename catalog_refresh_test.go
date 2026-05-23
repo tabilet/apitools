@@ -352,10 +352,11 @@ func TestRefreshCatalogSpecReferencesValidatesStructuredNonOpenAPI(t *testing.T)
 	defer server.Close()
 
 	report, err := (&Client{HTTPClient: server.Client(), AllowUnsafeHosts: true}).RefreshCatalogSpecReferences(context.Background(), []catalog.RefreshableSpecReference{{
-		ProviderID: "google-test",
-		SpecRefID:  "google-test-discovery",
-		Kind:       catalog.SpecKindGoogleDiscovery,
-		URL:        server.URL + "/discovery/rest",
+		ProviderID:             "google-test",
+		SpecRefID:              "google-test-discovery",
+		Kind:                   catalog.SpecKindGoogleDiscovery,
+		URL:                    server.URL + "/discovery/rest",
+		RegisteredArtifactPath: "openapi/google-test-discovery.json",
 	}}, CatalogSpecRefreshOptions{CacheDir: t.TempDir()})
 	if err != nil {
 		t.Fatal(err)
@@ -372,5 +373,37 @@ func TestRefreshCatalogSpecReferencesValidatesStructuredNonOpenAPI(t *testing.T)
 	}
 	if result.Metadata.Title != "Discovery Test" {
 		t.Fatalf("Metadata.Title = %q", result.Metadata.Title)
+	}
+}
+
+func TestRefreshCatalogSpecReferencesSavesSmithyArtifactUnderAWSSmithy(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"smithy":"2.0","shapes":{}}`))
+	}))
+	defer server.Close()
+
+	cacheDir := t.TempDir()
+	report, err := (&Client{HTTPClient: server.Client(), AllowUnsafeHosts: true}).RefreshCatalogSpecReferences(context.Background(), []catalog.RefreshableSpecReference{{
+		ProviderID:             "aws-s3",
+		SpecRefID:              "aws-s3-smithy-model",
+		Kind:                   catalog.SpecKindSmithyJSON,
+		URL:                    server.URL + "/aws-s3-smithy-model.json",
+		RegisteredArtifactPath: "openapi/aws-s3-smithy-model.json",
+	}}, CatalogSpecRefreshOptions{CacheDir: cacheDir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := report.Results[0]
+	if result.ValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	}
+	if result.Protocol != catalog.SpecProtocolSmithy {
+		t.Fatalf("protocol = %q, want smithy", result.Protocol)
+	}
+	if result.ArtifactPath != "aws-smithy/aws-s3-smithy-model.json" {
+		t.Fatalf("ArtifactPath = %q", result.ArtifactPath)
+	}
+	if _, err := os.Stat(filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))); err != nil {
+		t.Fatalf("expected saved artifact: %v", err)
 	}
 }

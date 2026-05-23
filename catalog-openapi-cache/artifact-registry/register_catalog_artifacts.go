@@ -160,7 +160,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-lambda-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/lambda/service/2015-03-31/lambda-2015-03-31.json",
-		path:       "openapi/aws-lambda-smithy-model.json",
+		path:       "aws-smithy/aws-lambda-smithy-model.json",
 		title:      "AWS Lambda Smithy Model",
 	},
 	{
@@ -168,7 +168,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-acm-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/acm/service/2015-12-08/acm-2015-12-08.json",
-		path:       "openapi/aws-acm-smithy-model.json",
+		path:       "aws-smithy/aws-acm-smithy-model.json",
 		title:      "AWS Certificate Manager Smithy Model",
 	},
 	{
@@ -176,7 +176,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-cognito-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/cognito-identity-provider/service/2016-04-18/cognito-identity-provider-2016-04-18.json",
-		path:       "openapi/aws-cognito-smithy-model.json",
+		path:       "aws-smithy/aws-cognito-smithy-model.json",
 		title:      "AWS Cognito Identity Provider Smithy Model",
 	},
 	{
@@ -184,7 +184,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-comprehend-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/comprehend/service/2017-11-27/comprehend-2017-11-27.json",
-		path:       "openapi/aws-comprehend-smithy-model.json",
+		path:       "aws-smithy/aws-comprehend-smithy-model.json",
 		title:      "Amazon Comprehend Smithy Model",
 	},
 	{
@@ -192,7 +192,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-dynamodb-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/dynamodb/service/2012-08-10/dynamodb-2012-08-10.json",
-		path:       "openapi/aws-dynamodb-smithy-model.json",
+		path:       "aws-smithy/aws-dynamodb-smithy-model.json",
 		title:      "Amazon DynamoDB Smithy Model",
 	},
 	{
@@ -200,7 +200,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-elb-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/elastic-load-balancing/service/2012-06-01/elastic-load-balancing-2012-06-01.json",
-		path:       "openapi/aws-elb-smithy-model.json",
+		path:       "aws-smithy/aws-elb-smithy-model.json",
 		title:      "Elastic Load Balancing Smithy Model",
 	},
 	{
@@ -208,7 +208,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-elbv2-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/elastic-load-balancing-v2/service/2015-12-01/elastic-load-balancing-v2-2015-12-01.json",
-		path:       "openapi/aws-elbv2-smithy-model.json",
+		path:       "aws-smithy/aws-elbv2-smithy-model.json",
 		title:      "Elastic Load Balancing v2 Smithy Model",
 	},
 	{
@@ -216,7 +216,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-iam-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/iam/service/2010-05-08/iam-2010-05-08.json",
-		path:       "openapi/aws-iam-smithy-model.json",
+		path:       "aws-smithy/aws-iam-smithy-model.json",
 		title:      "AWS IAM Smithy Model",
 	},
 	{
@@ -224,7 +224,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-rekognition-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/rekognition/service/2016-06-27/rekognition-2016-06-27.json",
-		path:       "openapi/aws-rekognition-smithy-model.json",
+		path:       "aws-smithy/aws-rekognition-smithy-model.json",
 		title:      "Amazon Rekognition Smithy Model",
 	},
 	{
@@ -232,7 +232,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-ses-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/ses/service/2010-12-01/ses-2010-12-01.json",
-		path:       "openapi/aws-ses-smithy-model.json",
+		path:       "aws-smithy/aws-ses-smithy-model.json",
 		title:      "Amazon SES Smithy Model",
 	},
 	{
@@ -240,7 +240,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-s3-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/s3/service/2006-03-01/s3-2006-03-01.json",
-		path:       "openapi/aws-s3-smithy-model.json",
+		path:       "aws-smithy/aws-s3-smithy-model.json",
 		title:      "Amazon S3 Smithy Model",
 	},
 	{
@@ -248,7 +248,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-sns-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/sns/service/2010-03-31/sns-2010-03-31.json",
-		path:       "openapi/aws-sns-smithy-model.json",
+		path:       "aws-smithy/aws-sns-smithy-model.json",
 		title:      "Amazon SNS Smithy Model",
 	},
 	{
@@ -256,7 +256,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-sqs-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/sqs/service/2012-11-05/sqs-2012-11-05.json",
-		path:       "openapi/aws-sqs-smithy-model.json",
+		path:       "aws-smithy/aws-sqs-smithy-model.json",
 		title:      "Amazon SQS Smithy Model",
 	},
 	{
@@ -264,7 +264,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-textract-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/textract/service/2018-06-27/textract-2018-06-27.json",
-		path:       "openapi/aws-textract-smithy-model.json",
+		path:       "aws-smithy/aws-textract-smithy-model.json",
 		title:      "Amazon Textract Smithy Model",
 	},
 	{
@@ -272,7 +272,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-transcribe-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/transcribe/service/2017-10-26/transcribe-2017-10-26.json",
-		path:       "openapi/aws-transcribe-smithy-model.json",
+		path:       "aws-smithy/aws-transcribe-smithy-model.json",
 		title:      "Amazon Transcribe Smithy Model",
 	},
 	{
@@ -280,7 +280,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-api-gateway-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/api-gateway/service/2015-07-09/api-gateway-2015-07-09.json",
-		path:       "openapi/aws-api-gateway-smithy-model.json",
+		path:       "aws-smithy/aws-api-gateway-smithy-model.json",
 		title:      "Amazon API Gateway Smithy Model",
 	},
 	{
@@ -288,7 +288,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-athena-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/athena/service/2017-05-18/athena-2017-05-18.json",
-		path:       "openapi/aws-athena-smithy-model.json",
+		path:       "aws-smithy/aws-athena-smithy-model.json",
 		title:      "Amazon Athena Smithy Model",
 	},
 	{
@@ -296,7 +296,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-bedrock-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/bedrock/service/2023-04-20/bedrock-2023-04-20.json",
-		path:       "openapi/aws-bedrock-smithy-model.json",
+		path:       "aws-smithy/aws-bedrock-smithy-model.json",
 		title:      "Amazon Bedrock Smithy Model",
 	},
 	{
@@ -304,7 +304,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-cloudwatch-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/cloudwatch/service/2010-08-01/cloudwatch-2010-08-01.json",
-		path:       "openapi/aws-cloudwatch-smithy-model.json",
+		path:       "aws-smithy/aws-cloudwatch-smithy-model.json",
 		title:      "Amazon CloudWatch Smithy Model",
 	},
 	{
@@ -312,7 +312,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-ec2-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/ec2/service/2016-11-15/ec2-2016-11-15.json",
-		path:       "openapi/aws-ec2-smithy-model.json",
+		path:       "aws-smithy/aws-ec2-smithy-model.json",
 		title:      "Amazon EC2 Smithy Model",
 	},
 	{
@@ -320,7 +320,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-glue-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/glue/service/2017-03-31/glue-2017-03-31.json",
-		path:       "openapi/aws-glue-smithy-model.json",
+		path:       "aws-smithy/aws-glue-smithy-model.json",
 		title:      "AWS Glue Smithy Model",
 	},
 	{
@@ -328,7 +328,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-guardduty-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/guardduty/service/2017-11-28/guardduty-2017-11-28.json",
-		path:       "openapi/aws-guardduty-smithy-model.json",
+		path:       "aws-smithy/aws-guardduty-smithy-model.json",
 		title:      "Amazon GuardDuty Smithy Model",
 	},
 	{
@@ -336,7 +336,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-inspector2-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/inspector2/service/2020-06-08/inspector2-2020-06-08.json",
-		path:       "openapi/aws-inspector2-smithy-model.json",
+		path:       "aws-smithy/aws-inspector2-smithy-model.json",
 		title:      "Amazon Inspector2 Smithy Model",
 	},
 	{
@@ -344,7 +344,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-kinesis-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/kinesis/service/2013-12-02/kinesis-2013-12-02.json",
-		path:       "openapi/aws-kinesis-smithy-model.json",
+		path:       "aws-smithy/aws-kinesis-smithy-model.json",
 		title:      "Amazon Kinesis Smithy Model",
 	},
 	{
@@ -352,7 +352,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-kms-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/kms/service/2014-11-01/kms-2014-11-01.json",
-		path:       "openapi/aws-kms-smithy-model.json",
+		path:       "aws-smithy/aws-kms-smithy-model.json",
 		title:      "AWS KMS Smithy Model",
 	},
 	{
@@ -360,7 +360,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-rds-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/rds/service/2014-10-31/rds-2014-10-31.json",
-		path:       "openapi/aws-rds-smithy-model.json",
+		path:       "aws-smithy/aws-rds-smithy-model.json",
 		title:      "Amazon RDS Smithy Model",
 	},
 	{
@@ -368,7 +368,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-sagemaker-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/sagemaker/service/2017-07-24/sagemaker-2017-07-24.json",
-		path:       "openapi/aws-sagemaker-smithy-model.json",
+		path:       "aws-smithy/aws-sagemaker-smithy-model.json",
 		title:      "Amazon SageMaker Smithy Model",
 	},
 	{
@@ -376,7 +376,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-secrets-manager-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/secrets-manager/service/2017-10-17/secrets-manager-2017-10-17.json",
-		path:       "openapi/aws-secrets-manager-smithy-model.json",
+		path:       "aws-smithy/aws-secrets-manager-smithy-model.json",
 		title:      "AWS Secrets Manager Smithy Model",
 	},
 	{
@@ -384,7 +384,7 @@ var specArtifacts = []specArtifact{
 		artifactID: "aws-securityhub-smithy-model",
 		kind:       "smithy-json",
 		url:        "https://raw.githubusercontent.com/aws/api-models-aws/main/models/securityhub/service/2018-10-26/securityhub-2018-10-26.json",
-		path:       "openapi/aws-securityhub-smithy-model.json",
+		path:       "aws-smithy/aws-securityhub-smithy-model.json",
 		title:      "AWS Security Hub Smithy Model",
 	},
 	{

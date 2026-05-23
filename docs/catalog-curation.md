@@ -15,7 +15,8 @@ For each service, use the same four-step review loop.
 
    - official OpenAPI or Swagger document;
    - official OpenAPI index that points to provider-owned specs;
-   - official non-OpenAPI machine-readable document, such as Google Discovery;
+   - official non-OpenAPI machine-readable document, such as Google Discovery
+     or AWS Smithy JSON;
    - official human API documentation when no machine-readable source is found.
 
    Downloaded official artifacts are local review inputs, not vendored catalog
@@ -29,7 +30,11 @@ For each service, use the same four-step review loop.
    When the original document is already saved on disk, register the cache row
    with `content_path` instead of duplicating the document bytes in SQLite.
    `content_path` values should normally be relative to
-   `catalog-openapi-cache/`, such as `openapi/slack-web-openapi-v2.json`.
+   `catalog-openapi-cache/`, such as `openapi/slack-web-openapi-v2.json`,
+   `google-discovery/gmail-discovery-v1.json`, or
+   `aws-smithy/aws-s3-smithy-model.json`. Legacy Google Discovery or AWS Smithy
+   rows under `openapi/` are normalized in catalog output, but the local
+   artifact registry should be rerun after accepting source-aligned paths.
    Use `catalog-openapi-cache/artifact-registry/register_catalog_artifacts.go`
    to refresh the local path manifest for the current curated batch.
 
@@ -58,13 +63,18 @@ For each service, use the same four-step review loop.
    offline. It joins built-in
    refreshable references with existing SQLite artifact registrations and saved
    cache files, then reports missing registrations, missing files, SHA-256 and
-   byte evidence, validation status, stale verification dates, and manual
-   follow-ups. It reads saved artifacts with a bounded local file limit and
-   rejects symlinked artifact paths. `catalog refresh` is opt-in and selected;
-   it must not be wired into `catalog check`. It downloads only the requested
-   known reference, saves the review artifact under ignored cache directories,
-   registers paths in SQLite, and reports manual follow-ups for catalog metadata
-   review.
+   byte evidence, validation status, stale verification dates, protocol and UWS
+   source type metadata, and manual follow-ups. It reads saved artifacts with a
+   bounded local file limit and rejects symlinked artifact paths. `catalog
+   refresh` is opt-in and selected; it must not be wired into `catalog check`.
+   It downloads only the requested known reference, saves the review artifact
+   under ignored cache directories, registers paths in SQLite, and reports
+   manual follow-ups for catalog metadata review.
+
+   `catalog materialize` writes first-class UWS API sources under
+   `<provider>/openapi/`, `<provider>/google-discovery/`, or
+   `<provider>/aws-smithy/`; artifacts without a first-class UWS source type
+   materialize under `<provider>/artifacts/`.
 
 2. Review auth/security completeness.
 
@@ -142,10 +152,10 @@ The private harness repository should track memory-bank milestone/status
 updates when the catalog process changes.
 
 The public repository should not track downloaded provider specs, Google
-Discovery documents, AWS Smithy JSON documents, or SQLite caches. Those review artifacts live under
-ignored paths in `catalog-openapi-cache/`. The SQLite cache should point at
-those files with paths instead of copying their document bodies into BLOB
-columns when a file-backed artifact exists.
+Discovery documents, AWS Smithy JSON documents, or SQLite caches. Those review
+artifacts live under ignored paths in `catalog-openapi-cache/`. The SQLite
+cache should point at those files with paths instead of copying their document
+bodies into BLOB columns when a file-backed artifact exists.
 
 ## Verification
 

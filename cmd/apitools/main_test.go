@@ -244,7 +244,7 @@ func TestCatalogSpecsOutputAndJSON(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
-	for _, expected := range []string{`"spec_ref_id": "slack-web-openapi-v2"`, `"protocol": "swagger"`, `"protocol_version": "2.0"`} {
+	for _, expected := range []string{`"spec_ref_id": "slack-web-openapi-v2"`, `"protocol": "swagger"`, `"protocol_version": "2.0"`, `"uws_source_type": "openapi"`, `"uws_source_type": "aws-smithy"`, `"uws_source_type": "google-discovery"`} {
 		if !strings.Contains(out.String(), expected) {
 			t.Fatalf("catalog specs json missing %q:\n%s", expected, out.String())
 		}
@@ -339,7 +339,7 @@ func TestCatalogResolveMaterializeAndExport(t *testing.T) {
 	if !strings.Contains(out.String(), "Materialized provider: Slack (slack)") || !strings.Contains(out.String(), "slack-web-openapi-v2.json") {
 		t.Fatalf("materialize output missing expected text:\n%s", out.String())
 	}
-	if _, err := os.Stat(filepath.Join(materializeDir, "slack", "artifacts", "slack-web-openapi-v2.json")); err != nil {
+	if _, err := os.Stat(filepath.Join(materializeDir, "slack", "openapi", "slack-web-openapi-v2.json")); err != nil {
 		t.Fatalf("missing materialized artifact: %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(materializeDir, "slack", "provenance.json")); err != nil {
@@ -358,6 +358,9 @@ func TestCatalogResolveMaterializeAndExport(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(workflowDir, "api-artifacts", "provenance.json")); err != nil {
 		t.Fatalf("missing export provenance: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(workflowDir, "api-artifacts", "slack", "openapi", "slack-web-openapi-v2.json")); err != nil {
+		t.Fatalf("missing exported artifact: %v", err)
 	}
 }
 

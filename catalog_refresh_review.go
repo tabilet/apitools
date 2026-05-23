@@ -237,8 +237,8 @@ func (result *CatalogSpecRefreshReviewResult) addCatalogRefreshReviewFollowUps(o
 
 func discoverUnregisteredCatalogRefreshArtifact(cacheDir string, ref catalog.RefreshableSpecReference) string {
 	dirs := []string{"openapi"}
-	if ref.Kind == catalog.SpecKindGoogleDiscovery {
-		dirs = []string{"google-discovery"}
+	if dir := ref.ProtocolClassification().SourceAlignedArtifactDir(); dir != "" {
+		dirs = []string{dir}
 	}
 	cacheAbs, err := filepath.Abs(cacheDir)
 	if err != nil {

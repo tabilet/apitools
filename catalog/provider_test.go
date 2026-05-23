@@ -928,6 +928,8 @@ func TestSpecProtocolClassificationUWSSourceType(t *testing.T) {
 func TestBuiltInRefreshableSpecReferences(t *testing.T) {
 	rows := BuiltInRefreshableSpecReferences([]CatalogSpecArtifact{
 		{ProviderID: "slack", SpecRefID: "slack-web-openapi-v2", Path: "openapi/slack-web-openapi-v2.json"},
+		{ProviderID: "aws-s3", SpecRefID: "aws-s3-smithy-model", Path: "openapi/aws-s3-smithy-model.json"},
+		{ProviderID: "gmail", SpecRefID: "gmail-discovery-v1", Path: "openapi/gmail-discovery-v1.json"},
 	})
 	if len(rows) == 0 {
 		t.Fatal("BuiltInRefreshableSpecReferences() returned no rows")
@@ -949,11 +951,20 @@ func TestBuiltInRefreshableSpecReferences(t *testing.T) {
 			if row.Protocol != SpecProtocolSwagger || row.ProtocolVersion != "2.0" {
 				t.Fatalf("slack protocol = %q %q, want swagger 2.0", row.Protocol, row.ProtocolVersion)
 			}
+			if row.UWSSourceType != "openapi" {
+				t.Fatalf("slack UWS source type = %q, want openapi", row.UWSSourceType)
+			}
 		}
 		if row.ProviderID == "aws-s3" && row.SpecRefID == "aws-s3-smithy-model" {
 			foundAWSS3 = true
 			if row.Protocol != SpecProtocolSmithy {
 				t.Fatalf("aws-s3 protocol = %q, want smithy", row.Protocol)
+			}
+			if row.UWSSourceType != "aws-smithy" {
+				t.Fatalf("aws-s3 UWS source type = %q, want aws-smithy", row.UWSSourceType)
+			}
+			if row.RegisteredArtifactPath != "aws-smithy/aws-s3-smithy-model.json" {
+				t.Fatalf("aws-s3 registered path = %q, want source-aligned aws-smithy path", row.RegisteredArtifactPath)
 			}
 		}
 		if row.ProviderID == "dropbox" {
@@ -966,6 +977,12 @@ func TestBuiltInRefreshableSpecReferences(t *testing.T) {
 			foundGmail = true
 			if row.Protocol != SpecProtocolGoogleDiscovery {
 				t.Fatalf("gmail protocol = %q, want google-discovery", row.Protocol)
+			}
+			if row.UWSSourceType != "google-discovery" {
+				t.Fatalf("gmail UWS source type = %q, want google-discovery", row.UWSSourceType)
+			}
+			if row.RegisteredArtifactPath != "google-discovery/gmail-discovery-v1.json" {
+				t.Fatalf("gmail registered path = %q, want source-aligned google-discovery path", row.RegisteredArtifactPath)
 			}
 		}
 	}

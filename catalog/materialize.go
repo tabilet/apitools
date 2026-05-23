@@ -61,6 +61,7 @@ type ResolutionSpecReference struct {
 	Kind            SpecKind        `json:"kind"`
 	Protocol        SpecProtocol    `json:"protocol"`
 	ProtocolVersion string          `json:"protocol_version,omitempty"`
+	UWSSourceType   string          `json:"uws_source_type,omitempty"`
 	URL             string          `json:"url,omitempty"`
 	SourceAuthority SourceAuthority `json:"source_authority,omitempty"`
 	VerifiedAt      string          `json:"verified_at,omitempty"`
@@ -74,6 +75,7 @@ type ResolutionArtifact struct {
 	SpecRefID      string            `json:"spec_ref_id,omitempty"`
 	Kind           string            `json:"kind,omitempty"`
 	Protocol       SpecProtocol      `json:"protocol,omitempty"`
+	UWSSourceType  string            `json:"uws_source_type,omitempty"`
 	Path           string            `json:"path,omitempty"`
 	OverlayPath    string            `json:"overlay_path,omitempty"`
 	BuilderPath    string            `json:"builder_path,omitempty"`
@@ -140,16 +142,17 @@ type MaterializeOptions struct {
 
 // MaterializedArtifact records one copied local artifact.
 type MaterializedArtifact struct {
-	ArtifactID string            `json:"artifact_id,omitempty"`
-	SpecRefID  string            `json:"spec_ref_id,omitempty"`
-	Kind       string            `json:"kind,omitempty"`
-	Protocol   SpecProtocol      `json:"protocol,omitempty"`
-	SourcePath string            `json:"source_path"`
-	TargetPath string            `json:"target_path"`
-	SourceURL  string            `json:"source_url,omitempty"`
-	SHA256     string            `json:"sha256,omitempty"`
-	Bytes      int64             `json:"bytes,omitempty"`
-	Metadata   map[string]string `json:"metadata,omitempty"`
+	ArtifactID    string            `json:"artifact_id,omitempty"`
+	SpecRefID     string            `json:"spec_ref_id,omitempty"`
+	Kind          string            `json:"kind,omitempty"`
+	Protocol      SpecProtocol      `json:"protocol,omitempty"`
+	UWSSourceType string            `json:"uws_source_type,omitempty"`
+	SourcePath    string            `json:"source_path"`
+	TargetPath    string            `json:"target_path"`
+	SourceURL     string            `json:"source_url,omitempty"`
+	SHA256        string            `json:"sha256,omitempty"`
+	Bytes         int64             `json:"bytes,omitempty"`
+	Metadata      map[string]string `json:"metadata,omitempty"`
 }
 
 // MaterializedSecurityOverlay records one emitted catalog security overlay.
@@ -356,6 +359,7 @@ func buildProviderResolution(provider Provider, artifacts []CatalogSpecArtifact,
 			Kind:            ref.Kind,
 			Protocol:        protocol.Protocol,
 			ProtocolVersion: protocol.Version,
+			UWSSourceType:   protocol.UWSSourceType(),
 			URL:             ref.URL,
 			SourceAuthority: ref.SourceAuthority,
 			VerifiedAt:      ref.VerifiedAt,
@@ -364,15 +368,13 @@ func buildProviderResolution(provider Provider, artifacts []CatalogSpecArtifact,
 	}
 	for _, artifact := range artifacts {
 		specRefID := strings.TrimSpace(artifact.SpecRefID)
-		protocol := SpecProtocol("")
-		if ref, ok := refByID[specRefID]; ok {
-			protocol = ref.ProtocolClassification().Protocol
-		}
+		protocol := artifactProtocolClassification(artifact, refByID)
 		resolution.Artifacts = append(resolution.Artifacts, ResolutionArtifact{
 			ArtifactID:     strings.TrimSpace(artifact.ArtifactID),
 			SpecRefID:      specRefID,
 			Kind:           strings.TrimSpace(artifact.Kind),
-			Protocol:       protocol,
+			Protocol:       protocol.Protocol,
+			UWSSourceType:  protocol.UWSSourceType(),
 			Path:           strings.TrimSpace(artifact.Path),
 			OverlayPath:    strings.TrimSpace(artifact.OverlayPath),
 			BuilderPath:    strings.TrimSpace(artifact.BuilderPath),
@@ -491,21 +493,24 @@ func copyMaterializedArtifact(cacheDir, providerDir string, provider Provider, a
 		return MaterializedArtifact{}, fmt.Errorf("%s/%s: %w", provider.ID, artifactIDForMaterialize(artifact), err)
 	}
 	targetName := materializedFileName(artifact)
-	targetPath := filepath.Join(providerDir, "artifacts", targetName)
+	targetPath := filepath.Join(providerDir, materializedSourceDir(artifact), targetName)
 	digest, bytes, err := copyFileWithDigest(sourcePath, targetPath)
 	if err != nil {
 		return MaterializedArtifact{}, fmt.Errorf("%s/%s: %w", provider.ID, artifactIDForMaterialize(artifact), err)
 	}
+	protocol := artifactProtocolClassification(artifact, specReferencesByID(provider.SpecReferences))
 	return MaterializedArtifact{
-		ArtifactID: artifactIDForMaterialize(artifact),
-		SpecRefID:  strings.TrimSpace(artifact.SpecRefID),
-		Kind:       strings.TrimSpace(artifact.Kind),
-		SourcePath: sourcePath,
-		TargetPath: targetPath,
-		SourceURL:  strings.TrimSpace(artifact.SourceURL),
-		SHA256:     digest,
-		Bytes:      bytes,
-		Metadata:   cloneStringMap(artifact.Metadata),
+		ArtifactID:    artifactIDForMaterialize(artifact),
+		SpecRefID:     strings.TrimSpace(artifact.SpecRefID),
+		Kind:          strings.TrimSpace(artifact.Kind),
+		Protocol:      protocol.Protocol,
+		UWSSourceType: protocol.UWSSourceType(),
+		SourcePath:    sourcePath,
+		TargetPath:    targetPath,
+		SourceURL:     strings.TrimSpace(artifact.SourceURL),
+		SHA256:        digest,
+		Bytes:         bytes,
+		Metadata:      cloneStringMap(artifact.Metadata),
 	}, nil
 }
 
@@ -588,12 +593,55 @@ func artifactIDForMaterialize(artifact CatalogSpecArtifact) string {
 	return "artifact"
 }
 
+func materializedSourceDir(artifact CatalogSpecArtifact) string {
+	if dir := specProtocolClassificationForArtifactKind(artifact.Kind).SourceAlignedArtifactDir(); dir != "" {
+		return dir
+	}
+	switch strings.TrimSpace(artifact.Kind) {
+	case "advisory-overlay":
+		return "openapi"
+	default:
+		return "artifacts"
+	}
+}
+
+func specReferencesByID(refs []SpecReference) map[string]SpecReference {
+	out := make(map[string]SpecReference, len(refs))
+	for _, ref := range refs {
+		out[ref.ID] = ref
+	}
+	return out
+}
+
+func artifactProtocolClassification(artifact CatalogSpecArtifact, refsByID map[string]SpecReference) SpecProtocolClassification {
+	if ref, ok := refsByID[strings.TrimSpace(artifact.SpecRefID)]; ok {
+		return ref.ProtocolClassification()
+	}
+	return specProtocolClassificationForArtifactKind(artifact.Kind)
+}
+
+func specProtocolClassificationForArtifactKind(kind string) SpecProtocolClassification {
+	switch strings.TrimSpace(kind) {
+	case "advisory-overlay":
+		return SpecProtocolClassification{Protocol: SpecProtocolOpenAPI}
+	case "swagger":
+		return SpecProtocolClassification{Protocol: SpecProtocolSwagger, Version: "2.0"}
+	default:
+		return specProtocolClassificationForKind(SpecKind(strings.TrimSpace(kind)))
+	}
+}
+
 func materializedFileName(artifact CatalogSpecArtifact) string {
 	id := artifactIDForMaterialize(artifact)
-	ext := filepath.Ext(strings.TrimSpace(artifact.Path))
+	path := strings.TrimSpace(artifact.Path)
+	lowerPath := strings.ToLower(path)
+	ext := filepath.Ext(path)
+	if strings.HasSuffix(lowerPath, ".tar.gz") {
+		ext = ".tar.gz"
+	}
 	if ext == "" {
 		switch strings.TrimSpace(artifact.Kind) {
-		case "advisory-overlay", "openapi", "google-discovery", "smithy-json", "openapi-index":
+		case "advisory-overlay", "openapi", "swagger", "google-discovery", "smithy-json", "openapi-index":
 			ext = ".json"
 		default:
 			ext = ".artifact"

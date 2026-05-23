@@ -342,17 +342,29 @@ func catalogRefreshStringValue(root map[string]any, key string) string {
 
 func catalogRefreshArtifactPath(ref catalog.RefreshableSpecReference, content []byte) (string, error) {
 	if path := strings.TrimSpace(ref.RegisteredArtifactPath); path != "" {
-		return cleanCatalogRefreshArtifactPath(path)
+		cleaned, err := cleanCatalogRefreshArtifactPath(path)
+		if err != nil {
+			return "", err
+		}
+		return normalizeCatalogRefreshRegisteredArtifactPath(ref, cleaned), nil
 	}
-	dir := "openapi"
-	switch ref.Kind {
-	case catalog.SpecKindGoogleDiscovery:
-		dir = "google-discovery"
-	case catalog.SpecKindSmithyJSON:
-		dir = "aws-smithy"
+	dir := ref.ProtocolClassification().SourceAlignedArtifactDir()
+	if dir == "" {
+		dir = "openapi"
 	}
 	ext := catalogRefreshExtension(ref.URL, content)
 	return cleanCatalogRefreshArtifactPath(filepath.ToSlash(filepath.Join(dir, ref.SpecRefID+ext)))
+}
+
+func normalizeCatalogRefreshRegisteredArtifactPath(ref catalog.RefreshableSpecReference, path string) string {
+	dir := ref.ProtocolClassification().SourceAlignedArtifactDir()
+	if dir == "" || dir == "openapi" {
+		return path
+	}
+	if strings.HasPrefix(path, "openapi/") {
+		return dir + strings.TrimPrefix(path, "openapi")
+	}
+	return path
 }
 
 func catalogRefreshExtension(rawURL string, content []byte) string {

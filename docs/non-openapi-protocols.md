@@ -21,6 +21,12 @@ stance for each family.
 
 ## Parser Priority And Source Decisions
 
+Catalog refresh and materialization keep first-class API source families in
+source-aligned directories: OpenAPI/Swagger under `openapi/`, Google Discovery
+under `google-discovery/`, and AWS Smithy JSON under `aws-smithy/`. Other
+review-only families remain metadata-only and materialize under `artifacts/`
+when copied for provenance.
+
 1. **Google Discovery native parsing.**
    Discovery documents are structured JSON, already include method IDs and REST
    paths, and have broad coverage for Google Workspace APIs. The parser
