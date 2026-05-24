@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -55,6 +56,72 @@ func TestCatalogHelpDocumentsSubcommands(t *testing.T) {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
 		}
+	}
+}
+
+func TestOAuthHelpDocumentsSubcommands(t *testing.T) {
+	var out bytes.Buffer
+	code := run([]string{"oauth", "--help"}, &out, &out)
+	if code != 0 {
+		t.Fatalf("code = %d\n%s", code, out.String())
+	}
+	if !strings.Contains(out.String(), "google") {
+		t.Fatalf("oauth help missing google command:\n%s", out.String())
+	}
+
+	out.Reset()
+	code = run([]string{"oauth", "google", "login", "--help"}, &out, &out)
+	if code != 0 {
+		t.Fatalf("code = %d\n%s", code, out.String())
+	}
+	for _, expected := range []string{"-client-id", "-client-secret-env", "-scope", "-listen", "-code"} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("oauth google login help missing %q:\n%s", expected, out.String())
+		}
+	}
+}
+
+func TestOAuthGoogleLoginCodeExchangePrintsEnvMarkerHCL(t *testing.T) {
+	t.Setenv("GOOGLE_CLIENT_SECRET_TEST", "client-secret")
+	tokenServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			t.Fatalf("ParseForm: %v", err)
+		}
+		if r.Form.Get("grant_type") != "authorization_code" || r.Form.Get("code") != "auth-code" {
+			t.Fatalf("unexpected token form: %#v", r.Form)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"access_token":"access-token","refresh_token":"refresh-token","token_type":"Bearer","expires_in":3600}`)
+	}))
+	defer tokenServer.Close()
+
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := run([]string{
+		"oauth", "google", "login",
+		"--client-id", "client-id",
+		"--client-secret-env", "GOOGLE_CLIENT_SECRET_TEST",
+		"--scope", "https://www.googleapis.com/auth/gmail.send",
+		"--code", "auth-code",
+		"--redirect-url", "http://127.0.0.1:8765/oauth2/callback",
+		"--token-url", tokenServer.URL,
+	}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{
+		"export GOOGLE_REFRESH_TOKEN='refresh-token'",
+		"credentials {",
+		"googleOAuth2 {",
+		`client_secret = "ENVIRONMENT:GOOGLE_CLIENT_SECRET_TEST"`,
+		`refresh_token = "ENVIRONMENT:GOOGLE_REFRESH_TOKEN"`,
+	} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("oauth output missing %q:\n%s", expected, out.String())
+		}
+	}
+	if strings.Contains(out.String(), "client-secret") {
+		t.Fatalf("oauth output leaked client secret:\n%s", out.String())
 	}
 }
 
