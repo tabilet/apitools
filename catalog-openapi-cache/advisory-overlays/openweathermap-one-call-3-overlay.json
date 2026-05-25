@@ -1,6 +1,66 @@
 {
   "components": {
     "schemas": {
+      "CurrentWeatherResponse": {
+        "description": "Partial advisory schema for documented Current Weather Data response fields.",
+        "properties": {
+          "base": {
+            "type": "string"
+          },
+          "clouds": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "cod": {},
+          "coord": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "dt": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "main": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "name": {
+            "type": "string"
+          },
+          "rain": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "snow": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "sys": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "timezone": {
+            "type": "integer"
+          },
+          "visibility": {
+            "type": "integer"
+          },
+          "weather": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "wind": {
+            "additionalProperties": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
       "GeocodingLocation": {
         "description": "Advisory schema for a documented OpenWeatherMap geocoding location result. Fields vary by country and location.",
         "properties": {
@@ -125,12 +185,102 @@
     }
   },
   "info": {
-    "description": "Advisory OpenAPI overlay derived from official OpenWeatherMap One Call 3.0 and Geocoding API human documentation. This is not an official OpenWeatherMap OpenAPI document.",
-    "title": "OpenWeatherMap One Call 3.0 and Geocoding Advisory Overlay",
+    "description": "Advisory OpenAPI overlay derived from official OpenWeatherMap Current Weather, One Call 3.0, and Geocoding API human documentation. This is not an official OpenWeatherMap OpenAPI document.",
+    "title": "OpenWeatherMap Weather and Geocoding Advisory Overlay",
     "version": "2026-05-18"
   },
   "openapi": "3.0.3",
   "paths": {
+    "/data/2.5/weather": {
+      "get": {
+        "description": "Advisory operation derived from official OpenWeatherMap Current Weather Data documentation.",
+        "operationId": "getOpenWeatherMapCurrentWeather",
+        "parameters": [
+          {
+            "description": "Latitude in decimal degrees.",
+            "in": "query",
+            "name": "lat",
+            "required": true,
+            "schema": {
+              "maximum": 90,
+              "minimum": -90,
+              "type": "number"
+            }
+          },
+          {
+            "description": "Longitude in decimal degrees.",
+            "in": "query",
+            "name": "lon",
+            "required": true,
+            "schema": {
+              "maximum": 180,
+              "minimum": -180,
+              "type": "number"
+            }
+          },
+          {
+            "description": "OpenWeather API key.",
+            "in": "query",
+            "name": "appid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Units of measurement.",
+            "in": "query",
+            "name": "units",
+            "required": false,
+            "schema": {
+              "enum": [
+                "standard",
+                "metric",
+                "imperial"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Language code.",
+            "in": "query",
+            "name": "lang",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentWeatherResponse"
+                }
+              }
+            },
+            "description": "Current weather response."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenWeatherError"
+                }
+              }
+            },
+            "description": "OpenWeather error response."
+          }
+        },
+        "security": [
+          {
+            "openWeatherAPIKey": []
+          }
+        ],
+        "summary": "Get current weather data"
+      }
+    },
     "/data/3.0/onecall": {
       "get": {
         "description": "Advisory operation derived from official OpenWeatherMap One Call API 3.0 documentation.",
@@ -444,8 +594,9 @@
     "official_openapi": false,
     "overlay_id": "openweathermap-one-call-3-advisory-overlay",
     "provider_id": "openweathermap",
-    "source_note": "OpenWeatherMap publishes human documentation for One Call API 3.0, Geocoding API coordinate lookup helpers, and API key usage, but no official OpenAPI document is recorded in the apitools catalog.",
+    "source_note": "OpenWeatherMap publishes human documentation for Current Weather, One Call API 3.0, Geocoding API coordinate lookup helpers, and API key usage, but no official OpenAPI document is recorded in the apitools catalog.",
     "source_refs": [
+      "https://openweathermap.org/current",
       "https://openweathermap.org/api/one-call-3?collection=one_call_api_3.0",
       "https://openweathermap.org/api/geocoding-api",
       "https://openweathermap.org/appid"

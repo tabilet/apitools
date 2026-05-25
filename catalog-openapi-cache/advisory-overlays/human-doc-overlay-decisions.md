@@ -102,7 +102,7 @@ overlay would hide native operation semantics.
 | Onfleet | `onfleet-api-overlay.json` | API docs support a focused auth, tasks, workers, teams, hubs, destinations, recipients, admins, and webhooks subset. |
 | OneSimpleApi | `onesimpleapi-toolkit-overlay.json` | Official docs support a focused web metadata, page status, screenshot, PDF, and QR utility subset. |
 | OpenThesaurus | `openthesaurus-api-overlay.json` | Webservice docs support the documented anonymous synonym search endpoint with JSON/XML and lookup options. |
-| OpenWeatherMap | `openweathermap-one-call-3-overlay.json` | One Call 3.0 and linked Geocoding API docs support a focused weather and coordinate lookup subset. |
+| OpenWeatherMap | `openweathermap-one-call-3-overlay.json` | Current Weather, One Call 3.0, and linked Geocoding API docs support a focused weather and coordinate lookup subset. |
 | Postmark | `postmark-api-overlay.json` | REST-shaped API docs and API Explorer support a focused email, template, bounce, message-stream, and server subset with separate server/account token headers. |
 | ProfitWell | `profitwell-api-v2-overlay.json` | API v2 docs support a focused company settings and metrics subset with Authorization header token auth. |
 | Quickbase | `quickbase-rest-api-overlay.json` | REST API docs support a focused fields, records, reports, and file subset with bearer user-token and realm-hostname headers. |

@@ -11,9 +11,9 @@ func main() {
 	doc := map[string]any{
 		"openapi": "3.0.3",
 		"info": map[string]any{
-			"title":       "OpenWeatherMap One Call 3.0 and Geocoding Advisory Overlay",
+			"title":       "OpenWeatherMap Weather and Geocoding Advisory Overlay",
 			"version":     "2026-05-18",
-			"description": "Advisory OpenAPI overlay derived from official OpenWeatherMap One Call 3.0 and Geocoding API human documentation. This is not an official OpenWeatherMap OpenAPI document.",
+			"description": "Advisory OpenAPI overlay derived from official OpenWeatherMap Current Weather, One Call 3.0, and Geocoding API human documentation. This is not an official OpenWeatherMap OpenAPI document.",
 		},
 		"servers": []map[string]any{{"url": "https://api.openweathermap.org"}},
 		"x-apitools-overlay": map[string]any{
@@ -22,11 +22,12 @@ func main() {
 			"official_openapi":  false,
 			"derived_from_docs": true,
 			"source_refs": []string{
+				"https://openweathermap.org/current",
 				"https://openweathermap.org/api/one-call-3?collection=one_call_api_3.0",
 				"https://openweathermap.org/api/geocoding-api",
 				"https://openweathermap.org/appid",
 			},
-			"source_note": "OpenWeatherMap publishes human documentation for One Call API 3.0, Geocoding API coordinate lookup helpers, and API key usage, but no official OpenAPI document is recorded in the apitools catalog.",
+			"source_note": "OpenWeatherMap publishes human documentation for Current Weather, One Call API 3.0, Geocoding API coordinate lookup helpers, and API key usage, but no official OpenAPI document is recorded in the apitools catalog.",
 		},
 		"components": map[string]any{
 			"securitySchemes": map[string]any{
@@ -51,6 +52,27 @@ func main() {
 						"hourly":          map[string]any{"type": "array", "items": map[string]any{"type": "object", "additionalProperties": true}},
 						"daily":           map[string]any{"type": "array", "items": map[string]any{"type": "object", "additionalProperties": true}},
 						"alerts":          map[string]any{"type": "array", "items": map[string]any{"type": "object", "additionalProperties": true}},
+					},
+				},
+				"CurrentWeatherResponse": map[string]any{
+					"type":        "object",
+					"description": "Partial advisory schema for documented Current Weather Data response fields.",
+					"properties": map[string]any{
+						"coord":      map[string]any{"type": "object", "additionalProperties": true},
+						"weather":    map[string]any{"type": "array", "items": map[string]any{"type": "object", "additionalProperties": true}},
+						"base":       map[string]any{"type": "string"},
+						"main":       map[string]any{"type": "object", "additionalProperties": true},
+						"visibility": map[string]any{"type": "integer"},
+						"wind":       map[string]any{"type": "object", "additionalProperties": true},
+						"rain":       map[string]any{"type": "object", "additionalProperties": true},
+						"snow":       map[string]any{"type": "object", "additionalProperties": true},
+						"clouds":     map[string]any{"type": "object", "additionalProperties": true},
+						"dt":         map[string]any{"type": "integer"},
+						"sys":        map[string]any{"type": "object", "additionalProperties": true},
+						"timezone":   map[string]any{"type": "integer"},
+						"id":         map[string]any{"type": "integer"},
+						"name":       map[string]any{"type": "string"},
+						"cod":        map[string]any{},
 					},
 				},
 				"GeocodingLocation": map[string]any{
@@ -84,6 +106,31 @@ func main() {
 		},
 		"security": []map[string]any{{"openWeatherAPIKey": []string{}}},
 		"paths": map[string]any{
+			"/data/2.5/weather": map[string]any{
+				"get": map[string]any{
+					"operationId": "getOpenWeatherMapCurrentWeather",
+					"summary":     "Get current weather data",
+					"description": "Advisory operation derived from official OpenWeatherMap Current Weather Data documentation.",
+					"parameters": []map[string]any{
+						{"name": "lat", "in": "query", "required": true, "schema": map[string]any{"type": "number", "minimum": -90, "maximum": 90}, "description": "Latitude in decimal degrees."},
+						{"name": "lon", "in": "query", "required": true, "schema": map[string]any{"type": "number", "minimum": -180, "maximum": 180}, "description": "Longitude in decimal degrees."},
+						{"name": "appid", "in": "query", "required": true, "schema": map[string]any{"type": "string"}, "description": "OpenWeather API key."},
+						{"name": "units", "in": "query", "required": false, "schema": map[string]any{"type": "string", "enum": []string{"standard", "metric", "imperial"}}, "description": "Units of measurement."},
+						{"name": "lang", "in": "query", "required": false, "schema": map[string]any{"type": "string"}, "description": "Language code."},
+					},
+					"security": []map[string]any{{"openWeatherAPIKey": []string{}}},
+					"responses": map[string]any{
+						"200": map[string]any{
+							"description": "Current weather response.",
+							"content":     map[string]any{"application/json": map[string]any{"schema": map[string]any{"$ref": "#/components/schemas/CurrentWeatherResponse"}}},
+						},
+						"default": map[string]any{
+							"description": "OpenWeather error response.",
+							"content":     map[string]any{"application/json": map[string]any{"schema": map[string]any{"$ref": "#/components/schemas/OpenWeatherError"}}},
+						},
+					},
+				},
+			},
 			"/data/3.0/onecall": map[string]any{
 				"get": map[string]any{
 					"operationId": "getOpenWeatherMapOneCall3",
