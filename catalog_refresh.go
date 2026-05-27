@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/OpenUdon/apitools/catalog"
+	"github.com/OpenUdon/apitools/openrpc"
 	"gopkg.in/yaml.v3"
 )
 
@@ -175,6 +176,12 @@ func validateCatalogRefreshContentRaw(ctx context.Context, ref catalog.Refreshab
 			return CatalogRefreshInvalid, SpecMetadata{}, fmt.Errorf("%s/%s: downloaded document is not structured JSON or YAML", ref.ProviderID, ref.SpecRefID)
 		}
 		return CatalogRefreshValidStructured, structuredMetadata(content), nil
+	case catalog.SpecKindOpenRPC:
+		metadata, err := openRPCMetadata(content)
+		if err != nil {
+			return CatalogRefreshInvalid, SpecMetadata{}, fmt.Errorf("%s/%s: downloaded document does not validate as OpenRPC: %w", ref.ProviderID, ref.SpecRefID, err)
+		}
+		return CatalogRefreshValidStructured, metadata, nil
 	case catalog.SpecKindDropboxStone:
 		if len(bytes.TrimSpace(content)) == 0 {
 			return CatalogRefreshInvalid, SpecMetadata{}, fmt.Errorf("%s/%s: downloaded artifact is empty", ref.ProviderID, ref.SpecRefID)
@@ -183,6 +190,18 @@ func validateCatalogRefreshContentRaw(ctx context.Context, ref catalog.Refreshab
 	default:
 		return CatalogRefreshInvalid, SpecMetadata{}, fmt.Errorf("%s/%s: unsupported refresh spec kind %q", ref.ProviderID, ref.SpecRefID, ref.Kind)
 	}
+}
+
+func openRPCMetadata(content []byte) (SpecMetadata, error) {
+	model, err := openrpc.Parse(content)
+	if err != nil {
+		return SpecMetadata{}, err
+	}
+	return SpecMetadata{
+		Title:          model.Info.Title,
+		Description:    model.Info.Description,
+		OperationCount: len(model.MethodSummaries()),
+	}, nil
 }
 
 func catalogRefreshStatusAllowsSave(status string) bool {
@@ -390,8 +409,8 @@ func cleanCatalogRefreshArtifactPath(path string) (string, error) {
 	if filepath.IsAbs(cleaned) || strings.HasPrefix(cleaned, "../") || cleaned == ".." || strings.Contains(cleaned, "/../") {
 		return "", fmt.Errorf("artifact path %q must stay under catalog cache directory", path)
 	}
-	if !strings.HasPrefix(cleaned, "openapi/") && !strings.HasPrefix(cleaned, "google-discovery/") && !strings.HasPrefix(cleaned, "aws-smithy/") && !strings.HasPrefix(cleaned, "asyncapi/") {
-		return "", fmt.Errorf("artifact path %q must be under openapi/, google-discovery/, aws-smithy/, or asyncapi/", path)
+	if !strings.HasPrefix(cleaned, "openapi/") && !strings.HasPrefix(cleaned, "google-discovery/") && !strings.HasPrefix(cleaned, "aws-smithy/") && !strings.HasPrefix(cleaned, "asyncapi/") && !strings.HasPrefix(cleaned, "openrpc/") {
+		return "", fmt.Errorf("artifact path %q must be under openapi/, google-discovery/, aws-smithy/, asyncapi/, or openrpc/", path)
 	}
 	return cleaned, nil
 }

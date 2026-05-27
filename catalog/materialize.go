@@ -22,6 +22,7 @@ const (
 	ProviderArtifactCapabilityOpenAPIReferenceOnly ProviderArtifactCapability = "openapi-reference-only"
 	ProviderArtifactCapabilityDiscoveryOnly        ProviderArtifactCapability = "discovery-only"
 	ProviderArtifactCapabilitySmithyOnly           ProviderArtifactCapability = "smithy-only"
+	ProviderArtifactCapabilityOpenRPCOnly          ProviderArtifactCapability = "openrpc-only"
 	ProviderArtifactCapabilityDocsOnly             ProviderArtifactCapability = "docs-only"
 	ProviderArtifactCapabilityAdvisoryOverlayOnly  ProviderArtifactCapability = "advisory-overlay-only"
 	ProviderArtifactCapabilityMixedMetadata        ProviderArtifactCapability = "mixed-metadata"
@@ -405,6 +406,7 @@ func providerArtifactCapability(protocols []SpecProtocol, artifacts []Resolution
 	hasOpenAPIRef := false
 	hasDiscoveryRef := false
 	hasSmithyRef := false
+	hasOpenRPCRef := false
 	hasHumanDocs := false
 	for _, protocol := range protocols {
 		switch protocol {
@@ -414,6 +416,8 @@ func providerArtifactCapability(protocols []SpecProtocol, artifacts []Resolution
 			hasDiscoveryRef = true
 		case SpecProtocolSmithy:
 			hasSmithyRef = true
+		case SpecProtocolOpenRPC:
+			hasOpenRPCRef = true
 		case SpecProtocolHumanDocs:
 			hasHumanDocs = true
 		}
@@ -443,7 +447,9 @@ func providerArtifactCapability(protocols []SpecProtocol, artifacts []Resolution
 		return ProviderArtifactCapabilityDiscoveryOnly
 	case hasSmithyRef && !hasDiscoveryRef:
 		return ProviderArtifactCapabilitySmithyOnly
-	case hasDiscoveryRef || hasSmithyRef:
+	case hasOpenRPCRef && !hasDiscoveryRef && !hasSmithyRef:
+		return ProviderArtifactCapabilityOpenRPCOnly
+	case hasDiscoveryRef || hasSmithyRef || hasOpenRPCRef:
 		return ProviderArtifactCapabilityMixedMetadata
 	case hasHumanDocs:
 		return ProviderArtifactCapabilityDocsOnly
@@ -642,6 +648,8 @@ func materializedFileName(artifact CatalogSpecArtifact) string {
 	if ext == "" {
 		switch strings.TrimSpace(artifact.Kind) {
 		case "advisory-overlay", "openapi", "swagger", "google-discovery", "smithy-json", "asyncapi", "openapi-index":
+			ext = ".json"
+		case "openrpc":
 			ext = ".json"
 		default:
 			ext = ".artifact"

@@ -13,6 +13,7 @@ const (
 	SpecProtocolSmithy          SpecProtocol = "smithy"
 	SpecProtocolGoogleDiscovery SpecProtocol = "google-discovery"
 	SpecProtocolAsyncAPI        SpecProtocol = "asyncapi"
+	SpecProtocolOpenRPC         SpecProtocol = "openrpc"
 	SpecProtocolDropboxStone    SpecProtocol = "dropbox-stone"
 	SpecProtocolOpenAPIIndex    SpecProtocol = "openapi-index"
 	SpecProtocolHumanDocs       SpecProtocol = "human-docs"
@@ -39,6 +40,8 @@ func (c SpecProtocolClassification) UWSSourceType() string {
 		return "aws-smithy"
 	case SpecProtocolAsyncAPI:
 		return "asyncapi"
+	case SpecProtocolOpenRPC:
+		return "openrpc"
 	default:
 		return ""
 	}
@@ -57,6 +60,8 @@ func (c SpecProtocolClassification) SourceAlignedArtifactDir() string {
 		return "aws-smithy"
 	case "asyncapi":
 		return "asyncapi"
+	case "openrpc":
+		return "openrpc"
 	default:
 		return ""
 	}
@@ -79,6 +84,8 @@ func (ref SpecReference) ProtocolClassification() SpecProtocolClassification {
 		return SpecProtocolClassification{Protocol: SpecProtocolGoogleDiscovery}
 	case SpecKindAsyncAPI:
 		return SpecProtocolClassification{Protocol: SpecProtocolAsyncAPI}
+	case SpecKindOpenRPC:
+		return SpecProtocolClassification{Protocol: SpecProtocolOpenRPC}
 	case SpecKindDropboxStone:
 		return SpecProtocolClassification{Protocol: SpecProtocolDropboxStone}
 	case SpecKindHumanDocs:
@@ -100,6 +107,8 @@ func specProtocolClassificationForKind(kind SpecKind) SpecProtocolClassification
 		return SpecProtocolClassification{Protocol: SpecProtocolGoogleDiscovery}
 	case SpecKindAsyncAPI:
 		return SpecProtocolClassification{Protocol: SpecProtocolAsyncAPI}
+	case SpecKindOpenRPC:
+		return SpecProtocolClassification{Protocol: SpecProtocolOpenRPC}
 	case SpecKindDropboxStone:
 		return SpecProtocolClassification{Protocol: SpecProtocolDropboxStone}
 	case SpecKindHumanDocs:

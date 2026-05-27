@@ -1301,6 +1301,8 @@ func catalogProtocolOrder() []catalogpkg.SpecProtocol {
 		catalogpkg.SpecProtocolSwagger,
 		catalogpkg.SpecProtocolSmithy,
 		catalogpkg.SpecProtocolGoogleDiscovery,
+		catalogpkg.SpecProtocolAsyncAPI,
+		catalogpkg.SpecProtocolOpenRPC,
 		catalogpkg.SpecProtocolDropboxStone,
 		catalogpkg.SpecProtocolOpenAPIIndex,
 		catalogpkg.SpecProtocolHumanDocs,
@@ -1318,6 +1320,10 @@ func catalogProtocolDisplayName(protocol catalogpkg.SpecProtocol) string {
 		return "Smithy"
 	case catalogpkg.SpecProtocolGoogleDiscovery:
 		return "Google Discovery"
+	case catalogpkg.SpecProtocolAsyncAPI:
+		return "AsyncAPI"
+	case catalogpkg.SpecProtocolOpenRPC:
+		return "OpenRPC"
 	case catalogpkg.SpecProtocolDropboxStone:
 		return "Dropbox Stone"
 	case catalogpkg.SpecProtocolOpenAPIIndex:

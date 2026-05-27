@@ -38,6 +38,41 @@ func TestResolveProvidersWithArtifactsReportsExecutableOpenAPI(t *testing.T) {
 	}
 }
 
+func TestResolveProvidersReportsOpenRPCOnlyCapability(t *testing.T) {
+	provider := Provider{
+		ID:                              "pet-rpc",
+		DisplayName:                     "Pet RPC",
+		ReviewState:                     ProviderReviewedCatalogEntry,
+		CandidateID:                     "pet-rpc",
+		OfficialOpenAPIAvailability:     SpecAvailabilityUnavailable,
+		OfficialMachineSpecAvailability: SpecAvailabilityKnown,
+		UserOpenAPINeed:                 UserOpenAPINeedNotExpected,
+		SpecReferences: []SpecReference{{
+			ID:              "pet-openrpc",
+			Kind:            SpecKindOpenRPC,
+			URL:             "https://example.com/openrpc.json",
+			SourceAuthority: SourceAuthorityOfficialProvider,
+			SourceNote:      "Official OpenRPC document.",
+		}},
+	}
+	rows, err := ResolveProvidersWithOptions(ProviderResolutionOptions{
+		Catalog:      Catalog{Providers: []Provider{provider}},
+		ProviderKeys: []string{"pet-rpc"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rows) != 1 {
+		t.Fatalf("resolution rows = %d, want 1", len(rows))
+	}
+	if rows[0].Capability != ProviderArtifactCapabilityOpenRPCOnly {
+		t.Fatalf("capability = %q, want %q", rows[0].Capability, ProviderArtifactCapabilityOpenRPCOnly)
+	}
+	if rows[0].SpecReferences[0].UWSSourceType != "openrpc" {
+		t.Fatalf("uws source type = %q, want openrpc", rows[0].SpecReferences[0].UWSSourceType)
+	}
+}
+
 func TestMaterializeProviderCopiesArtifactsAndEmitsOverlay(t *testing.T) {
 	dir := t.TempDir()
 	cacheDir := filepath.Join(dir, "cache")
@@ -145,6 +180,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 		filepath.Join("google-discovery", "gmail.json"):    `{"title":"Gmail","version":"v1","resources":{}}`,
 		filepath.Join("aws-smithy", "aws-s3-smithy.json"):  `{"smithy":"2.0","shapes":{}}`,
 		filepath.Join("asyncapi", "events.yaml"):           `{"asyncapi":"3.0.0","info":{"title":"Events","version":"1.0.0"},"operations":{}}`,
+		filepath.Join("openrpc", "pet-rpc.json"):           `{"openrpc":"1.3.2","info":{"title":"Pet RPC","version":"1.0.0"},"methods":[]}`,
 		filepath.Join("openapi", "docs-overlay.json"):      `{"openapi":"3.0.3","info":{"title":"Docs","version":"1"},"paths":{}}`,
 		filepath.Join("artifacts", "dropbox-stone.tar.gz"): `stone module`,
 	} {
@@ -166,6 +202,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 			{ProviderID: "demo", SpecRefID: "gmail", ArtifactID: "gmail", Kind: "google-discovery", Path: "google-discovery/gmail.json"},
 			{ProviderID: "demo", SpecRefID: "aws-s3", ArtifactID: "aws-s3", Kind: "smithy-json", Path: "aws-smithy/aws-s3-smithy.json"},
 			{ProviderID: "demo", SpecRefID: "events", ArtifactID: "events", Kind: "asyncapi", Path: "asyncapi/events.yaml"},
+			{ProviderID: "demo", SpecRefID: "pet-rpc", ArtifactID: "pet-rpc", Kind: "openrpc", Path: "openrpc/pet-rpc.json"},
 			{ProviderID: "demo", SpecRefID: "docs", ArtifactID: "docs", Kind: "advisory-overlay", Path: "openapi/docs-overlay.json"},
 			{ProviderID: "demo", SpecRefID: "stone", ArtifactID: "stone", Kind: "dropbox-stone", Path: "artifacts/dropbox-stone.tar.gz"},
 		},
@@ -183,6 +220,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 		"demo/google-discovery/gmail.json",
 		"demo/aws-smithy/aws-s3.json",
 		"demo/asyncapi/events.yaml",
+		"demo/openrpc/pet-rpc.json",
 		"demo/openapi/docs.json",
 		"demo/artifacts/stone.tar.gz",
 	} {
@@ -201,11 +239,12 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 		protocol      SpecProtocol
 		uwsSourceType string
 	}{
-		"gmail":  {protocol: SpecProtocolGoogleDiscovery, uwsSourceType: "google-discovery"},
-		"aws-s3": {protocol: SpecProtocolSmithy, uwsSourceType: "aws-smithy"},
-		"events": {protocol: SpecProtocolAsyncAPI, uwsSourceType: "asyncapi"},
-		"docs":   {protocol: SpecProtocolOpenAPI, uwsSourceType: "openapi"},
-		"stone":  {protocol: SpecProtocolDropboxStone},
+		"gmail":   {protocol: SpecProtocolGoogleDiscovery, uwsSourceType: "google-discovery"},
+		"aws-s3":  {protocol: SpecProtocolSmithy, uwsSourceType: "aws-smithy"},
+		"events":  {protocol: SpecProtocolAsyncAPI, uwsSourceType: "asyncapi"},
+		"pet-rpc": {protocol: SpecProtocolOpenRPC, uwsSourceType: "openrpc"},
+		"docs":    {protocol: SpecProtocolOpenAPI, uwsSourceType: "openapi"},
+		"stone":   {protocol: SpecProtocolDropboxStone},
 	} {
 		artifact, ok := artifactsByID[id]
 		if !ok {

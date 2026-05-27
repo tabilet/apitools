@@ -444,3 +444,52 @@ operations: {}
 		t.Fatalf("expected saved artifact: %v", err)
 	}
 }
+
+func TestRefreshCatalogSpecReferencesSavesOpenRPCArtifactUnderOpenRPC(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"openrpc":"1.3.2","info":{"title":"Pet RPC","version":"1.0.0"},"methods":[{"name":"pet.get"}]}`))
+	}))
+	defer server.Close()
+
+	cacheDir := t.TempDir()
+	report, err := (&Client{HTTPClient: server.Client(), AllowUnsafeHosts: true}).RefreshCatalogSpecReferences(context.Background(), []catalog.RefreshableSpecReference{{
+		ProviderID:             "pet",
+		SpecRefID:              "pet-openrpc",
+		Kind:                   catalog.SpecKindOpenRPC,
+		URL:                    server.URL + "/pet-openrpc.json",
+		RegisteredArtifactPath: "openapi/pet-openrpc.json",
+	}}, CatalogSpecRefreshOptions{CacheDir: cacheDir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := report.Results[0]
+	if result.ValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	}
+	if result.Protocol != catalog.SpecProtocolOpenRPC {
+		t.Fatalf("protocol = %q, want openrpc", result.Protocol)
+	}
+	if result.ArtifactPath != "openrpc/pet-openrpc.json" {
+		t.Fatalf("ArtifactPath = %q", result.ArtifactPath)
+	}
+	if _, err := os.Stat(filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))); err != nil {
+		t.Fatalf("expected saved artifact: %v", err)
+	}
+}
+
+func TestRefreshCatalogSpecReferencesRejectsStructuredNonOpenRPCArtifact(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"title":"Not OpenRPC","methods":[]}`))
+	}))
+	defer server.Close()
+
+	_, err := (&Client{HTTPClient: server.Client(), AllowUnsafeHosts: true}).RefreshCatalogSpecReferences(context.Background(), []catalog.RefreshableSpecReference{{
+		ProviderID: "pet",
+		SpecRefID:  "pet-openrpc",
+		Kind:       catalog.SpecKindOpenRPC,
+		URL:        server.URL + "/pet-openrpc.json",
+	}}, CatalogSpecRefreshOptions{CacheDir: t.TempDir()})
+	if err == nil || !strings.Contains(err.Error(), "does not validate as OpenRPC") {
+		t.Fatalf("RefreshCatalogSpecReferences() error = %v, want OpenRPC validation error", err)
+	}
+}

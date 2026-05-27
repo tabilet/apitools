@@ -1,7 +1,6 @@
-// Package openrpc is a placeholder for future metadata-only OpenRPC source
-// support.
+// Package openrpc parses metadata-only OpenRPC source documents.
 //
-// Parser and summary APIs will be added by a later milestone; this package
-// must not execute JSON-RPC methods, contact RPC servers, or resolve
-// credentials.
+// The package preserves JSON-RPC method contracts for catalog, authoring, and
+// review workflows. It does not execute JSON-RPC methods, contact RPC servers,
+// create transports, or resolve credentials.
 package openrpc

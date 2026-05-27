@@ -107,6 +107,7 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 		{name: "index", kind: catalog.SpecKindOpenAPIIndex, body: `{"title":"Index","apis":{"demo":{"openapi":"demo.yaml"}}}`},
 		{name: "smithy", kind: catalog.SpecKindSmithyJSON, body: `{"smithy":"2.0","shapes":{}}`},
 		{name: "asyncapi", kind: catalog.SpecKindAsyncAPI, body: `{"asyncapi":"3.0.0","info":{"title":"Events","version":"1.0.0"},"operations":{}}`},
+		{name: "openrpc", kind: catalog.SpecKindOpenRPC, body: `{"openrpc":"1.3.2","info":{"title":"Pet RPC","version":"1.0.0"},"methods":[{"name":"pet.get"}]}`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			dir := t.TempDir()
@@ -119,6 +120,8 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 				ref.RegisteredArtifactPath = "aws-smithy/" + tc.name + ".json"
 			case catalog.SpecKindAsyncAPI:
 				ref.RegisteredArtifactPath = "asyncapi/" + tc.name + ".json"
+			case catalog.SpecKindOpenRPC:
+				ref.RegisteredArtifactPath = "openrpc/" + tc.name + ".json"
 			}
 			writeRefreshReviewArtifact(t, dir, ref.RegisteredArtifactPath, tc.body)
 
@@ -134,6 +137,25 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 				t.Fatalf("protocol = %q, want %q", result.Protocol, refreshReviewTestProtocol(tc.kind))
 			}
 		})
+	}
+}
+
+func TestCatalogSpecRefreshReviewRejectsStructuredNonOpenRPCArtifact(t *testing.T) {
+	dir := t.TempDir()
+	ref := refreshReviewTestRef("openrpc", catalog.SpecKindOpenRPC)
+	ref.RegisteredArtifactPath = "openrpc/openrpc.json"
+	writeRefreshReviewArtifact(t, dir, ref.RegisteredArtifactPath, `{"title":"Not OpenRPC","methods":[]}`)
+
+	report, err := BuildCatalogSpecRefreshReviewReport([]catalog.RefreshableSpecReference{ref}, CatalogSpecRefreshReviewOptions{CacheDir: dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := singleRefreshReviewResult(t, report)
+	if result.ValidationStatus != CatalogRefreshInvalid {
+		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshInvalid)
+	}
+	if !strings.Contains(result.ValidationError, "does not validate as OpenRPC") {
+		t.Fatalf("validation error = %q, want OpenRPC validation error", result.ValidationError)
 	}
 }
 
@@ -371,6 +393,8 @@ func refreshReviewTestProtocol(kind catalog.SpecKind) catalog.SpecProtocol {
 		return catalog.SpecProtocolSmithy
 	case catalog.SpecKindAsyncAPI:
 		return catalog.SpecProtocolAsyncAPI
+	case catalog.SpecKindOpenRPC:
+		return catalog.SpecProtocolOpenRPC
 	default:
 		return catalog.SpecProtocolUnknown
 	}

@@ -890,6 +890,7 @@ func TestSpecReferenceProtocolClassification(t *testing.T) {
 		{name: "smithy", ref: SpecReference{Kind: SpecKindSmithyJSON}, want: SpecProtocolSmithy},
 		{name: "discovery", ref: SpecReference{Kind: SpecKindGoogleDiscovery}, want: SpecProtocolGoogleDiscovery},
 		{name: "asyncapi", ref: SpecReference{Kind: SpecKindAsyncAPI}, want: SpecProtocolAsyncAPI},
+		{name: "openrpc", ref: SpecReference{Kind: SpecKindOpenRPC}, want: SpecProtocolOpenRPC},
 		{name: "stone", ref: SpecReference{Kind: SpecKindDropboxStone}, want: SpecProtocolDropboxStone},
 		{name: "human docs", ref: SpecReference{Kind: SpecKindHumanDocs}, want: SpecProtocolHumanDocs},
 	}
@@ -914,6 +915,7 @@ func TestSpecProtocolClassificationUWSSourceType(t *testing.T) {
 		{name: "google discovery", ref: SpecReference{Kind: SpecKindGoogleDiscovery}, want: "google-discovery"},
 		{name: "aws smithy", ref: SpecReference{Kind: SpecKindSmithyJSON}, want: "aws-smithy"},
 		{name: "asyncapi", ref: SpecReference{Kind: SpecKindAsyncAPI}, want: "asyncapi"},
+		{name: "openrpc", ref: SpecReference{Kind: SpecKindOpenRPC}, want: "openrpc"},
 		{name: "openapi index", ref: SpecReference{Kind: SpecKindOpenAPIIndex}, want: ""},
 		{name: "stone", ref: SpecReference{Kind: SpecKindDropboxStone}, want: ""},
 		{name: "human docs", ref: SpecReference{Kind: SpecKindHumanDocs}, want: ""},
@@ -937,6 +939,7 @@ func TestSpecProtocolClassificationSourceAlignedArtifactDir(t *testing.T) {
 		{name: "google discovery", ref: SpecReference{Kind: SpecKindGoogleDiscovery}, want: "google-discovery"},
 		{name: "aws smithy", ref: SpecReference{Kind: SpecKindSmithyJSON}, want: "aws-smithy"},
 		{name: "asyncapi", ref: SpecReference{Kind: SpecKindAsyncAPI}, want: "asyncapi"},
+		{name: "openrpc", ref: SpecReference{Kind: SpecKindOpenRPC}, want: "openrpc"},
 		{name: "human docs", ref: SpecReference{Kind: SpecKindHumanDocs}, want: ""},
 	}
 	for _, tc := range cases {
@@ -1025,6 +1028,40 @@ func TestBuiltInRefreshableSpecReferences(t *testing.T) {
 	}
 }
 
+func TestRefreshableSpecReferencesOpenRPCSourceAlignment(t *testing.T) {
+	providers := []Provider{{
+		ID:                              "pet-rpc",
+		DisplayName:                     "Pet RPC",
+		ReviewState:                     ProviderReviewedCatalogEntry,
+		CandidateID:                     "pet-rpc",
+		OfficialOpenAPIAvailability:     SpecAvailabilityUnavailable,
+		OfficialMachineSpecAvailability: SpecAvailabilityKnown,
+		UserOpenAPINeed:                 UserOpenAPINeedNotExpected,
+		SpecReferences: []SpecReference{{
+			ID:              "pet-openrpc",
+			Kind:            SpecKindOpenRPC,
+			URL:             "https://example.com/openrpc.json",
+			SourceAuthority: SourceAuthorityOfficialProvider,
+			SourceNote:      "Official OpenRPC document.",
+		}},
+	}}
+	rows := RefreshableSpecReferences(providers, []CatalogSpecArtifact{{
+		ProviderID: "pet-rpc",
+		SpecRefID:  "pet-openrpc",
+		Path:       "openapi/pet-openrpc.json",
+	}})
+	if len(rows) != 1 {
+		t.Fatalf("rows = %d, want 1", len(rows))
+	}
+	row := rows[0]
+	if row.Protocol != SpecProtocolOpenRPC || row.UWSSourceType != "openrpc" {
+		t.Fatalf("protocol metadata = %q/%q, want openrpc/openrpc", row.Protocol, row.UWSSourceType)
+	}
+	if row.RegisteredArtifactPath != "openrpc/pet-openrpc.json" {
+		t.Fatalf("registered path = %q, want openrpc/pet-openrpc.json", row.RegisteredArtifactPath)
+	}
+}
+
 func TestBuiltInProvidersReturnCopies(t *testing.T) {
 	providers := BuiltInProviders()
 	providers[0].Aliases[0] = "mutated"
@@ -1080,6 +1117,21 @@ func TestValidateProvidersAcceptsAsyncAPIRefForKnownMachineSpec(t *testing.T) {
 		URL:             "https://example.com/asyncapi.yaml",
 		SourceAuthority: SourceAuthorityOfficialProvider,
 		SourceNote:      "Official AsyncAPI document.",
+	}}
+	if err := ValidateProviders([]Provider{provider}); err != nil {
+		t.Fatalf("ValidateProviders() error = %v", err)
+	}
+}
+
+func TestValidateProvidersAcceptsOpenRPCRefForKnownMachineSpec(t *testing.T) {
+	provider := minimalProvider("one", "One", nil)
+	provider.OfficialMachineSpecAvailability = SpecAvailabilityKnown
+	provider.SpecReferences = []SpecReference{{
+		ID:              "one-openrpc",
+		Kind:            SpecKindOpenRPC,
+		URL:             "https://example.com/openrpc.json",
+		SourceAuthority: SourceAuthorityOfficialProvider,
+		SourceNote:      "Official OpenRPC document.",
 	}}
 	if err := ValidateProviders([]Provider{provider}); err != nil {
 		t.Fatalf("ValidateProviders() error = %v", err)
