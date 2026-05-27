@@ -33,7 +33,9 @@ under `google-discovery/`, AWS Smithy JSON under `aws-smithy/`, AsyncAPI under
 `asyncapi/`, OpenRPC under `openrpc/`, GraphQL under `graphql/`, and
 gRPC/protobuf under `grpc-protobuf/`, and OData under `odata/`. Other
 review-only families remain metadata-only and materialize under `artifacts/`
-when copied for provenance.
+when copied for provenance. The UWS 1.4 source families now include a small
+reviewed local artifact corpus under those source-aligned cache directories:
+two official examples each for GraphQL, OpenRPC, gRPC/protobuf, and OData.
 
 1. **Google Discovery native parsing.**
    Discovery documents are structured JSON, already include method IDs and REST
