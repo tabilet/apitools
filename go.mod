@@ -3,7 +3,7 @@ module github.com/OpenUdon/apitools
 go 1.25.5
 
 require (
-	github.com/OpenUdon/asyncapi v0.0.0-20260527144130-5311eff3cbe4
+	github.com/OpenUdon/asyncapi v0.1.0
 	github.com/OpenUdon/awssmithy v0.0.0-20260520213111-549a060a5e28
 	github.com/OpenUdon/googlediscovery v0.0.0-20260520203137-c02129a009fc
 	github.com/OpenUdon/oas v0.0.0-20260507023120-7fb319711323
