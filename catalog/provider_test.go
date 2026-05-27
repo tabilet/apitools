@@ -892,6 +892,7 @@ func TestSpecReferenceProtocolClassification(t *testing.T) {
 		{name: "asyncapi", ref: SpecReference{Kind: SpecKindAsyncAPI}, want: SpecProtocolAsyncAPI},
 		{name: "openrpc", ref: SpecReference{Kind: SpecKindOpenRPC}, want: SpecProtocolOpenRPC},
 		{name: "graphql", ref: SpecReference{Kind: SpecKindGraphQL}, want: SpecProtocolGraphQL},
+		{name: "grpc protobuf", ref: SpecReference{Kind: SpecKindGRPCProtobuf}, want: SpecProtocolGRPCProtobuf},
 		{name: "stone", ref: SpecReference{Kind: SpecKindDropboxStone}, want: SpecProtocolDropboxStone},
 		{name: "human docs", ref: SpecReference{Kind: SpecKindHumanDocs}, want: SpecProtocolHumanDocs},
 	}
@@ -918,6 +919,7 @@ func TestSpecProtocolClassificationUWSSourceType(t *testing.T) {
 		{name: "asyncapi", ref: SpecReference{Kind: SpecKindAsyncAPI}, want: "asyncapi"},
 		{name: "openrpc", ref: SpecReference{Kind: SpecKindOpenRPC}, want: "openrpc"},
 		{name: "graphql", ref: SpecReference{Kind: SpecKindGraphQL}, want: "graphql"},
+		{name: "grpc protobuf", ref: SpecReference{Kind: SpecKindGRPCProtobuf}, want: "grpc-protobuf"},
 		{name: "openapi index", ref: SpecReference{Kind: SpecKindOpenAPIIndex}, want: ""},
 		{name: "stone", ref: SpecReference{Kind: SpecKindDropboxStone}, want: ""},
 		{name: "human docs", ref: SpecReference{Kind: SpecKindHumanDocs}, want: ""},
@@ -943,6 +945,7 @@ func TestSpecProtocolClassificationSourceAlignedArtifactDir(t *testing.T) {
 		{name: "asyncapi", ref: SpecReference{Kind: SpecKindAsyncAPI}, want: "asyncapi"},
 		{name: "openrpc", ref: SpecReference{Kind: SpecKindOpenRPC}, want: "openrpc"},
 		{name: "graphql", ref: SpecReference{Kind: SpecKindGraphQL}, want: "graphql"},
+		{name: "grpc protobuf", ref: SpecReference{Kind: SpecKindGRPCProtobuf}, want: "grpc-protobuf"},
 		{name: "human docs", ref: SpecReference{Kind: SpecKindHumanDocs}, want: ""},
 	}
 	for _, tc := range cases {

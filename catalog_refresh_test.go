@@ -511,6 +511,40 @@ func TestRefreshCatalogSpecReferencesSavesGraphQLArtifactUnderGraphQL(t *testing
 	}
 }
 
+func TestRefreshCatalogSpecReferencesSavesGRPCProtobufArtifactUnderGRPCProtobuf(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`syntax = "proto3"; package issues.v1; service IssueService { rpc GetIssue(GetIssueRequest) returns (Issue); } message GetIssueRequest { string id = 1; }`))
+	}))
+	defer server.Close()
+
+	cacheDir := t.TempDir()
+	report, err := (&Client{HTTPClient: server.Client(), AllowUnsafeHosts: true}).RefreshCatalogSpecReferences(context.Background(), []catalog.RefreshableSpecReference{{
+		ProviderID: "issues",
+		SpecRefID:  "issues-proto",
+		Kind:       catalog.SpecKindGRPCProtobuf,
+		URL:        server.URL + "/issues.proto",
+	}}, CatalogSpecRefreshOptions{CacheDir: cacheDir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := report.Results[0]
+	if result.ValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	}
+	if result.Protocol != catalog.SpecProtocolGRPCProtobuf {
+		t.Fatalf("protocol = %q, want grpc-protobuf", result.Protocol)
+	}
+	if result.ArtifactPath != "grpc-protobuf/issues-proto.proto" {
+		t.Fatalf("ArtifactPath = %q", result.ArtifactPath)
+	}
+	if result.Metadata.OperationCount != 1 {
+		t.Fatalf("operation count = %d, want 1", result.Metadata.OperationCount)
+	}
+	if _, err := os.Stat(filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))); err != nil {
+		t.Fatalf("expected saved artifact: %v", err)
+	}
+}
+
 func TestRefreshCatalogSpecReferencesRejectsStructuredNonOpenRPCArtifact(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(`{"title":"Not OpenRPC","methods":[]}`))

@@ -108,6 +108,41 @@ func TestResolveProvidersReportsGraphQLOnlyCapability(t *testing.T) {
 	}
 }
 
+func TestResolveProvidersReportsGRPCProtobufOnlyCapability(t *testing.T) {
+	provider := Provider{
+		ID:                              "issue-grpc",
+		DisplayName:                     "Issue gRPC",
+		ReviewState:                     ProviderReviewedCatalogEntry,
+		CandidateID:                     "issue-grpc",
+		OfficialOpenAPIAvailability:     SpecAvailabilityUnavailable,
+		OfficialMachineSpecAvailability: SpecAvailabilityKnown,
+		UserOpenAPINeed:                 UserOpenAPINeedNotExpected,
+		SpecReferences: []SpecReference{{
+			ID:              "issue-proto",
+			Kind:            SpecKindGRPCProtobuf,
+			URL:             "https://example.com/issues.proto",
+			SourceAuthority: SourceAuthorityOfficialProvider,
+			SourceNote:      "Official gRPC protobuf source.",
+		}},
+	}
+	rows, err := ResolveProvidersWithOptions(ProviderResolutionOptions{
+		Catalog:      Catalog{Providers: []Provider{provider}},
+		ProviderKeys: []string{"issue-grpc"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rows) != 1 {
+		t.Fatalf("resolution rows = %d, want 1", len(rows))
+	}
+	if rows[0].Capability != ProviderArtifactCapabilityGRPCProtobufOnly {
+		t.Fatalf("capability = %q, want %q", rows[0].Capability, ProviderArtifactCapabilityGRPCProtobufOnly)
+	}
+	if rows[0].SpecReferences[0].UWSSourceType != "grpc-protobuf" {
+		t.Fatalf("uws source type = %q, want grpc-protobuf", rows[0].SpecReferences[0].UWSSourceType)
+	}
+}
+
 func TestMaterializeProviderCopiesArtifactsAndEmitsOverlay(t *testing.T) {
 	dir := t.TempDir()
 	cacheDir := filepath.Join(dir, "cache")
@@ -217,6 +252,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 		filepath.Join("asyncapi", "events.yaml"):           `{"asyncapi":"3.0.0","info":{"title":"Events","version":"1.0.0"},"operations":{}}`,
 		filepath.Join("openrpc", "pet-rpc.json"):           `{"openrpc":"1.3.2","info":{"title":"Pet RPC","version":"1.0.0"},"methods":[]}`,
 		filepath.Join("graphql", "issues.graphql"):         `type Query { issue(id: ID!): Issue }`,
+		filepath.Join("grpc-protobuf", "issues.proto"):     `syntax = "proto3"; service IssueService { rpc GetIssue(GetIssueRequest) returns (Issue); } message GetIssueRequest { string id = 1; }`,
 		filepath.Join("openapi", "docs-overlay.json"):      `{"openapi":"3.0.3","info":{"title":"Docs","version":"1"},"paths":{}}`,
 		filepath.Join("artifacts", "dropbox-stone.tar.gz"): `stone module`,
 	} {
@@ -240,6 +276,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 			{ProviderID: "demo", SpecRefID: "events", ArtifactID: "events", Kind: "asyncapi", Path: "asyncapi/events.yaml"},
 			{ProviderID: "demo", SpecRefID: "pet-rpc", ArtifactID: "pet-rpc", Kind: "openrpc", Path: "openrpc/pet-rpc.json"},
 			{ProviderID: "demo", SpecRefID: "issues", ArtifactID: "issues", Kind: "graphql", Path: "graphql/issues.graphql"},
+			{ProviderID: "demo", SpecRefID: "issues-grpc", ArtifactID: "issues-grpc", Kind: "grpc-protobuf", Path: "grpc-protobuf/issues.proto"},
 			{ProviderID: "demo", SpecRefID: "docs", ArtifactID: "docs", Kind: "advisory-overlay", Path: "openapi/docs-overlay.json"},
 			{ProviderID: "demo", SpecRefID: "stone", ArtifactID: "stone", Kind: "dropbox-stone", Path: "artifacts/dropbox-stone.tar.gz"},
 		},
@@ -259,6 +296,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 		"demo/asyncapi/events.yaml",
 		"demo/openrpc/pet-rpc.json",
 		"demo/graphql/issues.graphql",
+		"demo/grpc-protobuf/issues-grpc.proto",
 		"demo/openapi/docs.json",
 		"demo/artifacts/stone.tar.gz",
 	} {
@@ -277,13 +315,14 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 		protocol      SpecProtocol
 		uwsSourceType string
 	}{
-		"gmail":   {protocol: SpecProtocolGoogleDiscovery, uwsSourceType: "google-discovery"},
-		"aws-s3":  {protocol: SpecProtocolSmithy, uwsSourceType: "aws-smithy"},
-		"events":  {protocol: SpecProtocolAsyncAPI, uwsSourceType: "asyncapi"},
-		"pet-rpc": {protocol: SpecProtocolOpenRPC, uwsSourceType: "openrpc"},
-		"issues":  {protocol: SpecProtocolGraphQL, uwsSourceType: "graphql"},
-		"docs":    {protocol: SpecProtocolOpenAPI, uwsSourceType: "openapi"},
-		"stone":   {protocol: SpecProtocolDropboxStone},
+		"gmail":       {protocol: SpecProtocolGoogleDiscovery, uwsSourceType: "google-discovery"},
+		"aws-s3":      {protocol: SpecProtocolSmithy, uwsSourceType: "aws-smithy"},
+		"events":      {protocol: SpecProtocolAsyncAPI, uwsSourceType: "asyncapi"},
+		"pet-rpc":     {protocol: SpecProtocolOpenRPC, uwsSourceType: "openrpc"},
+		"issues":      {protocol: SpecProtocolGraphQL, uwsSourceType: "graphql"},
+		"issues-grpc": {protocol: SpecProtocolGRPCProtobuf, uwsSourceType: "grpc-protobuf"},
+		"docs":        {protocol: SpecProtocolOpenAPI, uwsSourceType: "openapi"},
+		"stone":       {protocol: SpecProtocolDropboxStone},
 	} {
 		artifact, ok := artifactsByID[id]
 		if !ok {

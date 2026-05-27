@@ -109,6 +109,7 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 		{name: "asyncapi", kind: catalog.SpecKindAsyncAPI, body: `{"asyncapi":"3.0.0","info":{"title":"Events","version":"1.0.0"},"operations":{}}`},
 		{name: "openrpc", kind: catalog.SpecKindOpenRPC, body: `{"openrpc":"1.3.2","info":{"title":"Pet RPC","version":"1.0.0"},"methods":[{"name":"pet.get"}]}`},
 		{name: "graphql", kind: catalog.SpecKindGraphQL, body: `type Query { issue(id: ID!): Issue }`},
+		{name: "grpc-protobuf", kind: catalog.SpecKindGRPCProtobuf, body: `syntax = "proto3"; package issues.v1; service IssueService { rpc GetIssue(GetIssueRequest) returns (Issue); } message GetIssueRequest { string id = 1; }`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			dir := t.TempDir()
@@ -125,6 +126,8 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 				ref.RegisteredArtifactPath = "openrpc/" + tc.name + ".json"
 			case catalog.SpecKindGraphQL:
 				ref.RegisteredArtifactPath = "graphql/" + tc.name + ".graphql"
+			case catalog.SpecKindGRPCProtobuf:
+				ref.RegisteredArtifactPath = "grpc-protobuf/" + tc.name + ".proto"
 			}
 			writeRefreshReviewArtifact(t, dir, ref.RegisteredArtifactPath, tc.body)
 
@@ -400,6 +403,8 @@ func refreshReviewTestProtocol(kind catalog.SpecKind) catalog.SpecProtocol {
 		return catalog.SpecProtocolOpenRPC
 	case catalog.SpecKindGraphQL:
 		return catalog.SpecProtocolGraphQL
+	case catalog.SpecKindGRPCProtobuf:
+		return catalog.SpecProtocolGRPCProtobuf
 	default:
 		return catalog.SpecProtocolUnknown
 	}

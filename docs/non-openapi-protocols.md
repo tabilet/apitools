@@ -12,6 +12,7 @@ default. These notes define the current stance for each family.
 | Smithy JSON | Official AWS service model review artifact and native protocol metadata source. | Parsed explicitly through standalone `github.com/OpenUdon/awssmithy.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid losing protocol semantics. |
 | Google Discovery | Official Google REST API description artifact and native protocol metadata source. | Parsed explicitly through standalone `github.com/OpenUdon/googlediscovery.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid treating Discovery as an OpenAPI runtime contract. |
 | GraphQL | Official/provider-owned schema, introspection, or operation source family for UWS 1.4 `graphql` source descriptions. | Parsed locally from SDL, introspection JSON, or operation documents into native operation/type metadata; no live introspection, endpoint calls, credential resolution, variable resolution, or REST-shaped `POST /graphql` overlay. |
+| gRPC/protobuf | Official/provider-owned protobuf service source family for UWS 1.4 `grpc-protobuf` source descriptions. | Parsed locally from `.proto`, JSON descriptor, or binary `FileDescriptorSet` artifacts into native package/service/method/message metadata; no server reflection, channel creation, TLS negotiation, credential resolution, RPC execution, or REST-shaped lowering. |
 | Dropbox Stone | Official Dropbox API model source and advisory overlay provenance. | Review-only source metadata; no native Stone parser or route lowering is currently planned. |
 | Kubernetes Discovery/OpenAPI | Cluster-published API metadata for enabled groups, versions, resources, aggregated APIs, and CRDs. | User-exported local metadata only for now; no live cluster discovery, kubeconfig reading, credential resolution, or native parser in M54. |
 | OData | Enterprise application source family used by SAP S/4HANA and SAP SuccessFactors surfaces. | UWS 1.4 source family planned for M67; user-exported or provider metadata only for now, with no OData parser, lowering, or generic REST-shaped overlay before that milestone. |
@@ -29,9 +30,9 @@ default. These notes define the current stance for each family.
 Catalog refresh and materialization keep first-class API source families in
 source-aligned directories: OpenAPI/Swagger under `openapi/`, Google Discovery
 under `google-discovery/`, AWS Smithy JSON under `aws-smithy/`, AsyncAPI under
-`asyncapi/`, OpenRPC under `openrpc/`, and GraphQL under `graphql/`. Other
-review-only families remain metadata-only and materialize under `artifacts/`
-when copied for provenance.
+`asyncapi/`, OpenRPC under `openrpc/`, GraphQL under `graphql/`, and
+gRPC/protobuf under `grpc-protobuf/`. Other review-only families remain
+metadata-only and materialize under `artifacts/` when copied for provenance.
 
 1. **Google Discovery native parsing.**
    Discovery documents are structured JSON, already include method IDs and REST
@@ -64,13 +65,21 @@ when copied for provenance.
    REST-shaped single-endpoint overlay that hides query, mutation, subscription,
    variable, and type semantics.
 
-5. **Generic protocol connector boundary.**
+5. **gRPC/protobuf native metadata parsing.**
+   gRPC/protobuf support starts from local/provider-owned `.proto` files,
+   reviewed JSON descriptor artifacts, or binary `FileDescriptorSet` bytes.
+   Summaries preserve protobuf package, services, methods, request and
+   response message names, request fields, streaming flags,
+   `sourceOperationId`, and `sourceOperationRef` metadata. Generated clients
+   are not source truth unless accompanied by a reviewed descriptor artifact.
+
+6. **Generic protocol connector boundary.**
    Runtime workflow connectors and local execution utilities are not
    provider-owned API-source evidence. Do not promote connector names into
    provider catalog rows, docs-derived OpenAPI overlays, or native parser work
    without an explicit provider-owned or protocol-owned source artifact.
 
-6. **Kubernetes cluster metadata no-parser decision.**
+7. **Kubernetes cluster metadata no-parser decision.**
    M54 records Kubernetes as a cluster-published source family rather than a
    static provider-wide spec. `/api` and `/apis` Discovery outputs and
    `/openapi/v2` or `/openapi/v3` OpenAPI outputs must be supplied as exported
@@ -78,7 +87,7 @@ when copied for provenance.
    M54 because OpenAPI import already handles user-provided OpenAPI documents,
    and live discovery would cross the `apitools` boundary.
 
-7. **Enterprise application metadata no-parser decision.**
+8. **Enterprise application metadata no-parser decision.**
    M55 records NetSuite, SAP S/4HANA, SAP SuccessFactors, Oracle Fusion Cloud
    Applications, and Workday as official source families without adding parser
    code. NetSuite and Oracle Fusion can expose OpenAPI-shaped metadata only
@@ -87,7 +96,7 @@ when copied for provenance.
    overlays. Future parser work should start from exported local metadata and
    preserve native protocol fields.
 
-8. **Tenant-generated OpenAPI metadata.**
+9. **Tenant-generated OpenAPI metadata.**
    M56 records Acumatica as an OpenAPI-adjacent source family but not as a
    built-in downloadable provider spec. Useful Acumatica Swagger/OpenAPI is
    generated per ERP instance, endpoint, tenant, version, and customization, so
@@ -95,7 +104,7 @@ when copied for provenance.
    import. `apitools` must not log in to ERP tenants or call endpoint metadata
    URLs.
 
-9. **Postman/RAML/API Blueprint evaluation.**
+10. **Postman/RAML/API Blueprint evaluation.**
    M64 closes as a no-runtime, no-UWS-source-promotion decision. Postman
    Collection, RAML, and API Blueprint are local artifact detection,
    classification, and conversion candidates only. The documentation/planning
@@ -142,7 +151,7 @@ OpenAPI/Smithy/Discovery catalog targets by name alone:
 | Database and key-value protocols | PostgreSQL, MySQL, Oracle, Redis, MongoDB wire clients | Do not map protocol clients to provider API entries or docs-derived OpenAPI overlays. Service-specific admin APIs, such as a hosted database control-plane API, need their own source-backed milestone. |
 | Message and broker protocols | AMQP, Kafka, MQTT, RabbitMQ wire clients | Do not model broker operations as OpenAPI provider metadata. Future support should start from a stable machine-readable protocol or event contract source. |
 | Mail, file, and directory protocols | IMAP, SMTP, FTP/SFTP, LDAP | Keep outside the provider catalog unless a future source-family milestone defines metadata-only protocol documents and boundary checks. |
-| Generic execution and HTTP utility connectors | Local command execution, generic HTTP clients, webhooks, GraphQL wrappers | Treat as workflow construction tools, not provider sources. First-class GraphQL source support requires SDL, introspection JSON, or operation documents, not a generic connector alone. |
+| Generic execution and HTTP utility connectors | Local command execution, generic HTTP clients, webhooks, GraphQL wrappers, gRPC clients | Treat as workflow construction tools, not provider sources. First-class GraphQL source support requires SDL, introspection JSON, or operation documents; first-class gRPC/protobuf support requires `.proto` files or reviewed descriptors. |
 
 This boundary is intentionally separate from provider-specific API curation.
 For example, a MongoDB wire-protocol connector is not evidence for the MongoDB

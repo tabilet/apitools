@@ -121,7 +121,7 @@ func normalizeSourceAlignedRegisteredArtifactPath(protocol SpecProtocolClassific
 
 func refreshableSpecKind(kind SpecKind) bool {
 	switch kind {
-	case SpecKindOpenAPI, SpecKindOpenAPIIndex, SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindSmithyJSON, SpecKindAsyncAPI, SpecKindOpenRPC, SpecKindGraphQL:
+	case SpecKindOpenAPI, SpecKindOpenAPIIndex, SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindSmithyJSON, SpecKindAsyncAPI, SpecKindOpenRPC, SpecKindGraphQL, SpecKindGRPCProtobuf:
 		return true
 	default:
 		return false

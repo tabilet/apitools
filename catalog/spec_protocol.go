@@ -15,6 +15,7 @@ const (
 	SpecProtocolAsyncAPI        SpecProtocol = "asyncapi"
 	SpecProtocolOpenRPC         SpecProtocol = "openrpc"
 	SpecProtocolGraphQL         SpecProtocol = "graphql"
+	SpecProtocolGRPCProtobuf    SpecProtocol = "grpc-protobuf"
 	SpecProtocolDropboxStone    SpecProtocol = "dropbox-stone"
 	SpecProtocolOpenAPIIndex    SpecProtocol = "openapi-index"
 	SpecProtocolHumanDocs       SpecProtocol = "human-docs"
@@ -45,6 +46,8 @@ func (c SpecProtocolClassification) UWSSourceType() string {
 		return "openrpc"
 	case SpecProtocolGraphQL:
 		return "graphql"
+	case SpecProtocolGRPCProtobuf:
+		return "grpc-protobuf"
 	default:
 		return ""
 	}
@@ -67,6 +70,8 @@ func (c SpecProtocolClassification) SourceAlignedArtifactDir() string {
 		return "openrpc"
 	case "graphql":
 		return "graphql"
+	case "grpc-protobuf":
+		return "grpc-protobuf"
 	default:
 		return ""
 	}
@@ -93,6 +98,8 @@ func (ref SpecReference) ProtocolClassification() SpecProtocolClassification {
 		return SpecProtocolClassification{Protocol: SpecProtocolOpenRPC}
 	case SpecKindGraphQL:
 		return SpecProtocolClassification{Protocol: SpecProtocolGraphQL}
+	case SpecKindGRPCProtobuf:
+		return SpecProtocolClassification{Protocol: SpecProtocolGRPCProtobuf}
 	case SpecKindDropboxStone:
 		return SpecProtocolClassification{Protocol: SpecProtocolDropboxStone}
 	case SpecKindHumanDocs:
@@ -118,6 +125,8 @@ func specProtocolClassificationForKind(kind SpecKind) SpecProtocolClassification
 		return SpecProtocolClassification{Protocol: SpecProtocolOpenRPC}
 	case SpecKindGraphQL:
 		return SpecProtocolClassification{Protocol: SpecProtocolGraphQL}
+	case SpecKindGRPCProtobuf:
+		return SpecProtocolClassification{Protocol: SpecProtocolGRPCProtobuf}
 	case SpecKindDropboxStone:
 		return SpecProtocolClassification{Protocol: SpecProtocolDropboxStone}
 	case SpecKindHumanDocs:
