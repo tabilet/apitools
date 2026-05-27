@@ -143,6 +143,41 @@ func TestResolveProvidersReportsGRPCProtobufOnlyCapability(t *testing.T) {
 	}
 }
 
+func TestResolveProvidersReportsODataOnlyCapability(t *testing.T) {
+	provider := Provider{
+		ID:                              "products-odata",
+		DisplayName:                     "Products OData",
+		ReviewState:                     ProviderReviewedCatalogEntry,
+		CandidateID:                     "products-odata",
+		OfficialOpenAPIAvailability:     SpecAvailabilityUnavailable,
+		OfficialMachineSpecAvailability: SpecAvailabilityKnown,
+		UserOpenAPINeed:                 UserOpenAPINeedNotExpected,
+		SpecReferences: []SpecReference{{
+			ID:              "products-metadata",
+			Kind:            SpecKindOData,
+			URL:             "https://example.com/$metadata",
+			SourceAuthority: SourceAuthorityOfficialProvider,
+			SourceNote:      "Official OData CSDL metadata.",
+		}},
+	}
+	rows, err := ResolveProvidersWithOptions(ProviderResolutionOptions{
+		Catalog:      Catalog{Providers: []Provider{provider}},
+		ProviderKeys: []string{"products-odata"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rows) != 1 {
+		t.Fatalf("resolution rows = %d, want 1", len(rows))
+	}
+	if rows[0].Capability != ProviderArtifactCapabilityODataOnly {
+		t.Fatalf("capability = %q, want %q", rows[0].Capability, ProviderArtifactCapabilityODataOnly)
+	}
+	if rows[0].SpecReferences[0].UWSSourceType != "odata" {
+		t.Fatalf("uws source type = %q, want odata", rows[0].SpecReferences[0].UWSSourceType)
+	}
+}
+
 func TestMaterializeProviderCopiesArtifactsAndEmitsOverlay(t *testing.T) {
 	dir := t.TempDir()
 	cacheDir := filepath.Join(dir, "cache")
@@ -253,6 +288,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 		filepath.Join("openrpc", "pet-rpc.json"):           `{"openrpc":"1.3.2","info":{"title":"Pet RPC","version":"1.0.0"},"methods":[]}`,
 		filepath.Join("graphql", "issues.graphql"):         `type Query { issue(id: ID!): Issue }`,
 		filepath.Join("grpc-protobuf", "issues.proto"):     `syntax = "proto3"; service IssueService { rpc GetIssue(GetIssueRequest) returns (Issue); } message GetIssueRequest { string id = 1; }`,
+		filepath.Join("odata", "metadata.xml"):             `<Schema Namespace="Demo" xmlns="http://docs.oasis-open.org/odata/ns/edm"><EntityContainer Name="Container"><EntitySet Name="Products" EntityType="Demo.Product"/></EntityContainer></Schema>`,
 		filepath.Join("openapi", "docs-overlay.json"):      `{"openapi":"3.0.3","info":{"title":"Docs","version":"1"},"paths":{}}`,
 		filepath.Join("artifacts", "dropbox-stone.tar.gz"): `stone module`,
 	} {
@@ -277,6 +313,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 			{ProviderID: "demo", SpecRefID: "pet-rpc", ArtifactID: "pet-rpc", Kind: "openrpc", Path: "openrpc/pet-rpc.json"},
 			{ProviderID: "demo", SpecRefID: "issues", ArtifactID: "issues", Kind: "graphql", Path: "graphql/issues.graphql"},
 			{ProviderID: "demo", SpecRefID: "issues-grpc", ArtifactID: "issues-grpc", Kind: "grpc-protobuf", Path: "grpc-protobuf/issues.proto"},
+			{ProviderID: "demo", SpecRefID: "metadata", ArtifactID: "metadata", Kind: "odata", Path: "odata/metadata.xml"},
 			{ProviderID: "demo", SpecRefID: "docs", ArtifactID: "docs", Kind: "advisory-overlay", Path: "openapi/docs-overlay.json"},
 			{ProviderID: "demo", SpecRefID: "stone", ArtifactID: "stone", Kind: "dropbox-stone", Path: "artifacts/dropbox-stone.tar.gz"},
 		},
@@ -297,6 +334,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 		"demo/openrpc/pet-rpc.json",
 		"demo/graphql/issues.graphql",
 		"demo/grpc-protobuf/issues-grpc.proto",
+		"demo/odata/metadata.xml",
 		"demo/openapi/docs.json",
 		"demo/artifacts/stone.tar.gz",
 	} {
@@ -321,6 +359,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 		"pet-rpc":     {protocol: SpecProtocolOpenRPC, uwsSourceType: "openrpc"},
 		"issues":      {protocol: SpecProtocolGraphQL, uwsSourceType: "graphql"},
 		"issues-grpc": {protocol: SpecProtocolGRPCProtobuf, uwsSourceType: "grpc-protobuf"},
+		"metadata":    {protocol: SpecProtocolOData, uwsSourceType: "odata"},
 		"docs":        {protocol: SpecProtocolOpenAPI, uwsSourceType: "openapi"},
 		"stone":       {protocol: SpecProtocolDropboxStone},
 	} {

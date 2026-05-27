@@ -110,6 +110,7 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 		{name: "openrpc", kind: catalog.SpecKindOpenRPC, body: `{"openrpc":"1.3.2","info":{"title":"Pet RPC","version":"1.0.0"},"methods":[{"name":"pet.get"}]}`},
 		{name: "graphql", kind: catalog.SpecKindGraphQL, body: `type Query { issue(id: ID!): Issue }`},
 		{name: "grpc-protobuf", kind: catalog.SpecKindGRPCProtobuf, body: `syntax = "proto3"; package issues.v1; service IssueService { rpc GetIssue(GetIssueRequest) returns (Issue); } message GetIssueRequest { string id = 1; }`},
+		{name: "odata", kind: catalog.SpecKindOData, body: `<Schema Namespace="Demo" xmlns="http://docs.oasis-open.org/odata/ns/edm"><EntityContainer Name="Container"><EntitySet Name="Products" EntityType="Demo.Product"/></EntityContainer></Schema>`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			dir := t.TempDir()
@@ -128,6 +129,8 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 				ref.RegisteredArtifactPath = "graphql/" + tc.name + ".graphql"
 			case catalog.SpecKindGRPCProtobuf:
 				ref.RegisteredArtifactPath = "grpc-protobuf/" + tc.name + ".proto"
+			case catalog.SpecKindOData:
+				ref.RegisteredArtifactPath = "odata/" + tc.name + ".xml"
 			}
 			writeRefreshReviewArtifact(t, dir, ref.RegisteredArtifactPath, tc.body)
 
@@ -405,6 +408,8 @@ func refreshReviewTestProtocol(kind catalog.SpecKind) catalog.SpecProtocol {
 		return catalog.SpecProtocolGraphQL
 	case catalog.SpecKindGRPCProtobuf:
 		return catalog.SpecProtocolGRPCProtobuf
+	case catalog.SpecKindOData:
+		return catalog.SpecProtocolOData
 	default:
 		return catalog.SpecProtocolUnknown
 	}

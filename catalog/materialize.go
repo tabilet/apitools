@@ -25,6 +25,7 @@ const (
 	ProviderArtifactCapabilityOpenRPCOnly          ProviderArtifactCapability = "openrpc-only"
 	ProviderArtifactCapabilityGraphQLOnly          ProviderArtifactCapability = "graphql-only"
 	ProviderArtifactCapabilityGRPCProtobufOnly     ProviderArtifactCapability = "grpc-protobuf-only"
+	ProviderArtifactCapabilityODataOnly            ProviderArtifactCapability = "odata-only"
 	ProviderArtifactCapabilityDocsOnly             ProviderArtifactCapability = "docs-only"
 	ProviderArtifactCapabilityAdvisoryOverlayOnly  ProviderArtifactCapability = "advisory-overlay-only"
 	ProviderArtifactCapabilityMixedMetadata        ProviderArtifactCapability = "mixed-metadata"
@@ -411,6 +412,7 @@ func providerArtifactCapability(protocols []SpecProtocol, artifacts []Resolution
 	hasOpenRPCRef := false
 	hasGraphQLRef := false
 	hasGRPCProtobufRef := false
+	hasODataRef := false
 	hasHumanDocs := false
 	for _, protocol := range protocols {
 		switch protocol {
@@ -426,6 +428,8 @@ func providerArtifactCapability(protocols []SpecProtocol, artifacts []Resolution
 			hasGraphQLRef = true
 		case SpecProtocolGRPCProtobuf:
 			hasGRPCProtobufRef = true
+		case SpecProtocolOData:
+			hasODataRef = true
 		case SpecProtocolHumanDocs:
 			hasHumanDocs = true
 		}
@@ -451,17 +455,19 @@ func providerArtifactCapability(protocols []SpecProtocol, artifacts []Resolution
 		return ProviderArtifactCapabilityOpenAPIReferenceOnly
 	case hasAdvisoryOverlay:
 		return ProviderArtifactCapabilityAdvisoryOverlayOnly
-	case hasDiscoveryRef && !hasSmithyRef && !hasGraphQLRef && !hasGRPCProtobufRef:
+	case hasDiscoveryRef && !hasSmithyRef && !hasGraphQLRef && !hasGRPCProtobufRef && !hasODataRef:
 		return ProviderArtifactCapabilityDiscoveryOnly
-	case hasSmithyRef && !hasDiscoveryRef && !hasGraphQLRef && !hasGRPCProtobufRef:
+	case hasSmithyRef && !hasDiscoveryRef && !hasGraphQLRef && !hasGRPCProtobufRef && !hasODataRef:
 		return ProviderArtifactCapabilitySmithyOnly
-	case hasOpenRPCRef && !hasDiscoveryRef && !hasSmithyRef && !hasGraphQLRef && !hasGRPCProtobufRef:
+	case hasOpenRPCRef && !hasDiscoveryRef && !hasSmithyRef && !hasGraphQLRef && !hasGRPCProtobufRef && !hasODataRef:
 		return ProviderArtifactCapabilityOpenRPCOnly
-	case hasGraphQLRef && !hasDiscoveryRef && !hasSmithyRef && !hasOpenRPCRef && !hasGRPCProtobufRef:
+	case hasGraphQLRef && !hasDiscoveryRef && !hasSmithyRef && !hasOpenRPCRef && !hasGRPCProtobufRef && !hasODataRef:
 		return ProviderArtifactCapabilityGraphQLOnly
-	case hasGRPCProtobufRef && !hasDiscoveryRef && !hasSmithyRef && !hasOpenRPCRef && !hasGraphQLRef:
+	case hasGRPCProtobufRef && !hasDiscoveryRef && !hasSmithyRef && !hasOpenRPCRef && !hasGraphQLRef && !hasODataRef:
 		return ProviderArtifactCapabilityGRPCProtobufOnly
-	case hasDiscoveryRef || hasSmithyRef || hasOpenRPCRef || hasGraphQLRef || hasGRPCProtobufRef:
+	case hasODataRef && !hasDiscoveryRef && !hasSmithyRef && !hasOpenRPCRef && !hasGraphQLRef && !hasGRPCProtobufRef:
+		return ProviderArtifactCapabilityODataOnly
+	case hasDiscoveryRef || hasSmithyRef || hasOpenRPCRef || hasGraphQLRef || hasGRPCProtobufRef || hasODataRef:
 		return ProviderArtifactCapabilityMixedMetadata
 	case hasHumanDocs:
 		return ProviderArtifactCapabilityDocsOnly
@@ -661,7 +667,7 @@ func materializedFileName(artifact CatalogSpecArtifact) string {
 		switch strings.TrimSpace(artifact.Kind) {
 		case "advisory-overlay", "openapi", "swagger", "google-discovery", "smithy-json", "asyncapi", "openapi-index":
 			ext = ".json"
-		case "openrpc", "graphql", "grpc-protobuf":
+		case "openrpc", "graphql", "grpc-protobuf", "odata":
 			ext = ".json"
 		default:
 			ext = ".artifact"
