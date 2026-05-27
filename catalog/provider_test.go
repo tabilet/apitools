@@ -889,6 +889,7 @@ func TestSpecReferenceProtocolClassification(t *testing.T) {
 		{name: "openapi id with product v2", ref: SpecReference{ID: "clickup-api-v2-openapi", Kind: SpecKindOpenAPI, Version: "2.0"}, want: SpecProtocolOpenAPI},
 		{name: "smithy", ref: SpecReference{Kind: SpecKindSmithyJSON}, want: SpecProtocolSmithy},
 		{name: "discovery", ref: SpecReference{Kind: SpecKindGoogleDiscovery}, want: SpecProtocolGoogleDiscovery},
+		{name: "asyncapi", ref: SpecReference{Kind: SpecKindAsyncAPI}, want: SpecProtocolAsyncAPI},
 		{name: "stone", ref: SpecReference{Kind: SpecKindDropboxStone}, want: SpecProtocolDropboxStone},
 		{name: "human docs", ref: SpecReference{Kind: SpecKindHumanDocs}, want: SpecProtocolHumanDocs},
 	}
@@ -912,6 +913,7 @@ func TestSpecProtocolClassificationUWSSourceType(t *testing.T) {
 		{name: "swagger", ref: SpecReference{ID: "legacy-swagger", Kind: SpecKindOpenAPI, Version: "Swagger 2.0"}, want: "openapi"},
 		{name: "google discovery", ref: SpecReference{Kind: SpecKindGoogleDiscovery}, want: "google-discovery"},
 		{name: "aws smithy", ref: SpecReference{Kind: SpecKindSmithyJSON}, want: "aws-smithy"},
+		{name: "asyncapi", ref: SpecReference{Kind: SpecKindAsyncAPI}, want: "asyncapi"},
 		{name: "openapi index", ref: SpecReference{Kind: SpecKindOpenAPIIndex}, want: ""},
 		{name: "stone", ref: SpecReference{Kind: SpecKindDropboxStone}, want: ""},
 		{name: "human docs", ref: SpecReference{Kind: SpecKindHumanDocs}, want: ""},
@@ -920,6 +922,27 @@ func TestSpecProtocolClassificationUWSSourceType(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.ref.ProtocolClassification().UWSSourceType(); got != tc.want {
 				t.Fatalf("UWSSourceType() = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestSpecProtocolClassificationSourceAlignedArtifactDir(t *testing.T) {
+	cases := []struct {
+		name string
+		ref  SpecReference
+		want string
+	}{
+		{name: "openapi", ref: SpecReference{Kind: SpecKindOpenAPI}, want: "openapi"},
+		{name: "google discovery", ref: SpecReference{Kind: SpecKindGoogleDiscovery}, want: "google-discovery"},
+		{name: "aws smithy", ref: SpecReference{Kind: SpecKindSmithyJSON}, want: "aws-smithy"},
+		{name: "asyncapi", ref: SpecReference{Kind: SpecKindAsyncAPI}, want: "asyncapi"},
+		{name: "human docs", ref: SpecReference{Kind: SpecKindHumanDocs}, want: ""},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := tc.ref.ProtocolClassification().SourceAlignedArtifactDir(); got != tc.want {
+				t.Fatalf("SourceAlignedArtifactDir() = %q, want %q", got, tc.want)
 			}
 		})
 	}

@@ -36,6 +36,7 @@ const (
 	SpecKindDropboxStone    SpecKind = "dropbox-stone"
 	SpecKindGoogleDiscovery SpecKind = "google-discovery"
 	SpecKindSmithyJSON      SpecKind = "smithy-json"
+	SpecKindAsyncAPI        SpecKind = "asyncapi"
 	SpecKindHumanDocs       SpecKind = "human-docs"
 )
 
@@ -279,7 +280,7 @@ func validSpecAvailability(value SpecAvailability) bool {
 
 func validSpecKind(value SpecKind) bool {
 	switch value {
-	case SpecKindOpenAPI, SpecKindOpenAPIIndex, SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindSmithyJSON, SpecKindHumanDocs:
+	case SpecKindOpenAPI, SpecKindOpenAPIIndex, SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindSmithyJSON, SpecKindAsyncAPI, SpecKindHumanDocs:
 		return true
 	default:
 		return false

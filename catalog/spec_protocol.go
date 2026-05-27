@@ -12,6 +12,7 @@ const (
 	SpecProtocolSwagger         SpecProtocol = "swagger"
 	SpecProtocolSmithy          SpecProtocol = "smithy"
 	SpecProtocolGoogleDiscovery SpecProtocol = "google-discovery"
+	SpecProtocolAsyncAPI        SpecProtocol = "asyncapi"
 	SpecProtocolDropboxStone    SpecProtocol = "dropbox-stone"
 	SpecProtocolOpenAPIIndex    SpecProtocol = "openapi-index"
 	SpecProtocolHumanDocs       SpecProtocol = "human-docs"
@@ -26,7 +27,7 @@ type SpecProtocolClassification struct {
 }
 
 // UWSSourceType returns the first-class UWS sourceDescription.type for
-// protocols that can be represented directly in UWS 1.2. Empty means the
+// protocols that can be represented directly in UWS source descriptions. Empty means the
 // protocol is not a first-class UWS source type.
 func (c SpecProtocolClassification) UWSSourceType() string {
 	switch c.Protocol {
@@ -36,6 +37,8 @@ func (c SpecProtocolClassification) UWSSourceType() string {
 		return "google-discovery"
 	case SpecProtocolSmithy:
 		return "aws-smithy"
+	case SpecProtocolAsyncAPI:
+		return "asyncapi"
 	default:
 		return ""
 	}
@@ -52,6 +55,8 @@ func (c SpecProtocolClassification) SourceAlignedArtifactDir() string {
 		return "google-discovery"
 	case "aws-smithy":
 		return "aws-smithy"
+	case "asyncapi":
+		return "asyncapi"
 	default:
 		return ""
 	}
@@ -72,6 +77,8 @@ func (ref SpecReference) ProtocolClassification() SpecProtocolClassification {
 		return SpecProtocolClassification{Protocol: SpecProtocolSmithy}
 	case SpecKindGoogleDiscovery:
 		return SpecProtocolClassification{Protocol: SpecProtocolGoogleDiscovery}
+	case SpecKindAsyncAPI:
+		return SpecProtocolClassification{Protocol: SpecProtocolAsyncAPI}
 	case SpecKindDropboxStone:
 		return SpecProtocolClassification{Protocol: SpecProtocolDropboxStone}
 	case SpecKindHumanDocs:
@@ -91,6 +98,8 @@ func specProtocolClassificationForKind(kind SpecKind) SpecProtocolClassification
 		return SpecProtocolClassification{Protocol: SpecProtocolSmithy}
 	case SpecKindGoogleDiscovery:
 		return SpecProtocolClassification{Protocol: SpecProtocolGoogleDiscovery}
+	case SpecKindAsyncAPI:
+		return SpecProtocolClassification{Protocol: SpecProtocolAsyncAPI}
 	case SpecKindDropboxStone:
 		return SpecProtocolClassification{Protocol: SpecProtocolDropboxStone}
 	case SpecKindHumanDocs:
