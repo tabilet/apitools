@@ -1,8 +1,9 @@
 # Non-OpenAPI Protocol Notes
 
-`apitools` records several official server-side API description model families
-that are not strict OpenAPI import inputs. These notes define the current
-stance for each family.
+`apitools` records several API source and advisory artifact families that are
+not strict OpenAPI import inputs. Some are official server-side API description
+models; others are local evidence that must not be treated as provider truth by
+default. These notes define the current stance for each family.
 
 ## Current Classification
 
@@ -16,6 +17,9 @@ stance for each family.
 | WSDL/SOAP | Enterprise application source family used by Workday WWS and some SAP surfaces. | Review-only source metadata for now; no WSDL/SOAP parser, credential resolution, tenant calls, or OpenAPI lowering in M55. |
 | Tenant describe and metadata catalogs | Account-specific metadata catalogs such as NetSuite SuiteTalk REST OpenAPI 3.0 metadata, Oracle Fusion `/describe` responses, and Acumatica endpoint Swagger/OpenAPI. | User-provided exported metadata only for now; no live tenant metadata calls, ERP login, or native describe parser in M55/M56. |
 | OpenAPI index | Provider-owned index of OpenAPI documents. | Review-only index; individual child OpenAPI documents still need explicit selection and validation. |
+| Postman Collection | Client/workspace collection, test, or collaboration artifact that may contain useful request examples. | Local source/advisory evidence only by default; not provider-wide API truth unless provenance proves provider ownership and completeness. |
+| RAML | API description language that can represent REST API contracts. | Source-aware import/conversion candidate; prefer conversion to OpenAPI or a stronger native source when semantics survive. |
+| API Blueprint | API description language that can represent documented HTTP resources and examples. | Source-aware import/conversion candidate; preserve provenance and keep advisory when conversion would lose important semantics. |
 | Human docs | Official documentation source for docs-derived advisory overlays. | Not importable by itself; endpoint overlays are advisory and source-backed, not provider truth. |
 | Generic protocol connectors | Workflow/runtime connectors for databases, brokers, mail, files, directories, generic HTTP, webhooks, or local execution. | Not provider catalog evidence by themselves; future native source work must start from provider-owned or protocol-owned metadata artifacts. |
 
@@ -85,6 +89,16 @@ when copied for provenance.
    operators or downstream tooling must supply exported local metadata before
    import. `apitools` must not log in to ERP tenants or call endpoint metadata
    URLs.
+
+9. **Postman/RAML/API Blueprint evaluation.**
+   M64 evaluates Postman Collection, RAML, and API Blueprint as local artifact
+   detection/classification and conversion candidates. Postman collections are
+   client/workspace artifacts by default, not provider-wide API truth. RAML and
+   API Blueprint may describe APIs directly, but the first target is
+   source-aware import or conversion review that preserves provenance and
+   prefers OpenAPI or a stronger native source when semantics survive. This
+   milestone does not add execution, credential resolution, remote workspace
+   calls, or UWS source-type promotion.
 
 ## Generic Protocol Connector Families
 
