@@ -17,9 +17,9 @@ default. These notes define the current stance for each family.
 | WSDL/SOAP | Enterprise application source family used by Workday WWS and some SAP surfaces. | Review-only source metadata for now; no WSDL/SOAP parser, credential resolution, tenant calls, or OpenAPI lowering in M55. |
 | Tenant describe and metadata catalogs | Account-specific metadata catalogs such as NetSuite SuiteTalk REST OpenAPI 3.0 metadata, Oracle Fusion `/describe` responses, and Acumatica endpoint Swagger/OpenAPI. | User-provided exported metadata only for now; no live tenant metadata calls, ERP login, or native describe parser in M55/M56. |
 | OpenAPI index | Provider-owned index of OpenAPI documents. | Review-only index; individual child OpenAPI documents still need explicit selection and validation. |
-| Postman Collection | Client/workspace collection, test, or collaboration artifact that may contain useful request examples. | Local source/advisory evidence only by default; not provider-wide API truth unless provenance proves provider ownership and completeness. |
-| RAML | API description language that can represent REST API contracts. | Source-aware import/conversion candidate; prefer conversion to OpenAPI or a stronger native source when semantics survive. |
-| API Blueprint | API description language that can represent documented HTTP resources and examples. | Source-aware import/conversion candidate; preserve provenance and keep advisory when conversion would lose important semantics. |
+| Postman Collection | Client/workspace collection, test, or collaboration artifact that may contain useful request examples. | Detect local collection files or source trees only; keep advisory by default and never treat as provider-wide API truth unless provenance proves provider ownership, intended API-truth status, and useful completeness. |
+| RAML | API description language that can represent REST API contracts. | Detect local RAML-marked files as source-aware conversion candidates; prefer official OpenAPI/Swagger or a stronger native source when available. |
+| API Blueprint | Documentation-oriented API description language that can represent HTTP resources and examples. | Detect local Blueprint-marked files as source-aware conversion candidates; preserve provenance and keep advisory when Markdown ambiguity or semantic loss would make OpenAPI output misleading. |
 | Human docs | Official documentation source for docs-derived advisory overlays. | Not importable by itself; endpoint overlays are advisory and source-backed, not provider truth. |
 | Generic protocol connectors | Workflow/runtime connectors for databases, brokers, mail, files, directories, generic HTTP, webhooks, or local execution. | Not provider catalog evidence by themselves; future native source work must start from provider-owned or protocol-owned metadata artifacts. |
 
@@ -91,14 +91,41 @@ when copied for provenance.
    URLs.
 
 9. **Postman/RAML/API Blueprint evaluation.**
-   M64 evaluates Postman Collection, RAML, and API Blueprint as local artifact
-   detection/classification and conversion candidates. Postman collections are
-   client/workspace artifacts by default, not provider-wide API truth. RAML and
-   API Blueprint may describe APIs directly, but the first target is
-   source-aware import or conversion review that preserves provenance and
-   prefers OpenAPI or a stronger native source when semantics survive. This
-   milestone does not add execution, credential resolution, remote workspace
-   calls, or UWS source-type promotion.
+   M64 closes as a no-runtime, no-UWS-source-promotion decision. Postman
+   Collection, RAML, and API Blueprint are local artifact detection,
+   classification, and conversion candidates only. The documentation/planning
+   labels are `postman-collection`, `raml`, and `api-blueprint`; they are not
+   `SpecKind`, `SpecProtocol`, materialization directory, CLI, catalog cache, or
+   UWS `sourceDescriptions[].type` values.
+
+   Postman detection is local-only. Useful signals include local JSON
+   collection files with Postman schema evidence, `*.postman_collection.json`,
+   and v3 collection source-tree evidence such as `definition.yaml` and
+   `*.request.yaml`. Postman collections remain advisory client/workspace
+   evidence unless provenance proves that the provider owns the artifact,
+   intends it as API truth, and covers the relevant surface. `apitools` must not
+   call remote Postman workspaces, select accounts or workspaces, resolve
+   variables from environments, run collection scripts or tests, execute
+   requests, or resolve credentials.
+
+   RAML detection is based on local `.raml`, `.yaml`, or `.yml` files whose
+   first meaningful line is `#%RAML 1.0` or `#%RAML 0.8`. Such files may be
+   provider-owned API descriptions and source-aware conversion candidates, but
+   OpenAPI/Swagger, Google Discovery, AWS Smithy, AsyncAPI, OpenRPC, or another
+   stronger native source should be preferred when available.
+
+   API Blueprint detection is based on local `.apib` or `.md` files with
+   leading metadata such as `FORMAT: 1A`. Blueprint artifacts are
+   documentation-oriented API descriptions and source-aware conversion
+   candidates only when review can preserve resource and method structure.
+
+   Conversion to OpenAPI is acceptable only as reviewed, source-aware output.
+   Review must confirm that methods and resources, parameters, request and
+   response bodies, schemas or examples, auth hints, and provenance survive
+   without misleading downstream authoring tools. Keep artifacts advisory and
+   skip conversion when variables, environments, scripts/tests, includes,
+   overlays, annotations, Markdown ambiguity, or missing provenance would make
+   derived OpenAPI output misleading.
 
 ## Generic Protocol Connector Families
 
