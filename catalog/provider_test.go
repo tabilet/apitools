@@ -1071,6 +1071,21 @@ func TestValidateProvidersRequiresMachineRefForKnownMachineSpec(t *testing.T) {
 	}
 }
 
+func TestValidateProvidersAcceptsAsyncAPIRefForKnownMachineSpec(t *testing.T) {
+	provider := minimalProvider("one", "One", nil)
+	provider.OfficialMachineSpecAvailability = SpecAvailabilityKnown
+	provider.SpecReferences = []SpecReference{{
+		ID:              "one-events-asyncapi",
+		Kind:            SpecKindAsyncAPI,
+		URL:             "https://example.com/asyncapi.yaml",
+		SourceAuthority: SourceAuthorityOfficialProvider,
+		SourceNote:      "Official AsyncAPI document.",
+	}}
+	if err := ValidateProviders([]Provider{provider}); err != nil {
+		t.Fatalf("ValidateProviders() error = %v", err)
+	}
+}
+
 func minimalProvider(id, displayName string, aliases []string) Provider {
 	return Provider{
 		ID:                              id,

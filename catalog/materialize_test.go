@@ -144,6 +144,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 	for rel, content := range map[string]string{
 		filepath.Join("google-discovery", "gmail.json"):    `{"title":"Gmail","version":"v1","resources":{}}`,
 		filepath.Join("aws-smithy", "aws-s3-smithy.json"):  `{"smithy":"2.0","shapes":{}}`,
+		filepath.Join("asyncapi", "events.yaml"):           `{"asyncapi":"3.0.0","info":{"title":"Events","version":"1.0.0"},"operations":{}}`,
 		filepath.Join("openapi", "docs-overlay.json"):      `{"openapi":"3.0.3","info":{"title":"Docs","version":"1"},"paths":{}}`,
 		filepath.Join("artifacts", "dropbox-stone.tar.gz"): `stone module`,
 	} {
@@ -164,6 +165,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 		Artifacts: []CatalogSpecArtifact{
 			{ProviderID: "demo", SpecRefID: "gmail", ArtifactID: "gmail", Kind: "google-discovery", Path: "google-discovery/gmail.json"},
 			{ProviderID: "demo", SpecRefID: "aws-s3", ArtifactID: "aws-s3", Kind: "smithy-json", Path: "aws-smithy/aws-s3-smithy.json"},
+			{ProviderID: "demo", SpecRefID: "events", ArtifactID: "events", Kind: "asyncapi", Path: "asyncapi/events.yaml"},
 			{ProviderID: "demo", SpecRefID: "docs", ArtifactID: "docs", Kind: "advisory-overlay", Path: "openapi/docs-overlay.json"},
 			{ProviderID: "demo", SpecRefID: "stone", ArtifactID: "stone", Kind: "dropbox-stone", Path: "artifacts/dropbox-stone.tar.gz"},
 		},
@@ -180,6 +182,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 	for _, wantSuffix := range []string{
 		"demo/google-discovery/gmail.json",
 		"demo/aws-smithy/aws-s3.json",
+		"demo/asyncapi/events.yaml",
 		"demo/openapi/docs.json",
 		"demo/artifacts/stone.tar.gz",
 	} {
@@ -200,6 +203,7 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 	}{
 		"gmail":  {protocol: SpecProtocolGoogleDiscovery, uwsSourceType: "google-discovery"},
 		"aws-s3": {protocol: SpecProtocolSmithy, uwsSourceType: "aws-smithy"},
+		"events": {protocol: SpecProtocolAsyncAPI, uwsSourceType: "asyncapi"},
 		"docs":   {protocol: SpecProtocolOpenAPI, uwsSourceType: "openapi"},
 		"stone":  {protocol: SpecProtocolDropboxStone},
 	} {

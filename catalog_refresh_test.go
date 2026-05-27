@@ -407,3 +407,40 @@ func TestRefreshCatalogSpecReferencesSavesSmithyArtifactUnderAWSSmithy(t *testin
 		t.Fatalf("expected saved artifact: %v", err)
 	}
 }
+
+func TestRefreshCatalogSpecReferencesSavesAsyncAPIArtifactUnderAsyncAPI(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`asyncapi: 3.0.0
+info:
+  title: Events
+  version: 1.0.0
+operations: {}
+`))
+	}))
+	defer server.Close()
+
+	cacheDir := t.TempDir()
+	report, err := (&Client{HTTPClient: server.Client(), AllowUnsafeHosts: true}).RefreshCatalogSpecReferences(context.Background(), []catalog.RefreshableSpecReference{{
+		ProviderID:             "events",
+		SpecRefID:              "events-asyncapi",
+		Kind:                   catalog.SpecKindAsyncAPI,
+		URL:                    server.URL + "/events.yaml",
+		RegisteredArtifactPath: "openapi/events-asyncapi.yaml",
+	}}, CatalogSpecRefreshOptions{CacheDir: cacheDir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := report.Results[0]
+	if result.ValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	}
+	if result.Protocol != catalog.SpecProtocolAsyncAPI {
+		t.Fatalf("protocol = %q, want asyncapi", result.Protocol)
+	}
+	if result.ArtifactPath != "asyncapi/events-asyncapi.yaml" {
+		t.Fatalf("ArtifactPath = %q", result.ArtifactPath)
+	}
+	if _, err := os.Stat(filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))); err != nil {
+		t.Fatalf("expected saved artifact: %v", err)
+	}
+}

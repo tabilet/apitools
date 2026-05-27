@@ -170,7 +170,7 @@ func validateCatalogRefreshContentRaw(ctx context.Context, ref catalog.Refreshab
 			return CatalogRefreshValidSwagger, metadata, nil
 		}
 		return CatalogRefreshValidOpenAPI, metadata, nil
-	case catalog.SpecKindGoogleDiscovery, catalog.SpecKindOpenAPIIndex, catalog.SpecKindSmithyJSON:
+	case catalog.SpecKindGoogleDiscovery, catalog.SpecKindOpenAPIIndex, catalog.SpecKindSmithyJSON, catalog.SpecKindAsyncAPI:
 		if !validStructuredCatalogArtifact(content) {
 			return CatalogRefreshInvalid, SpecMetadata{}, fmt.Errorf("%s/%s: downloaded document is not structured JSON or YAML", ref.ProviderID, ref.SpecRefID)
 		}
@@ -390,8 +390,8 @@ func cleanCatalogRefreshArtifactPath(path string) (string, error) {
 	if filepath.IsAbs(cleaned) || strings.HasPrefix(cleaned, "../") || cleaned == ".." || strings.Contains(cleaned, "/../") {
 		return "", fmt.Errorf("artifact path %q must stay under catalog cache directory", path)
 	}
-	if !strings.HasPrefix(cleaned, "openapi/") && !strings.HasPrefix(cleaned, "google-discovery/") && !strings.HasPrefix(cleaned, "aws-smithy/") {
-		return "", fmt.Errorf("artifact path %q must be under openapi/, google-discovery/, or aws-smithy/", path)
+	if !strings.HasPrefix(cleaned, "openapi/") && !strings.HasPrefix(cleaned, "google-discovery/") && !strings.HasPrefix(cleaned, "aws-smithy/") && !strings.HasPrefix(cleaned, "asyncapi/") {
+		return "", fmt.Errorf("artifact path %q must be under openapi/, google-discovery/, aws-smithy/, or asyncapi/", path)
 	}
 	return cleaned, nil
 }

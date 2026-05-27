@@ -257,7 +257,7 @@ func (p Provider) hasSpecKind(kinds ...SpecKind) bool {
 }
 
 func (p Provider) hasMachineSpecKind() bool {
-	return p.hasSpecKind(SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindSmithyJSON)
+	return p.hasSpecKind(SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindSmithyJSON, SpecKindAsyncAPI)
 }
 
 func validProviderReviewState(value ProviderReviewState) bool {

@@ -641,7 +641,7 @@ func materializedFileName(artifact CatalogSpecArtifact) string {
 	}
 	if ext == "" {
 		switch strings.TrimSpace(artifact.Kind) {
-		case "advisory-overlay", "openapi", "swagger", "google-discovery", "smithy-json", "openapi-index":
+		case "advisory-overlay", "openapi", "swagger", "google-discovery", "smithy-json", "asyncapi", "openapi-index":
 			ext = ".json"
 		default:
 			ext = ".artifact"

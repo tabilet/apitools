@@ -106,6 +106,7 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 		{name: "google", kind: catalog.SpecKindGoogleDiscovery, body: `{"title":"Google","version":"v1","resources":{}}`},
 		{name: "index", kind: catalog.SpecKindOpenAPIIndex, body: `{"title":"Index","apis":{"demo":{"openapi":"demo.yaml"}}}`},
 		{name: "smithy", kind: catalog.SpecKindSmithyJSON, body: `{"smithy":"2.0","shapes":{}}`},
+		{name: "asyncapi", kind: catalog.SpecKindAsyncAPI, body: `{"asyncapi":"3.0.0","info":{"title":"Events","version":"1.0.0"},"operations":{}}`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			dir := t.TempDir()
@@ -116,6 +117,8 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 				ref.RegisteredArtifactPath = "google-discovery/" + tc.name + ".json"
 			case catalog.SpecKindSmithyJSON:
 				ref.RegisteredArtifactPath = "aws-smithy/" + tc.name + ".json"
+			case catalog.SpecKindAsyncAPI:
+				ref.RegisteredArtifactPath = "asyncapi/" + tc.name + ".json"
 			}
 			writeRefreshReviewArtifact(t, dir, ref.RegisteredArtifactPath, tc.body)
 
@@ -366,6 +369,8 @@ func refreshReviewTestProtocol(kind catalog.SpecKind) catalog.SpecProtocol {
 		return catalog.SpecProtocolOpenAPIIndex
 	case catalog.SpecKindSmithyJSON:
 		return catalog.SpecProtocolSmithy
+	case catalog.SpecKindAsyncAPI:
+		return catalog.SpecProtocolAsyncAPI
 	default:
 		return catalog.SpecProtocolUnknown
 	}

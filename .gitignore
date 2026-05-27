@@ -8,6 +8,12 @@ catalog-openapi-cache/openapi
 !catalog-openapi-cache/openapi/
 catalog-openapi-cache/openapi/*
 !catalog-openapi-cache/openapi/nvidia-dsx-air-openapi.yaml
+catalog-openapi-cache/asyncapi
+!catalog-openapi-cache/asyncapi/
+catalog-openapi-cache/asyncapi/*
+!catalog-openapi-cache/asyncapi/asyncapi-gemini-websocket.yml
+!catalog-openapi-cache/asyncapi/asyncapi-slack-rtm.yml
+!catalog-openapi-cache/asyncapi/asyncapi-streetlights-mqtt.yml
 AGENTS.md
 memory-bank
 memory-bank/

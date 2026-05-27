@@ -1,6 +1,8 @@
 package apitools
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/OpenUdon/asyncapi"
@@ -97,5 +99,31 @@ func TestAsyncAPIOperationSummariesSkipsNilAndBlankOperations(t *testing.T) {
 	})
 	if len(got) != 1 || got[0].OperationID != "publishOrder" {
 		t.Fatalf("summaries = %#v, want publishOrder only", got)
+	}
+}
+
+func TestTrackedAsyncAPIArtifactsParse(t *testing.T) {
+	paths := []string{
+		"catalog-openapi-cache/asyncapi/asyncapi-gemini-websocket.yml",
+		"catalog-openapi-cache/asyncapi/asyncapi-slack-rtm.yml",
+		"catalog-openapi-cache/asyncapi/asyncapi-streetlights-mqtt.yml",
+	}
+	for _, path := range paths {
+		t.Run(filepath.Base(path), func(t *testing.T) {
+			data, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			ops, err := ParseAsyncAPIOperationSummaries(data, filepath.ToSlash(path))
+			if err != nil {
+				t.Fatalf("ParseAsyncAPIOperationSummaries() error = %v", err)
+			}
+			if len(ops) == 0 {
+				t.Fatalf("no operations discovered in %s", path)
+			}
+			if ops[0].Provenance != "asyncapi" || ops[0].DocumentRelativePath != filepath.ToSlash(path) {
+				t.Fatalf("operation metadata = %#v", ops[0])
+			}
+		})
 	}
 }
