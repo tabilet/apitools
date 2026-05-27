@@ -11,9 +11,10 @@ default. These notes define the current stance for each family.
 |---|---|---|
 | Smithy JSON | Official AWS service model review artifact and native protocol metadata source. | Parsed explicitly through standalone `github.com/OpenUdon/awssmithy.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid losing protocol semantics. |
 | Google Discovery | Official Google REST API description artifact and native protocol metadata source. | Parsed explicitly through standalone `github.com/OpenUdon/googlediscovery.Parse` / `ParseMap`; OpenAPI-shaped conversion has been removed to avoid treating Discovery as an OpenAPI runtime contract. |
+| GraphQL | Official/provider-owned schema, introspection, or operation source family for UWS 1.4 `graphql` source descriptions. | Parsed locally from SDL, introspection JSON, or operation documents into native operation/type metadata; no live introspection, endpoint calls, credential resolution, variable resolution, or REST-shaped `POST /graphql` overlay. |
 | Dropbox Stone | Official Dropbox API model source and advisory overlay provenance. | Review-only source metadata; no native Stone parser or route lowering is currently planned. |
 | Kubernetes Discovery/OpenAPI | Cluster-published API metadata for enabled groups, versions, resources, aggregated APIs, and CRDs. | User-exported local metadata only for now; no live cluster discovery, kubeconfig reading, credential resolution, or native parser in M54. |
-| OData | Enterprise application source family used by SAP S/4HANA and SAP SuccessFactors surfaces. | User-exported or provider metadata only for now; no OData parser, lowering, or generic REST-shaped overlay in M55. |
+| OData | Enterprise application source family used by SAP S/4HANA and SAP SuccessFactors surfaces. | UWS 1.4 source family planned for M67; user-exported or provider metadata only for now, with no OData parser, lowering, or generic REST-shaped overlay before that milestone. |
 | WSDL/SOAP | Enterprise application source family used by Workday WWS and some SAP surfaces. | Review-only source metadata for now; no WSDL/SOAP parser, credential resolution, tenant calls, or OpenAPI lowering in M55. |
 | Tenant describe and metadata catalogs | Account-specific metadata catalogs such as NetSuite SuiteTalk REST OpenAPI 3.0 metadata, Oracle Fusion `/describe` responses, and Acumatica endpoint Swagger/OpenAPI. | User-provided exported metadata only for now; no live tenant metadata calls, ERP login, or native describe parser in M55/M56. |
 | OpenAPI index | Provider-owned index of OpenAPI documents. | Review-only index; individual child OpenAPI documents still need explicit selection and validation. |
@@ -27,7 +28,8 @@ default. These notes define the current stance for each family.
 
 Catalog refresh and materialization keep first-class API source families in
 source-aligned directories: OpenAPI/Swagger under `openapi/`, Google Discovery
-under `google-discovery/`, and AWS Smithy JSON under `aws-smithy/`. Other
+under `google-discovery/`, AWS Smithy JSON under `aws-smithy/`, AsyncAPI under
+`asyncapi/`, OpenRPC under `openrpc/`, and GraphQL under `graphql/`. Other
 review-only families remain metadata-only and materialize under `artifacts/`
 when copied for provenance.
 
@@ -53,11 +55,14 @@ when copied for provenance.
    advisory overlay. Future expansion should be targeted source-backed overlay
    work if needed.
 
-4. **GraphQL-aware classification.**
-   Linear and Monday.com should not get REST-shaped endpoint overlays for now.
-   Useful coverage should come from a GraphQL protocol classification and
-   schema/introspection workflow rather than a single `POST /graphql` wrapper
-   that hides operation semantics.
+4. **GraphQL native metadata parsing.**
+   GraphQL support starts from local/provider-owned SDL, introspection JSON, or
+   operation documents. Summaries preserve operation kind, variables, root
+   fields, type/field refs, `sourceOperationId`, and `sourceOperationRef`
+   metadata for review. Linear, Monday.com, and similar GraphQL-first providers
+   should use this source family when a suitable artifact is supplied, not a
+   REST-shaped single-endpoint overlay that hides query, mutation, subscription,
+   variable, and type semantics.
 
 5. **Generic protocol connector boundary.**
    Runtime workflow connectors and local execution utilities are not
@@ -137,7 +142,7 @@ OpenAPI/Smithy/Discovery catalog targets by name alone:
 | Database and key-value protocols | PostgreSQL, MySQL, Oracle, Redis, MongoDB wire clients | Do not map protocol clients to provider API entries or docs-derived OpenAPI overlays. Service-specific admin APIs, such as a hosted database control-plane API, need their own source-backed milestone. |
 | Message and broker protocols | AMQP, Kafka, MQTT, RabbitMQ wire clients | Do not model broker operations as OpenAPI provider metadata. Future support should start from a stable machine-readable protocol or event contract source. |
 | Mail, file, and directory protocols | IMAP, SMTP, FTP/SFTP, LDAP | Keep outside the provider catalog unless a future source-family milestone defines metadata-only protocol documents and boundary checks. |
-| Generic execution and HTTP utility connectors | Local command execution, generic HTTP clients, webhooks, GraphQL wrappers | Treat as workflow construction tools, not provider sources. GraphQL remains a possible future protocol family when backed by schema artifacts, not by a generic connector. |
+| Generic execution and HTTP utility connectors | Local command execution, generic HTTP clients, webhooks, GraphQL wrappers | Treat as workflow construction tools, not provider sources. First-class GraphQL source support requires SDL, introspection JSON, or operation documents, not a generic connector alone. |
 
 This boundary is intentionally separate from provider-specific API curation.
 For example, a MongoDB wire-protocol connector is not evidence for the MongoDB
@@ -149,8 +154,8 @@ suitable for a reviewed advisory overlay, or another explicit source model.
 Future native protocol-family work should meet all of these criteria before it
 enters `apitools`:
 
-- A stable, reusable metadata artifact exists, such as GraphQL SDL, AsyncAPI,
-  database schema dumps, or another reviewed protocol schema format.
+- A stable, reusable metadata artifact exists, such as AsyncAPI, database
+  schema dumps, or another reviewed protocol schema format.
 - The implementation can parse local or downloaded metadata without opening
   sockets to live services, introspecting running databases, or reading runtime
   credentials.

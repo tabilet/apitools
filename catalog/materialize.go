@@ -23,6 +23,7 @@ const (
 	ProviderArtifactCapabilityDiscoveryOnly        ProviderArtifactCapability = "discovery-only"
 	ProviderArtifactCapabilitySmithyOnly           ProviderArtifactCapability = "smithy-only"
 	ProviderArtifactCapabilityOpenRPCOnly          ProviderArtifactCapability = "openrpc-only"
+	ProviderArtifactCapabilityGraphQLOnly          ProviderArtifactCapability = "graphql-only"
 	ProviderArtifactCapabilityDocsOnly             ProviderArtifactCapability = "docs-only"
 	ProviderArtifactCapabilityAdvisoryOverlayOnly  ProviderArtifactCapability = "advisory-overlay-only"
 	ProviderArtifactCapabilityMixedMetadata        ProviderArtifactCapability = "mixed-metadata"
@@ -407,6 +408,7 @@ func providerArtifactCapability(protocols []SpecProtocol, artifacts []Resolution
 	hasDiscoveryRef := false
 	hasSmithyRef := false
 	hasOpenRPCRef := false
+	hasGraphQLRef := false
 	hasHumanDocs := false
 	for _, protocol := range protocols {
 		switch protocol {
@@ -418,6 +420,8 @@ func providerArtifactCapability(protocols []SpecProtocol, artifacts []Resolution
 			hasSmithyRef = true
 		case SpecProtocolOpenRPC:
 			hasOpenRPCRef = true
+		case SpecProtocolGraphQL:
+			hasGraphQLRef = true
 		case SpecProtocolHumanDocs:
 			hasHumanDocs = true
 		}
@@ -443,13 +447,15 @@ func providerArtifactCapability(protocols []SpecProtocol, artifacts []Resolution
 		return ProviderArtifactCapabilityOpenAPIReferenceOnly
 	case hasAdvisoryOverlay:
 		return ProviderArtifactCapabilityAdvisoryOverlayOnly
-	case hasDiscoveryRef && !hasSmithyRef:
+	case hasDiscoveryRef && !hasSmithyRef && !hasGraphQLRef:
 		return ProviderArtifactCapabilityDiscoveryOnly
-	case hasSmithyRef && !hasDiscoveryRef:
+	case hasSmithyRef && !hasDiscoveryRef && !hasGraphQLRef:
 		return ProviderArtifactCapabilitySmithyOnly
-	case hasOpenRPCRef && !hasDiscoveryRef && !hasSmithyRef:
+	case hasOpenRPCRef && !hasDiscoveryRef && !hasSmithyRef && !hasGraphQLRef:
 		return ProviderArtifactCapabilityOpenRPCOnly
-	case hasDiscoveryRef || hasSmithyRef || hasOpenRPCRef:
+	case hasGraphQLRef && !hasDiscoveryRef && !hasSmithyRef && !hasOpenRPCRef:
+		return ProviderArtifactCapabilityGraphQLOnly
+	case hasDiscoveryRef || hasSmithyRef || hasOpenRPCRef || hasGraphQLRef:
 		return ProviderArtifactCapabilityMixedMetadata
 	case hasHumanDocs:
 		return ProviderArtifactCapabilityDocsOnly
@@ -649,7 +655,7 @@ func materializedFileName(artifact CatalogSpecArtifact) string {
 		switch strings.TrimSpace(artifact.Kind) {
 		case "advisory-overlay", "openapi", "swagger", "google-discovery", "smithy-json", "asyncapi", "openapi-index":
 			ext = ".json"
-		case "openrpc":
+		case "openrpc", "graphql":
 			ext = ".json"
 		default:
 			ext = ".artifact"

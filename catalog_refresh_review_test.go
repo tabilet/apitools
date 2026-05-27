@@ -108,6 +108,7 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 		{name: "smithy", kind: catalog.SpecKindSmithyJSON, body: `{"smithy":"2.0","shapes":{}}`},
 		{name: "asyncapi", kind: catalog.SpecKindAsyncAPI, body: `{"asyncapi":"3.0.0","info":{"title":"Events","version":"1.0.0"},"operations":{}}`},
 		{name: "openrpc", kind: catalog.SpecKindOpenRPC, body: `{"openrpc":"1.3.2","info":{"title":"Pet RPC","version":"1.0.0"},"methods":[{"name":"pet.get"}]}`},
+		{name: "graphql", kind: catalog.SpecKindGraphQL, body: `type Query { issue(id: ID!): Issue }`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			dir := t.TempDir()
@@ -122,6 +123,8 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 				ref.RegisteredArtifactPath = "asyncapi/" + tc.name + ".json"
 			case catalog.SpecKindOpenRPC:
 				ref.RegisteredArtifactPath = "openrpc/" + tc.name + ".json"
+			case catalog.SpecKindGraphQL:
+				ref.RegisteredArtifactPath = "graphql/" + tc.name + ".graphql"
 			}
 			writeRefreshReviewArtifact(t, dir, ref.RegisteredArtifactPath, tc.body)
 
@@ -395,6 +398,8 @@ func refreshReviewTestProtocol(kind catalog.SpecKind) catalog.SpecProtocol {
 		return catalog.SpecProtocolAsyncAPI
 	case catalog.SpecKindOpenRPC:
 		return catalog.SpecProtocolOpenRPC
+	case catalog.SpecKindGraphQL:
+		return catalog.SpecProtocolGraphQL
 	default:
 		return catalog.SpecProtocolUnknown
 	}

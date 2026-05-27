@@ -477,6 +477,40 @@ func TestRefreshCatalogSpecReferencesSavesOpenRPCArtifactUnderOpenRPC(t *testing
 	}
 }
 
+func TestRefreshCatalogSpecReferencesSavesGraphQLArtifactUnderGraphQL(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`type Query { issue(id: ID!): Issue }`))
+	}))
+	defer server.Close()
+
+	cacheDir := t.TempDir()
+	report, err := (&Client{HTTPClient: server.Client(), AllowUnsafeHosts: true}).RefreshCatalogSpecReferences(context.Background(), []catalog.RefreshableSpecReference{{
+		ProviderID: "issues",
+		SpecRefID:  "issues-graphql",
+		Kind:       catalog.SpecKindGraphQL,
+		URL:        server.URL + "/schema.graphql",
+	}}, CatalogSpecRefreshOptions{CacheDir: cacheDir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := report.Results[0]
+	if result.ValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	}
+	if result.Protocol != catalog.SpecProtocolGraphQL {
+		t.Fatalf("protocol = %q, want graphql", result.Protocol)
+	}
+	if result.ArtifactPath != "graphql/issues-graphql.graphql" {
+		t.Fatalf("ArtifactPath = %q", result.ArtifactPath)
+	}
+	if result.Metadata.OperationCount != 1 {
+		t.Fatalf("operation count = %d, want 1", result.Metadata.OperationCount)
+	}
+	if _, err := os.Stat(filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))); err != nil {
+		t.Fatalf("expected saved artifact: %v", err)
+	}
+}
+
 func TestRefreshCatalogSpecReferencesRejectsStructuredNonOpenRPCArtifact(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(`{"title":"Not OpenRPC","methods":[]}`))

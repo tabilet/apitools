@@ -38,6 +38,7 @@ const (
 	SpecKindSmithyJSON      SpecKind = "smithy-json"
 	SpecKindAsyncAPI        SpecKind = "asyncapi"
 	SpecKindOpenRPC         SpecKind = "openrpc"
+	SpecKindGraphQL         SpecKind = "graphql"
 	SpecKindHumanDocs       SpecKind = "human-docs"
 )
 
@@ -258,7 +259,7 @@ func (p Provider) hasSpecKind(kinds ...SpecKind) bool {
 }
 
 func (p Provider) hasMachineSpecKind() bool {
-	return p.hasSpecKind(SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindSmithyJSON, SpecKindAsyncAPI, SpecKindOpenRPC)
+	return p.hasSpecKind(SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindSmithyJSON, SpecKindAsyncAPI, SpecKindOpenRPC, SpecKindGraphQL)
 }
 
 func validProviderReviewState(value ProviderReviewState) bool {
@@ -281,7 +282,7 @@ func validSpecAvailability(value SpecAvailability) bool {
 
 func validSpecKind(value SpecKind) bool {
 	switch value {
-	case SpecKindOpenAPI, SpecKindOpenAPIIndex, SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindSmithyJSON, SpecKindAsyncAPI, SpecKindOpenRPC, SpecKindHumanDocs:
+	case SpecKindOpenAPI, SpecKindOpenAPIIndex, SpecKindDropboxStone, SpecKindGoogleDiscovery, SpecKindSmithyJSON, SpecKindAsyncAPI, SpecKindOpenRPC, SpecKindGraphQL, SpecKindHumanDocs:
 		return true
 	default:
 		return false

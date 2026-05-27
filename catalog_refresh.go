@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/OpenUdon/apitools/catalog"
+	graphqlsource "github.com/OpenUdon/apitools/graphql"
 	"github.com/OpenUdon/apitools/openrpc"
 	"gopkg.in/yaml.v3"
 )
@@ -182,6 +183,12 @@ func validateCatalogRefreshContentRaw(ctx context.Context, ref catalog.Refreshab
 			return CatalogRefreshInvalid, SpecMetadata{}, fmt.Errorf("%s/%s: downloaded document does not validate as OpenRPC: %w", ref.ProviderID, ref.SpecRefID, err)
 		}
 		return CatalogRefreshValidStructured, metadata, nil
+	case catalog.SpecKindGraphQL:
+		metadata, err := graphQLMetadata(content)
+		if err != nil {
+			return CatalogRefreshInvalid, SpecMetadata{}, fmt.Errorf("%s/%s: downloaded document does not validate as GraphQL source metadata: %w", ref.ProviderID, ref.SpecRefID, err)
+		}
+		return CatalogRefreshValidStructured, metadata, nil
 	case catalog.SpecKindDropboxStone:
 		if len(bytes.TrimSpace(content)) == 0 {
 			return CatalogRefreshInvalid, SpecMetadata{}, fmt.Errorf("%s/%s: downloaded artifact is empty", ref.ProviderID, ref.SpecRefID)
@@ -201,6 +208,18 @@ func openRPCMetadata(content []byte) (SpecMetadata, error) {
 		Title:          model.Info.Title,
 		Description:    model.Info.Description,
 		OperationCount: len(model.MethodSummaries()),
+	}, nil
+}
+
+func graphQLMetadata(content []byte) (SpecMetadata, error) {
+	model, err := graphqlsource.Parse(content)
+	if err != nil {
+		return SpecMetadata{}, err
+	}
+	return SpecMetadata{
+		Title:          "GraphQL",
+		Description:    model.Schema.Description,
+		OperationCount: len(model.OperationSummaries()),
 	}, nil
 }
 
@@ -392,7 +411,7 @@ func catalogRefreshExtension(rawURL string, content []byte) string {
 		return ".tar.gz"
 	}
 	switch ext := strings.ToLower(filepath.Ext(lowerPath)); ext {
-	case ".json", ".yaml", ".yml":
+	case ".json", ".yaml", ".yml", ".graphql", ".graphqls", ".gql":
 		return ext
 	}
 	if len(bytes.TrimSpace(content)) > 0 && bytes.TrimSpace(content)[0] == '{' {
@@ -409,8 +428,8 @@ func cleanCatalogRefreshArtifactPath(path string) (string, error) {
 	if filepath.IsAbs(cleaned) || strings.HasPrefix(cleaned, "../") || cleaned == ".." || strings.Contains(cleaned, "/../") {
 		return "", fmt.Errorf("artifact path %q must stay under catalog cache directory", path)
 	}
-	if !strings.HasPrefix(cleaned, "openapi/") && !strings.HasPrefix(cleaned, "google-discovery/") && !strings.HasPrefix(cleaned, "aws-smithy/") && !strings.HasPrefix(cleaned, "asyncapi/") && !strings.HasPrefix(cleaned, "openrpc/") {
-		return "", fmt.Errorf("artifact path %q must be under openapi/, google-discovery/, aws-smithy/, asyncapi/, or openrpc/", path)
+	if !strings.HasPrefix(cleaned, "openapi/") && !strings.HasPrefix(cleaned, "google-discovery/") && !strings.HasPrefix(cleaned, "aws-smithy/") && !strings.HasPrefix(cleaned, "asyncapi/") && !strings.HasPrefix(cleaned, "openrpc/") && !strings.HasPrefix(cleaned, "graphql/") {
+		return "", fmt.Errorf("artifact path %q must be under openapi/, google-discovery/, aws-smithy/, asyncapi/, openrpc/, or graphql/", path)
 	}
 	return cleaned, nil
 }
