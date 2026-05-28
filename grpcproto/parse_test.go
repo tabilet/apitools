@@ -1,6 +1,10 @@
 package grpcproto
 
-import "testing"
+import (
+	"fmt"
+	"strings"
+	"testing"
+)
 
 func TestParseProtoPreservesServicesMessagesAndSelectors(t *testing.T) {
 	model, err := Parse([]byte(`
@@ -121,6 +125,24 @@ func TestParseBinaryDescriptorSet(t *testing.T) {
 	}
 }
 
+func TestParseBinaryDescriptorSetRejectsDeepNestedMessages(t *testing.T) {
+	data := message(
+		fieldBytes(1, message(
+			fieldString(1, "deep.proto"),
+			fieldString(2, "deep.v1"),
+			fieldBytes(4, deepNestedDescriptorMessage(maxDescriptorProtoDepth+2)),
+			fieldString(12, "proto3"),
+		)),
+	)
+	_, err := parseBinaryDescriptorSet(data)
+	if err == nil {
+		t.Fatal("Parse() error = nil, want descriptor nesting depth error")
+	}
+	if !strings.Contains(err.Error(), "maximum message depth") {
+		t.Fatalf("Parse() error = %v, want maximum message depth", err)
+	}
+}
+
 func TestDetectLocalArtifact(t *testing.T) {
 	detection, ok := DetectLocalArtifact([]byte(`syntax = "proto3"; service S { rpc M (Req) returns (Resp); } message Req { string id = 1; }`), "api.proto")
 	if !ok {
@@ -163,6 +185,14 @@ func fieldVarint(number int, value uint64) []byte {
 	out := encodeVarint(uint64(number << 3))
 	out = append(out, encodeVarint(value)...)
 	return out
+}
+
+func deepNestedDescriptorMessage(depth int) []byte {
+	parts := [][]byte{fieldString(1, fmt.Sprintf("M%d", depth))}
+	if depth > 0 {
+		parts = append(parts, fieldBytes(3, deepNestedDescriptorMessage(depth-1)))
+	}
+	return message(parts...)
 }
 
 func encodeVarint(value uint64) []byte {

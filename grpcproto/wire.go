@@ -5,6 +5,8 @@ import (
 	"io"
 )
 
+const maxDescriptorProtoDepth = 100
+
 func parseBinaryDescriptorSet(data []byte) (*Model, error) {
 	reader := wireReader{data: data}
 	model := &Model{SourceKind: ArtifactKindDescriptorSet}
@@ -173,6 +175,13 @@ func parseMethodDescriptorProto(data []byte, packageName string) (*Method, error
 }
 
 func parseDescriptorProto(data []byte, packageName, parent string) (*Message, error) {
+	return parseDescriptorProtoDepth(data, packageName, parent, 0)
+}
+
+func parseDescriptorProtoDepth(data []byte, packageName, parent string, depth int) (*Message, error) {
+	if depth > maxDescriptorProtoDepth {
+		return nil, fmt.Errorf("grpcproto: descriptor nesting exceeds maximum message depth %d", maxDescriptorProtoDepth)
+	}
 	reader := wireReader{data: data}
 	message := &Message{}
 	for !reader.done() {
@@ -198,7 +207,7 @@ func parseDescriptorProto(data []byte, packageName, parent string) (*Message, er
 			payload, err = reader.bytesOfType(wireType)
 			if err == nil {
 				var nested *Message
-				nested, err = parseDescriptorProto(payload, packageName, joinName(parent, message.Name))
+				nested, err = parseDescriptorProtoDepth(payload, packageName, joinName(parent, message.Name), depth+1)
 				if nested != nil {
 					message.Messages = append(message.Messages, nested)
 				}
