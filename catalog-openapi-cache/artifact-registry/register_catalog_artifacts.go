@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -82,7 +83,10 @@ func run() error {
 func registerSpec(ctx context.Context, cache *sqlitecache.Cache, artifact specArtifact) error {
 	cached, ok, err := cache.LoadSpec(ctx, artifact.url, 100*365*24*time.Hour)
 	if err != nil {
-		return err
+		if !errors.Is(err, apitools.ErrCachedSpecIntegrity) {
+			return err
+		}
+		ok = false
 	}
 	metadata := cached.Metadata
 	finalURL := cached.FinalURL
