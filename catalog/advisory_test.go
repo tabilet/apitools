@@ -338,25 +338,27 @@ func TestKubernetesClusterAPISourceCoverageAdvisoryRow(t *testing.T) {
 		t.Fatalf("providers len = %d, want %d", got, want)
 	}
 	row := report.Providers[0]
-	if row.OpenAPIAvailability != SpecAvailabilityUnavailable {
-		t.Fatalf("OpenAPI availability = %q, want %q", row.OpenAPIAvailability, SpecAvailabilityUnavailable)
+	if row.OpenAPIAvailability != SpecAvailabilityKnown {
+		t.Fatalf("OpenAPI availability = %q, want %q", row.OpenAPIAvailability, SpecAvailabilityKnown)
 	}
-	if row.UserOpenAPINeed != UserOpenAPINeedLikely {
-		t.Fatalf("user OpenAPI need = %q, want %q", row.UserOpenAPINeed, UserOpenAPINeedLikely)
+	if row.UserOpenAPINeed != UserOpenAPINeedPossible {
+		t.Fatalf("user OpenAPI need = %q, want %q", row.UserOpenAPINeed, UserOpenAPINeedPossible)
 	}
 	if row.AuthStatus != AuthStatusPresentIncomplete {
 		t.Fatalf("auth status = %q, want %q", row.AuthStatus, AuthStatusPresentIncomplete)
 	}
-	if !advisoryHasSpecKind(row, SpecKindHumanDocs) {
-		t.Fatalf("missing Kubernetes human docs reference: %#v", row.SpecReferences)
+	if !advisoryHasSpecKind(row, SpecKindOpenAPI) || !advisoryHasSpecKind(row, SpecKindHumanDocs) {
+		t.Fatalf("missing Kubernetes OpenAPI or human docs reference: %#v", row.SpecReferences)
 	}
-	if row.ResolvedOpenAPI.Source != ResolutionSourceBuiltInSpecReference || row.ResolvedOpenAPI.SpecRefID != "kubernetes-api-overview" {
+	if row.ResolvedOpenAPI.Source != ResolutionSourceBuiltInSpecReference || row.ResolvedOpenAPI.SpecRefID != "kubernetes-v1-19-2-swagger" {
 		t.Fatalf("resolved OpenAPI = %#v", row.ResolvedOpenAPI)
 	}
 	if len(row.EndpointOverlays) != 0 {
 		t.Fatalf("endpoint overlays = %#v, want none", row.EndpointOverlays)
 	}
-	assertHasFollowUp(t, row.ManualFollowUps, "OpenAPI-only workflows likely need a user-provided or generated OpenAPI document before import.")
+	if !containsString(row.Quirks, "The built-in Kubernetes Swagger artifact is a pinned v1.19.2 fixture snapshot from terraform-provider-kubernetes, not a canonical provider-wide replacement for cluster-exported metadata.") {
+		t.Fatalf("quirks = %#v, want pinned snapshot caveat", row.Quirks)
+	}
 }
 
 func TestEnterpriseApplicationSourceCoverageAdvisoryRows(t *testing.T) {

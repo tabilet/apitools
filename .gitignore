@@ -7,6 +7,7 @@ catalog-openapi-cache/google-discovery
 catalog-openapi-cache/openapi
 !catalog-openapi-cache/openapi/
 catalog-openapi-cache/openapi/*
+!catalog-openapi-cache/openapi/kubernetes-v1-19-2-swagger.json
 !catalog-openapi-cache/openapi/nvidia-dsx-air-openapi.yaml
 catalog-openapi-cache/asyncapi
 !catalog-openapi-cache/asyncapi/

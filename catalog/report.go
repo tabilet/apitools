@@ -446,10 +446,10 @@ var builtInSecurityClassifications = []SecurityClassification{
 	},
 	{
 		ProviderID: "kubernetes",
-		SpecRefID:  "kubernetes-api-overview",
+		SpecRefID:  "kubernetes-v1-19-2-swagger",
 		Status:     AuthStatusPresentIncomplete,
-		SourceRefs: []string{"https://kubernetes.io/docs/concepts/overview/kubernetes-api/", "https://kubernetes.io/docs/reference/access-authn-authz/authentication/", "https://kubernetes.io/docs/concepts/security/controlling-access/"},
-		SourceNote: "Kubernetes API authentication and authorization are cluster-configured; exported cluster OpenAPI/Discovery metadata has no portable provider-wide security scheme, and apitools must not read kubeconfig, resolve credentials, or contact API servers.",
+		SourceRefs: []string{"https://raw.githubusercontent.com/hashicorp/terraform-provider-kubernetes/dcdf46c9ca238b671d1159f252ec19c8fe2ed16e/manifest/openapi/testdata/k8s-swagger.json", "https://kubernetes.io/docs/concepts/overview/kubernetes-api/", "https://kubernetes.io/docs/reference/access-authn-authz/authentication/", "https://kubernetes.io/docs/concepts/security/controlling-access/"},
+		SourceNote: "The pinned Kubernetes v1.19.2 Swagger snapshot declares bearer-token authentication, but Kubernetes API authentication and authorization are cluster-configured; real cluster exports have no portable provider-wide security scheme, and apitools must not read kubeconfig, resolve credentials, or contact API servers.",
 	},
 	{
 		ProviderID: "box",

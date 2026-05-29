@@ -25,6 +25,7 @@ type specArtifact struct {
 	openapi    string
 	swagger    string
 	status     string
+	official   string
 }
 
 type overlayArtifact struct {
@@ -116,6 +117,9 @@ func registerSpec(ctx context.Context, cache *sqlitecache.Cache, artifact specAr
 	artifactMetadata := map[string]string{
 		"official": "true",
 		"kind":     artifact.kind,
+	}
+	if artifact.official != "" {
+		artifactMetadata["official"] = artifact.official
 	}
 	if artifact.status != "" {
 		artifactMetadata["validation_status"] = artifact.status
@@ -567,6 +571,17 @@ var specArtifacts = []specArtifact{
 		title:      "Cloudflare API",
 		openapi:    "3.0.3",
 		status:     apitools.CatalogRefreshParseableOpenAPIInvalid,
+	},
+	{
+		providerID: "kubernetes",
+		artifactID: "kubernetes-v1-19-2-swagger",
+		kind:       "openapi",
+		url:        "https://raw.githubusercontent.com/hashicorp/terraform-provider-kubernetes/dcdf46c9ca238b671d1159f252ec19c8fe2ed16e/manifest/openapi/testdata/k8s-swagger.json",
+		path:       "openapi/kubernetes-v1-19-2-swagger.json",
+		title:      "Kubernetes",
+		swagger:    "2.0",
+		status:     apitools.CatalogRefreshValidSwagger,
+		official:   "false",
 	},
 	{
 		providerID: "chargebee",
