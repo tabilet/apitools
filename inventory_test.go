@@ -288,6 +288,82 @@ func TestBuildOperationInventoryRequestBodyFieldsAreRecursiveAndPromptSafe(t *te
 	}
 }
 
+func TestBuildOperationInventoryResolvesSwaggerBodyRefFields(t *testing.T) {
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{
+		Documents: []InventoryDocument{{
+			Name: "kubernetes",
+			Content: []byte(`swagger: "2.0"
+info:
+  title: Kubernetes
+  version: v1
+paths:
+  /api/v1/namespaces:
+    post:
+      operationId: createCoreV1Namespace
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/io.k8s.api.core.v1.Namespace"
+      responses:
+        "201":
+          description: created
+definitions:
+  io.k8s.api.core.v1.Namespace:
+    type: object
+    required: [metadata]
+    properties:
+      metadata:
+        type: object
+        required: [name]
+        properties:
+          name:
+            type: string
+          labels:
+            type: object
+            additionalProperties:
+              type: string
+          owner:
+            $ref: "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Owner"
+          previousOwner:
+            $ref: "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Owner"
+  io.k8s.apimachinery.pkg.apis.meta.v1.Owner:
+    type: object
+    properties:
+      name:
+        type: string
+`),
+		}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Operations) != 1 {
+		t.Fatalf("operations = %#v", inventory.Operations)
+	}
+	body := inventory.Operations[0].RequestBody
+	if body == nil {
+		t.Fatalf("missing request body")
+	}
+	var paths []string
+	for _, field := range body.Fields {
+		paths = append(paths, field.Path)
+	}
+	joined := strings.Join(paths, ",")
+	for _, expected := range []string{"metadata", "metadata.name", "metadata.labels", "metadata.owner.name", "metadata.previousOwner.name"} {
+		if !strings.Contains(joined, expected) {
+			t.Fatalf("missing %q in fields %#v", expected, body.Fields)
+		}
+	}
+	if strings.Contains(joined, "body") {
+		t.Fatalf("body ref stayed opaque: %#v", body.Fields)
+	}
+	if got := strings.Join(body.RequiredFieldPaths, ","); !strings.Contains(got, "metadata.name") {
+		t.Fatalf("required paths = %#v", body.RequiredFieldPaths)
+	}
+}
+
 func TestBuildOperationInventoryAllowsRequestBodyWithoutSchema(t *testing.T) {
 	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{
 		Query: "create",

@@ -103,7 +103,7 @@ func addDocumentInventory(inventory *OperationInventory, doc InventoryDocument, 
 			op := operationSummary(doc, name, path, method, operation)
 			op.Parameters = append(op.Parameters, parameterSummaries(pathParameterValues, &op)...)
 			op.Parameters = append(op.Parameters, parameterSummaries(sliceValue(operation["parameters"]), &op)...)
-			op.RequestBody = requestBodySummary(operation, &op)
+			op.RequestBody = requestBodySummary(root, operation, &op)
 			if value, ok := operation["security"]; ok {
 				op.Security = securityRequirements(value, securitySchemes)
 			} else {

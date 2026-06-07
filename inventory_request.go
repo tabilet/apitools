@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func requestBodySummary(operation map[string]any, op *OperationSummary) *RequestBodySummary {
+func requestBodySummary(root map[string]any, operation map[string]any, op *OperationSummary) *RequestBodySummary {
 	if body := mapValue(operation["requestBody"]); len(body) > 0 {
 		summary := &RequestBodySummary{
 			Description: stringValue(body["description"]),
@@ -19,7 +19,7 @@ func requestBodySummary(operation map[string]any, op *OperationSummary) *Request
 		summary.ContentTypes = sortedMapKeys(content)
 		if len(summary.ContentTypes) > 0 {
 			media := mapValue(content[summary.ContentTypes[0]])
-			rawSchema := mapValue(media["schema"])
+			rawSchema := resolveLocalSchemaRefs(root, mapValue(media["schema"]), map[string]bool{}, 0)
 			schema := schemaSummary(rawSchema)
 			summary.Schema = &schema
 			summary.Fields = requestFieldSummaries(rawSchema, "", summary.Required, 0)
@@ -38,7 +38,7 @@ func requestBodySummary(operation map[string]any, op *OperationSummary) *Request
 		if stringValue(parameter["in"]) != "body" {
 			continue
 		}
-		rawSchema := mapValue(parameter["schema"])
+		rawSchema := resolveLocalSchemaRefs(root, mapValue(parameter["schema"]), map[string]bool{}, 0)
 		schema := schemaSummary(rawSchema)
 		if schema.Ref != "" {
 			addOperationIssue(op, "schema.ref_unresolved", "body parameter schema reference was not resolved", schema.Ref)
@@ -57,6 +57,70 @@ func requestBodySummary(operation map[string]any, op *OperationSummary) *Request
 		}
 	}
 	return nil
+}
+
+func resolveLocalSchemaRefs(root map[string]any, schema map[string]any, seen map[string]bool, depth int) map[string]any {
+	if len(schema) == 0 || depth > maxRequestFieldDepth {
+		return schema
+	}
+	if ref := stringValue(schema["$ref"]); strings.HasPrefix(ref, "#/definitions/") || strings.HasPrefix(ref, "#/components/schemas/") {
+		if !seen[ref] {
+			nextSeen := copyStringBoolMap(seen)
+			nextSeen[ref] = true
+			if resolved := localSchemaRef(root, ref); len(resolved) > 0 {
+				base := resolveLocalSchemaRefs(root, resolved, nextSeen, depth+1)
+				merged := copyStringAnyMap(base)
+				for key, value := range schema {
+					if key == "$ref" {
+						continue
+					}
+					merged[key] = value
+				}
+				schema = merged
+			}
+		}
+	}
+	out := copyStringAnyMap(schema)
+	if properties := mapValue(out["properties"]); len(properties) > 0 {
+		resolvedProperties := make(map[string]any, len(properties))
+		for _, name := range sortedMapKeys(properties) {
+			resolvedProperties[name] = resolveLocalSchemaRefs(root, mapValue(properties[name]), copyStringBoolMap(seen), depth+1)
+		}
+		out["properties"] = resolvedProperties
+	}
+	if items := mapValue(out["items"]); len(items) > 0 {
+		out["items"] = resolveLocalSchemaRefs(root, items, copyStringBoolMap(seen), depth+1)
+	}
+	return out
+}
+
+func localSchemaRef(root map[string]any, ref string) map[string]any {
+	switch {
+	case strings.HasPrefix(ref, "#/definitions/"):
+		name := strings.TrimPrefix(ref, "#/definitions/")
+		return mapValue(mapValue(root["definitions"])[name])
+	case strings.HasPrefix(ref, "#/components/schemas/"):
+		name := strings.TrimPrefix(ref, "#/components/schemas/")
+		return mapValue(mapValue(mapValue(root["components"])["schemas"])[name])
+	default:
+		return nil
+	}
+}
+
+func copyStringAnyMap(in map[string]any) map[string]any {
+	out := make(map[string]any, len(in))
+	for key, value := range in {
+		out[key] = value
+	}
+	return out
+}
+
+func copyStringBoolMap(in map[string]bool) map[string]bool {
+	out := make(map[string]bool, len(in))
+	for key, value := range in {
+		out[key] = value
+	}
+	return out
 }
 
 func schemaSummary(schema map[string]any) SchemaSummary {
