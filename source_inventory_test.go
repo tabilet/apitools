@@ -75,6 +75,7 @@ func TestBuildAPISourceOperationInventoryNativeSources(t *testing.T) {
             "project": {"type": "string", "required": true, "location": "query"}
           },
           "request": {"$ref": "Bucket"},
+          "response": {"$ref": "Bucket"},
           "scopes": ["https://www.googleapis.com/auth/devstorage.full_control"]
         }
       }
@@ -98,6 +99,15 @@ func TestBuildAPISourceOperationInventoryNativeSources(t *testing.T) {
 			}
 			if _, ok := index.LookupOperationID(tt.operation); !ok {
 				t.Fatalf("operation %q missing from %#v", tt.operation, index.OperationIDs)
+			}
+			if tt.kind == APISourceKindGoogleDiscovery {
+				op, ok := index.LookupOperationID(tt.operation)
+				if !ok || op.ResponseBody == nil || op.ResponseBody.Ref != "Bucket" {
+					t.Fatalf("google response body = %#v", op.ResponseBody)
+				}
+				if names := responseFieldNames(op.ResponseBody.Fields); len(names) != 1 || names[0] != "name" {
+					t.Fatalf("google response fields = %#v", op.ResponseBody.Fields)
+				}
 			}
 		})
 	}

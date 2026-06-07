@@ -311,6 +311,7 @@ func googleDiscoveryOperationSummary(documentName string, doc APISourceDocument,
 		Tags:                 append([]string(nil), op.Tags...),
 		Parameters:           googleDiscoveryRequestParameters(op.Parameters),
 		RequestBody:          googleDiscoveryRequestBodySummary(model, op),
+		ResponseBody:         googleDiscoveryResponseBodySummary(model, op),
 		Security: []SecuritySummary{{
 			Name:   "googleOAuth2",
 			Type:   "oauth2",
@@ -366,6 +367,34 @@ func googleDiscoveryRequestBodySummary(model *upstreamdiscovery.Model, op *upstr
 		}
 	}
 	return body
+}
+
+func googleDiscoveryResponseBodySummary(model *upstreamdiscovery.Model, op *upstreamdiscovery.Operation) *ResponseBodySummary {
+	if op == nil || strings.TrimSpace(op.ResponseRef) == "" {
+		return nil
+	}
+	body := &ResponseBodySummary{
+		StatusCode:   "2xx",
+		Ref:          op.ResponseRef,
+		ContentTypes: []string{firstNonEmpty(op.ResponseMediaType, "application/json")},
+	}
+	if model == nil {
+		return body
+	}
+	schemaName := strings.TrimPrefix(op.ResponseRef, "#/components/schemas/")
+	schema, ok := model.Schemas[schemaName]
+	if !ok {
+		return body
+	}
+	body.Description = stringFromMap(schema, "description")
+	summary := schemaSummary(schema)
+	body.Schema = &summary
+	body.Fields = googleDiscoveryResponseFields(schema)
+	return body
+}
+
+func googleDiscoveryResponseFields(schema map[string]any) []RequestFieldSummary {
+	return appendMissingTopLevelResponseFields(requestFieldSummaries(schema, "", false, 0), schema, "name", "id")
 }
 
 func googleDiscoveryRequestFields(schema map[string]any, operationID string) []RequestFieldSummary {

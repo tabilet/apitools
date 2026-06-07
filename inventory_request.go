@@ -59,6 +59,125 @@ func requestBodySummary(root map[string]any, operation map[string]any, op *Opera
 	return nil
 }
 
+func responseBodySummary(root map[string]any, operation map[string]any, op *OperationSummary) *ResponseBodySummary {
+	responses := mapValue(operation["responses"])
+	if len(responses) == 0 {
+		return nil
+	}
+	for _, status := range successfulResponseStatuses(responses) {
+		response := mapValue(responses[status])
+		if len(response) == 0 {
+			continue
+		}
+		summary := &ResponseBodySummary{
+			StatusCode:  status,
+			Description: stringValue(response["description"]),
+			Ref:         stringValue(response["$ref"]),
+		}
+		if summary.Ref != "" {
+			addOperationIssue(op, "schema.ref_unresolved", "response references a schema that was not resolved", summary.Ref)
+		}
+		if content := mapValue(response["content"]); len(content) > 0 {
+			summary.ContentTypes = sortedMapKeys(content)
+			for _, contentType := range preferredResponseContentTypes(summary.ContentTypes) {
+				media := mapValue(content[contentType])
+				rawSchema := resolveLocalSchemaRefs(root, mapValue(media["schema"]), map[string]bool{}, 0)
+				if len(rawSchema) == 0 {
+					continue
+				}
+				schema := schemaSummary(rawSchema)
+				summary.Schema = &schema
+				summary.Fields = requestFieldSummaries(rawSchema, "", false, 0)
+				summary.Fields = appendMissingTopLevelResponseFields(summary.Fields, rawSchema, "name", "id")
+				if len(summary.Fields) == 0 && !looksLikeCredentialName("body") {
+					summary.Fields = []RequestFieldSummary{requestFieldSummary("body", false, rawSchema)}
+				}
+				if schema.Ref != "" {
+					addOperationIssue(op, "schema.ref_unresolved", "response schema reference was not resolved", schema.Ref)
+				}
+				return summary
+			}
+			if len(summary.ContentTypes) > 0 {
+				return summary
+			}
+			continue
+		}
+		rawSchema := resolveLocalSchemaRefs(root, mapValue(response["schema"]), map[string]bool{}, 0)
+		if len(rawSchema) == 0 {
+			continue
+		}
+		schema := schemaSummary(rawSchema)
+		summary.Schema = &schema
+		summary.Fields = requestFieldSummaries(rawSchema, "", false, 0)
+		summary.Fields = appendMissingTopLevelResponseFields(summary.Fields, rawSchema, "name", "id")
+		if len(summary.Fields) == 0 && !looksLikeCredentialName("body") {
+			summary.Fields = []RequestFieldSummary{requestFieldSummary("body", false, rawSchema)}
+		}
+		if schema.Ref != "" {
+			addOperationIssue(op, "schema.ref_unresolved", "response schema reference was not resolved", schema.Ref)
+		}
+		return summary
+	}
+	return nil
+}
+
+func appendMissingTopLevelResponseFields(fields []RequestFieldSummary, schema map[string]any, names ...string) []RequestFieldSummary {
+	properties := mapValue(schema["properties"])
+	if len(properties) == 0 {
+		return fields
+	}
+	seen := map[string]bool{}
+	for _, field := range fields {
+		seen[field.Path] = true
+	}
+	for _, name := range names {
+		if seen[name] {
+			continue
+		}
+		property := mapValue(properties[name])
+		if len(property) == 0 {
+			continue
+		}
+		fields = append(fields, requestFieldSummary(name, false, property))
+		seen[name] = true
+	}
+	sort.SliceStable(fields, func(i, j int) bool {
+		return fields[i].Path < fields[j].Path
+	})
+	return fields
+}
+
+func successfulResponseStatuses(responses map[string]any) []string {
+	var statuses []string
+	for _, status := range sortedMapKeys(responses) {
+		trimmed := strings.TrimSpace(status)
+		if len(trimmed) == 3 && trimmed[0] == '2' {
+			statuses = append(statuses, trimmed)
+		}
+	}
+	return statuses
+}
+
+func preferredResponseContentTypes(contentTypes []string) []string {
+	out := append([]string(nil), contentTypes...)
+	sort.SliceStable(out, func(i, j int) bool {
+		return responseContentTypeScore(out[i]) > responseContentTypeScore(out[j])
+	})
+	return out
+}
+
+func responseContentTypeScore(contentType string) int {
+	contentType = strings.ToLower(strings.TrimSpace(contentType))
+	switch {
+	case strings.Contains(contentType, "json"):
+		return 3
+	case strings.Contains(contentType, "yaml") || strings.Contains(contentType, "xml"):
+		return 2
+	default:
+		return 1
+	}
+}
+
 func resolveLocalSchemaRefs(root map[string]any, schema map[string]any, seen map[string]bool, depth int) map[string]any {
 	if len(schema) == 0 || depth > maxRequestFieldDepth {
 		return schema

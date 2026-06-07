@@ -43,6 +43,12 @@ func TestBuildOperationInventoryOpenAPI3(t *testing.T) {
 	if len(got.RequestBody.Schema.Properties) != 2 || got.RequestBody.Schema.Properties[0].Name != "priority" {
 		t.Fatalf("schema properties = %#v", got.RequestBody.Schema.Properties)
 	}
+	if got.ResponseBody == nil || got.ResponseBody.StatusCode != "201" || got.ResponseBody.Schema == nil {
+		t.Fatalf("missing response body: %#v", got.ResponseBody)
+	}
+	if names := responseFieldNames(got.ResponseBody.Fields); strings.Join(names, ",") != "id,name,status" {
+		t.Fatalf("response fields = %#v", got.ResponseBody.Fields)
+	}
 	if len(got.Security) != 1 || got.Security[0].Name != "apiKeyAuth" || got.Security[0].In != "header" || got.Security[0].ParameterName != "X-API-Key" {
 		t.Fatalf("security = %#v", got.Security)
 	}
@@ -190,6 +196,12 @@ func TestBuildOperationInventorySwagger2(t *testing.T) {
 	}
 	if len(got.Security) != 1 || got.Security[0].Name != "api_key" || got.Security[0].Type != "apiKey" || got.Security[0].ParameterName != "X-API-Key" {
 		t.Fatalf("security = %#v", got.Security)
+	}
+	if got.ResponseBody == nil || got.ResponseBody.StatusCode != "200" || got.ResponseBody.Schema == nil {
+		t.Fatalf("response body = %#v", got.ResponseBody)
+	}
+	if names := responseFieldNames(got.ResponseBody.Fields); strings.Join(names, ",") != "id,name" {
+		t.Fatalf("response fields = %#v", got.ResponseBody.Fields)
 	}
 }
 
@@ -572,7 +584,26 @@ paths:
       responses:
         "201":
           description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  status:
+                    type: string
 `
+}
+
+func responseFieldNames(fields []RequestFieldSummary) []string {
+	out := make([]string, 0, len(fields))
+	for _, field := range fields {
+		out = append(out, field.Path)
+	}
+	return out
 }
 
 func swagger2InventoryFixture() string {
@@ -599,6 +630,13 @@ paths:
       responses:
         "200":
           description: ok
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
 `
 }
 

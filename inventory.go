@@ -104,6 +104,7 @@ func addDocumentInventory(inventory *OperationInventory, doc InventoryDocument, 
 			op.Parameters = append(op.Parameters, parameterSummaries(pathParameterValues, &op)...)
 			op.Parameters = append(op.Parameters, parameterSummaries(sliceValue(operation["parameters"]), &op)...)
 			op.RequestBody = requestBodySummary(root, operation, &op)
+			op.ResponseBody = responseBodySummary(root, operation, &op)
 			if value, ok := operation["security"]; ok {
 				op.Security = securityRequirements(value, securitySchemes)
 			} else {
@@ -154,11 +155,12 @@ func operationSummary(doc InventoryDocument, documentName, path, method string, 
 
 func operationExtensions(operation map[string]any) map[string]string {
 	allow := map[string]struct{}{
-		"x-aws-operation-name": {},
+		"x-aws-operation-name":        {},
+		"x-ms-long-running-operation": {},
 	}
 	out := map[string]string{}
 	for key := range allow {
-		value := strings.TrimSpace(stringValue(operation[key]))
+		value := operationExtensionValue(operation[key])
 		if value != "" {
 			out[key] = value
 		}
@@ -167,6 +169,19 @@ func operationExtensions(operation map[string]any) map[string]string {
 		return nil
 	}
 	return out
+}
+
+func operationExtensionValue(value any) string {
+	if text := strings.TrimSpace(stringValue(value)); text != "" {
+		return text
+	}
+	if typed, ok := value.(bool); ok {
+		if typed {
+			return "true"
+		}
+		return "false"
+	}
+	return ""
 }
 
 func operationMethods(pathItem map[string]any) []string {
