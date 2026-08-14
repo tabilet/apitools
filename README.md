@@ -286,6 +286,29 @@ results, err := apitools.LocalFiles(ctx, apitools.LocalOptions{
 _, _ = results, err
 ```
 
+For family-aware authoring discovery, callers provide every file or directory
+root explicitly. The report validates OpenAPI/Swagger, Google Discovery, AWS
+Smithy, AsyncAPI, GraphQL, OpenRPC, gRPC/protobuf, and OData, and includes
+content digests and visible rejections instead of guessing from directory
+names:
+
+```go
+sources, err := apitools.DiscoverLocalSources(ctx, apitools.LocalSourceDiscoveryOptions{
+	Roots: []string{"./api-sources", "./openapi/pets.yaml"},
+	Sources: []apitools.LocalSource{
+		{Kind: apitools.APISourceKindOpenRPC, ID: "billing", Path: "./metadata/service.json"},
+	},
+	Query: "fetch pet and publish billing event",
+})
+_, _ = sources, err
+```
+
+Discovery defaults to 10,000 visited entries, 100 accepted candidates, and 20
+MiB per file. Reaching either count bound marks the report truncated with a
+blocking diagnostic and narrowing guidance. Identical content is deduplicated
+by SHA-256. Ambiguous JSON or XML requires an explicit `LocalSource.Kind`;
+conventional source directory names affect neither detection nor validation.
+
 Prompt-safe OpenAPI operation context is available through inventories and
 document summaries:
 
@@ -399,8 +422,9 @@ including localhost, private, link-local, multicast, and unspecified addresses.
 Callers that intentionally need local fixtures can opt into that behavior with
 `Client.AllowUnsafeHosts`.
 
-Local file reads are also fail-closed. `LocalFiles`, `BuildOperationInventory`,
-and `LoadOperationIndex` reject symlinked scan roots, symlinked document paths,
+Local file reads are also fail-closed. `LocalFiles`, `DiscoverLocalSources`,
+`BuildOperationInventory`, and `LoadOperationIndex` reject symlinked scan
+roots, symlinked document paths,
 symlinked parent components, directories, special files, and files larger than
 the resolved byte limit before parsing. Path-backed local reads use bounded I/O;
 `LocalOptions.MaxBytes` and `InventoryOptions.MaxBytes` can lower or raise the

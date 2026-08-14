@@ -33,9 +33,9 @@ type APISourceInventoryOptions struct {
 }
 
 // BuildAPISourceOperationInventory extracts prompt-safe operation summaries
-// from OpenAPI/Swagger, AWS Smithy JSON, and Google Discovery source documents.
-// It preserves native source families rather than lowering Smithy or Discovery
-// into OpenAPI.
+// from OpenAPI/Swagger, AWS Smithy JSON, Google Discovery, AsyncAPI, GraphQL,
+// OpenRPC, gRPC/protobuf, and OData source documents. It preserves native
+// source families rather than lowering them into OpenAPI.
 func BuildAPISourceOperationInventory(ctx context.Context, opts APISourceInventoryOptions) (OperationInventory, error) {
 	if ctx == nil {
 		ctx = context.Background()
@@ -97,6 +97,8 @@ func BuildAPISourceOperationInventory(ctx context.Context, opts APISourceInvento
 			addAWSSmithyInventory(&inventory, doc, i, content, opts.Query)
 		case APISourceKindGoogleDiscovery:
 			addGoogleDiscoveryInventory(&inventory, doc, i, content, opts.Query)
+		case APISourceKindAsyncAPI, APISourceKindGraphQL, APISourceKindOpenRPC, APISourceKindGRPCProtobuf, APISourceKindOData:
+			addAdditionalSourceInventory(&inventory, doc, i, kind, content, opts.Query)
 		}
 	}
 	sort.SliceStable(inventory.Operations, func(i, j int) bool {
@@ -126,9 +128,65 @@ func normalizeAPISourceKind(kind string) string {
 		return APISourceKindAWSSmithy
 	case APISourceKindGoogleDiscovery, "discovery", "google":
 		return APISourceKindGoogleDiscovery
+	case APISourceKindAsyncAPI:
+		return APISourceKindAsyncAPI
+	case APISourceKindGraphQL:
+		return APISourceKindGraphQL
+	case APISourceKindOpenRPC:
+		return APISourceKindOpenRPC
+	case APISourceKindGRPCProtobuf, "grpc", "protobuf", "proto":
+		return APISourceKindGRPCProtobuf
+	case APISourceKindOData:
+		return APISourceKindOData
 	default:
 		return ""
 	}
+}
+
+func addAdditionalSourceInventory(inventory *OperationInventory, doc APISourceDocument, index int, kind string, content []byte, query string) {
+	path := firstNonEmpty(doc.RelativePath, doc.Path, doc.Name)
+	var operations []OperationSummary
+	var err error
+	switch kind {
+	case APISourceKindAsyncAPI:
+		operations, err = ParseAsyncAPIOperationSummaries(content, path)
+	case APISourceKindGraphQL:
+		operations, err = ParseGraphQLOperationSummaries(content, path)
+	case APISourceKindOpenRPC:
+		operations, err = ParseOpenRPCOperationSummaries(content, path)
+	case APISourceKindGRPCProtobuf:
+		operations, err = ParseGRPCProtobufOperationSummaries(content, path)
+	case APISourceKindOData:
+		operations, err = ParseODataOperationSummaries(content, path)
+	}
+	if err != nil {
+		inventory.Diagnostics = append(inventory.Diagnostics, Diagnostic{
+			Severity: "error", Code: "document.parse", Message: err.Error(), Path: path,
+			Remediation: "Provide a valid " + kind + " source document.",
+		})
+		return
+	}
+	name := firstNonEmpty(doc.Name, func() string {
+		if len(operations) > 0 {
+			return operations[0].DocumentName
+		}
+		return ""
+	}(), fmt.Sprintf("document-%d", index+1))
+	for operationIndex := range operations {
+		operation := &operations[operationIndex]
+		operation.DocumentName = firstNonEmpty(operation.DocumentName, name)
+		operation.DocumentPath = firstNonEmpty(doc.Path, operation.DocumentPath)
+		operation.DocumentRelativePath = firstNonEmpty(doc.RelativePath, operation.DocumentRelativePath)
+		if operation.Extensions == nil {
+			operation.Extensions = map[string]string{}
+		}
+		operation.Extensions["x-uws-source-kind"] = kind
+		operation.Score = ScoreText(query, operationSearchText(*operation))
+	}
+	inventory.Documents = append(inventory.Documents, DocumentSummary{
+		Name: name, Path: doc.Path, RelativePath: doc.RelativePath, Title: name, OperationCount: len(operations),
+	})
+	inventory.Operations = append(inventory.Operations, operations...)
 }
 
 func addAWSSmithyInventory(inventory *OperationInventory, doc APISourceDocument, index int, content []byte, query string) {
