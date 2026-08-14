@@ -686,10 +686,19 @@ func likelySourceFile(path string) bool {
 
 func isLocalSourceSidecar(path string) bool {
 	base := strings.ToLower(filepath.Base(path))
-	return strings.Contains(base, ".security-overlay.") ||
-		strings.HasSuffix(base, ".security-overlay.json") ||
-		strings.HasSuffix(base, ".security-overlay.yaml") ||
-		strings.HasSuffix(base, ".security-overlay.yml")
+	for _, suffix := range []string{
+		".security.json",
+		".security.yaml",
+		".security.yml",
+		".security-overlay.json",
+		".security-overlay.yaml",
+		".security-overlay.yml",
+	} {
+		if strings.HasSuffix(base, suffix) {
+			return true
+		}
+	}
+	return false
 }
 
 func conventionalSourceDirectory(path string) bool {

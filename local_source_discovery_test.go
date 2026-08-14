@@ -236,7 +236,16 @@ func TestDiscoverLocalSourcesRejectsAuthoringOpenAPIWithoutOperationID(t *testin
 func TestDiscoverLocalSourcesIgnoresSecurityOverlaySidecars(t *testing.T) {
 	dir := t.TempDir()
 	writeLocalDiscoveryFile(t, dir, "service.json", `{"openapi":"3.0.3","info":{"title":"Service","version":"1"},"paths":{"/items":{"get":{"operationId":"listItems"}}}}`)
-	writeLocalDiscoveryFile(t, dir, "service.security-overlay.json", `{"operations":{"listItems":{"side_effect":"read"}}}`)
+	for _, name := range []string{
+		"service.json.security.json",
+		"service.json.security.yaml",
+		"service.security.json",
+		"service.security.yaml",
+		"service.security-overlay.json",
+		"service.security-overlay.yaml",
+	} {
+		writeLocalDiscoveryFile(t, dir, name, `{"operations":{"listItems":{"side_effect":"read"}}}`)
+	}
 	report, err := DiscoverLocalSources(context.Background(), LocalSourceDiscoveryOptions{Roots: []string{dir}})
 	if err != nil {
 		t.Fatal(err)
