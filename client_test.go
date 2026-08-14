@@ -68,6 +68,9 @@ func TestAutoFallsBackToPublicAPIs(t *testing.T) {
 		switch r.URL.Path {
 		case "/guru.json":
 			_ = json.NewEncoder(w).Encode(map[string]any{})
+		case "/lap-search":
+			w.Header().Set("Content-Type", "text/lap")
+			_, _ = w.Write([]byte("@search_query mail\n@total 0\n"))
 		case "/entries":
 			_ = json.NewEncoder(w).Encode(map[string]any{
 				"entries": []map[string]any{{
@@ -89,6 +92,7 @@ func TestAutoFallsBackToPublicAPIs(t *testing.T) {
 
 	report, err := (&Client{
 		APIsGuruListURL:  server.URL + "/guru.json",
+		LAPSearchURL:     server.URL + "/lap-search",
 		PublicAPIsURL:    server.URL + "/entries",
 		AllowUnsafeHosts: true,
 	}).Search(context.Background(), SearchOptions{

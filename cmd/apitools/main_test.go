@@ -24,7 +24,7 @@ func TestSearchHelpDocumentsFlags(t *testing.T) {
 		t.Fatalf("code = %d\n%s", code, out.String())
 	}
 	text := out.String()
-	for _, expected := range []string{"Usage: apitools search", "-query", "-limit", "-source", "-public-probe", "-probe-timeout", "-probe-budget", "-cache", "-cache-mode", "-cache-ttl", "-offline", "-json"} {
+	for _, expected := range []string{"Usage: apitools search", "-query", "-limit", "-source", "-provider-url", "lap-registry", "rfc9727", "-public-probe", "-probe-timeout", "-probe-budget", "-cache", "-cache-mode", "-cache-ttl", "-offline", "-json"} {
 		if !strings.Contains(text, expected) {
 			t.Fatalf("help missing %q:\n%s", expected, text)
 		}
@@ -1062,6 +1062,39 @@ func TestSearchProbeTimeoutAndBudgetFlagsAreWired(t *testing.T) {
 	}
 	if !strings.Contains(errOut.String(), apitools.ErrProbeBudgetExceeded.Error()) {
 		t.Fatalf("expected probe budget error on stderr, got:\n%s", errOut.String())
+	}
+}
+
+func TestSearchProviderURLFlagWiresRFC9727(t *testing.T) {
+	var baseURL string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/.well-known/api-catalog" {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/linkset+json")
+		fmt.Fprintf(w, `{"linkset":[{"anchor":%q,"service-desc":[{"href":%q,"type":"application/yaml"}]}]}`,
+			baseURL+"/apis/mail", baseURL+"/mail-openapi.yaml")
+	}))
+	defer server.Close()
+	baseURL = server.URL
+
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	code := runSearchWithClient([]string{
+		"--query", "mail",
+		"--source", string(apitools.SourceRFC9727),
+		"--provider-url", baseURL + "/docs",
+	}, &out, &errOut, func(string) (*apitools.Client, func(), error) {
+		return &apitools.Client{AllowUnsafeHosts: true}, func() {}, nil
+	})
+	if code != 0 {
+		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
+	}
+	for _, expected := range []string{"mail", "source:   rfc9727", "status:   experimental, unvalidated candidate", baseURL + "/mail-openapi.yaml"} {
+		if !strings.Contains(out.String(), expected) {
+			t.Fatalf("search output missing %q:\n%s", expected, out.String())
+		}
 	}
 }
 

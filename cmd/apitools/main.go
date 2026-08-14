@@ -52,7 +52,7 @@ func usage(out io.Writer) {
 	fmt.Fprintln(out, "Usage: apitools <command>")
 	fmt.Fprintln(out)
 	fmt.Fprintln(out, "Commands:")
-	fmt.Fprintln(out, "  search   search APIs.guru with public-apis fallback")
+	fmt.Fprintln(out, "  search   search APIs.guru with bounded LAP, RFC 9727, and public-apis fallbacks")
 	fmt.Fprintln(out, "  import   download and validate an OpenAPI document")
 	fmt.Fprintln(out, "  catalog  inspect built-in provider catalog metadata")
 	fmt.Fprintln(out, "  oauth    local OAuth2 operator utilities")
@@ -1765,7 +1765,8 @@ func runSearchWithClient(args []string, out, errOut io.Writer, newClient func(st
 	fs.SetOutput(errOut)
 	query := fs.String("query", "", "Search query")
 	limit := fs.Int("limit", 10, "Maximum result count")
-	source := fs.String("source", string(apitools.SourceAuto), "Search source: auto, apis-guru, or public-apis")
+	source := fs.String("source", string(apitools.SourceAuto), "Search source: auto, apis-guru, lap-registry, rfc9727, or public-apis")
+	providerURL := fs.String("provider-url", "", "Provider URL or hostname for RFC 9727 /.well-known/api-catalog discovery")
 	publicProbe := fs.Int("public-probe", 0, "Maximum public-apis well-known URL probes; defaults to limit*5, capped at 50")
 	probeTimeout := fs.Duration("probe-timeout", apitools.DefaultProbeTimeout, "Timeout for each public-apis OpenAPI probe")
 	probeBudget := fs.Duration("probe-budget", apitools.DefaultPublicProbeBudget, "Overall time budget for public-apis probing")
@@ -1775,7 +1776,7 @@ func runSearchWithClient(args []string, out, errOut io.Writer, newClient func(st
 	offline := fs.Bool("offline", false, "Use only cached search results; shorthand for --cache-mode offline")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	fs.Usage = func() {
-		fmt.Fprintln(fs.Output(), "Usage: apitools search --query <text> [--limit 10] [--source auto|apis-guru|public-apis] [--public-probe 25] [--probe-timeout 5s] [--probe-budget 30s] [--cache cache.sqlite] [--cache-mode read-write|refresh|offline|bypass] [--json]")
+		fmt.Fprintln(fs.Output(), "Usage: apitools search --query <text> [--limit 10] [--source auto|apis-guru|lap-registry|rfc9727|public-apis] [--provider-url example.com] [--public-probe 25] [--probe-timeout 5s] [--probe-budget 30s] [--cache cache.sqlite] [--cache-mode read-write|refresh|offline|bypass] [--json]")
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
@@ -1811,6 +1812,7 @@ func runSearchWithClient(args []string, out, errOut io.Writer, newClient func(st
 		PublicProbe: *publicProbe,
 		CacheMode:   mode,
 		CacheMaxAge: *cacheTTL,
+		ProviderURL: *providerURL,
 	})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
@@ -1833,6 +1835,9 @@ func runSearchWithClient(args []string, out, errOut io.Writer, newClient func(st
 			fmt.Fprintf(out, "   provider: %s\n", result.Provider)
 		}
 		fmt.Fprintf(out, "   source:   %s\n", result.Source)
+		if result.Experimental {
+			fmt.Fprintln(out, "   status:   experimental, unvalidated candidate")
+		}
 		fmt.Fprintf(out, "   url:      %s\n", result.SpecURL)
 		if strings.TrimSpace(result.Description) != "" {
 			fmt.Fprintf(out, "   about:    %s\n", singleLine(result.Description))

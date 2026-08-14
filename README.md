@@ -16,8 +16,10 @@ repositories.
 
 Keep these responsibilities in `apitools`:
 
-- Discover OpenAPI/Swagger documents from local project files, URLs, APIs.guru, and
-  public-apis probes, and classify catalog Google Discovery and AWS Smithy JSON artifacts.
+- Discover OpenAPI/Swagger candidates from local project files, URLs,
+  APIs.guru, the experimental LAP Registry adapter, provider-scoped RFC 9727
+  catalogs, and legacy public-apis probes, and classify catalog Google
+  Discovery and AWS Smithy JSON artifacts.
 - Safely download OpenAPI, Swagger, and catalog-registered API source documents over HTTP(S), with unsafe host
   rejection, redirect limits, request timeouts, and response-size limits.
 - Validate OpenAPI 3.0, OpenAPI 3.1, and Swagger 2.0 roots well enough for
@@ -43,6 +45,8 @@ operations.
 ```bash
 go run ./cmd/apitools --help
 go run ./cmd/apitools search --query slack
+go run ./cmd/apitools search --query slack --source lap-registry
+go run ./cmd/apitools search --query slack --source rfc9727 --provider-url slack.com
 go run ./cmd/apitools search --query slack --json
 go run ./cmd/apitools search --query slack --cache ~/.cache/apitools/cache.sqlite
 go run ./cmd/apitools import --url https://example.com/openapi.yaml --dir ./openapi --name example
@@ -63,8 +67,18 @@ GOOGLE_CLIENT_SECRET=... go run ./cmd/apitools oauth google login \
   --scope https://www.googleapis.com/auth/gmail.send
 ```
 
-Search uses APIs.guru first and can fall back to public-apis by probing common
-OpenAPI and Swagger paths. Imported documents are treated as untrusted data.
+Search uses APIs.guru first, then the experimental LAP Registry adapter. When
+`--provider-url` is present, it next checks that publisher's RFC 9727
+`/.well-known/api-catalog`; the legacy public-apis path probe remains the final
+compatibility fallback. LAP returns its reported original `source_url`, and
+RFC 9727 returns OpenAPI-like `service-desc` links. Both remain visibly
+experimental, unvalidated candidates until `apitools import` downloads and
+validates the selected document. RFC 9727 discovery fetches one catalog only,
+does not recurse into nested catalogs, and rejects unsafe hosts and catalogs
+over the service-description link bound. Swagger Catalog and Scalar Registry
+are not queried as unauthenticated global catalogs.
+
+Imported documents are treated as untrusted data.
 This package never executes API operations. The `oauth google login` command is
 an explicit local operator utility for OAuth consent/token exchange; it prints
 environment export and marker-based HCL guidance instead of storing secrets.
@@ -78,6 +92,7 @@ go run ./cmd/apitools search \
   --query "support ticket" \
   --limit 10 \
   --source auto \
+  --provider-url api.example.com \
   --public-probe 25 \
   --probe-timeout 5s \
   --probe-budget 30s \
@@ -270,6 +285,7 @@ report, err := client.Search(ctx, apitools.SearchOptions{
 	Query:  "slack",
 	Source: apitools.SourceAuto,
 	Limit:  10,
+	// ProviderURL: "slack.com", // enables RFC 9727 after global sources miss
 })
 _, _ = report, err
 ```

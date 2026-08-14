@@ -111,13 +111,18 @@ func cachedSpecContent(ctx context.Context, rawURL string, spec CachedSpec) ([]b
 }
 
 func (c *Client) downloadBounded(ctx context.Context, rawURL string) ([]byte, *url.URL, error) {
+	content, finalURL, _, err := c.downloadBoundedWithAccept(ctx, rawURL, "")
+	return content, finalURL, err
+}
+
+func (c *Client) downloadBoundedWithAccept(ctx context.Context, rawURL, accept string) ([]byte, *url.URL, string, error) {
 	c = c.effective()
 	if ctx == nil {
 		ctx = context.Background()
 	}
 	parsed, err := c.validateHTTPURL(ctx, rawURL)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, "", err
 	}
 	timeout := c.Timeout
 	if timeout <= 0 {
@@ -131,35 +136,38 @@ func (c *Client) downloadBounded(ctx context.Context, rawURL string) ([]byte, *u
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, parsed.String(), nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, "", err
+	}
+	if strings.TrimSpace(accept) != "" {
+		req.Header.Set("Accept", accept)
 	}
 	client, err := c.redirectSafeClient()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, "", err
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, "", err
 	}
 	defer resp.Body.Close()
 	finalURL := parsed
 	if resp.Request != nil && resp.Request.URL != nil {
 		finalURL = resp.Request.URL
 		if err := c.rejectHost(ctx, finalURL.Hostname()); err != nil {
-			return nil, nil, err
+			return nil, nil, "", err
 		}
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, nil, HTTPStatusError{Code: resp.StatusCode, Status: resp.Status}
+		return nil, nil, "", HTTPStatusError{Code: resp.StatusCode, Status: resp.Status}
 	}
 	content, err := io.ReadAll(io.LimitReader(resp.Body, maxBytes+1))
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, "", err
 	}
 	if int64(len(content)) > maxBytes {
-		return nil, nil, fmt.Errorf("downloaded document is larger than %d bytes", maxBytes)
+		return nil, nil, "", fmt.Errorf("downloaded document is larger than %d bytes", maxBytes)
 	}
-	return content, finalURL, nil
+	return content, finalURL, resp.Header.Get("Content-Type"), nil
 }
 
 func (c *Client) client() *http.Client {

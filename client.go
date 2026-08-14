@@ -11,7 +11,10 @@ import (
 
 const (
 	DefaultAPIsGuruListURL   = "https://api.apis.guru/v2/list.json"
+	DefaultLAPSearchURL      = "https://registry.lap.sh/v1/search"
 	DefaultPublicAPIsURL     = "https://api.publicapis.org/entries"
+	DefaultAPICatalogPath    = "/.well-known/api-catalog"
+	DefaultRFC9727LinkLimit  = 100
 	DefaultTimeout           = 30 * time.Second
 	DefaultMaxBytes          = 20 * 1024 * 1024
 	DefaultCacheMaxAge       = 24 * time.Hour
@@ -49,9 +52,11 @@ var (
 type Source string
 
 const (
-	SourceAuto       Source = "auto"
-	SourceAPIsGuru   Source = "apis-guru"
-	SourcePublicAPIs Source = "public-apis"
+	SourceAuto        Source = "auto"
+	SourceAPIsGuru    Source = "apis-guru"
+	SourceLAPRegistry Source = "lap-registry"
+	SourceRFC9727     Source = "rfc9727"
+	SourcePublicAPIs  Source = "public-apis"
 )
 
 type CacheMode string
@@ -66,6 +71,7 @@ const (
 type Client struct {
 	HTTPClient        *http.Client
 	APIsGuruListURL   string
+	LAPSearchURL      string
 	PublicAPIsURL     string
 	Timeout           time.Duration
 	MaxBytes          int64
@@ -74,6 +80,7 @@ type Client struct {
 	Cache             Cache
 	ProbeTimeout      time.Duration
 	PublicProbeBudget time.Duration
+	RFC9727LinkLimit  int
 }
 
 type SearchOptions struct {
@@ -83,6 +90,9 @@ type SearchOptions struct {
 	PublicProbe int
 	CacheMode   CacheMode
 	CacheMaxAge time.Duration
+	// ProviderURL enables provider-scoped RFC 9727 discovery. A bare hostname
+	// defaults to HTTPS; any supplied path is replaced by /.well-known/api-catalog.
+	ProviderURL string
 }
 
 type SearchReport struct {
@@ -100,18 +110,20 @@ type SearchAttempt struct {
 }
 
 type Result struct {
-	ID          string   `json:"id"`
-	Source      string   `json:"source"`
-	Provider    string   `json:"provider,omitempty"`
-	Title       string   `json:"title"`
-	Description string   `json:"description,omitempty"`
-	Version     string   `json:"version,omitempty"`
-	Categories  []string `json:"categories,omitempty"`
-	SpecURL     string   `json:"spec_url"`
-	LandingURL  string   `json:"landing_url,omitempty"`
-	Score       int      `json:"score"`
-	Validated   bool     `json:"validated"`
-	Provenance  string   `json:"provenance"`
+	ID           string   `json:"id"`
+	Source       string   `json:"source"`
+	Provider     string   `json:"provider,omitempty"`
+	Title        string   `json:"title"`
+	Description  string   `json:"description,omitempty"`
+	Version      string   `json:"version,omitempty"`
+	Categories   []string `json:"categories,omitempty"`
+	SpecURL      string   `json:"spec_url"`
+	LandingURL   string   `json:"landing_url,omitempty"`
+	Score        int      `json:"score"`
+	Validated    bool     `json:"validated"`
+	Provenance   string   `json:"provenance"`
+	MediaType    string   `json:"media_type,omitempty"`
+	Experimental bool     `json:"experimental,omitempty"`
 }
 
 type ImportOptions struct {
@@ -146,6 +158,7 @@ type SearchCacheKey struct {
 	Source      Source `json:"source"`
 	Limit       int    `json:"limit"`
 	PublicProbe int    `json:"public_probe,omitempty"`
+	ProviderURL string `json:"provider_url,omitempty"`
 }
 
 type CachedSpec struct {
@@ -188,7 +201,8 @@ func (c *Client) Search(ctx context.Context, opts SearchOptions) (SearchReport, 
 		return SearchReport{}, err
 	}
 	maxAge := normalizeCacheMaxAge(opts.CacheMaxAge)
-	key := SearchCacheKey{Query: query, Source: source, Limit: limit, PublicProbe: opts.PublicProbe}
+	providerURL := strings.TrimSpace(opts.ProviderURL)
+	key := SearchCacheKey{Query: query, Source: source, Limit: limit, PublicProbe: opts.PublicProbe, ProviderURL: providerURL}
 	if c.Cache != nil && mode != CacheModeRefresh && mode != CacheModeBypass {
 		report, ok, err := c.Cache.LoadSearch(ctx, key, maxAge)
 		if err != nil {
@@ -216,6 +230,16 @@ func (c *Client) Search(ctx context.Context, opts SearchOptions) (SearchReport, 
 		report.Results = results
 		report.Attempts = append(report.Attempts, attempts...)
 		return c.storeSearch(ctx, key, report, mode, err)
+	case SourceLAPRegistry:
+		results, attempts, err := c.searchLAPRegistry(ctx, query, limit)
+		report.Results = results
+		report.Attempts = append(report.Attempts, attempts...)
+		return c.storeSearch(ctx, key, report, mode, err)
+	case SourceRFC9727:
+		results, attempts, err := c.searchRFC9727(ctx, query, providerURL, limit)
+		report.Results = results
+		report.Attempts = append(report.Attempts, attempts...)
+		return c.storeSearch(ctx, key, report, mode, err)
 	case SourcePublicAPIs:
 		results, attempts, err := c.searchPublicAPIs(ctx, query, limit, opts.PublicProbe, mode, maxAge)
 		report.Results = results
@@ -228,17 +252,36 @@ func (c *Client) Search(ctx context.Context, opts SearchOptions) (SearchReport, 
 			report.Results = results
 			return c.storeSearch(ctx, key, report, mode, nil)
 		}
+		var fallbackErrors []string
 		if err != nil {
-			report.Attempts = append(report.Attempts, SearchAttempt{Source: string(SourceAPIsGuru), Status: "fail", Detail: err.Error()})
+			fallbackErrors = append(fallbackErrors, "apis-guru: "+err.Error())
+		}
+		results, attempts, lapErr := c.searchLAPRegistry(ctx, query, limit)
+		report.Attempts = append(report.Attempts, attempts...)
+		if lapErr == nil && len(results) > 0 {
+			report.Results = results
+			return c.storeSearch(ctx, key, report, mode, nil)
+		}
+		if lapErr != nil {
+			fallbackErrors = append(fallbackErrors, "lap-registry: "+lapErr.Error())
+		}
+		if providerURL != "" {
+			results, attempts, catalogErr := c.searchRFC9727(ctx, query, providerURL, limit)
+			report.Attempts = append(report.Attempts, attempts...)
+			if catalogErr == nil && len(results) > 0 {
+				report.Results = results
+				return c.storeSearch(ctx, key, report, mode, nil)
+			}
+			if catalogErr != nil {
+				fallbackErrors = append(fallbackErrors, "rfc9727: "+catalogErr.Error())
+			}
 		}
 		results, attempts, publicErr := c.searchPublicAPIs(ctx, query, limit, opts.PublicProbe, mode, maxAge)
 		report.Attempts = append(report.Attempts, attempts...)
 		report.Results = results
 		if publicErr != nil {
-			if err != nil {
-				return c.storeSearch(ctx, key, report, mode, fmt.Errorf("apis-guru: %v; public-apis: %w", err, publicErr))
-			}
-			return c.storeSearch(ctx, key, report, mode, publicErr)
+			fallbackErrors = append(fallbackErrors, "public-apis: "+publicErr.Error())
+			return c.storeSearch(ctx, key, report, mode, errors.New(strings.Join(fallbackErrors, "; ")))
 		}
 		return c.storeSearch(ctx, key, report, mode, nil)
 	default:
@@ -261,7 +304,7 @@ func (c *Client) effective() *Client {
 
 func validateSource(source Source) error {
 	switch source {
-	case SourceAuto, SourceAPIsGuru, SourcePublicAPIs:
+	case SourceAuto, SourceAPIsGuru, SourceLAPRegistry, SourceRFC9727, SourcePublicAPIs:
 		return nil
 	default:
 		return fmt.Errorf("unknown source %q", source)

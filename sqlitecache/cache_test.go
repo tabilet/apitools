@@ -75,6 +75,44 @@ func TestSearchReportHonorsTTL(t *testing.T) {
 	}
 }
 
+func TestSearchReportRFC9727ProviderURLIsolatesCacheKey(t *testing.T) {
+	cache, err := Open(filepath.Join(t.TempDir(), "cache.sqlite"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+
+	key := apitools.SearchCacheKey{Query: "mail", Source: apitools.SourceRFC9727, Limit: 3, ProviderURL: "https://mail.example"}
+	report := apitools.SearchReport{
+		Query:  "mail",
+		Source: apitools.SourceRFC9727,
+		Results: []apitools.Result{{
+			ID:           "rfc9727:mail.example:one",
+			Source:       string(apitools.SourceRFC9727),
+			Title:        "Mail API",
+			SpecURL:      "https://mail.example/openapi.yaml",
+			Provenance:   "test",
+			MediaType:    "application/yaml",
+			Experimental: true,
+		}},
+	}
+	if err := cache.StoreSearch(context.Background(), key, report); err != nil {
+		t.Fatal(err)
+	}
+	got, ok, err := cache.LoadSearch(context.Background(), key, time.Hour)
+	if err != nil || !ok {
+		t.Fatalf("matching provider cache lookup: ok=%t err=%v", ok, err)
+	}
+	if len(got.Results) != 1 || !got.Results[0].Experimental || got.Results[0].MediaType != "application/yaml" {
+		t.Fatalf("cached RFC 9727 trust metadata = %#v", got.Results)
+	}
+	other := key
+	other.ProviderURL = "https://other.example"
+	if _, ok, err := cache.LoadSearch(context.Background(), other, time.Hour); err != nil || ok {
+		t.Fatalf("different provider cache lookup: ok=%t err=%v", ok, err)
+	}
+}
+
 func TestSpecRoundTripByOriginalAndFinalURL(t *testing.T) {
 	cache, err := Open(":memory:")
 	if err != nil {
