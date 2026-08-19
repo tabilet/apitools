@@ -260,6 +260,11 @@ Catalog stats are offline. `catalog stats` summarizes primary provider
 protocol classifications, local catalog artifact registry counts by kind, and
 refresh artifact validation buckets without probing URLs or executing provider
 operations.
+The same aggregation is available to library callers through
+`apitools.BuildCatalogStatsReport`; the CLI owns only flag parsing and text/JSON
+rendering. Repeated advisory and resolver lookups use `catalog.CatalogIndex`,
+which validates provider/spec/overlay/security metadata once and returns cloned
+records from immutable lookup maps.
 
 Catalog materialization is offline and copy-only. `catalog resolve` reports
 provider IDs, protocol capability, registered local artifacts, and security

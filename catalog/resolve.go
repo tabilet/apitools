@@ -55,19 +55,27 @@ type ResolvedProvider struct {
 // built-in security overlay. It does not read files, fetch URLs, parse specs,
 // execute operations, or resolve credentials.
 func ResolveProvider(options ResolveProviderOptions) (ResolvedProvider, error) {
-	catalog := options.Catalog
+	cat := options.Catalog
 	classifications := options.SecurityClassifications
-	if catalog.isZero() {
-		catalog = BuiltInCatalog()
+	var index *CatalogIndex
+	if cat.isZero() {
+		cat = BuiltInCatalog()
 		if classifications == nil {
-			classifications = BuiltInSecurityClassifications()
+			index = BuiltInCatalogIndex()
 		}
 	}
-	if err := catalog.Validate(); err != nil {
-		return ResolvedProvider{}, err
+	if index == nil {
+		var err error
+		index, err = NewCatalogIndex(cat, classifications)
+		if err != nil {
+			return ResolvedProvider{}, err
+		}
 	}
+	return resolveProviderWithIndex(index, options)
+}
 
-	provider, ok := catalog.FindProvider(options.ProviderKey)
+func resolveProviderWithIndex(index *CatalogIndex, options ResolveProviderOptions) (ResolvedProvider, error) {
+	provider, ok := index.FindProvider(options.ProviderKey)
 	if !ok {
 		return ResolvedProvider{}, fmt.Errorf("unknown provider %q", options.ProviderKey)
 	}
@@ -81,12 +89,8 @@ func ResolveProvider(options ResolveProviderOptions) (ResolvedProvider, error) {
 		return ResolvedProvider{}, err
 	}
 
-	overlays := overlaysForProvider(catalog.SecurityOverlays, provider.ID)
-	report, err := BuildSecurityReport(catalog.Providers, catalog.SecurityOverlays, classifications)
-	if err != nil {
-		return ResolvedProvider{}, err
-	}
-	securityReport, _ := report.FindProvider(provider.ID)
+	overlays := index.SecurityOverlaysForProvider(provider.ID)
+	securityReport, _ := index.SecurityForProvider(provider.ID)
 	resolved := ResolvedProvider{
 		Provider:                cloneProvider(provider),
 		OpenAPI:                 ResolvedReference{Source: ResolutionSourceNone},
@@ -183,17 +187,6 @@ func preferredSpecReference(provider Provider) (SpecReference, bool) {
 		}
 	}
 	return SpecReference{}, false
-}
-
-func overlaysForProvider(overlays []SecurityOverlay, providerID string) []SecurityOverlay {
-	var out []SecurityOverlay
-	for _, overlay := range overlays {
-		if overlay.ProviderID == providerID {
-			out = append(out, overlay)
-		}
-	}
-	sortSecurityOverlays(out)
-	return out
 }
 
 func cloneProviderSecurityReport(report ProviderSecurityReport) ProviderSecurityReport {

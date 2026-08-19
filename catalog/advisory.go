@@ -84,9 +84,10 @@ type AdvisoryEndpointOverlay struct {
 // BuiltInProviderAdvisoryReport builds advisory output for built-in catalog
 // metadata without network access or cache writes.
 func BuiltInProviderAdvisoryReport(options ProviderAdvisoryOptions) (ProviderAdvisoryReport, error) {
-	options.Catalog = BuiltInCatalog()
 	if options.SecurityClassifications == nil {
-		options.SecurityClassifications = BuiltInSecurityClassifications()
+		options.Catalog = Catalog{}
+	} else {
+		options.Catalog = BuiltInCatalog()
 	}
 	return BuildProviderAdvisoryReport(options)
 }
@@ -98,45 +99,40 @@ func BuiltInProviderAdvisoryReport(options ProviderAdvisoryOptions) (ProviderAdv
 func BuildProviderAdvisoryReport(options ProviderAdvisoryOptions) (ProviderAdvisoryReport, error) {
 	catalog := options.Catalog
 	classifications := options.SecurityClassifications
+	var index *CatalogIndex
 	if catalog.isZero() {
 		catalog = BuiltInCatalog()
 		if classifications == nil {
-			classifications = BuiltInSecurityClassifications()
+			index = BuiltInCatalogIndex()
 		}
 	}
-	if err := catalog.Validate(); err != nil {
-		return ProviderAdvisoryReport{}, err
-	}
-	securityReport, err := BuildSecurityReport(catalog.Providers, catalog.SecurityOverlays, classifications)
-	if err != nil {
-		return ProviderAdvisoryReport{}, err
+	if index == nil {
+		var err error
+		index, err = NewCatalogIndex(catalog, classifications)
+		if err != nil {
+			return ProviderAdvisoryReport{}, err
+		}
 	}
 
 	var providers []Provider
 	if key := strings.TrimSpace(options.ProviderKey); key != "" {
-		provider, ok := catalog.FindProvider(key)
+		provider, ok := index.FindProvider(key)
 		if !ok {
 			return ProviderAdvisoryReport{}, fmt.Errorf("unknown provider %q", options.ProviderKey)
 		}
 		providers = []Provider{provider}
 	} else {
-		providers = catalog.ListProviders()
+		providers = index.ListProviders()
 	}
 
 	artifactPathByKey := advisoryArtifactPathMap(options.Artifacts)
 	endpointOverlaysByProvider := advisoryEndpointOverlaysByProvider(options.Artifacts)
-	overlaysByProvider := map[string][]SecurityOverlay{}
-	for _, overlay := range catalog.ListSecurityOverlays() {
-		overlaysByProvider[overlay.ProviderID] = append(overlaysByProvider[overlay.ProviderID], overlay)
-	}
 
 	out := make([]ProviderAdvisory, 0, len(providers))
 	for _, provider := range providers {
-		report, _ := securityReport.FindProvider(provider.ID)
-		resolved, err := ResolveProvider(ResolveProviderOptions{
-			Catalog:                 catalog,
-			SecurityClassifications: classifications,
-			ProviderKey:             provider.ID,
+		report, _ := index.SecurityForProvider(provider.ID)
+		resolved, err := resolveProviderWithIndex(index, ResolveProviderOptions{
+			ProviderKey: provider.ID,
 		})
 		if err != nil {
 			return ProviderAdvisoryReport{}, err
@@ -185,7 +181,7 @@ func BuildProviderAdvisoryReport(options ProviderAdvisoryOptions) (ProviderAdvis
 				})
 			}
 		}
-		advisory.ManualFollowUps = advisoryManualFollowUps(provider, report, overlaysByProvider[provider.ID], advisory.SpecReferences, advisory.EndpointOverlays)
+		advisory.ManualFollowUps = advisoryManualFollowUps(provider, report, index.SecurityOverlaysForProvider(provider.ID), advisory.SpecReferences, advisory.EndpointOverlays)
 		out = append(out, advisory)
 	}
 	sort.SliceStable(out, func(i, j int) bool {

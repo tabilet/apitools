@@ -71,7 +71,7 @@ func BuiltInSecurityClassifications() []SecurityClassification {
 
 // BuiltInSecurityReport returns the built-in provider security report.
 func BuiltInSecurityReport() (SecurityReport, error) {
-	return BuildSecurityReport(BuiltInProviders(), BuiltInSecurityOverlays(), BuiltInSecurityClassifications())
+	return BuiltInCatalogIndex().SecurityReport(), nil
 }
 
 // BuildSecurityReport combines provider metadata, security overlays, and
