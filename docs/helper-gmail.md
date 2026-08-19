@@ -121,100 +121,73 @@ Gmail send scope:
 https://www.googleapis.com/auth/gmail.send
 ```
 
-Use the local operator CLI to get a refresh token:
+OAuth consent and token exchange are runtime responsibilities, not apitools
+helper behavior. Use Udon's trusted operator CLI with a Google Desktop OAuth
+client:
 
 ```bash
 export GOOGLE_CLIENT_SECRET='...'
 
-go run ./cmd/apitools oauth google login \
+udon oauth google login \
   --client-id 395074190883-pl1v83a1v9q2o41m9p1kqfbpu720ufbo.apps.googleusercontent.com \
-  --scope https://www.googleapis.com/auth/gmail.send
+  --scope https://www.googleapis.com/auth/gmail.send \
+  --output ./google-oauth.hcl
 ```
 
-By default the command listens on:
+The command binds only to loopback and chooses an ephemeral port by default:
 
 ```text
-127.0.0.1:8765
+127.0.0.1:0
 ```
 
-and uses this redirect URL:
-
-```text
-http://127.0.0.1:8765/oauth2/callback
-```
-
-Add that URL to the OAuth client's authorized redirect URIs in Google Cloud
-Console before running the command.
-
-The command prints:
-
-- the Google consent URL;
-- an `export GOOGLE_REFRESH_TOKEN='...'` command;
-- a marker-based `data.hcl` snippet.
-
-It does not write files and does not call Gmail APIs.
+The actual redirect is `http://127.0.0.1:<port>/oauth2/callback`. Authorization
+uses a fresh state value and PKCE verifier. The refresh token is never printed;
+it is written only to the requested new file, which must not already exist and
+is created with mode `0600`. Keep that file out of version control. Use
+`--listen 127.0.0.1:8765` only when the OAuth client requires a fixed loopback
+port.
 
 ## Data File For Udon
 
-Use environment markers in `expected/data.hcl` so the reviewed package contains
-names of environment variables, not plaintext secrets:
+Keep non-secret workflow inputs in a reviewed data file:
 
 ```hcl
 inputs {
   recipient_email = "ENVIRONMENT:RECIPIENT_EMAIL"
 }
 
-credentials {
-  googleOAuth2 {
-    client_id     = "395074190883-pl1v83a1v9q2o41m9p1kqfbpu720ufbo.apps.googleusercontent.com"
-    client_secret = "ENVIRONMENT:GOOGLE_CLIENT_SECRET"
-    refresh_token = "ENVIRONMENT:GOOGLE_REFRESH_TOKEN"
-  }
-}
 ```
 
-Then run Udon with those environment variables set:
+Pass the private OAuth file separately when running Udon:
 
 ```bash
 export RECIPIENT_EMAIL='me@example.com'
 export GOOGLE_CLIENT_SECRET='...'
-export GOOGLE_REFRESH_TOKEN='...'
 
-udon --workdir . --workflow workflows/workflow.hcl --datafile expected/data.hcl
+udon --workdir . --workflow workflows/workflow.hcl \
+  --datafile expected/data.hcl \
+  --datafile ./google-oauth.hcl
 ```
 
 Udon resolves `ENVIRONMENT` markers at execution time. If an environment
 variable is unset, execution fails before provider calls.
 
-`UDON_CREDENTIAL_GOOGLEOAUTH2` still takes priority when present. The data-file
-OAuth block is a fallback for direct Udon execution.
-
-## Manual Code Exchange
-
-If you already have an authorization code, exchange it without starting the
-local callback server:
-
-```bash
-export GOOGLE_CLIENT_SECRET='...'
-
-go run ./cmd/apitools oauth google login \
-  --client-id 395074190883-pl1v83a1v9q2o41m9p1kqfbpu720ufbo.apps.googleusercontent.com \
-  --scope https://www.googleapis.com/auth/gmail.send \
-  --code '<authorization-code>' \
-  --redirect-url '<redirect-url-used-to-create-the-code>'
-```
-
-The redirect URL must exactly match the one used when Google issued the code.
+`UDON_CREDENTIAL_GOOGLEOAUTH2` still takes priority when present. Runtime data
+files may supply an existing access token or refresh token; Udon deliberately
+does not exchange a manually pasted authorization code without the command's
+PKCE verifier.
 
 ## Common Issues
 
-- **Redirect URI mismatch**: add
-  `http://127.0.0.1:8765/oauth2/callback` to the OAuth client, or pass
-  `--redirect-url` and configure that exact URL.
+- **Redirect URI mismatch**: use a Google Desktop OAuth client for dynamic
+  loopback redirects, or choose an explicitly configured loopback port with
+  `--listen`.
 - **No refresh token returned**: Google may not return a refresh token if the
   user already granted the app. Revoke the app grant in the Google account,
   then rerun the command.
 - **Wrong scope**: Gmail send needs
   `https://www.googleapis.com/auth/gmail.send`.
-- **Do not commit secrets**: commit marker names such as
-  `ENVIRONMENT:GOOGLE_REFRESH_TOKEN`, not token values.
+- **Output already exists**: choose a new output path or move the old private
+  file deliberately; the command never overwrites credential files.
+- **Do not commit secrets**: `google-oauth.hcl` contains a refresh token and
+  must remain private.

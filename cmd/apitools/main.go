@@ -36,8 +36,6 @@ func run(args []string, out, errOut io.Writer) int {
 		return runImport(args[1:], out, errOut)
 	case "catalog":
 		return runCatalog(args[1:], out, errOut)
-	case "oauth":
-		return runOAuth(args[1:], out, errOut)
 	case "-h", "--help", "help":
 		usage(out)
 		return 0
@@ -55,7 +53,6 @@ func usage(out io.Writer) {
 	fmt.Fprintln(out, "  search   search APIs.guru with bounded LAP, RFC 9727, and public-apis fallbacks")
 	fmt.Fprintln(out, "  import   download and validate an OpenAPI document")
 	fmt.Fprintln(out, "  catalog  inspect built-in provider catalog metadata")
-	fmt.Fprintln(out, "  oauth    local OAuth2 operator utilities")
 }
 
 func runCatalog(args []string, out, errOut io.Writer) int {

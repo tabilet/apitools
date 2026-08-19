@@ -62,9 +62,6 @@ go run ./cmd/apitools catalog security-report
 go run ./cmd/apitools catalog check
 go run ./cmd/apitools catalog stats
 go run ./cmd/apitools catalog refresh-report
-GOOGLE_CLIENT_SECRET=... go run ./cmd/apitools oauth google login \
-  --client-id 395074190883-pl1v83a1v9q2o41m9p1kqfbpu720ufbo.apps.googleusercontent.com \
-  --scope https://www.googleapis.com/auth/gmail.send
 ```
 
 Search uses APIs.guru first, then the experimental LAP Registry adapter. When
@@ -79,11 +76,10 @@ over the service-description link bound. Swagger Catalog and Scalar Registry
 are not queried as unauthenticated global catalogs.
 
 Imported documents are treated as untrusted data.
-This package never executes API operations. The `oauth google login` command is
-an explicit local operator utility for OAuth consent/token exchange; it prints
-environment export and marker-based HCL guidance instead of storing secrets.
-See [Helper And Gmail Setup](docs/helper-gmail.md) for `helper/`,
-`gmail.render_raw`, and OAuth setup details.
+This package never executes API operations, resolves credentials, or exchanges
+tokens. OAuth consent and token refresh belong to Udon's trusted runtime. See
+[Helper And Gmail Setup](docs/helper-gmail.md) for the pure `gmail.render_raw`
+helper and downstream runtime setup.
 
 `search` flags:
 
@@ -453,8 +449,7 @@ It must not:
 
 - Execute API operations or workflows.
 - Select production accounts or runtime environments.
-- Resolve credentials, acquire tokens, or sign requests except for explicit
-  local operator OAuth login commands.
+- Resolve credentials, acquire tokens, or sign requests.
 - Store secrets, workflow execution data, approval state, or runtime state.
 - Treat discovered documents as trusted input.
 
