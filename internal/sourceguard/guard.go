@@ -20,6 +20,11 @@ const (
 	// MaxWorkItems bounds tokens, wire fields, or decoded nodes handled by one
 	// parse operation.
 	MaxWorkItems = 100_000
+	// MaxStructuralItems bounds the streaming JSON/YAML preflight. Structural
+	// scans are linear in the already-bounded source bytes and need a higher
+	// ceiling than semantic parser work so valid large OpenAPI documents (for
+	// example Kubernetes Swagger) remain inspectable.
+	MaxStructuralItems = 1_000_000
 )
 
 // CheckDocument enforces the shared direct-parser byte limit.
@@ -63,8 +68,8 @@ func CheckYAML(kind string, data []byte) error {
 			continue
 		}
 		work++
-		if work > MaxWorkItems {
-			return fmt.Errorf("%s: YAML node count exceeds maximum %d", kind, MaxWorkItems)
+		if work > MaxStructuralItems {
+			return fmt.Errorf("%s: YAML node count exceeds maximum %d", kind, MaxStructuralItems)
 		}
 		if current.depth > MaxNestingDepth {
 			return fmt.Errorf("%s: YAML nesting exceeds maximum depth %d", kind, MaxNestingDepth)
@@ -99,8 +104,8 @@ func CheckJSON(kind string, data []byte) error {
 			return fmt.Errorf("%s: decode JSON structure: %w", kind, err)
 		}
 		work++
-		if work > MaxWorkItems {
-			return fmt.Errorf("%s: JSON token count exceeds maximum %d", kind, MaxWorkItems)
+		if work > MaxStructuralItems {
+			return fmt.Errorf("%s: JSON token count exceeds maximum %d", kind, MaxStructuralItems)
 		}
 		if delimiter, ok := token.(json.Delim); ok {
 			switch delimiter {
