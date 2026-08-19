@@ -376,9 +376,7 @@ func coveringSecurityOverlayIDs(ref catalog.SpecReference, overlays []catalog.Se
 func securityRequirementNames(value any) []string {
 	var out []string
 	for _, requirementValue := range sliceValue(value) {
-		for _, name := range sortedMapKeys(mapValue(requirementValue)) {
-			out = append(out, name)
-		}
+		out = append(out, sortedMapKeys(mapValue(requirementValue))...)
 	}
 	return sortedUniqueStrings(out)
 }

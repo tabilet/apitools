@@ -10,9 +10,7 @@ The first concrete helper package is `helper/gmailmsg`.
 `apitools` owns:
 
 - public helper descriptors;
-- pure payload-shaping helper implementations such as `gmail.render_raw`;
-- narrow OAuth2 bootstrap shapes and local operator CLI utilities for Google
-  OAuth setup.
+- pure payload-shaping helper implementations such as `gmail.render_raw`.
 
 `apitools` does not own:
 
@@ -20,6 +18,7 @@ The first concrete helper package is `helper/gmailmsg`.
 - Gmail API calls;
 - runtime account selection;
 - secret storage;
+- OAuth credential parsing, consent, or token exchange;
 - trusted-runner approval or package handoff.
 
 Trusted runtimes such as `../udon` decide when helper functions are registered

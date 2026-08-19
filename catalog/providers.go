@@ -5379,10 +5379,6 @@ func awsSmithyProviderAt(seed awsSmithyProviderSeed, verifiedAt string) Provider
 	})
 }
 
-func awsSmithyRef20260520(id, url, version, blobSHA, serviceName string) SpecReference {
-	return awsSmithyRefAt(id, url, version, blobSHA, serviceName, "2026-05-20")
-}
-
 func awsSmithyRefAt(id, url, version, blobSHA, serviceName, verifiedAt string) SpecReference {
 	return SpecReference{
 		ID:              id,
