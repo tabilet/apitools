@@ -368,6 +368,7 @@ func TestCatalogResolveMaterializeAndExport(t *testing.T) {
 }
 
 func TestCatalogStatsOutputAndJSON(t *testing.T) {
+	providerCount := catalog.BuiltInCatalogManifest().ProviderCount
 	dir := t.TempDir()
 	cacheDir := filepath.Join(dir, "catalog-openapi-cache")
 	cachePath := filepath.Join(cacheDir, "cache.sqlite")
@@ -400,7 +401,7 @@ func TestCatalogStatsOutputAndJSON(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
-	for _, expected := range []string{"Provider protocols: 316 provider(s)", "OpenAPI", "94", "Swagger", "13", "Smithy", "29", "Google Discovery", "21", "Human docs", "157", "Artifact registry", "openapi", "Refresh artifacts", "valid-swagger"} {
+	for _, expected := range []string{fmt.Sprintf("Provider protocols: %d provider(s)", providerCount), "OpenAPI", "94", "Swagger", "13", "Smithy", "29", "Google Discovery", "21", "Human docs", "157", "Artifact registry", "openapi", "Refresh artifacts", "valid-swagger"} {
 		if !strings.Contains(out.String(), expected) {
 			t.Fatalf("catalog stats output missing %q:\n%s", expected, out.String())
 		}
@@ -412,7 +413,7 @@ func TestCatalogStatsOutputAndJSON(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
-	for _, expected := range []string{`"provider_count": 316`, `"protocol": "openapi"`, `"count": 94`, `"protocol": "swagger"`, `"count": 13`, `"protocol": "smithy"`, `"count": 29`, `"protocol": "google-discovery"`, `"count": 21`, `"artifact_registry"`, `"kind": "openapi"`, `"status": "valid-swagger"`} {
+	for _, expected := range []string{fmt.Sprintf(`"provider_count": %d`, providerCount), `"protocol": "openapi"`, `"count": 94`, `"protocol": "swagger"`, `"count": 13`, `"protocol": "smithy"`, `"count": 29`, `"protocol": "google-discovery"`, `"count": 21`, `"artifact_registry"`, `"kind": "openapi"`, `"status": "valid-swagger"`} {
 		if !strings.Contains(out.String(), expected) {
 			t.Fatalf("catalog stats json missing %q:\n%s", expected, out.String())
 		}
@@ -802,6 +803,7 @@ func TestCatalogSecurityReportJSON(t *testing.T) {
 }
 
 func TestCatalogSecurityAuditOutputAndJSON(t *testing.T) {
+	providerCount := catalog.BuiltInCatalogManifest().ProviderCount
 	var out bytes.Buffer
 	var errOut bytes.Buffer
 	code := run([]string{"catalog", "security-audit"}, &out, &errOut)
@@ -810,7 +812,7 @@ func TestCatalogSecurityAuditOutputAndJSON(t *testing.T) {
 	}
 	text := out.String()
 	for _, expected := range []string{
-		"Catalog security audit: 316 provider(s)",
+		fmt.Sprintf("Catalog security audit: %d provider(s)", providerCount),
 		"Disposition:",
 		"Auth status:",
 		"Queued source re-review: none",
@@ -826,7 +828,7 @@ func TestCatalogSecurityAuditOutputAndJSON(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
-	for _, expected := range []string{`"provider_count": 316`, `"disposition": "complete-via-overlay"`, `"provider_id": "github"`, `"dispositions":`, `"scope": "spec"`} {
+	for _, expected := range []string{fmt.Sprintf(`"provider_count": %d`, providerCount), `"disposition": "complete-via-overlay"`, `"provider_id": "github"`, `"dispositions":`, `"scope": "spec"`} {
 		if !strings.Contains(out.String(), expected) {
 			t.Fatalf("security audit json missing %q:\n%s", expected, out.String())
 		}

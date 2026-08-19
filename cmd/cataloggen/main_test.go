@@ -77,6 +77,57 @@ func TestBuildOutputsRejectsConflictingScopedDispositions(t *testing.T) {
 	}
 }
 
+func TestBuildOutputsRejectsInvalidCatalogReferences(t *testing.T) {
+	tests := []struct {
+		name   string
+		mutate func(*catalog.CatalogBundle)
+		want   string
+	}{
+		{
+			name: "invalid id",
+			mutate: func(bundle *catalog.CatalogBundle) {
+				bundle.Candidates[0].ID = "INVALID ID"
+			},
+			want: "invalid id",
+		},
+		{
+			name: "missing candidate reference",
+			mutate: func(bundle *catalog.CatalogBundle) {
+				bundle.Providers[0].CandidateID = "missing-candidate"
+			},
+			want: "unknown candidate",
+		},
+		{
+			name: "missing overlay scope",
+			mutate: func(bundle *catalog.CatalogBundle) {
+				bundle.SecurityOverlays[0].SpecRefID = "missing-spec"
+			},
+			want: "unknown spec ref",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			content, err := os.ReadFile(filepath.Join("..", "..", "catalog", "data", "catalog.json"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			bundle, err := catalog.ParseCatalogBundle(content)
+			if err != nil {
+				t.Fatal(err)
+			}
+			test.mutate(&bundle)
+			content, err = json.Marshal(bundle)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = buildOutputs(content)
+			if err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("generation error = %v, want %q", err, test.want)
+			}
+		})
+	}
+}
+
 func TestCheckedInCatalogOutputsAreCurrent(t *testing.T) {
 	var out bytes.Buffer
 	if err := run([]string{"-check", "-root", filepath.Join("..", "..")}, &out); err != nil {

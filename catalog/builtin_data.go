@@ -32,6 +32,36 @@ var builtInSecurityOverlays = loadedBuiltInCatalog.SecurityOverlays
 var builtInCandidateLookupIndex = mustCandidateLookupIndex(builtInCandidates)
 var builtInProviderLookupIndex = mustProviderLookupIndex(builtInProviders)
 
+// CatalogManifest records the generated golden identity and record counts for
+// the reviewed built-in catalog source bundle.
+type CatalogManifest struct {
+	Version                     string `json:"version"`
+	CatalogVersion              string `json:"catalog_version"`
+	CatalogSHA256               string `json:"catalog_sha256"`
+	CatalogBytes                int    `json:"catalog_bytes"`
+	CandidateCount              int    `json:"candidate_count"`
+	ProviderCount               int    `json:"provider_count"`
+	SpecReferenceCount          int    `json:"spec_reference_count"`
+	SecurityClassificationCount int    `json:"security_classification_count"`
+	SecurityOverlayCount        int    `json:"security_overlay_count"`
+}
+
+// BuiltInCatalogManifest returns the generated golden identity for the
+// reviewed built-in catalog.
+func BuiltInCatalogManifest() CatalogManifest {
+	return CatalogManifest{
+		Version:                     generatedCatalogManifestVersion,
+		CatalogVersion:              CatalogBundleVersion,
+		CatalogSHA256:               generatedCatalogSHA256,
+		CatalogBytes:                generatedCatalogBytes,
+		CandidateCount:              generatedCandidateCount,
+		ProviderCount:               generatedProviderCount,
+		SpecReferenceCount:          generatedSpecReferenceCount,
+		SecurityClassificationCount: generatedSecurityClassificationCount,
+		SecurityOverlayCount:        generatedSecurityOverlayCount,
+	}
+}
+
 func mustLoadBuiltInCatalog(content []byte, indexes generatedCatalogIndexes) CatalogBundle {
 	if generatedCatalogManifestVersion != "apitools.catalog-manifest.v1" {
 		panic(fmt.Sprintf("unsupported generated catalog manifest version %q", generatedCatalogManifestVersion))

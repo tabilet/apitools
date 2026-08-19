@@ -1,11 +1,33 @@
 package catalog
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"os"
 	"strings"
 	"testing"
 )
+
+func TestBuiltInCatalogManifestMatchesReviewedBundle(t *testing.T) {
+	content, err := os.ReadFile("data/catalog.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	bundle, err := ParseCatalogBundle(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	manifest := BuiltInCatalogManifest()
+	digest := sha256.Sum256(content)
+	specCount := 0
+	for _, provider := range bundle.Providers {
+		specCount += len(provider.SpecReferences)
+	}
+	if manifest.Version != generatedCatalogManifestVersion || manifest.CatalogVersion != bundle.Version || manifest.CatalogSHA256 != hex.EncodeToString(digest[:]) || manifest.CatalogBytes != len(content) || manifest.CandidateCount != len(bundle.Candidates) || manifest.ProviderCount != len(bundle.Providers) || manifest.SpecReferenceCount != specCount || manifest.SecurityClassificationCount != len(bundle.SecurityClassifications) || manifest.SecurityOverlayCount != len(bundle.SecurityOverlays) {
+		t.Fatalf("manifest = %#v, does not match reviewed bundle", manifest)
+	}
+}
 
 func TestReviewedCatalogBundleMatchesEmbeddedBuiltIns(t *testing.T) {
 	content, err := os.ReadFile("data/catalog.json")

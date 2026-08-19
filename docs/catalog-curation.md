@@ -140,7 +140,10 @@ For each service, use the same four-step review loop.
 The public `apitools` repository should track durable metadata, source-backed
 advisory assets, and code:
 
-- `catalog/` provider, spec-reference, and security-overlay metadata;
+- `catalog/data/catalog.json` as the reviewed provider, spec-reference,
+  classification, and security-overlay source of truth;
+- generated `catalog/data/manifest.json` and `catalog/catalog_gen.go` outputs
+  refreshed with `go run ./cmd/cataloggen` after reviewing JSON changes;
 - `catalog-openapi-cache/advisory-overlays/` docs-derived advisory overlays;
 - `catalog-openapi-cache/overlay-builders/` service-specific builders;
 - `catalog-openapi-cache/artifact-registry/` local manifest registration
@@ -165,6 +168,7 @@ For each reviewed batch, run:
 go test ./...
 go vet ./...
 git diff --check
+go run ./cmd/cataloggen -check
 go run ./cmd/apitools catalog list
 go run ./cmd/apitools catalog security-report
 go run ./cmd/apitools catalog security-audit
