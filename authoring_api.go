@@ -49,8 +49,11 @@ type AuthoringOperationRef struct {
 type AuthoringOperationRankingOptions struct {
 	Query              string                  `json:"query,omitempty"`
 	SelectedOperations []AuthoringOperationRef `json:"selected_operations,omitempty"`
-	Limit              int                     `json:"limit,omitempty"`
-	PromptBudget       PromptBudget            `json:"prompt_budget,omitempty"`
+	// Limit is the maximum number of additional unselected operations. Zero
+	// uses the default shortlist of 12; a negative value returns selected
+	// operations only.
+	Limit        int          `json:"limit,omitempty"`
+	PromptBudget PromptBudget `json:"prompt_budget,omitempty"`
 }
 
 // AuthoringPromptContextReport is a bounded ranked prompt payload. Bytes is
@@ -130,17 +133,90 @@ func BuildAuthoringAPIDocuments(ctx context.Context, opts AuthoringAPIDocumentOp
 // blocking diagnostic and error.
 func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperationRankingOptions) (AuthoringPromptContextReport, error) {
 	limit := opts.Limit
-	if limit <= 0 {
+	if limit == 0 {
 		limit = 12
+	} else if limit < 0 {
+		limit = 0
+	}
+	budget := resolvedPromptBudget(opts.PromptBudget)
+	report := AuthoringPromptContextReport{}
+	if len(docs) > budget.MaxOperations {
+		diagnostic := Diagnostic{
+			Severity: "error", Code: "prompt.document_count",
+			Message:     fmt.Sprintf("authoring context contains %d documents, exceeding the %d-document prompt work budget", len(docs), budget.MaxOperations),
+			Remediation: "Narrow the source set or increase MaxOperations for a reviewed prompt.",
+		}
+		report.Diagnostics = []Diagnostic{diagnostic}
+		report.Truncated = true
+		return report, DiagnosticError{Diagnostics: []Diagnostic{diagnostic}}
+	}
+	if len(opts.SelectedOperations) > budget.MaxOperations {
+		diagnostic := Diagnostic{
+			Severity: "error", Code: "prompt.selection_count",
+			Message:     fmt.Sprintf("authoring context contains %d selected operation references, exceeding the %d-reference prompt work budget", len(opts.SelectedOperations), budget.MaxOperations),
+			Remediation: "Narrow the selected operation set or increase MaxOperations for a reviewed prompt.",
+		}
+		report.Diagnostics = []Diagnostic{diagnostic}
+		report.Truncated = true
+		return report, DiagnosticError{Diagnostics: []Diagnostic{diagnostic}}
+	}
+	for _, ref := range opts.SelectedOperations {
+		_, pathUnsafe := sanitizePromptString(ref.DocumentPath, budget.MaxTextRunes)
+		_, operationUnsafe := sanitizePromptString(ref.OperationID, budget.MaxIdentifierRunes)
+		if pathUnsafe || operationUnsafe {
+			diagnostic := Diagnostic{
+				Severity: "error", Code: "prompt.selection_sanitized",
+				Message:     "a selected operation reference contains controls or values beyond the prompt-safety budget",
+				Path:        ref.DocumentPath,
+				Remediation: "Select an operation using its exact bounded source path and operation ID.",
+			}
+			report.Diagnostics = []Diagnostic{diagnostic}
+			report.Truncated = true
+			return report, DiagnosticError{Diagnostics: []Diagnostic{diagnostic}}
+		}
 	}
 	selected := authoringSelectedOperations(opts.SelectedOperations)
-	budget := resolvedPromptBudget(opts.PromptBudget)
+	query, queryUnsafe := sanitizePromptString(opts.Query, budget.MaxTextRunes)
+	if queryUnsafe {
+		report.Diagnostics = append(report.Diagnostics, Diagnostic{
+			Severity: "warning", Code: "prompt.query_sanitized",
+			Message:     "operation-ranking query contained controls or text beyond the prompt-safety budget and was sanitized",
+			Remediation: "Narrow the ranking query if the removed or shortened text is required.",
+		})
+	}
+	safeDocs := make([]AuthoringAPIDocument, len(docs))
+	copy(safeDocs, docs)
+	operationCount := 0
+	for docIndex := range safeDocs {
+		if len(safeDocs[docIndex].Operations) > budget.MaxOperations-operationCount {
+			diagnostic := Diagnostic{
+				Severity: "error", Code: "prompt.operation_count",
+				Message:     fmt.Sprintf("authoring documents contain more than the %d-operation prompt work budget", budget.MaxOperations),
+				Remediation: "Narrow the source set or increase MaxOperations for a reviewed prompt.",
+			}
+			report.Diagnostics = append(report.Diagnostics, diagnostic)
+			report.Truncated = true
+			return report, DiagnosticError{Diagnostics: []Diagnostic{diagnostic}}
+		}
+		operationCount += len(safeDocs[docIndex].Operations)
+		if sanitizeAuthoringDocument(&safeDocs[docIndex], budget) {
+			report.Diagnostics = append(report.Diagnostics, Diagnostic{
+				Severity: "warning", Code: "prompt.document_sanitized",
+				Message:     "document metadata contained controls or values beyond the prompt-safety budget and was sanitized",
+				Path:        firstNonEmpty(safeDocs[docIndex].RelativePath, safeDocs[docIndex].Path),
+				Remediation: "Review the source metadata if the removed or shortened text is required.",
+			})
+		}
+	}
 	var candidates []authoringCandidate
-	query := opts.Query
-	for docIndex, doc := range docs {
+	for docIndex, doc := range safeDocs {
 		for opIndex, op := range doc.Operations {
-			key := authoringOperationKey(firstNonEmpty(doc.RelativePath, doc.Path), op.OperationID)
-			isSelected := selected[key] || selected[authoringOperationKey("", op.OperationID)]
+			originalDoc := docs[docIndex]
+			originalOp := originalDoc.Operations[opIndex]
+			key := authoringOperationKey(firstNonEmpty(originalDoc.RelativePath, originalDoc.Path), originalOp.OperationID)
+			isSelected := selected[key] || selected[authoringOperationKey("", originalOp.OperationID)]
+			diagnostics := sanitizeOperationSummary(&op, budget)
+			report.Diagnostics = append(report.Diagnostics, diagnostics...)
 			score := ScoreText(query, authoringOperationSearchText(doc, op))
 			if isSelected {
 				score += 1000
@@ -163,11 +239,6 @@ func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperat
 		}
 		return candidates[i].opIndex < candidates[j].opIndex
 	})
-	report := AuthoringPromptContextReport{}
-	for i := range candidates {
-		diagnostics := sanitizeOperationSummary(&candidates[i].op, budget)
-		report.Diagnostics = append(report.Diagnostics, diagnostics...)
-	}
 	report.Truncated = len(report.Diagnostics) > 0
 	if errors := errorDiagnostics(report.Diagnostics); len(errors) > 0 {
 		return report, DiagnosticError{Diagnostics: errors}
@@ -180,7 +251,7 @@ func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperat
 		include[authoringCandidateKey(candidate.docIndex, candidate.opIndex)] = true
 		report.SelectedOperations++
 	}
-	selectedDocs := buildRankedAuthoringDocuments(docs, candidates, include, budget)
+	selectedDocs := buildRankedAuthoringDocuments(safeDocs, candidates, include, budget)
 	selectedBytes := promptJSONSize(selectedDocs)
 	if selectedBytes > budget.MaxContextBytes {
 		diagnostic := Diagnostic{
@@ -195,13 +266,20 @@ func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperat
 
 	unselected := 0
 	skippedForBudget := false
+	skippedForLimit := false
 	for _, candidate := range candidates {
-		if candidate.selected || unselected >= limit {
+		if candidate.selected {
+			continue
+		}
+		if unselected >= limit {
+			if limit > 0 {
+				skippedForLimit = true
+			}
 			continue
 		}
 		key := authoringCandidateKey(candidate.docIndex, candidate.opIndex)
 		include[key] = true
-		tentative := buildRankedAuthoringDocuments(docs, candidates, include, budget)
+		tentative := buildRankedAuthoringDocuments(safeDocs, candidates, include, budget)
 		if promptJSONSize(tentative) > budget.MaxContextBytes {
 			delete(include, key)
 			skippedForBudget = true
@@ -209,7 +287,7 @@ func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperat
 		}
 		unselected++
 	}
-	report.Documents = buildRankedAuthoringDocuments(docs, candidates, include, budget)
+	report.Documents = buildRankedAuthoringDocuments(safeDocs, candidates, include, budget)
 	report.Bytes = promptJSONSize(report.Documents)
 	if skippedForBudget {
 		report.Truncated = true
@@ -219,7 +297,28 @@ func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperat
 			Remediation: "Narrow the query or increase MaxContextBytes for a reviewed prompt.",
 		})
 	}
+	if skippedForLimit {
+		report.Truncated = true
+		report.Diagnostics = append(report.Diagnostics, Diagnostic{
+			Severity: "warning", Code: "prompt.operation_limit",
+			Message:     fmt.Sprintf("ranked operations were truncated to %d additional unselected operations", limit),
+			Remediation: "Narrow the query or increase Limit for a reviewed prompt.",
+		})
+	}
 	return report, nil
+}
+
+func sanitizeAuthoringDocument(doc *AuthoringAPIDocument, budget PromptBudget) bool {
+	if doc == nil {
+		return false
+	}
+	changed := false
+	doc.ID, changed = sanitizePromptValue(doc.ID, budget.MaxIdentifierRunes, changed)
+	doc.Path, changed = sanitizePromptValue(doc.Path, budget.MaxTextRunes, changed)
+	doc.RelativePath, changed = sanitizePromptValue(doc.RelativePath, budget.MaxTextRunes, changed)
+	doc.Title, changed = sanitizePromptValue(doc.Title, budget.MaxTextRunes, changed)
+	doc.Description, changed = sanitizePromptValue(doc.Description, budget.MaxTextRunes, changed)
+	return changed
 }
 
 func authoringCandidateKey(docIndex, opIndex int) string {

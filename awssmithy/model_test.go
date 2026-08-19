@@ -10,6 +10,22 @@ import (
 	"github.com/OpenUdon/apitools/awssmithy"
 )
 
+func TestParseRejectsUnboundedCompatibilityInputs(t *testing.T) {
+	if _, err := awssmithy.Parse([]byte(strings.Repeat(" ", (20<<20)+1))); err == nil || !strings.Contains(err.Error(), "maximum size") {
+		t.Fatalf("oversized Parse error = %v", err)
+	}
+	deep := map[string]any{}
+	cursor := deep
+	for range 101 {
+		next := map[string]any{}
+		cursor["next"] = next
+		cursor = next
+	}
+	if _, err := awssmithy.ParseMap(deep); err == nil || !strings.Contains(err.Error(), "nesting exceeds") {
+		t.Fatalf("deep ParseMap error = %v", err)
+	}
+}
+
 func TestParseSupportsAWSProtocolFamilies(t *testing.T) {
 	for _, tc := range []struct {
 		name       string

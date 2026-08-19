@@ -1,6 +1,9 @@
 package googlediscovery
 
-import upstream "github.com/OpenUdon/googlediscovery"
+import (
+	"github.com/OpenUdon/apitools/internal/sourceguard"
+	upstream "github.com/OpenUdon/googlediscovery"
+)
 
 // Model is a parsed Google Discovery document.
 //
@@ -26,6 +29,9 @@ type MediaUpload = upstream.MediaUpload
 //
 // Deprecated: use github.com/OpenUdon/googlediscovery.Parse.
 func Parse(data []byte) (*Model, error) {
+	if err := sourceguard.CheckJSON("google-discovery", data); err != nil {
+		return nil, err
+	}
 	return upstream.Parse(data)
 }
 
@@ -34,5 +40,8 @@ func Parse(data []byte) (*Model, error) {
 //
 // Deprecated: use github.com/OpenUdon/googlediscovery.ParseMap.
 func ParseMap(raw map[string]any) (*Model, error) {
+	if err := sourceguard.CheckValue("google-discovery", raw); err != nil {
+		return nil, err
+	}
 	return upstream.ParseMap(raw)
 }

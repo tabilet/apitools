@@ -26,6 +26,7 @@ type PromptBudget struct {
 	MaxTextRunes       int `json:"max_text_runes,omitempty"`
 	MaxCollectionItems int `json:"max_collection_items,omitempty"`
 	MaxFields          int `json:"max_fields,omitempty"`
+	MaxOperations      int `json:"max_operations,omitempty"`
 	MaxOperationBytes  int `json:"max_operation_bytes,omitempty"`
 	MaxContextBytes    int `json:"max_context_bytes,omitempty"`
 }
@@ -45,6 +46,7 @@ func DefaultPromptBudget() PromptBudget {
 		MaxTextRunes:       DefaultPromptTextRunes,
 		MaxCollectionItems: DefaultPromptCollectionItems,
 		MaxFields:          DefaultPromptFieldItems,
+		MaxOperations:      DefaultMaxInventoryOperations,
 		MaxOperationBytes:  DefaultPromptOperationBytes,
 		MaxContextBytes:    DefaultPromptContextBytes,
 	}
@@ -57,6 +59,17 @@ func SanitizeOperationSummaries(operations []OperationSummary, budget PromptBudg
 	report := PromptOperationSummaryReport{}
 	if len(operations) == 0 {
 		return report, nil
+	}
+	budget = resolvedPromptBudget(budget)
+	if len(operations) > budget.MaxOperations {
+		diagnostic := Diagnostic{
+			Severity: "error", Code: "prompt.operation_count",
+			Message:     fmt.Sprintf("operation summaries contain %d operations, exceeding the %d-operation prompt work budget", len(operations), budget.MaxOperations),
+			Remediation: "Narrow the source or increase MaxOperations for a reviewed prompt.",
+		}
+		report.Diagnostics = []Diagnostic{diagnostic}
+		report.Truncated = true
+		return report, DiagnosticError{Diagnostics: []Diagnostic{diagnostic}}
 	}
 	encoded, err := json.Marshal(operations)
 	if err != nil {
@@ -91,6 +104,9 @@ func resolvedPromptBudget(budget PromptBudget) PromptBudget {
 	}
 	if budget.MaxFields <= 0 {
 		budget.MaxFields = defaults.MaxFields
+	}
+	if budget.MaxOperations <= 0 {
+		budget.MaxOperations = defaults.MaxOperations
 	}
 	if budget.MaxOperationBytes <= 0 {
 		budget.MaxOperationBytes = defaults.MaxOperationBytes

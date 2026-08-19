@@ -496,6 +496,21 @@ In-memory `InventoryDocument.Content` is unchanged. Regular `.json`, `.yaml`,
 and `.yml` files that parse but are not OpenAPI or Swagger are still ignored by
 `LocalFiles`.
 
+Direct source parsers apply the same untrusted-input contract: 20 MiB source
+bytes, depth 100, and bounded structural or semantic work. This includes the
+deprecated Smithy and Google Discovery compatibility wrappers; their
+already-decoded `ParseMap` entry points bound retained string bytes, nesting,
+and traversal work before delegating upstream.
+
+Prompt-facing operation metadata is sanitized before use. The default
+`PromptBudget` caps identifiers at 256 runes, text at 2,048 runes, collections
+at 32 entries, schema fields at 60 entries, authoring work at 10,000 operations,
+each operation at 32 KiB, and a ranked authoring context at 512 KiB.
+ANSI/control removal and non-semantic shortening produce visible
+warnings. Any compaction that could remove fields or security alternatives,
+an oversized selected set, or an aggregate/work-budget violation returns a
+blocking `DiagnosticError`; selected operations are never silently discarded.
+
 ## Packages
 
 - `github.com/OpenUdon/apitools`: core client, discovery, import, validation,

@@ -71,6 +71,18 @@ func TestSanitizeOperationSummariesReturnsCopiesAndDiagnostics(t *testing.T) {
 	}
 }
 
+func TestSanitizeOperationSummariesEnforcesWorkBudget(t *testing.T) {
+	operations := []OperationSummary{
+		{OperationID: "a", Method: "GET", Path: "/a"},
+		{OperationID: "b", Method: "GET", Path: "/b"},
+	}
+	report, err := SanitizeOperationSummaries(operations, PromptBudget{MaxOperations: 1})
+	var diagnosticErr DiagnosticError
+	if !errors.As(err, &diagnosticErr) || len(report.Diagnostics) != 1 || report.Diagnostics[0].Code != "prompt.operation_count" {
+		t.Fatalf("operation-count report = %#v error=%T %v", report, err, err)
+	}
+}
+
 func TestRankAuthoringAPIDocumentsUsesExactIndexesAndAggregateBudget(t *testing.T) {
 	docs := []AuthoringAPIDocument{{
 		ID: "duplicate",
@@ -123,5 +135,64 @@ func TestRankAuthoringAPIDocumentsBlocksOversizedSelectedSet(t *testing.T) {
 	}
 	if len(report.Diagnostics) != 1 || report.Diagnostics[0].Code != "prompt.selected_budget" {
 		t.Fatalf("diagnostics = %#v", report.Diagnostics)
+	}
+}
+
+func TestRankAuthoringAPIDocumentsSupportsSelectedOnlyContext(t *testing.T) {
+	docs := []AuthoringAPIDocument{{
+		RelativePath: "openapi/test.yaml",
+		Operations: []OperationSummary{
+			{OperationID: "a", Method: "GET", Path: "/a"},
+			{OperationID: "b", Method: "GET", Path: "/b"},
+		},
+	}}
+	report, err := RankAuthoringAPIDocuments(docs, AuthoringOperationRankingOptions{
+		SelectedOperations: []AuthoringOperationRef{{DocumentPath: docs[0].RelativePath, OperationID: "b"}},
+		Limit:              -1,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(report.Documents) != 1 || len(report.Documents[0].Operations) != 1 || report.Documents[0].Operations[0].OperationID != "b" {
+		t.Fatalf("selected-only report = %#v", report)
+	}
+}
+
+func TestRankAuthoringAPIDocumentsReportsDocumentSanitizationAndWorkLimit(t *testing.T) {
+	docs := []AuthoringAPIDocument{{
+		ID:          "source",
+		Title:       "\x1b[31m" + strings.Repeat("title", DefaultPromptTextRunes),
+		Description: "safe",
+		Operations: []OperationSummary{
+			{OperationID: "a", Method: "GET", Path: "/a"},
+			{OperationID: "b", Method: "GET", Path: "/b"},
+		},
+	}}
+	report, err := RankAuthoringAPIDocuments(docs, AuthoringOperationRankingOptions{Limit: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !report.Truncated || len(report.Diagnostics) != 2 || report.Diagnostics[0].Code != "prompt.document_sanitized" || report.Diagnostics[1].Code != "prompt.operation_limit" || strings.Contains(report.Documents[0].Title, "\x1b") {
+		t.Fatalf("sanitized document report = %#v", report)
+	}
+
+	report, err = RankAuthoringAPIDocuments(docs, AuthoringOperationRankingOptions{PromptBudget: PromptBudget{MaxOperations: 1}})
+	var diagnosticErr DiagnosticError
+	if !errors.As(err, &diagnosticErr) || len(report.Diagnostics) == 0 || report.Diagnostics[len(report.Diagnostics)-1].Code != "prompt.operation_count" {
+		t.Fatalf("operation-count report = %#v error=%T %v", report, err, err)
+	}
+
+	report, err = RankAuthoringAPIDocuments(docs, AuthoringOperationRankingOptions{
+		Query: strings.Repeat("query", DefaultPromptTextRunes), Limit: 1,
+	})
+	if err != nil || len(report.Diagnostics) < 3 || report.Diagnostics[0].Code != "prompt.query_sanitized" {
+		t.Fatalf("query-sanitized report = %#v error=%v", report, err)
+	}
+
+	report, err = RankAuthoringAPIDocuments(docs, AuthoringOperationRankingOptions{
+		SelectedOperations: []AuthoringOperationRef{{OperationID: "\x00bad"}},
+	})
+	if !errors.As(err, &diagnosticErr) || len(report.Diagnostics) != 1 || report.Diagnostics[0].Code != "prompt.selection_sanitized" {
+		t.Fatalf("selection-sanitized report = %#v error=%T %v", report, err, err)
 	}
 }

@@ -122,6 +122,68 @@ func CheckJSON(kind string, data []byte) error {
 	return nil
 }
 
+// CheckValue bounds an already-decoded JSON-shaped value before a parser
+// traverses it. ParseMap-style compatibility APIs cannot apply a source-byte
+// limit, so this guard accounts for container/scalar work, nesting, and the
+// aggregate bytes retained in string keys and values. Cyclic maps or slices
+// terminate at the nesting limit instead of recursing indefinitely.
+func CheckValue(kind string, value any) error {
+	type item struct {
+		value any
+		depth int
+	}
+	stack := []item{{value: value}}
+	work := 0
+	retainedBytes := 0
+	addBytes := func(n int) error {
+		if n > MaxDocumentBytes-retainedBytes {
+			return fmt.Errorf("%s: decoded string data exceeds maximum size %d bytes", kind, MaxDocumentBytes)
+		}
+		retainedBytes += n
+		return nil
+	}
+	for len(stack) > 0 {
+		last := len(stack) - 1
+		current := stack[last]
+		stack = stack[:last]
+		work++
+		if work > MaxWorkItems {
+			return fmt.Errorf("%s: decoded value work exceeds maximum %d items", kind, MaxWorkItems)
+		}
+		if current.depth > MaxNestingDepth {
+			return fmt.Errorf("%s: decoded value nesting exceeds maximum depth %d", kind, MaxNestingDepth)
+		}
+		switch typed := current.value.(type) {
+		case map[string]any:
+			if len(typed) > MaxWorkItems-work-len(stack) {
+				return fmt.Errorf("%s: decoded value work exceeds maximum %d items", kind, MaxWorkItems)
+			}
+			for key, child := range typed {
+				if err := addBytes(len(key)); err != nil {
+					return err
+				}
+				stack = append(stack, item{value: child, depth: current.depth + 1})
+			}
+		case []any:
+			if len(typed) > MaxWorkItems-work-len(stack) {
+				return fmt.Errorf("%s: decoded value work exceeds maximum %d items", kind, MaxWorkItems)
+			}
+			for _, child := range typed {
+				stack = append(stack, item{value: child, depth: current.depth + 1})
+			}
+		case string:
+			if err := addBytes(len(typed)); err != nil {
+				return err
+			}
+		case []byte:
+			if err := addBytes(len(typed)); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 // Budget tracks work shared by recursive or nested binary decoders.
 type Budget struct {
 	kind  string

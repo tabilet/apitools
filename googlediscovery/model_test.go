@@ -5,8 +5,25 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 )
+
+func TestParseRejectsUnboundedCompatibilityInputs(t *testing.T) {
+	if _, err := Parse([]byte(strings.Repeat(" ", (20<<20)+1))); err == nil || !strings.Contains(err.Error(), "maximum size") {
+		t.Fatalf("oversized Parse error = %v", err)
+	}
+	deep := map[string]any{}
+	cursor := deep
+	for range 101 {
+		next := map[string]any{}
+		cursor["next"] = next
+		cursor = next
+	}
+	if _, err := ParseMap(deep); err == nil || !strings.Contains(err.Error(), "nesting exceeds") {
+		t.Fatalf("deep ParseMap error = %v", err)
+	}
+}
 
 func TestParseDriveDiscoveryModel(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join("testdata", "drive.discovery.json"))

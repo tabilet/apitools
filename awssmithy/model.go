@@ -1,6 +1,9 @@
 package awssmithy
 
-import upstream "github.com/OpenUdon/awssmithy"
+import (
+	"github.com/OpenUdon/apitools/internal/sourceguard"
+	upstream "github.com/OpenUdon/awssmithy"
+)
 
 const (
 	// Deprecated: use github.com/OpenUdon/awssmithy.ProtocolRestJSON1.
@@ -42,6 +45,9 @@ type MemberBinding = upstream.MemberBinding
 //
 // Deprecated: use github.com/OpenUdon/awssmithy.Parse.
 func Parse(data []byte) (*Model, error) {
+	if err := sourceguard.CheckJSON("aws-smithy", data); err != nil {
+		return nil, err
+	}
 	return upstream.Parse(data)
 }
 
@@ -50,5 +56,8 @@ func Parse(data []byte) (*Model, error) {
 //
 // Deprecated: use github.com/OpenUdon/awssmithy.ParseMap.
 func ParseMap(raw map[string]any) (*Model, error) {
+	if err := sourceguard.CheckValue("aws-smithy", raw); err != nil {
+		return nil, err
+	}
 	return upstream.ParseMap(raw)
 }
