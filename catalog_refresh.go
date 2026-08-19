@@ -7,13 +7,13 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/OpenUdon/apitools/catalog"
 	graphqlsource "github.com/OpenUdon/apitools/graphql"
 	"github.com/OpenUdon/apitools/grpcproto"
+	"github.com/OpenUdon/apitools/internal/artifactio"
 	odatasource "github.com/OpenUdon/apitools/odata"
 	"github.com/OpenUdon/apitools/openrpc"
 	"gopkg.in/yaml.v3"
@@ -489,12 +489,9 @@ func cleanCatalogRefreshArtifactPath(path string) (string, error) {
 }
 
 func writeCatalogRefreshArtifact(cacheDir, artifactPath string, content []byte) (string, error) {
-	fullPath := filepath.Join(cacheDir, filepath.FromSlash(artifactPath))
-	if err := os.MkdirAll(filepath.Dir(fullPath), 0o755); err != nil {
+	result, err := artifactio.WriteFile(cacheDir, filepath.FromSlash(artifactPath), content, artifactio.WriteOptions{Mode: 0o644, Force: true})
+	if err != nil {
 		return "", err
 	}
-	if err := os.WriteFile(fullPath, content, 0o644); err != nil {
-		return "", err
-	}
-	return fullPath, nil
+	return result.Path, nil
 }

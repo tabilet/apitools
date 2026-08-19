@@ -275,7 +275,7 @@ func auditOpenAPISecurityArtifact(providerID, specRefID string, artifact catalog
 		row.ManualFollowUps = append(row.ManualFollowUps, "Fix the registered artifact path before auditing upstream OpenAPI security metadata.")
 		return row
 	}
-	content, _, exists, err := readCatalogRefreshReviewArtifact(savedPath, opts.MaxBytes)
+	content, _, exists, err := readCatalogRefreshReviewArtifact(opts.CacheDir, savedPath, opts.MaxBytes)
 	row.Exists = exists
 	if err != nil {
 		if exists {

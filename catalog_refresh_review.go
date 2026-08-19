@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -13,6 +12,7 @@ import (
 	"time"
 
 	"github.com/OpenUdon/apitools/catalog"
+	"github.com/OpenUdon/apitools/internal/artifactio"
 )
 
 const (
@@ -173,7 +173,7 @@ func reviewCatalogRefreshArtifact(ref catalog.RefreshableSpecReference, opts Cat
 	}
 	result.SavedPath = savedPath
 
-	content, size, exists, err := readCatalogRefreshReviewArtifact(savedPath, opts.MaxBytes)
+	content, size, exists, err := readCatalogRefreshReviewArtifact(opts.CacheDir, savedPath, opts.MaxBytes)
 	result.Exists = exists
 	result.Bytes = size
 	if err != nil {
@@ -357,31 +357,22 @@ func resolveCatalogRefreshReviewPath(cacheDir, artifactPath string) (string, err
 	return fullAbs, nil
 }
 
-func readCatalogRefreshReviewArtifact(path string, maxBytes int64) ([]byte, int64, bool, error) {
+func readCatalogRefreshReviewArtifact(cacheDir, path string, maxBytes int64) ([]byte, int64, bool, error) {
 	info, err := os.Lstat(path)
 	if err != nil {
 		return nil, 0, false, err
 	}
-	if info.Mode()&os.ModeSymlink != 0 {
-		return nil, 0, true, fmt.Errorf("artifact path %q is a symlink", path)
-	}
-	if !info.Mode().IsRegular() {
-		return nil, 0, true, fmt.Errorf("artifact path %q is not a regular file", path)
-	}
-	if info.Size() > maxBytes {
-		return nil, info.Size(), true, fmt.Errorf("artifact path %q is %d bytes, over limit %d", path, info.Size(), maxBytes)
-	}
-	file, err := os.Open(path)
+	cacheAbs, err := filepath.Abs(strings.TrimSpace(cacheDir))
 	if err != nil {
 		return nil, info.Size(), true, err
 	}
-	defer file.Close()
-	content, err := io.ReadAll(io.LimitReader(file, maxBytes+1))
+	relative, err := filepath.Rel(cacheAbs, path)
 	if err != nil {
 		return nil, info.Size(), true, err
 	}
-	if int64(len(content)) > maxBytes {
-		return nil, int64(len(content)), true, fmt.Errorf("artifact path %q is over limit %d", path, maxBytes)
+	file, err := artifactio.ReadFile(cacheAbs, relative, artifactio.ReadOptions{MaxBytes: maxBytes})
+	if err != nil {
+		return nil, info.Size(), true, err
 	}
-	return content, int64(len(content)), true, nil
+	return file.Data, file.Bytes, true, nil
 }

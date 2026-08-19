@@ -2,16 +2,16 @@ package catalog
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io"
-	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/OpenUdon/apitools/internal/artifactio"
 )
+
+const DefaultMaterializeMaxBytes = artifactio.DefaultMaxBytes
 
 // ProviderArtifactCapability describes the strongest local catalog artifact
 // surface available for a provider without fetching remote documents.
@@ -142,6 +142,8 @@ type MaterializeOptions struct {
 	Artifacts               []CatalogSpecArtifact
 	IncludeSecurityOverlays bool
 	WriteManifest           bool
+	Force                   bool
+	MaxBytes                int64
 }
 
 // MaterializedArtifact records one copied local artifact.
@@ -178,6 +180,7 @@ type MaterializationReport struct {
 	ManualFollowUps  []string                      `json:"manual_follow_ups,omitempty"`
 	Resolution       ProviderResolution            `json:"resolution"`
 	ManifestPath     string                        `json:"manifest_path,omitempty"`
+	Reused           bool                          `json:"reused,omitempty"`
 }
 
 // Materialize copies local artifacts for a built-in provider into targetDir
@@ -218,53 +221,22 @@ func MaterializeProvider(ctx context.Context, options MaterializeOptions) (Mater
 		return MaterializationReport{}, fmt.Errorf("target dir is required")
 	}
 	providerDir := filepath.Join(targetDir, provider.ID)
-	if err := os.MkdirAll(providerDir, 0o755); err != nil {
-		return MaterializationReport{}, err
-	}
 	artifacts := materializeArtifactsByProvider(options.Artifacts)[provider.ID]
 	overlays := materializeOverlaysByProvider(cat.ListSecurityOverlays())[provider.ID]
-	resolution := buildProviderResolution(provider, artifacts, overlays)
-	report := MaterializationReport{
-		ProviderID:  provider.ID,
-		DisplayName: provider.DisplayName,
-		Capability:  resolution.Capability,
-		TargetDir:   providerDir,
-		Resolution:  resolution,
+	tx, err := artifactio.BeginDir(providerDir, options.Force)
+	if err != nil {
+		return MaterializationReport{}, err
 	}
-	for _, artifact := range artifacts {
-		if err := ctx.Err(); err != nil {
-			return MaterializationReport{}, err
-		}
-		materialized, err := copyMaterializedArtifact(options.CacheDir, providerDir, provider, artifact)
-		if err != nil {
-			report.ManualFollowUps = append(report.ManualFollowUps, err.Error())
-			continue
-		}
-		report.Artifacts = append(report.Artifacts, materialized)
+	defer tx.Rollback() // no-op after commit
+	report, err := stageMaterializedProvider(ctx, tx, "", providerDir, options.CacheDir, options.MaxBytes, provider, artifacts, overlays, options.IncludeSecurityOverlays, options.WriteManifest)
+	if err != nil {
+		return MaterializationReport{}, err
 	}
-	if options.IncludeSecurityOverlays {
-		for _, overlay := range overlays {
-			if err := ctx.Err(); err != nil {
-				return MaterializationReport{}, err
-			}
-			materialized, err := emitMaterializedSecurityOverlay(providerDir, overlay)
-			if err != nil {
-				return MaterializationReport{}, err
-			}
-			report.SecurityOverlays = append(report.SecurityOverlays, materialized)
-		}
+	reused, err := tx.Commit()
+	if err != nil {
+		return MaterializationReport{}, err
 	}
-	if len(report.Artifacts) == 0 {
-		report.ManualFollowUps = append(report.ManualFollowUps, "No local catalog artifact was materialized; register or provide artifact rows before expecting importable files.")
-	}
-	report.ManualFollowUps = sortedUniqueStrings(report.ManualFollowUps)
-	if options.WriteManifest {
-		manifestPath := filepath.Join(providerDir, "provenance.json")
-		if err := writeMaterializationJSON(manifestPath, report); err != nil {
-			return MaterializationReport{}, err
-		}
-		report.ManifestPath = manifestPath
-	}
+	report.Reused = reused
 	return report, nil
 }
 
@@ -279,6 +251,8 @@ type ExportWorkflowArtifactsOptions struct {
 	Artifacts               []CatalogSpecArtifact
 	IncludeSecurityOverlays bool
 	WriteManifest           bool
+	Force                   bool
+	MaxBytes                int64
 }
 
 // ExportReport records a multi-provider workflow artifact export.
@@ -287,6 +261,7 @@ type ExportReport struct {
 	ArtifactDir  string                  `json:"artifact_dir"`
 	ManifestPath string                  `json:"manifest_path,omitempty"`
 	Providers    []MaterializationReport `json:"providers,omitempty"`
+	Reused       bool                    `json:"reused,omitempty"`
 }
 
 // ExportWorkflowArtifacts materializes selected providers under a workflow
@@ -304,25 +279,44 @@ func ExportWorkflowArtifacts(ctx context.Context, opts ExportWorkflowArtifactsOp
 	if artifactDir == "" {
 		artifactDir = "api-artifacts"
 	}
+	artifactDir = filepath.Clean(filepath.FromSlash(artifactDir))
+	if artifactDir == "." || !filepath.IsLocal(artifactDir) {
+		return ExportReport{}, fmt.Errorf("artifact dir %q must be a non-empty relative path under the workflow directory", opts.ArtifactDir)
+	}
 	targetDir := filepath.Join(workflowDir, artifactDir)
-	if err := os.MkdirAll(targetDir, 0o755); err != nil {
+	tx, err := artifactio.BeginDir(targetDir, opts.Force)
+	if err != nil {
 		return ExportReport{}, err
 	}
+	defer tx.Rollback() // no-op after commit
 	includeOverlays := opts.IncludeSecurityOverlays
 	report := ExportReport{
 		WorkflowDir: workflowDir,
 		ArtifactDir: targetDir,
 	}
+	cat := opts.Catalog
+	if cat.isZero() {
+		cat = BuiltInCatalog()
+	}
+	if err := cat.Validate(); err != nil {
+		return ExportReport{}, err
+	}
+	artifactsByProvider := materializeArtifactsByProvider(opts.Artifacts)
+	overlaysByProvider := materializeOverlaysByProvider(cat.ListSecurityOverlays())
+	seen := map[string]struct{}{}
 	for _, key := range opts.ProviderKeys {
-		materialized, err := MaterializeProvider(ctx, MaterializeOptions{
-			Catalog:                 opts.Catalog,
-			ProviderKey:             key,
-			TargetDir:               targetDir,
-			CacheDir:                opts.CacheDir,
-			Artifacts:               opts.Artifacts,
-			IncludeSecurityOverlays: includeOverlays,
-			WriteManifest:           true,
-		})
+		if err := ctx.Err(); err != nil {
+			return ExportReport{}, err
+		}
+		provider, ok := cat.FindProvider(key)
+		if !ok {
+			return ExportReport{}, fmt.Errorf("unknown provider %q", key)
+		}
+		if _, ok := seen[provider.ID]; ok {
+			continue
+		}
+		seen[provider.ID] = struct{}{}
+		materialized, err := stageMaterializedProvider(ctx, tx, provider.ID, filepath.Join(targetDir, provider.ID), opts.CacheDir, opts.MaxBytes, provider, artifactsByProvider[provider.ID], overlaysByProvider[provider.ID], includeOverlays, true)
 		if err != nil {
 			return ExportReport{}, err
 		}
@@ -333,11 +327,20 @@ func ExportWorkflowArtifacts(ctx context.Context, opts ExportWorkflowArtifactsOp
 	})
 	if opts.WriteManifest {
 		manifestPath := filepath.Join(targetDir, "provenance.json")
-		if err := writeMaterializationJSON(manifestPath, report); err != nil {
+		report.ManifestPath = manifestPath
+		content, err := materializationJSON(report)
+		if err != nil {
 			return ExportReport{}, err
 		}
-		report.ManifestPath = manifestPath
+		if _, err := tx.Stage("provenance.json", content, 0o600); err != nil {
+			return ExportReport{}, err
+		}
 	}
+	reused, err := tx.Commit()
+	if err != nil {
+		return ExportReport{}, err
+	}
+	report.Reused = reused
 	return report, nil
 }
 
@@ -511,100 +514,111 @@ func materializeOverlaysByProvider(overlays []SecurityOverlay) map[string][]Secu
 	return out
 }
 
-func copyMaterializedArtifact(cacheDir, providerDir string, provider Provider, artifact CatalogSpecArtifact) (MaterializedArtifact, error) {
-	sourcePath, err := resolveMaterializeSourcePath(cacheDir, artifact.Path)
+func stageMaterializedProvider(ctx context.Context, tx *artifactio.DirTransaction, prefix, providerDir, cacheDir string, maxBytes int64, provider Provider, artifacts []CatalogSpecArtifact, overlays []SecurityOverlay, includeOverlays, writeManifest bool) (MaterializationReport, error) {
+	resolution := buildProviderResolution(provider, artifacts, overlays)
+	report := MaterializationReport{
+		ProviderID:  provider.ID,
+		DisplayName: provider.DisplayName,
+		Capability:  resolution.Capability,
+		TargetDir:   providerDir,
+		Resolution:  resolution,
+	}
+	if maxBytes <= 0 {
+		maxBytes = DefaultMaterializeMaxBytes
+	}
+	for _, artifact := range artifacts {
+		if err := ctx.Err(); err != nil {
+			return MaterializationReport{}, err
+		}
+		materialized, err := stageMaterializedArtifact(tx, prefix, providerDir, cacheDir, maxBytes, provider, artifact)
+		if err != nil {
+			return MaterializationReport{}, err
+		}
+		report.Artifacts = append(report.Artifacts, materialized)
+	}
+	if includeOverlays {
+		for _, overlay := range overlays {
+			if err := ctx.Err(); err != nil {
+				return MaterializationReport{}, err
+			}
+			content, err := materializationJSON(overlay)
+			if err != nil {
+				return MaterializationReport{}, err
+			}
+			relative := filepath.Join(prefix, "security-overlays", overlay.ID+".json")
+			if _, err := tx.Stage(relative, content, 0o600); err != nil {
+				return MaterializationReport{}, err
+			}
+			report.SecurityOverlays = append(report.SecurityOverlays, MaterializedSecurityOverlay{
+				OverlayID:  overlay.ID,
+				SpecRefID:  strings.TrimSpace(overlay.SpecRefID),
+				Status:     overlay.Status,
+				TargetPath: filepath.Join(providerDir, "security-overlays", overlay.ID+".json"),
+			})
+		}
+	}
+	if len(report.Artifacts) == 0 {
+		report.ManualFollowUps = append(report.ManualFollowUps, "No local catalog artifact was materialized; register or provide artifact rows before expecting importable files.")
+	}
+	report.ManualFollowUps = sortedUniqueStrings(report.ManualFollowUps)
+	if writeManifest {
+		report.ManifestPath = filepath.Join(providerDir, "provenance.json")
+		content, err := materializationJSON(report)
+		if err != nil {
+			return MaterializationReport{}, err
+		}
+		if _, err := tx.Stage(filepath.Join(prefix, "provenance.json"), content, 0o600); err != nil {
+			return MaterializationReport{}, err
+		}
+	}
+	return report, nil
+}
+
+func stageMaterializedArtifact(tx *artifactio.DirTransaction, prefix, providerDir, cacheDir string, maxBytes int64, provider Provider, artifact CatalogSpecArtifact) (MaterializedArtifact, error) {
+	id := artifactIDForMaterialize(artifact)
+	path := filepath.Clean(filepath.FromSlash(strings.TrimSpace(artifact.Path)))
+	if path == "." || !filepath.IsLocal(path) {
+		return MaterializedArtifact{}, fmt.Errorf("%s/%s: artifact path %q must be local to the cache directory", provider.ID, id, artifact.Path)
+	}
+	if strings.TrimSpace(cacheDir) == "" {
+		return MaterializedArtifact{}, fmt.Errorf("%s/%s: cache dir is required", provider.ID, id)
+	}
+	digest := strings.ToLower(strings.TrimSpace(artifact.SHA256))
+	if digest == "" {
+		return MaterializedArtifact{}, fmt.Errorf("%s/%s: artifact SHA256 is required", provider.ID, id)
+	}
+	source, err := artifactio.ReadFile(cacheDir, path, artifactio.ReadOptions{MaxBytes: maxBytes, SHA256: digest, Bytes: artifact.Bytes})
 	if err != nil {
-		return MaterializedArtifact{}, fmt.Errorf("%s/%s: %w", provider.ID, artifactIDForMaterialize(artifact), err)
+		return MaterializedArtifact{}, fmt.Errorf("%s/%s: %w", provider.ID, id, err)
 	}
 	targetName := materializedFileName(artifact)
-	targetPath := filepath.Join(providerDir, materializedSourceDir(artifact), targetName)
-	digest, bytes, err := copyFileWithDigest(sourcePath, targetPath)
-	if err != nil {
-		return MaterializedArtifact{}, fmt.Errorf("%s/%s: %w", provider.ID, artifactIDForMaterialize(artifact), err)
+	relative := filepath.Join(prefix, materializedSourceDir(artifact), targetName)
+	if _, err := tx.Stage(relative, source.Data, 0o600); err != nil {
+		return MaterializedArtifact{}, fmt.Errorf("%s/%s: %w", provider.ID, id, err)
 	}
 	protocol := artifactProtocolClassification(artifact, specReferencesByID(provider.SpecReferences))
 	return MaterializedArtifact{
-		ArtifactID:    artifactIDForMaterialize(artifact),
+		ArtifactID:    id,
 		SpecRefID:     strings.TrimSpace(artifact.SpecRefID),
 		Kind:          strings.TrimSpace(artifact.Kind),
 		Protocol:      protocol.Protocol,
 		UWSSourceType: protocol.UWSSourceType(),
-		SourcePath:    sourcePath,
-		TargetPath:    targetPath,
+		SourcePath:    source.Path,
+		TargetPath:    filepath.Join(providerDir, materializedSourceDir(artifact), targetName),
 		SourceURL:     strings.TrimSpace(artifact.SourceURL),
-		SHA256:        digest,
-		Bytes:         bytes,
+		SHA256:        source.SHA256,
+		Bytes:         source.Bytes,
 		Metadata:      cloneStringMap(artifact.Metadata),
 	}, nil
 }
 
-func emitMaterializedSecurityOverlay(providerDir string, overlay SecurityOverlay) (MaterializedSecurityOverlay, error) {
-	targetPath := filepath.Join(providerDir, "security-overlays", overlay.ID+".json")
-	if err := writeMaterializationJSON(targetPath, overlay); err != nil {
-		return MaterializedSecurityOverlay{}, err
-	}
-	return MaterializedSecurityOverlay{
-		OverlayID:  overlay.ID,
-		SpecRefID:  strings.TrimSpace(overlay.SpecRefID),
-		Status:     overlay.Status,
-		TargetPath: targetPath,
-	}, nil
-}
-
-func resolveMaterializeSourcePath(cacheDir, artifactPath string) (string, error) {
-	path := strings.TrimSpace(artifactPath)
-	if path == "" {
-		return "", fmt.Errorf("artifact path is required")
-	}
-	if filepath.IsAbs(path) {
-		return filepath.Clean(path), nil
-	}
-	base := strings.TrimSpace(cacheDir)
-	if base == "" {
-		return "", fmt.Errorf("cache dir is required for relative artifact path %q", path)
-	}
-	cleanSlash := filepath.ToSlash(filepath.Clean(path))
-	if cleanSlash == "." || strings.HasPrefix(cleanSlash, "../") || cleanSlash == ".." {
-		return "", fmt.Errorf("artifact path %q escapes cache dir", path)
-	}
-	return filepath.Join(base, filepath.FromSlash(cleanSlash)), nil
-}
-
-func copyFileWithDigest(sourcePath, targetPath string) (string, int64, error) {
-	if err := os.MkdirAll(filepath.Dir(targetPath), 0o755); err != nil {
-		return "", 0, err
-	}
-	source, err := os.Open(sourcePath)
-	if err != nil {
-		return "", 0, err
-	}
-	defer source.Close()
-	target, err := os.OpenFile(targetPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o600)
-	if err != nil {
-		return "", 0, err
-	}
-	hash := sha256.New()
-	written, copyErr := io.Copy(io.MultiWriter(target, hash), source)
-	closeErr := target.Close()
-	if copyErr != nil {
-		return "", written, copyErr
-	}
-	if closeErr != nil {
-		return "", written, closeErr
-	}
-	return hex.EncodeToString(hash.Sum(nil)), written, nil
-}
-
-func writeMaterializationJSON(path string, value any) error {
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-		return err
-	}
+func materializationJSON(value any) ([]byte, error) {
 	content, err := json.MarshalIndent(value, "", "  ")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	content = append(content, '\n')
-	return os.WriteFile(path, content, 0o600)
+	return content, nil
 }
 
 func artifactIDForMaterialize(artifact CatalogSpecArtifact) string {

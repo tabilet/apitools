@@ -247,8 +247,13 @@ overlay IDs. JSON reports include protocol classifications and
 `uws_source_type` for first-class UWS API sources. `catalog materialize` copies
 existing cache-registered artifacts for one provider into source-aligned
 directories and emits catalog security overlays as separate JSON metadata with
-provenance. `catalog export` writes the same provider-scoped artifacts under a
-workflow directory. These commands do not download missing files, apply
+provenance. Every registered source must be a relative regular file under the
+selected cache directory with a matching SHA-256 digest. Materialization and
+workflow export stage a complete tree and publish it atomically; identical
+destinations are reused, while differing destinations are rejected unless the
+operator supplies `--force`, which uses a rollback-capable replacement.
+`catalog export` requires `--artifact-dir` to stay beneath the workflow root.
+These commands do not download missing files, apply
 overlays into OpenAPI documents, lower Discovery or Smithy into OpenAPI,
 execute operations, or resolve credentials.
 
@@ -403,7 +408,8 @@ materialized, err := catalog.MaterializeProvider(ctx, catalog.MaterializeOptions
 	ProviderKey:             "slack",
 	TargetDir:               "./api-artifacts",
 	CacheDir:                "catalog-openapi-cache",
-	// Artifacts: existing CatalogSpecArtifact rows, usually loaded from sqlitecache.
+	// Artifacts: existing CatalogSpecArtifact rows with relative Path, SHA256,
+	// and Bytes, usually loaded from sqlitecache.
 	IncludeSecurityOverlays: true,
 })
 _, _ = materialized, err

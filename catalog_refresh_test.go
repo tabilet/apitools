@@ -336,6 +336,27 @@ func TestRefreshCatalogSpecReferencesRejectsUnsafeHost(t *testing.T) {
 	}
 }
 
+func TestWriteCatalogRefreshArtifactRejectsSymlinkDestination(t *testing.T) {
+	cacheDir := t.TempDir()
+	outside := filepath.Join(t.TempDir(), "outside.json")
+	if err := os.WriteFile(outside, []byte("outside"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(cacheDir, "openapi"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(outside, filepath.Join(cacheDir, "openapi", "demo.json")); err != nil {
+		t.Skipf("symlinks unavailable: %v", err)
+	}
+	if _, err := writeCatalogRefreshArtifact(cacheDir, "openapi/demo.json", []byte("replacement")); err == nil || !strings.Contains(err.Error(), "regular file") {
+		t.Fatalf("expected symlink rejection, got %v", err)
+	}
+	content, err := os.ReadFile(outside)
+	if err != nil || string(content) != "outside" {
+		t.Fatalf("outside content = %q, err %v", content, err)
+	}
+}
+
 func hasRefreshFollowUp(result CatalogSpecRefreshResult, text string) bool {
 	for _, followUp := range result.ManualFollowUps {
 		if strings.Contains(followUp, text) {

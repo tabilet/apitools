@@ -2,10 +2,15 @@ package catalog
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/OpenUdon/apitools/internal/artifactio"
 )
 
 func TestResolveProvidersWithArtifactsReportsExecutableOpenAPI(t *testing.T) {
@@ -200,7 +205,7 @@ func TestMaterializeProviderCopiesArtifactsAndEmitsOverlay(t *testing.T) {
 		CacheDir:                cacheDir,
 		IncludeSecurityOverlays: true,
 		WriteManifest:           true,
-		Artifacts: []CatalogSpecArtifact{{
+		Artifacts: []CatalogSpecArtifact{withMaterializeIntegrity(t, cacheDir, CatalogSpecArtifact{
 			ProviderID: "demo",
 			SpecRefID:  "demo-openapi",
 			ArtifactID: "demo-openapi",
@@ -208,7 +213,7 @@ func TestMaterializeProviderCopiesArtifactsAndEmitsOverlay(t *testing.T) {
 			Path:       filepath.ToSlash(sourceRel),
 			SourceURL:  "https://example.com/openapi.json",
 			Metadata:   map[string]string{"validation_status": "valid-openapi"},
-		}},
+		})},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -258,14 +263,14 @@ func TestExportWorkflowArtifactsWritesAggregateManifest(t *testing.T) {
 		WorkflowDir:   filepath.Join(dir, "workflow"),
 		CacheDir:      cacheDir,
 		WriteManifest: true,
-		Artifacts: []CatalogSpecArtifact{{
+		Artifacts: []CatalogSpecArtifact{withMaterializeIntegrity(t, cacheDir, CatalogSpecArtifact{
 			ProviderID: "demo",
 			SpecRefID:  "demo-openapi",
 			ArtifactID: "demo-openapi",
 			Kind:       "openapi",
 			Path:       filepath.ToSlash(sourceRel),
 			Metadata:   map[string]string{"validation_status": "valid-openapi"},
-		}},
+		})},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -301,22 +306,26 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 		}
 	}
 
+	artifacts := []CatalogSpecArtifact{
+		{ProviderID: "demo", SpecRefID: "gmail", ArtifactID: "gmail", Kind: "google-discovery", Path: "google-discovery/gmail.json"},
+		{ProviderID: "demo", SpecRefID: "aws-s3", ArtifactID: "aws-s3", Kind: "smithy-json", Path: "aws-smithy/aws-s3-smithy.json"},
+		{ProviderID: "demo", SpecRefID: "events", ArtifactID: "events", Kind: "asyncapi", Path: "asyncapi/events.yaml"},
+		{ProviderID: "demo", SpecRefID: "pet-rpc", ArtifactID: "pet-rpc", Kind: "openrpc", Path: "openrpc/pet-rpc.json"},
+		{ProviderID: "demo", SpecRefID: "issues", ArtifactID: "issues", Kind: "graphql", Path: "graphql/issues.graphql"},
+		{ProviderID: "demo", SpecRefID: "issues-grpc", ArtifactID: "issues-grpc", Kind: "grpc-protobuf", Path: "grpc-protobuf/issues.proto"},
+		{ProviderID: "demo", SpecRefID: "metadata", ArtifactID: "metadata", Kind: "odata", Path: "odata/metadata.xml"},
+		{ProviderID: "demo", SpecRefID: "docs", ArtifactID: "docs", Kind: "advisory-overlay", Path: "openapi/docs-overlay.json"},
+		{ProviderID: "demo", SpecRefID: "stone", ArtifactID: "stone", Kind: "dropbox-stone", Path: "artifacts/dropbox-stone.tar.gz"},
+	}
+	for index := range artifacts {
+		artifacts[index] = withMaterializeIntegrity(t, cacheDir, artifacts[index])
+	}
 	report, err := MaterializeProvider(context.Background(), MaterializeOptions{
 		Catalog:     Catalog{Providers: []Provider{qualityProvider("demo")}},
 		ProviderKey: "demo",
 		TargetDir:   filepath.Join(dir, "out"),
 		CacheDir:    cacheDir,
-		Artifacts: []CatalogSpecArtifact{
-			{ProviderID: "demo", SpecRefID: "gmail", ArtifactID: "gmail", Kind: "google-discovery", Path: "google-discovery/gmail.json"},
-			{ProviderID: "demo", SpecRefID: "aws-s3", ArtifactID: "aws-s3", Kind: "smithy-json", Path: "aws-smithy/aws-s3-smithy.json"},
-			{ProviderID: "demo", SpecRefID: "events", ArtifactID: "events", Kind: "asyncapi", Path: "asyncapi/events.yaml"},
-			{ProviderID: "demo", SpecRefID: "pet-rpc", ArtifactID: "pet-rpc", Kind: "openrpc", Path: "openrpc/pet-rpc.json"},
-			{ProviderID: "demo", SpecRefID: "issues", ArtifactID: "issues", Kind: "graphql", Path: "graphql/issues.graphql"},
-			{ProviderID: "demo", SpecRefID: "issues-grpc", ArtifactID: "issues-grpc", Kind: "grpc-protobuf", Path: "grpc-protobuf/issues.proto"},
-			{ProviderID: "demo", SpecRefID: "metadata", ArtifactID: "metadata", Kind: "odata", Path: "odata/metadata.xml"},
-			{ProviderID: "demo", SpecRefID: "docs", ArtifactID: "docs", Kind: "advisory-overlay", Path: "openapi/docs-overlay.json"},
-			{ProviderID: "demo", SpecRefID: "stone", ArtifactID: "stone", Kind: "dropbox-stone", Path: "artifacts/dropbox-stone.tar.gz"},
-		},
+		Artifacts:   artifacts,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -374,4 +383,164 @@ func TestMaterializeProviderUsesSourceAlignedDirs(t *testing.T) {
 			t.Fatalf("%s UWS source type = %q, want %q", id, artifact.UWSSourceType, want.uwsSourceType)
 		}
 	}
+}
+
+func TestMaterializeProviderVerifiesDigestAndRollsBack(t *testing.T) {
+	dir := t.TempDir()
+	cacheDir := filepath.Join(dir, "cache")
+	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(cacheDir, "source.json"), []byte("source"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	targetDir := filepath.Join(dir, "out")
+	providerDir := filepath.Join(targetDir, "demo")
+	if err := os.MkdirAll(providerDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	sentinel := filepath.Join(providerDir, "sentinel")
+	if err := os.WriteFile(sentinel, []byte("keep"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	_, err := MaterializeProvider(context.Background(), MaterializeOptions{
+		Catalog:     Catalog{Providers: []Provider{qualityProvider("demo")}},
+		ProviderKey: "demo",
+		TargetDir:   targetDir,
+		CacheDir:    cacheDir,
+		Force:       true,
+		Artifacts: []CatalogSpecArtifact{{
+			ProviderID: "demo",
+			SpecRefID:  "demo-openapi",
+			ArtifactID: "demo-openapi",
+			Kind:       "openapi",
+			Path:       "source.json",
+			SHA256:     strings.Repeat("0", 64),
+		}},
+	})
+	if err == nil || !strings.Contains(err.Error(), "SHA256") {
+		t.Fatalf("expected digest mismatch, got %v", err)
+	}
+	content, readErr := os.ReadFile(sentinel)
+	if readErr != nil || string(content) != "keep" {
+		t.Fatalf("rollback changed destination: content=%q err=%v", content, readErr)
+	}
+}
+
+func TestMaterializeProviderRejectsSymlinkSource(t *testing.T) {
+	dir := t.TempDir()
+	cacheDir := filepath.Join(dir, "cache")
+	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	outside := filepath.Join(dir, "outside.json")
+	content := []byte("outside")
+	if err := os.WriteFile(outside, content, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(outside, filepath.Join(cacheDir, "source.json")); err != nil {
+		t.Skipf("symlinks unavailable: %v", err)
+	}
+	digest := sha256.Sum256(content)
+	_, err := MaterializeProvider(context.Background(), MaterializeOptions{
+		Catalog:     Catalog{Providers: []Provider{qualityProvider("demo")}},
+		ProviderKey: "demo",
+		TargetDir:   filepath.Join(dir, "out"),
+		CacheDir:    cacheDir,
+		Artifacts: []CatalogSpecArtifact{{
+			ProviderID: "demo", ArtifactID: "demo", Kind: "openapi", Path: "source.json", SHA256: hex.EncodeToString(digest[:]),
+		}},
+	})
+	if err == nil || !strings.Contains(err.Error(), "regular file") {
+		t.Fatalf("expected symlink rejection, got %v", err)
+	}
+	if _, statErr := os.Stat(filepath.Join(dir, "out", "demo")); !errors.Is(statErr, os.ErrNotExist) {
+		t.Fatalf("failed materialization published output: %v", statErr)
+	}
+}
+
+func TestMaterializeProviderCollisionRequiresForce(t *testing.T) {
+	dir := t.TempDir()
+	cacheDir := filepath.Join(dir, "cache")
+	path := filepath.Join(cacheDir, "source.json")
+	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte("one"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	artifact := withMaterializeIntegrity(t, cacheDir, CatalogSpecArtifact{ProviderID: "demo", ArtifactID: "demo", Kind: "openapi", Path: "source.json"})
+	opts := MaterializeOptions{Catalog: Catalog{Providers: []Provider{qualityProvider("demo")}}, ProviderKey: "demo", TargetDir: filepath.Join(dir, "out"), CacheDir: cacheDir, Artifacts: []CatalogSpecArtifact{artifact}}
+	if _, err := MaterializeProvider(context.Background(), opts); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte("two"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	opts.Artifacts[0] = withMaterializeIntegrity(t, cacheDir, opts.Artifacts[0])
+	if _, err := MaterializeProvider(context.Background(), opts); !errors.Is(err, artifactio.ErrCollision) {
+		t.Fatalf("expected collision, got %v", err)
+	}
+	target := filepath.Join(dir, "out", "demo", "openapi", "demo.json")
+	if content, err := os.ReadFile(target); err != nil || string(content) != "one" {
+		t.Fatalf("collision changed destination: content=%q err=%v", content, err)
+	}
+	opts.Force = true
+	if _, err := MaterializeProvider(context.Background(), opts); err != nil {
+		t.Fatal(err)
+	}
+	if content, err := os.ReadFile(target); err != nil || string(content) != "two" {
+		t.Fatalf("forced transaction did not replace destination: content=%q err=%v", content, err)
+	}
+}
+
+func TestExportWorkflowArtifactsConfinesRootAndRollsBackAllProviders(t *testing.T) {
+	dir := t.TempDir()
+	for _, artifactDir := range []string{"../outside", filepath.Join(dir, "absolute"), "."} {
+		_, err := ExportWorkflowArtifacts(context.Background(), ExportWorkflowArtifactsOptions{
+			Catalog:      Catalog{Providers: []Provider{qualityProvider("demo")}},
+			ProviderKeys: []string{"demo"},
+			WorkflowDir:  filepath.Join(dir, "workflow"),
+			ArtifactDir:  artifactDir,
+		})
+		if err == nil || !strings.Contains(err.Error(), "under the workflow") {
+			t.Errorf("artifact dir %q: expected confinement error, got %v", artifactDir, err)
+		}
+	}
+
+	cacheDir := filepath.Join(dir, "cache")
+	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(cacheDir, "one.json"), []byte("one"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	one := withMaterializeIntegrity(t, cacheDir, CatalogSpecArtifact{ProviderID: "one", ArtifactID: "one", Kind: "openapi", Path: "one.json"})
+	two := CatalogSpecArtifact{ProviderID: "two", ArtifactID: "two", Kind: "openapi", Path: "missing.json", SHA256: strings.Repeat("0", 64)}
+	workflowDir := filepath.Join(dir, "transaction-workflow")
+	_, err := ExportWorkflowArtifacts(context.Background(), ExportWorkflowArtifactsOptions{
+		Catalog:      Catalog{Providers: []Provider{qualityProvider("one"), qualityProvider("two")}},
+		ProviderKeys: []string{"one", "two"},
+		WorkflowDir:  workflowDir,
+		CacheDir:     cacheDir,
+		Artifacts:    []CatalogSpecArtifact{one, two},
+	})
+	if err == nil {
+		t.Fatal("expected second-provider failure")
+	}
+	if _, statErr := os.Stat(filepath.Join(workflowDir, "api-artifacts")); !errors.Is(statErr, os.ErrNotExist) {
+		t.Fatalf("failed export published a partial tree: %v", statErr)
+	}
+}
+
+func withMaterializeIntegrity(t *testing.T, cacheDir string, artifact CatalogSpecArtifact) CatalogSpecArtifact {
+	t.Helper()
+	content, err := os.ReadFile(filepath.Join(cacheDir, filepath.FromSlash(artifact.Path)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	digest := sha256.Sum256(content)
+	artifact.SHA256 = hex.EncodeToString(digest[:])
+	artifact.Bytes = int64(len(content))
+	return artifact
 }

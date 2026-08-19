@@ -257,8 +257,10 @@ func runCatalogMaterialize(args []string, out, errOut io.Writer) int {
 	positionals, flagArgs, splitOK := splitCatalogProviderFlags(args, map[string]struct{}{
 		"--cache":     {},
 		"--cache-dir": {},
+		"--max-bytes": {},
 		"--out":       {},
 	}, map[string]struct{}{
+		"--force":                {},
 		"--json":                 {},
 		"--no-security-overlays": {},
 	})
@@ -270,10 +272,12 @@ func runCatalogMaterialize(args []string, out, errOut io.Writer) int {
 	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory containing saved review artifacts")
 	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
 	outDir := fs.String("out", "", "Directory to receive provider artifacts")
+	maxBytes := fs.Int64("max-bytes", catalogpkg.DefaultMaterializeMaxBytes, "Maximum bytes to read from each registered artifact")
+	force := fs.Bool("force", false, "Atomically replace a differing existing provider directory")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	noSecurityOverlays := fs.Bool("no-security-overlays", false, "Do not emit catalog security overlay JSON files")
 	fs.Usage = func() {
-		fmt.Fprintln(fs.Output(), "Usage: apitools catalog materialize <provider> --out <dir> [--cache-dir catalog-openapi-cache] [--cache catalog-openapi-cache/cache.sqlite] [--json]")
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog materialize <provider> --out <dir> [--cache-dir catalog-openapi-cache] [--cache catalog-openapi-cache/cache.sqlite] [--force] [--json]")
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
@@ -311,6 +315,8 @@ func runCatalogMaterialize(args []string, out, errOut io.Writer) int {
 		Artifacts:               artifacts,
 		IncludeSecurityOverlays: !*noSecurityOverlays,
 		WriteManifest:           true,
+		Force:                   *force,
+		MaxBytes:                *maxBytes,
 	})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
@@ -332,8 +338,10 @@ func runCatalogExport(args []string, out, errOut io.Writer) int {
 		"--artifact-dir": {},
 		"--cache":        {},
 		"--cache-dir":    {},
+		"--max-bytes":    {},
 		"--workflow-dir": {},
 	}, map[string]struct{}{
+		"--force":                {},
 		"--json":                 {},
 		"--no-security-overlays": {},
 	})
@@ -346,10 +354,12 @@ func runCatalogExport(args []string, out, errOut io.Writer) int {
 	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
 	workflowDir := fs.String("workflow-dir", "", "Workflow directory to receive exported API artifacts")
 	artifactDir := fs.String("artifact-dir", "api-artifacts", "Subdirectory under the workflow directory for exported artifacts")
+	maxBytes := fs.Int64("max-bytes", catalogpkg.DefaultMaterializeMaxBytes, "Maximum bytes to read from each registered artifact")
+	force := fs.Bool("force", false, "Atomically replace a differing existing artifact directory")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	noSecurityOverlays := fs.Bool("no-security-overlays", false, "Do not emit catalog security overlay JSON files")
 	fs.Usage = func() {
-		fmt.Fprintln(fs.Output(), "Usage: apitools catalog export <provider>... --workflow-dir <dir> [--artifact-dir api-artifacts] [--cache-dir catalog-openapi-cache] [--cache catalog-openapi-cache/cache.sqlite] [--json]")
+		fmt.Fprintln(fs.Output(), "Usage: apitools catalog export <provider>... --workflow-dir <dir> [--artifact-dir api-artifacts] [--cache-dir catalog-openapi-cache] [--cache catalog-openapi-cache/cache.sqlite] [--force] [--json]")
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
@@ -388,6 +398,8 @@ func runCatalogExport(args []string, out, errOut io.Writer) int {
 		Artifacts:               artifacts,
 		IncludeSecurityOverlays: !*noSecurityOverlays,
 		WriteManifest:           true,
+		Force:                   *force,
+		MaxBytes:                *maxBytes,
 	})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
@@ -1493,6 +1505,11 @@ func writeCatalogMaterializeReport(out io.Writer, report catalogpkg.Materializat
 	fmt.Fprintf(out, "Materialized provider: %s (%s)\n", report.DisplayName, report.ProviderID)
 	fmt.Fprintf(out, "Capability: %s\n", report.Capability)
 	fmt.Fprintf(out, "Target dir: %s\n", report.TargetDir)
+	if report.Reused {
+		fmt.Fprintln(out, "Commit: reused identical existing directory")
+	} else {
+		fmt.Fprintln(out, "Commit: atomic directory transaction")
+	}
 	if len(report.Artifacts) > 0 {
 		fmt.Fprintln(out, "Artifacts:")
 		for _, artifact := range report.Artifacts {
@@ -1520,6 +1537,11 @@ func writeCatalogExportReport(out io.Writer, report catalogpkg.ExportReport) {
 	fmt.Fprintf(out, "Exported workflow artifacts: %d provider(s)\n", len(report.Providers))
 	fmt.Fprintf(out, "Workflow dir: %s\n", report.WorkflowDir)
 	fmt.Fprintf(out, "Artifact dir: %s\n", report.ArtifactDir)
+	if report.Reused {
+		fmt.Fprintln(out, "Commit: reused identical existing directory")
+	} else {
+		fmt.Fprintln(out, "Commit: atomic directory transaction")
+	}
 	if report.ManifestPath != "" {
 		fmt.Fprintf(out, "Manifest: %s\n", report.ManifestPath)
 	}
