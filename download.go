@@ -1,6 +1,7 @@
 package apitools
 
 import (
+	"compress/gzip"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
@@ -10,6 +11,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -141,6 +143,9 @@ func (c *Client) downloadBoundedWithAccept(ctx context.Context, rawURL, accept s
 	if strings.TrimSpace(accept) != "" {
 		req.Header.Set("Accept", accept)
 	}
+	// Set this ourselves so net/http does not transparently decompress the
+	// response before the wire-byte budget can be enforced.
+	req.Header.Set("Accept-Encoding", "gzip")
 	client, err := c.redirectSafeClient()
 	if err != nil {
 		return nil, nil, "", err
@@ -153,21 +158,69 @@ func (c *Client) downloadBoundedWithAccept(ctx context.Context, rawURL, accept s
 	finalURL := parsed
 	if resp.Request != nil && resp.Request.URL != nil {
 		finalURL = resp.Request.URL
-		if err := c.rejectHost(ctx, finalURL.Hostname()); err != nil {
+		if _, err := c.validateHTTPURL(ctx, finalURL.String()); err != nil {
 			return nil, nil, "", err
 		}
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return nil, nil, "", HTTPStatusError{Code: resp.StatusCode, Status: resp.Status}
 	}
-	content, err := io.ReadAll(io.LimitReader(resp.Body, maxBytes+1))
+	content, err := readBoundedResponseBody(resp, maxBytes)
 	if err != nil {
 		return nil, nil, "", err
 	}
-	if int64(len(content)) > maxBytes {
-		return nil, nil, "", fmt.Errorf("downloaded document is larger than %d bytes", maxBytes)
-	}
 	return content, finalURL, resp.Header.Get("Content-Type"), nil
+}
+
+func readBoundedResponseBody(resp *http.Response, maxBytes int64) ([]byte, error) {
+	if resp == nil || resp.Body == nil {
+		return nil, fmt.Errorf("download response body is missing")
+	}
+	if maxBytes <= 0 {
+		return nil, fmt.Errorf("download byte limit must be positive")
+	}
+	if resp.ContentLength > maxBytes {
+		return nil, fmt.Errorf("downloaded wire body is larger than %d bytes", maxBytes)
+	}
+
+	wire := &io.LimitedReader{R: resp.Body, N: maxBytes + 1}
+	var decoded io.Reader = wire
+	var closeDecoded func() error
+	switch strings.ToLower(strings.TrimSpace(resp.Header.Get("Content-Encoding"))) {
+	case "", "identity":
+	case "gzip":
+		reader, err := gzip.NewReader(wire)
+		if err != nil {
+			return nil, fmt.Errorf("decode gzip response: %w", err)
+		}
+		decoded = reader
+		closeDecoded = reader.Close
+	default:
+		return nil, fmt.Errorf("unsupported Content-Encoding %q", resp.Header.Get("Content-Encoding"))
+	}
+
+	content, err := io.ReadAll(io.LimitReader(decoded, maxBytes+1))
+	if closeDecoded != nil {
+		closeErr := closeDecoded()
+		if err == nil {
+			err = closeErr
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(content)) > maxBytes {
+		return nil, fmt.Errorf("downloaded decoded body is larger than %d bytes", maxBytes)
+	}
+	// A decoder can finish before consuming trailing bytes. Drain only through
+	// the bounded wire reader so appended data cannot evade the wire budget.
+	if _, err := io.Copy(io.Discard, wire); err != nil {
+		return nil, err
+	}
+	if wire.N == 0 {
+		return nil, fmt.Errorf("downloaded wire body is larger than %d bytes", maxBytes)
+	}
+	return content, nil
 }
 
 func (c *Client) client() *http.Client {
@@ -195,10 +248,7 @@ func (c *Client) redirectSafeClient() (*http.Client, error) {
 		if req == nil || req.URL == nil {
 			return fmt.Errorf("redirect target is missing")
 		}
-		if req.URL.Scheme != "http" && req.URL.Scheme != "https" {
-			return fmt.Errorf("redirect URL scheme must be http or https")
-		}
-		if err := c.rejectHost(req.Context(), req.URL.Hostname()); err != nil {
+		if _, err := c.validateHTTPURL(req.Context(), req.URL.String()); err != nil {
 			return err
 		}
 		if baseCheck != nil {
@@ -214,23 +264,20 @@ func (c *Client) safeTransport(roundTripper http.RoundTripper) (http.RoundTrippe
 	if c != nil && c.AllowUnsafeHosts {
 		return roundTripper, nil
 	}
-	var transport *http.Transport
-	if roundTripper == nil {
-		if base, ok := http.DefaultTransport.(*http.Transport); ok {
-			transport = base.Clone()
-		}
-	} else if base, ok := roundTripper.(*http.Transport); ok {
-		transport = base.Clone()
-	} else {
+	if roundTripper != nil {
 		return nil, fmt.Errorf("custom HTTP transport requires AllowUnsafeHosts")
 	}
-	if transport == nil {
-		return nil, fmt.Errorf("default HTTP transport is not cloneable")
+	// Construct the transport rather than cloning the mutable process default.
+	// This prevents custom proxy and TLS dial hooks from bypassing the guarded
+	// dial path while retaining the standard library's normal timeout profile.
+	transport := &http.Transport{
+		DialContext:           c.safeDialContext,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: time.Second,
 	}
-	transport.Proxy = nil
-	transport.DialContext = c.safeDialContext
-	transport.DialTLS = nil
-	transport.DialTLSContext = nil
 	return transport, nil
 }
 
@@ -240,6 +287,9 @@ func (c *Client) safeDialContext(ctx context.Context, network, address string) (
 	// resolver applies its own policy.
 	host, port, err := net.SplitHostPort(address)
 	if err != nil {
+		return nil, err
+	}
+	if err := c.validateDialPort(port); err != nil {
 		return nil, err
 	}
 	addrs, err := net.DefaultResolver.LookupIPAddr(ctx, host)
@@ -277,10 +327,16 @@ func (c *Client) validateHTTPURL(ctx context.Context, rawURL string) (*url.URL, 
 	if parsed.Scheme != "http" && parsed.Scheme != "https" {
 		return nil, fmt.Errorf("URL scheme must be http or https")
 	}
+	if parsed.User != nil {
+		return nil, fmt.Errorf("URL userinfo is not allowed")
+	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
 	if err := c.rejectHost(ctx, parsed.Hostname()); err != nil {
+		return nil, err
+	}
+	if err := c.validateURLPort(parsed); err != nil {
 		return nil, err
 	}
 	return parsed, nil
@@ -291,19 +347,28 @@ func (c *Client) validateCacheURL(ctx context.Context, rawURL string) (*url.URL,
 	if err != nil || parsed.Scheme == "" {
 		return nil, fmt.Errorf("valid URL is required")
 	}
-	if c != nil && c.AllowUnsafeHosts {
-		return parsed, nil
-	}
 	if parsed.Host == "" {
 		return nil, fmt.Errorf("valid URL is required")
 	}
 	if parsed.Scheme != "http" && parsed.Scheme != "https" {
 		return nil, fmt.Errorf("URL scheme must be http or https")
 	}
+	if parsed.User != nil {
+		return nil, fmt.Errorf("URL userinfo is not allowed")
+	}
+	if c != nil && c.AllowUnsafeHosts {
+		if err := c.validateURLPort(parsed); err != nil {
+			return nil, err
+		}
+		return parsed, nil
+	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
 	if err := c.rejectHost(ctx, parsed.Hostname()); err != nil {
+		return nil, err
+	}
+	if err := c.validateURLPort(parsed); err != nil {
 		return nil, err
 	}
 	return parsed, nil
@@ -319,6 +384,9 @@ func (c *Client) rejectHost(ctx context.Context, host string) error {
 	}
 	if strings.EqualFold(host, "localhost") {
 		return fmt.Errorf("refusing localhost URL")
+	}
+	if strings.Contains(host, "%") {
+		return fmt.Errorf("refusing scoped URL host %q", host)
 	}
 	ip := net.ParseIP(host)
 	if ip != nil {
@@ -340,5 +408,124 @@ func (c *Client) rejectHost(ctx context.Context, host string) error {
 }
 
 func isUnsafeIP(ip net.IP) bool {
-	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified() || ip.IsMulticast()
+	if ip == nil || !ip.IsGlobalUnicast() {
+		return true
+	}
+	if v4 := ip.To4(); v4 != nil {
+		return ipInAnyCIDR(v4, unsafeIPv4Networks)
+	}
+	return ipInAnyCIDR(ip, unsafeIPv6Networks)
+}
+
+var unsafeIPv4Networks = mustIPNetworks(
+	"0.0.0.0/8",
+	"10.0.0.0/8",
+	"100.64.0.0/10",
+	"127.0.0.0/8",
+	"169.254.0.0/16",
+	"172.16.0.0/12",
+	"192.0.0.0/24",
+	"192.0.2.0/24",
+	"192.88.99.0/24",
+	"192.168.0.0/16",
+	"198.18.0.0/15",
+	"198.51.100.0/24",
+	"203.0.113.0/24",
+)
+
+var unsafeIPv6Networks = mustIPNetworks(
+	"64:ff9b::/96",
+	"64:ff9b:1::/48",
+	"100::/64",
+	"2001::/32",   // Teredo transition addresses.
+	"2001:2::/48", // Benchmarking.
+	"2001:10::/28",
+	"2001:20::/28",
+	"2001:db8::/32",
+	"2002::/16", // 6to4 transition addresses.
+	"fc00::/7",
+)
+
+func mustIPNetworks(values ...string) []*net.IPNet {
+	networks := make([]*net.IPNet, 0, len(values))
+	for _, value := range values {
+		_, network, err := net.ParseCIDR(value)
+		if err != nil {
+			panic(err)
+		}
+		networks = append(networks, network)
+	}
+	return networks
+}
+
+func ipInAnyCIDR(ip net.IP, networks []*net.IPNet) bool {
+	for _, network := range networks {
+		if network.Contains(ip) {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Client) validateURLPort(parsed *url.URL) error {
+	if parsed == nil {
+		return fmt.Errorf("valid URL is required")
+	}
+	port := parsed.Port()
+	if port == "" {
+		return nil
+	}
+	value, err := strconv.Atoi(port)
+	if err != nil || value < 1 || value > 65535 {
+		return fmt.Errorf("URL port must be between 1 and 65535")
+	}
+	if c != nil && c.AllowUnsafeHosts {
+		return nil
+	}
+	defaultPort := (parsed.Scheme == "http" && value == 80) || (parsed.Scheme == "https" && value == 443)
+	if defaultPort {
+		return nil
+	}
+	allowed, err := c.additionalPortAllowed(value)
+	if err != nil {
+		return err
+	}
+	if !allowed {
+		return fmt.Errorf("refusing URL port %d for %s", value, parsed.Scheme)
+	}
+	return nil
+}
+
+func (c *Client) validateDialPort(port string) error {
+	value, err := strconv.Atoi(port)
+	if err != nil || value < 1 || value > 65535 {
+		return fmt.Errorf("destination port must be between 1 and 65535")
+	}
+	if value == 80 || value == 443 {
+		return nil
+	}
+	allowed, err := c.additionalPortAllowed(value)
+	if err != nil {
+		return err
+	}
+	if !allowed {
+		return fmt.Errorf("refusing destination port %d", value)
+	}
+	return nil
+}
+
+func (c *Client) additionalPortAllowed(port int) (bool, error) {
+	if c == nil {
+		return false, nil
+	}
+	allowed := false
+	for _, candidate := range c.AllowedPorts {
+		if candidate < 1 || candidate > 65535 {
+			return false, fmt.Errorf("allowed port must be between 1 and 65535: %d", candidate)
+		}
+		if candidate == port {
+			allowed = true
+		}
+	}
+	return allowed, nil
 }

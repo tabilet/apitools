@@ -69,12 +69,15 @@ const (
 )
 
 type Client struct {
-	HTTPClient        *http.Client
-	APIsGuruListURL   string
-	LAPSearchURL      string
-	PublicAPIsURL     string
-	Timeout           time.Duration
-	MaxBytes          int64
+	HTTPClient      *http.Client
+	APIsGuruListURL string
+	LAPSearchURL    string
+	PublicAPIsURL   string
+	Timeout         time.Duration
+	MaxBytes        int64
+	// AllowedPorts adds reviewed destination ports to the default HTTP port 80
+	// and HTTPS port 443 policy. It does not relax hostname or IP checks.
+	AllowedPorts      []int
 	WellKnownPaths    []string
 	AllowUnsafeHosts  bool
 	Cache             Cache

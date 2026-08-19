@@ -442,9 +442,15 @@ It must not:
 - Treat discovered documents as trusted input.
 
 Remote fetches are limited to HTTP(S). Unsafe hosts are rejected by default,
-including localhost, private, link-local, multicast, and unspecified addresses.
-Callers that intentionally need local fixtures can opt into that behavior with
-`Client.AllowUnsafeHosts`.
+including localhost, private, link-local, multicast, unspecified, carrier-grade
+NAT, documentation, benchmarking, NAT64, Teredo, and 6to4 addresses. URL
+userinfo is always rejected. Safe clients permit HTTP port 80 and HTTPS port
+443; callers may add reviewed ports with `Client.AllowedPorts` without
+relaxing address checks. Redirect targets and dial-time DNS results pass the
+same checks. Remote bodies are bounded both before and after gzip decoding.
+Callers that intentionally need local fixtures can opt out of host and port
+checks with `Client.AllowUnsafeHosts`; userinfo and response byte limits remain
+enforced.
 
 Local file reads are also fail-closed. `LocalFiles`, `DiscoverLocalSources`,
 `BuildOperationInventory`, and `LoadOperationIndex` reject symlinked scan

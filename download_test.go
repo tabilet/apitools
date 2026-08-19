@@ -1,9 +1,12 @@
 package apitools
 
 import (
+	"bytes"
+	"compress/gzip"
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -27,6 +30,51 @@ func TestDownloadBoundedRejectsURLWithoutHost(t *testing.T) {
 		_, _, err := c.downloadBounded(context.Background(), raw)
 		if err == nil {
 			t.Fatalf("input %q: expected error, got nil", raw)
+		}
+	}
+}
+
+func TestDownloadBoundedRejectsURLUserinfoEvenWithUnsafeHostsAllowed(t *testing.T) {
+	for _, client := range []*Client{{}, {AllowUnsafeHosts: true}} {
+		_, _, err := client.downloadBounded(context.Background(), "https://operator:secret@8.8.8.8/openapi.yaml")
+		if err == nil || !strings.Contains(err.Error(), "userinfo") {
+			t.Fatalf("client %#v: expected userinfo error, got %v", client, err)
+		}
+	}
+}
+
+func TestValidateHTTPURLRestrictsPortsWithoutRelaxingHostChecks(t *testing.T) {
+	client := &Client{}
+	if _, err := client.validateHTTPURL(context.Background(), "https://8.8.8.8:22/openapi.yaml"); err == nil || !strings.Contains(err.Error(), "port") {
+		t.Fatalf("expected unsafe-port error, got %v", err)
+	}
+	client.AllowedPorts = []int{8443}
+	if _, err := client.validateHTTPURL(context.Background(), "https://8.8.8.8:8443/openapi.yaml"); err != nil {
+		t.Fatalf("expected reviewed additional port to pass: %v", err)
+	}
+	if _, err := client.validateHTTPURL(context.Background(), "https://127.0.0.1:8443/openapi.yaml"); err == nil || !strings.Contains(err.Error(), "private") {
+		t.Fatalf("additional port bypassed address checks: %v", err)
+	}
+}
+
+func TestIsUnsafeIPRejectsSpecialAndTransitionRanges(t *testing.T) {
+	for _, raw := range []string{
+		"100.64.0.1",
+		"192.0.2.1",
+		"198.18.0.1",
+		"64:ff9b::0808:0808",
+		"64:ff9b:1::1",
+		"2001::1",
+		"2002:0808:0808::1",
+		"2001:db8::1",
+	} {
+		if !isUnsafeIP(net.ParseIP(raw)) {
+			t.Errorf("expected %s to be unsafe", raw)
+		}
+	}
+	for _, raw := range []string{"8.8.8.8", "1.1.1.1", "2001:4860:4860::8888"} {
+		if isUnsafeIP(net.ParseIP(raw)) {
+			t.Errorf("expected %s to be public", raw)
 		}
 	}
 }
@@ -101,6 +149,55 @@ func TestDownloadBoundedEnforcesSizeCap(t *testing.T) {
 	_, _, err := c.downloadBounded(context.Background(), server.URL)
 	if err == nil || !strings.Contains(err.Error(), "larger than") {
 		t.Fatalf("expected size error, got %v", err)
+	}
+}
+
+func TestDownloadBoundedEnforcesDecodedGzipSizeCap(t *testing.T) {
+	encoded := gzipBytes(t, []byte(strings.Repeat("a", 4096)))
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Encoding", "gzip")
+		_, _ = w.Write(encoded)
+	}))
+	defer server.Close()
+
+	_, _, err := (&Client{AllowUnsafeHosts: true, MaxBytes: 1024}).downloadBounded(context.Background(), server.URL)
+	if err == nil || !strings.Contains(err.Error(), "decoded body") {
+		t.Fatalf("expected decoded-size error, got %v", err)
+	}
+}
+
+func TestDownloadBoundedEnforcesCompressedWireSizeCap(t *testing.T) {
+	encoded := gzipBytes(t, []byte("a"))
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Encoding", "gzip")
+		w.Header().Del("Content-Length")
+		_, _ = w.Write(encoded)
+	}))
+	defer server.Close()
+
+	_, _, err := (&Client{AllowUnsafeHosts: true, MaxBytes: int64(len(encoded) - 1)}).downloadBounded(context.Background(), server.URL)
+	if err == nil || !strings.Contains(err.Error(), "wire body") {
+		t.Fatalf("expected wire-size error, got %v", err)
+	}
+}
+
+func TestDownloadBoundedDecodesGzipWithinBothBudgets(t *testing.T) {
+	encoded := gzipBytes(t, []byte("openapi"))
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Accept-Encoding") != "gzip" {
+			t.Errorf("Accept-Encoding = %q", r.Header.Get("Accept-Encoding"))
+		}
+		w.Header().Set("Content-Encoding", "gzip")
+		_, _ = w.Write(encoded)
+	}))
+	defer server.Close()
+
+	content, _, err := (&Client{AllowUnsafeHosts: true, MaxBytes: 1024}).downloadBounded(context.Background(), server.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(content) != "openapi" {
+		t.Fatalf("content = %q", content)
 	}
 }
 
@@ -253,6 +350,19 @@ type stubTransport struct{}
 
 func (stubTransport) RoundTrip(*http.Request) (*http.Response, error) {
 	return nil, fmt.Errorf("stub")
+}
+
+func gzipBytes(t *testing.T, content []byte) []byte {
+	t.Helper()
+	var encoded bytes.Buffer
+	writer := gzip.NewWriter(&encoded)
+	if _, err := writer.Write(content); err != nil {
+		t.Fatal(err)
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return encoded.Bytes()
 }
 
 const validOpenAPISpec = `{
