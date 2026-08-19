@@ -147,18 +147,30 @@ func sanitizeOperationSummary(operation *OperationSummary, budget PromptBudget) 
 		return nil
 	}
 	budget = resolvedPromptBudget(budget)
+	securityCompacted := len(operation.SecurityRequirementSets) > budget.MaxCollectionItems
+	if !securityCompacted {
+		for _, set := range operation.SecurityRequirementSets {
+			if len(set.Requirements) > budget.MaxCollectionItems {
+				securityCompacted = true
+				break
+			}
+		}
+	}
 	changed := sanitizeOperationFields(operation, budget)
-	compacted := false
+	compacted := securityCompacted
+	byteCompacted := false
 	if promptJSONSize(operation) > budget.MaxOperationBytes {
 		compactOperationDetails(operation)
 		changed = true
 		compacted = true
+		byteCompacted = true
 	}
 	if promptJSONSize(operation) > budget.MaxOperationBytes {
 		minimal := minimalPromptOperation(*operation, budget)
 		*operation = minimal
 		changed = true
 		compacted = true
+		byteCompacted = true
 	}
 	if !changed {
 		return nil
@@ -170,8 +182,13 @@ func sanitizeOperationSummary(operation *OperationSummary, budget PromptBudget) 
 	if compacted {
 		severity = "error"
 		code = "prompt.operation_budget"
-		message = fmt.Sprintf("operation metadata exceeded the %d-byte prompt budget and was compacted", budget.MaxOperationBytes)
-		remediation = "Narrow the operation schema or use the source document directly during reviewed mapping."
+		if byteCompacted {
+			message = fmt.Sprintf("operation metadata exceeded the %d-byte prompt budget and was compacted", budget.MaxOperationBytes)
+			remediation = "Narrow the operation schema or use the source document directly during reviewed mapping."
+		} else {
+			message = fmt.Sprintf("operation security metadata exceeded the %d-item prompt collection budget and was compacted", budget.MaxCollectionItems)
+			remediation = "Narrow the operation security alternatives or review the source document directly before selecting authentication."
+		}
 		operation.ReadinessIssues = append(operation.ReadinessIssues, ReadinessIssue{
 			Severity: "error", Code: code, Message: message, OperationID: operation.OperationID,
 			Path: operation.Provenance, Remediation: remediation,
@@ -230,12 +247,19 @@ func sanitizeOperationFields(operation *OperationSummary, budget PromptBudget) b
 	if operation.ResponseBody != nil {
 		changed = sanitizeResponseBody(operation.ResponseBody, budget, changed)
 	}
-	if len(operation.Security) > budget.MaxCollectionItems {
-		operation.Security = operation.Security[:budget.MaxCollectionItems]
+	if len(operation.SecurityRequirementSets) > budget.MaxCollectionItems {
+		operation.SecurityRequirementSets = operation.SecurityRequirementSets[:budget.MaxCollectionItems]
 		changed = true
 	}
-	for i := range operation.Security {
-		changed = sanitizeSecuritySummary(&operation.Security[i], budget, changed)
+	for setIndex := range operation.SecurityRequirementSets {
+		securitySet := &operation.SecurityRequirementSets[setIndex]
+		if len(securitySet.Requirements) > budget.MaxCollectionItems {
+			securitySet.Requirements = securitySet.Requirements[:budget.MaxCollectionItems]
+			changed = true
+		}
+		for requirementIndex := range securitySet.Requirements {
+			changed = sanitizeSecuritySummary(&securitySet.Requirements[requirementIndex], budget, changed)
+		}
 	}
 	if len(operation.ReadinessIssues) > budget.MaxCollectionItems {
 		operation.ReadinessIssues = operation.ReadinessIssues[:budget.MaxCollectionItems]
@@ -454,16 +478,23 @@ func compactOperationDetails(operation *OperationSummary) {
 			operation.ResponseBody.Fields[i].Description = ""
 		}
 	}
-	if len(operation.Security) > 8 {
-		operation.Security = operation.Security[:8]
+	if len(operation.SecurityRequirementSets) > 8 {
+		operation.SecurityRequirementSets = operation.SecurityRequirementSets[:8]
 	}
-	for i := range operation.Security {
-		operation.Security[i].Description = ""
-		if len(operation.Security[i].OAuthFlows) > 4 {
-			operation.Security[i].OAuthFlows = operation.Security[i].OAuthFlows[:4]
+	for setIndex := range operation.SecurityRequirementSets {
+		securitySet := &operation.SecurityRequirementSets[setIndex]
+		if len(securitySet.Requirements) > 8 {
+			securitySet.Requirements = securitySet.Requirements[:8]
 		}
-		if len(operation.Security[i].Scopes) > 8 {
-			operation.Security[i].Scopes = operation.Security[i].Scopes[:8]
+		for requirementIndex := range securitySet.Requirements {
+			security := &securitySet.Requirements[requirementIndex]
+			security.Description = ""
+			if len(security.OAuthFlows) > 4 {
+				security.OAuthFlows = security.OAuthFlows[:4]
+			}
+			if len(security.Scopes) > 8 {
+				security.Scopes = security.Scopes[:8]
+			}
 		}
 	}
 	if len(operation.Tags) > 8 {

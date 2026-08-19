@@ -357,9 +357,17 @@ Auth helpers summarize credential and configuration requirements without
 resolving secrets or signing requests:
 
 ```go
-requirements := apitools.AuthRequirementsForOperations("stripe", docs[0].Operations)
-_ = requirements
+sets := apitools.AuthRequirementSetsForOperation("stripe", inventory.Operations[0])
+requestFields := apitools.RequiredRequestFields(inventory.Operations[0])
+credentialFieldSets := apitools.CredentialFieldSets(inventory.Operations[0])
+_, _, _ = sets, requestFields, credentialFieldSets
 ```
+
+Security sets preserve OpenAPI semantics: outer entries are OR alternatives,
+requirements inside one entry are AND, and an empty entry explicitly permits
+anonymous access. Callers must select one alternative before treating its
+symbolic credential fields as required; the helpers never flatten alternatives
+or resolve credential values.
 
 Provider catalog helpers live in `github.com/OpenUdon/apitools/catalog`:
 

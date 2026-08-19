@@ -78,7 +78,7 @@ paths:
 			create = op
 		}
 	}
-	if got := strings.Join(RequiredOperationFields(create), ","); got != "customer.email" {
+	if got := strings.Join(RequiredRequestFields(create), ","); got != "customer.email" {
 		t.Fatalf("required fields = %q", got)
 	}
 	bodyText := inventoryJSON(t, create.RequestBody)
@@ -91,8 +91,42 @@ paths:
 			get = op
 		}
 	}
-	if !reflect.DeepEqual(OperationCredentialFields(get), []string{"api_key_auth"}) {
-		t.Fatalf("credential fields = %#v", OperationCredentialFields(get))
+	if !reflect.DeepEqual(CredentialFieldSets(get), [][]string{{"api_key_auth"}}) {
+		t.Fatalf("credential field sets = %#v", CredentialFieldSets(get))
+	}
+}
+
+func TestSecurityAlternativeHelpersPreserveAnonymousAndConjunctiveSets(t *testing.T) {
+	op := OperationSummary{SecurityRequirementSets: []SecurityRequirementSetSummary{
+		{Requirements: []SecuritySummary{
+			{Name: "key", Type: "apiKey", ParameterName: "X-API-Key"},
+			{Name: "tenant", Type: "apiKey", ParameterName: "X-Tenant"},
+		}},
+		{},
+	}}
+	if got := CredentialFieldSets(op); !reflect.DeepEqual(got, [][]string{{"key", "tenant"}, nil}) {
+		t.Fatalf("credential field sets = %#v", got)
+	}
+	if OperationNeedsCredential(op) {
+		t.Fatalf("anonymous alternative should not require credentials")
+	}
+	op.SecurityRequirementSets = op.SecurityRequirementSets[:1]
+	if !OperationNeedsCredential(op) {
+		t.Fatalf("conjunctive credential set should require credentials")
+	}
+}
+
+func TestPromptSanitizationBlocksTruncatedSecuritySemantics(t *testing.T) {
+	op := OperationSummary{OperationID: "protected", SecurityRequirementSets: []SecurityRequirementSetSummary{
+		{Requirements: []SecuritySummary{{Name: "key", Type: "apiKey"}, {Name: "certificate", Type: "mutualTLS"}}},
+		{},
+	}}
+	report, err := SanitizeOperationSummaries([]OperationSummary{op}, PromptBudget{MaxCollectionItems: 1})
+	if err == nil {
+		t.Fatal("security requirement truncation was not blocking")
+	}
+	if len(report.Diagnostics) == 0 || report.Diagnostics[0].Code != "prompt.operation_budget" || len(report.Operations) != 1 || len(report.Operations[0].ReadinessIssues) == 0 {
+		t.Fatalf("prompt report = %#v, error = %v", report, err)
 	}
 }
 

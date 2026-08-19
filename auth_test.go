@@ -6,15 +6,16 @@ import (
 )
 
 func TestAuthRequirementsForOperationAWSSigV4Fields(t *testing.T) {
-	got := AuthRequirementsForOperation("aws", OperationSummary{
+	sets := AuthRequirementSetsForOperation("aws", OperationSummary{
 		OperationID: "GET_DescribeInstanceStatus",
-		Security: []SecuritySummary{{
+		SecurityRequirementSets: []SecurityRequirementSetSummary{{Requirements: []SecuritySummary{{
 			Name:          "hmac",
 			Type:          "apiKey",
 			In:            "header",
 			ParameterName: "Authorization",
-		}},
+		}}}},
 	})
+	got := sets[0]
 	if len(got) != 1 {
 		t.Fatalf("requirements = %#v", got)
 	}
@@ -34,27 +35,29 @@ func TestAuthRequirementsForOperationAWSSigV4Fields(t *testing.T) {
 }
 
 func TestAuthRequirementsForOperationDetectsExplicitAWSSigV4Metadata(t *testing.T) {
-	got := AuthRequirementsForOperation("generic", OperationSummary{
-		Security: []SecuritySummary{{
+	sets := AuthRequirementSetsForOperation("generic", OperationSummary{
+		SecurityRequirementSets: []SecurityRequirementSetSummary{{Requirements: []SecuritySummary{{
 			Name:   "sigv4Auth",
 			Type:   "http",
 			Scheme: "awsSigv4",
-		}},
+		}}}},
 	})
+	got := sets[0]
 	if len(got) != 1 || got[0].Kind != "aws_signature" {
 		t.Fatalf("requirements = %#v", got)
 	}
 }
 
 func TestAuthRequirementsForOperationGenericSchemes(t *testing.T) {
-	got := AuthRequirementsForOperation("sandbox", OperationSummary{
-		Security: []SecuritySummary{
+	sets := AuthRequirementSetsForOperation("sandbox", OperationSummary{
+		SecurityRequirementSets: []SecurityRequirementSetSummary{{Requirements: []SecuritySummary{
 			{Name: "apiKeyAuth", Type: "apiKey", In: "header", ParameterName: "X-API-Key"},
 			{Name: "bearerAuth", Type: "http", Scheme: "bearer"},
 			{Name: "basicAuth", Type: "http", Scheme: "basic"},
 			{Name: "googleOAuth", Type: "oauth2", Flows: []string{"authorizationCode"}, Scopes: []string{"drive.readonly"}},
-		},
+		}}},
 	})
+	got := sets[0]
 	byKind := map[string]AuthRequirementSummary{}
 	for _, requirement := range got {
 		byKind[requirement.Kind] = requirement
@@ -74,8 +77,8 @@ func TestAuthRequirementsForOperationGenericSchemes(t *testing.T) {
 }
 
 func TestAuthRequirementsForOperationDetectsGCPOAuth2Dialect(t *testing.T) {
-	got := AuthRequirementsForOperation("gmail", OperationSummary{
-		Security: []SecuritySummary{{
+	sets := AuthRequirementSetsForOperation("gmail", OperationSummary{
+		SecurityRequirementSets: []SecurityRequirementSetSummary{{Requirements: []SecuritySummary{{
 			Name:             "Oauth2c",
 			Type:             "oauth2",
 			Flows:            []string{"authorizationCode"},
@@ -83,8 +86,9 @@ func TestAuthRequirementsForOperationDetectsGCPOAuth2Dialect(t *testing.T) {
 			AuthorizationURL: "https://accounts.google.com/o/oauth2/auth",
 			TokenURL:         "https://oauth2.googleapis.com/token",
 			Scopes:           []string{"https://www.googleapis.com/auth/gmail.readonly"},
-		}},
+		}}}},
 	})
+	got := sets[0]
 	if len(got) != 1 {
 		t.Fatalf("requirements = %#v", got)
 	}
@@ -106,18 +110,19 @@ func TestAuthRequirementsForOperationDetectsGCPOAuth2Dialect(t *testing.T) {
 	}
 }
 
-func TestAuthRequirementsForOperationsMergesScopesDeterministically(t *testing.T) {
-	got := AuthRequirementsForOperations("google", []OperationSummary{
-		{OperationID: "z", Security: []SecuritySummary{{Name: "googleOAuth", Type: "oauth2", Flows: []string{"clientCredentials"}, Scopes: []string{"write", "read"}}}},
-		{OperationID: "a", Security: []SecuritySummary{{Name: "googleOAuth", Type: "oauth2", Flows: []string{"authorizationCode"}, Scopes: []string{"read"}}}},
-	})
-	if len(got) != 1 {
-		t.Fatalf("requirements = %#v", got)
+func TestAuthRequirementSetsForOperationPreservesAlternatives(t *testing.T) {
+	sets := AuthRequirementSetsForOperation("google", OperationSummary{SecurityRequirementSets: []SecurityRequirementSetSummary{
+		{Requirements: []SecuritySummary{{Name: "googleOAuth", Type: "oauth2", Flows: []string{"clientCredentials"}, Scopes: []string{"write", "read"}}}},
+		{Requirements: []SecuritySummary{{Name: "googleOAuth", Type: "oauth2", Flows: []string{"authorizationCode"}, Scopes: []string{"read"}}}},
+		{},
+	}})
+	if len(sets) != 3 || len(sets[0]) != 1 || len(sets[1]) != 1 || len(sets[2]) != 0 {
+		t.Fatalf("requirement sets = %#v", sets)
 	}
-	if !reflect.DeepEqual(got[0].Flows, []string{"authorizationCode", "clientCredentials"}) {
-		t.Fatalf("flows = %#v", got[0].Flows)
+	if !reflect.DeepEqual(sets[0][0].Flows, []string{"clientCredentials"}) || !reflect.DeepEqual(sets[0][0].Scopes, []string{"read", "write"}) {
+		t.Fatalf("first alternative = %#v", sets[0])
 	}
-	if !reflect.DeepEqual(got[0].Scopes, []string{"read", "write"}) {
-		t.Fatalf("scopes = %#v", got[0].Scopes)
+	if !reflect.DeepEqual(sets[1][0].Flows, []string{"authorizationCode"}) || !reflect.DeepEqual(sets[1][0].Scopes, []string{"read"}) {
+		t.Fatalf("second alternative = %#v", sets[1])
 	}
 }

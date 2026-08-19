@@ -50,8 +50,8 @@ func TestBuildOperationInventoryOpenAPI3(t *testing.T) {
 	if names := responseFieldNames(got.ResponseBody.Fields); strings.Join(names, ",") != "id,name,status" {
 		t.Fatalf("response fields = %#v", got.ResponseBody.Fields)
 	}
-	if len(got.Security) != 1 || got.Security[0].Name != "apiKeyAuth" || got.Security[0].In != "header" || got.Security[0].ParameterName != "X-API-Key" {
-		t.Fatalf("security = %#v", got.Security)
+	if len(got.SecurityRequirementSets) != 1 || len(got.SecurityRequirementSets[0].Requirements) != 1 || got.SecurityRequirementSets[0].Requirements[0].Name != "apiKeyAuth" || got.SecurityRequirementSets[0].Requirements[0].In != "header" || got.SecurityRequirementSets[0].Requirements[0].ParameterName != "X-API-Key" {
+		t.Fatalf("security = %#v", got.SecurityRequirementSets)
 	}
 }
 
@@ -253,10 +253,10 @@ func TestBuildOperationInventoryOAuthFlowURLs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(inventory.Operations) != 1 || len(inventory.Operations[0].Security) != 1 {
+	if len(inventory.Operations) != 1 || len(inventory.Operations[0].SecurityRequirementSets) != 1 || len(inventory.Operations[0].SecurityRequirementSets[0].Requirements) != 1 {
 		t.Fatalf("operations = %#v", inventory.Operations)
 	}
-	security := inventory.Operations[0].Security[0]
+	security := inventory.Operations[0].SecurityRequirementSets[0].Requirements[0]
 	if security.AuthorizationURL != "https://accounts.google.com/o/oauth2/auth" || security.TokenURL != "https://oauth2.googleapis.com/token" || security.RefreshURL != "https://oauth2.googleapis.com/token" {
 		t.Fatalf("security = %#v", security)
 	}
@@ -265,6 +265,45 @@ func TestBuildOperationInventoryOAuthFlowURLs(t *testing.T) {
 	}
 	if len(security.OAuthFlows) != 1 || security.OAuthFlows[0].Name != "authorizationCode" || security.OAuthFlows[0].TokenURL != "https://oauth2.googleapis.com/token" {
 		t.Fatalf("oauth flows = %#v", security.OAuthFlows)
+	}
+}
+
+func TestBuildOperationInventoryPreservesSecurityAndOrSemantics(t *testing.T) {
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{Documents: []InventoryDocument{{Content: []byte(`openapi: 3.0.0
+info: {title: Security Sets, version: 1.0.0}
+components:
+  securitySchemes:
+    key: {type: apiKey, in: header, name: X-API-Key}
+    oauth: {type: oauth2, flows: {clientCredentials: {tokenUrl: https://example.test/token, scopes: {write: Write}}}}
+    bearer: {type: http, scheme: bearer}
+paths:
+  /protected:
+    post:
+      operationId: protected
+      security:
+        - key: []
+          oauth: [write]
+        - bearer: []
+        - {}
+  /public:
+    get:
+      operationId: public
+      security: []
+`)}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := map[string]OperationSummary{}
+	for _, operation := range inventory.Operations {
+		byID[operation.OperationID] = operation
+	}
+	sets := byID["protected"].SecurityRequirementSets
+	if len(sets) != 3 || len(sets[0].Requirements) != 2 || sets[0].Requirements[0].Name != "key" || sets[0].Requirements[1].Name != "oauth" || len(sets[1].Requirements) != 1 || sets[1].Requirements[0].Name != "bearer" || len(sets[2].Requirements) != 0 {
+		t.Fatalf("protected security sets = %#v", sets)
+	}
+	publicSets := byID["public"].SecurityRequirementSets
+	if len(publicSets) != 1 || len(publicSets[0].Requirements) != 0 {
+		t.Fatalf("public security sets = %#v", publicSets)
 	}
 }
 
@@ -309,10 +348,10 @@ func TestBuildOperationInventoryKeepsOAuthFlowURLsSeparate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(inventory.Operations) != 1 || len(inventory.Operations[0].Security) != 1 {
+	if len(inventory.Operations) != 1 || len(inventory.Operations[0].SecurityRequirementSets) != 1 || len(inventory.Operations[0].SecurityRequirementSets[0].Requirements) != 1 {
 		t.Fatalf("operations = %#v", inventory.Operations)
 	}
-	security := inventory.Operations[0].Security[0]
+	security := inventory.Operations[0].SecurityRequirementSets[0].Requirements[0]
 	if len(security.OAuthFlows) != 2 {
 		t.Fatalf("oauth flows = %#v", security.OAuthFlows)
 	}
@@ -352,8 +391,8 @@ func TestBuildOperationInventorySwagger2(t *testing.T) {
 	if len(got.Parameters) != 1 || got.Parameters[0].Name != "id" || got.Parameters[0].Type != "string" {
 		t.Fatalf("parameters = %#v", got.Parameters)
 	}
-	if len(got.Security) != 1 || got.Security[0].Name != "api_key" || got.Security[0].Type != "apiKey" || got.Security[0].ParameterName != "X-API-Key" {
-		t.Fatalf("security = %#v", got.Security)
+	if len(got.SecurityRequirementSets) != 1 || len(got.SecurityRequirementSets[0].Requirements) != 1 || got.SecurityRequirementSets[0].Requirements[0].Name != "api_key" || got.SecurityRequirementSets[0].Requirements[0].Type != "apiKey" || got.SecurityRequirementSets[0].Requirements[0].ParameterName != "X-API-Key" {
+		t.Fatalf("security = %#v", got.SecurityRequirementSets)
 	}
 	if got.ResponseBody == nil || got.ResponseBody.StatusCode != "200" || got.ResponseBody.Schema == nil {
 		t.Fatalf("response body = %#v", got.ResponseBody)

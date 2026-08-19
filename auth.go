@@ -29,44 +29,27 @@ type AuthRequirementSummary struct {
 	OptionalConfigFields     []string           `json:"optional_config_fields,omitempty"`
 }
 
-// AuthRequirementsForOperation derives runtime-neutral auth metadata for one
-// operation. It does not resolve credentials, acquire tokens, or sign requests.
-func AuthRequirementsForOperation(provider string, operation OperationSummary) []AuthRequirementSummary {
-	if len(operation.Security) == 0 {
+// AuthRequirementSetsForOperation derives runtime-neutral alternative auth
+// sets for one operation. Requirements within a set are conjunctive; separate
+// sets are alternatives. It does not resolve credentials, acquire tokens, or
+// sign requests.
+func AuthRequirementSetsForOperation(provider string, operation OperationSummary) [][]AuthRequirementSummary {
+	if len(operation.SecurityRequirementSets) == 0 {
 		return nil
 	}
-	out := make([]AuthRequirementSummary, 0, len(operation.Security))
-	for _, security := range operation.Security {
-		requirement := authRequirementForSecurity(provider, security)
-		if requirement.Kind == "" {
-			continue
+	out := make([][]AuthRequirementSummary, 0, len(operation.SecurityRequirementSets))
+	for _, securitySet := range operation.SecurityRequirementSets {
+		var requirements []AuthRequirementSummary
+		for _, security := range securitySet.Requirements {
+			requirement := authRequirementForSecurity(provider, security)
+			if requirement.Kind == "" {
+				continue
+			}
+			requirements = append(requirements, requirement)
 		}
-		out = append(out, requirement)
+		out = append(out, mergeAuthRequirements(requirements))
 	}
-	return mergeAuthRequirements(out)
-}
-
-// AuthRequirementsForOperations derives merged runtime-neutral auth metadata
-// for a set of operations. Scopes and flows are merged deterministically.
-func AuthRequirementsForOperations(provider string, operations []OperationSummary) []AuthRequirementSummary {
-	if len(operations) == 0 {
-		return nil
-	}
-	operations = append([]OperationSummary(nil), operations...)
-	sort.SliceStable(operations, func(i, j int) bool {
-		if operations[i].OperationID != operations[j].OperationID {
-			return operations[i].OperationID < operations[j].OperationID
-		}
-		if operations[i].Path != operations[j].Path {
-			return operations[i].Path < operations[j].Path
-		}
-		return operations[i].Method < operations[j].Method
-	})
-	var summaries []AuthRequirementSummary
-	for _, operation := range operations {
-		summaries = append(summaries, AuthRequirementsForOperation(provider, operation)...)
-	}
-	return mergeAuthRequirements(summaries)
+	return out
 }
 
 func authRequirementForSecurity(provider string, security SecuritySummary) AuthRequirementSummary {

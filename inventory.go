@@ -105,7 +105,7 @@ func addDocumentInventory(ctx context.Context, inventory *OperationInventory, do
 		Swagger:      stringValue(root["swagger"]),
 	}
 	securitySchemes := securitySchemes(root)
-	defaultSecurity := securityRequirements(root["security"], securitySchemes)
+	defaultSecurity := securityRequirementSets(root["security"], securitySchemes)
 	paths := mapValue(root["paths"])
 	pathKeys := sortedMapKeys(paths)
 	for _, path := range pathKeys {
@@ -146,9 +146,9 @@ func addDocumentInventory(ctx context.Context, inventory *OperationInventory, do
 				return false, err
 			}
 			if value, ok := operation["security"]; ok {
-				op.Security = securityRequirements(value, securitySchemes)
+				op.SecurityRequirementSets = securityRequirementSets(value, securitySchemes)
 			} else {
-				op.Security = defaultSecurity
+				op.SecurityRequirementSets = defaultSecurity
 			}
 			op.Score = ScoreText(query, operationSearchText(op))
 			if op.OperationID == "" {

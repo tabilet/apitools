@@ -274,16 +274,11 @@ func awsSmithyOperationSummary(documentName string, doc APISourceDocument, model
 			"x-uws-source-kind": APISourceKindAWSSmithy,
 		},
 		Provenance: firstNonEmpty(doc.Path, documentName) + "#" + op.Name,
-		Security: []SecuritySummary{{
-			Name:          "hmac",
-			Type:          "apiKey",
-			In:            "header",
-			ParameterName: "Authorization",
-			Description:   "AWS Signature Version 4 metadata for native Smithy source execution.",
-			Extensions: map[string]string{
-				"x-aws-signing-name": firstNonEmpty(model.SigningName, model.EndpointPrefix, model.AWSServiceID),
-			},
-		}},
+		SecurityRequirementSets: []SecurityRequirementSetSummary{{Requirements: []SecuritySummary{{
+			Name: "hmac", Type: "apiKey", In: "header", ParameterName: "Authorization",
+			Description: "AWS Signature Version 4 metadata for native Smithy source execution.",
+			Extensions:  map[string]string{"x-aws-signing-name": firstNonEmpty(model.SigningName, model.EndpointPrefix, model.AWSServiceID)},
+		}}}},
 	}
 	if summary.Method == "" {
 		summary.Method = "POST"
@@ -409,11 +404,9 @@ func googleDiscoveryOperationSummary(documentName string, doc APISourceDocument,
 		Parameters:           googleDiscoveryRequestParameters(op.Parameters),
 		RequestBody:          googleDiscoveryRequestBodySummary(model, op),
 		ResponseBody:         googleDiscoveryResponseBodySummary(model, op),
-		Security: []SecuritySummary{{
-			Name:   "googleOAuth2",
-			Type:   "oauth2",
-			Scopes: append([]string(nil), op.Scopes...),
-		}},
+		SecurityRequirementSets: []SecurityRequirementSetSummary{{Requirements: []SecuritySummary{{
+			Name: "googleOAuth2", Type: "oauth2", Scopes: append([]string(nil), op.Scopes...),
+		}}}},
 		Extensions: map[string]string{
 			"x-uws-source-kind": APISourceKindGoogleDiscovery,
 		},

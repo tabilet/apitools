@@ -123,23 +123,27 @@ func securitySchemeExtensions(scheme map[string]any) map[string]string {
 	return out
 }
 
-func securityRequirements(value any, schemes map[string]SecuritySummary) []SecuritySummary {
-	var out []SecuritySummary
-	seen := make(map[string]bool)
-	for _, requirementValue := range sliceValue(value) {
+func securityRequirementSets(value any, schemes map[string]SecuritySummary) []SecurityRequirementSetSummary {
+	values, ok := value.([]any)
+	if !ok {
+		return nil
+	}
+	if len(values) == 0 {
+		return []SecurityRequirementSetSummary{{}}
+	}
+	out := make([]SecurityRequirementSetSummary, 0, len(values))
+	for _, requirementValue := range values {
 		requirement := mapValue(requirementValue)
+		set := SecurityRequirementSetSummary{}
 		for _, name := range sortedMapKeys(requirement) {
-			if seen[name] {
-				continue
-			}
 			summary := schemes[name]
 			if summary.Name == "" {
 				summary.Name = name
 			}
 			summary.Scopes = stringSlice(requirement[name])
-			out = append(out, summary)
-			seen[name] = true
+			set.Requirements = append(set.Requirements, summary)
 		}
+		out = append(out, set)
 	}
 	return out
 }

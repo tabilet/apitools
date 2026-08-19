@@ -43,25 +43,25 @@ type DocumentSummary struct {
 
 // OperationSummary describes one prompt-safe OpenAPI operation.
 type OperationSummary struct {
-	ID                   string               `json:"id"`
-	DocumentName         string               `json:"document_name,omitempty"`
-	DocumentPath         string               `json:"document_path,omitempty"`
-	DocumentRelativePath string               `json:"document_relative_path,omitempty"`
-	DocumentURL          string               `json:"document_url,omitempty"`
-	OperationID          string               `json:"operation_id,omitempty"`
-	Method               string               `json:"method"`
-	Path                 string               `json:"path"`
-	Summary              string               `json:"summary,omitempty"`
-	Description          string               `json:"description,omitempty"`
-	Tags                 []string             `json:"tags,omitempty"`
-	Extensions           map[string]string    `json:"extensions,omitempty"`
-	Parameters           []ParameterSummary   `json:"parameters,omitempty"`
-	RequestBody          *RequestBodySummary  `json:"request_body,omitempty"`
-	ResponseBody         *ResponseBodySummary `json:"response_body,omitempty"`
-	Security             []SecuritySummary    `json:"security,omitempty"`
-	Score                int                  `json:"score,omitempty"`
-	Provenance           string               `json:"provenance,omitempty"`
-	ReadinessIssues      []ReadinessIssue     `json:"readiness_issues,omitempty"`
+	ID                      string                          `json:"id"`
+	DocumentName            string                          `json:"document_name,omitempty"`
+	DocumentPath            string                          `json:"document_path,omitempty"`
+	DocumentRelativePath    string                          `json:"document_relative_path,omitempty"`
+	DocumentURL             string                          `json:"document_url,omitempty"`
+	OperationID             string                          `json:"operation_id,omitempty"`
+	Method                  string                          `json:"method"`
+	Path                    string                          `json:"path"`
+	Summary                 string                          `json:"summary,omitempty"`
+	Description             string                          `json:"description,omitempty"`
+	Tags                    []string                        `json:"tags,omitempty"`
+	Extensions              map[string]string               `json:"extensions,omitempty"`
+	Parameters              []ParameterSummary              `json:"parameters,omitempty"`
+	RequestBody             *RequestBodySummary             `json:"request_body,omitempty"`
+	ResponseBody            *ResponseBodySummary            `json:"response_body,omitempty"`
+	SecurityRequirementSets []SecurityRequirementSetSummary `json:"security_requirement_sets,omitempty"`
+	Score                   int                             `json:"score,omitempty"`
+	Provenance              string                          `json:"provenance,omitempty"`
+	ReadinessIssues         []ReadinessIssue                `json:"readiness_issues,omitempty"`
 }
 
 // ParameterSummary describes an operation parameter without examples or values.
@@ -143,6 +143,13 @@ type SecuritySummary struct {
 	Scopes           []string           `json:"scopes,omitempty"`
 	Description      string             `json:"description,omitempty"`
 	Extensions       map[string]string  `json:"extensions,omitempty"`
+}
+
+// SecurityRequirementSetSummary is one OpenAPI security alternative.
+// Requirements inside a set are conjunctive; separate sets are alternatives.
+// An empty set explicitly permits anonymous access.
+type SecurityRequirementSetSummary struct {
+	Requirements []SecuritySummary `json:"requirements,omitempty"`
 }
 
 // OAuthFlowSummary describes one OpenAPI OAuth2 flow without credential values.

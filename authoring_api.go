@@ -261,8 +261,9 @@ func OperationLabel(op OperationSummary) string {
 	return strings.TrimSpace(text)
 }
 
-// RequiredOperationFields returns required request and credential field names.
-func RequiredOperationFields(op OperationSummary) []string {
+// RequiredRequestFields returns request fields required independently of the
+// selected security alternative.
+func RequiredRequestFields(op OperationSummary) []string {
 	var out []string
 	for _, parameter := range op.Parameters {
 		if parameter.Required && strings.TrimSpace(parameter.Name) != "" {
@@ -276,24 +277,41 @@ func RequiredOperationFields(op OperationSummary) []string {
 		}
 		out = append(out, fields...)
 	}
-	out = append(out, OperationCredentialFields(op)...)
 	return sortedUniqueStrings(out)
 }
 
-// OperationCredentialFields returns prompt-safe symbolic credential field names.
-func OperationCredentialFields(op OperationSummary) []string {
-	var out []string
-	for _, security := range op.Security {
-		if field := SecurityCredentialFieldName(security); field != "" {
-			out = append(out, field)
+// CredentialFieldSets returns symbolic credential fields for each security
+// alternative. Fields inside a set are jointly required. An empty set permits
+// anonymous access.
+func CredentialFieldSets(op OperationSummary) [][]string {
+	if len(op.SecurityRequirementSets) == 0 {
+		return nil
+	}
+	out := make([][]string, 0, len(op.SecurityRequirementSets))
+	for _, securitySet := range op.SecurityRequirementSets {
+		var fields []string
+		for _, security := range securitySet.Requirements {
+			if field := SecurityCredentialFieldName(security); field != "" {
+				fields = append(fields, field)
+			}
+		}
+		out = append(out, sortedUniqueStrings(fields))
+	}
+	return out
+}
+
+// OperationNeedsCredential reports whether every declared alternative
+// requires credentials. Anonymous or undeclared security returns false.
+func OperationNeedsCredential(op OperationSummary) bool {
+	if len(op.SecurityRequirementSets) == 0 {
+		return false
+	}
+	for _, securitySet := range op.SecurityRequirementSets {
+		if len(securitySet.Requirements) == 0 {
+			return false
 		}
 	}
-	return sortedUniqueStrings(out)
-}
-
-// OperationNeedsCredential reports whether an operation declares security.
-func OperationNeedsCredential(op OperationSummary) bool {
-	return len(op.Security) > 0
+	return true
 }
 
 // OperationRequestFieldTypes returns all valid request mapping fields.
@@ -304,8 +322,10 @@ func OperationRequestFieldTypes(op OperationSummary) map[string]OperationRequest
 			out[parameter.Name] = OperationRequestFieldInfo{Type: parameter.Type}
 		}
 	}
-	for _, field := range OperationCredentialFields(op) {
-		out[field] = OperationRequestFieldInfo{Type: "string"}
+	for _, fields := range CredentialFieldSets(op) {
+		for _, field := range fields {
+			out[field] = OperationRequestFieldInfo{Type: "string"}
+		}
 	}
 	if op.RequestBody != nil {
 		for _, field := range op.RequestBody.Fields {
@@ -405,7 +425,9 @@ func authoringOperationSearchText(doc AuthoringAPIDocument, op OperationSummary)
 			parts = append(parts, field.Path, field.Type, field.Description)
 		}
 	}
-	parts = append(parts, OperationCredentialFields(op)...)
+	for _, fields := range CredentialFieldSets(op) {
+		parts = append(parts, fields...)
+	}
 	return strings.Join(parts, " ")
 }
 
