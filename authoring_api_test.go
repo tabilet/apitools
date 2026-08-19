@@ -60,7 +60,7 @@ paths:
 `), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	docs, err := BuildAuthoringAPIDocuments(context.Background(), AuthoringAPIDocumentOptions{
+	report, err := BuildAuthoringAPIDocuments(context.Background(), AuthoringAPIDocumentOptions{
 		Documents: []InventoryDocument{{Name: "support", Path: path}},
 		BaseDir:   dir,
 		Query:     "create ticket",
@@ -68,6 +68,7 @@ paths:
 	if err != nil {
 		t.Fatal(err)
 	}
+	docs := report.Documents
 	if len(docs) != 1 || docs[0].ID != "support" || docs[0].RelativePath != "openapi/support.yaml" || len(docs[0].Operations) != 2 {
 		t.Fatalf("docs = %#v", docs)
 	}
@@ -104,11 +105,15 @@ func TestRankAuthoringAPIDocumentsCapsAndPreservesSelected(t *testing.T) {
 			{OperationID: "closeTicket", Method: "POST", Path: "/tickets/{id}/close"},
 		},
 	}}
-	ranked := RankAuthoringAPIDocuments(docs, AuthoringOperationRankingOptions{
+	report, err := RankAuthoringAPIDocuments(docs, AuthoringOperationRankingOptions{
 		Query:              "search support tickets",
 		Limit:              1,
 		SelectedOperations: []AuthoringOperationRef{{DocumentPath: "openapi/support.yaml", OperationID: "closeTicket"}},
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ranked := report.Documents
 	if got := []string{ranked[0].Operations[0].OperationID, ranked[0].Operations[1].OperationID}; !reflect.DeepEqual(got, []string{"closeTicket", "searchTickets"}) {
 		t.Fatalf("ranked operations = %#v", got)
 	}

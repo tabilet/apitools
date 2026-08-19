@@ -22,9 +22,21 @@ type AuthoringAPIDocument struct {
 
 // AuthoringAPIDocumentOptions configures prompt-safe OpenAPI document context.
 type AuthoringAPIDocumentOptions struct {
-	Documents []InventoryDocument `json:"documents,omitempty"`
-	BaseDir   string              `json:"base_dir,omitempty"`
-	Query     string              `json:"query,omitempty"`
+	Documents     []InventoryDocument `json:"documents,omitempty"`
+	BaseDir       string              `json:"base_dir,omitempty"`
+	Query         string              `json:"query,omitempty"`
+	MaxBytes      int64               `json:"max_bytes,omitempty"`
+	MaxOperations int                 `json:"max_operations,omitempty"`
+	PromptBudget  PromptBudget        `json:"prompt_budget,omitempty"`
+}
+
+// AuthoringAPIDocumentReport preserves prompt-safety diagnostics that would
+// otherwise be lost while grouping inventory operations by source document.
+type AuthoringAPIDocumentReport struct {
+	Documents       []AuthoringAPIDocument `json:"documents,omitempty"`
+	Diagnostics     []Diagnostic           `json:"diagnostics,omitempty"`
+	ReadinessIssues []ReadinessIssue       `json:"readiness_issues,omitempty"`
+	Truncated       bool                   `json:"truncated"`
 }
 
 // AuthoringOperationRef identifies an already-selected OpenAPI operation.
@@ -38,6 +50,26 @@ type AuthoringOperationRankingOptions struct {
 	Query              string                  `json:"query,omitempty"`
 	SelectedOperations []AuthoringOperationRef `json:"selected_operations,omitempty"`
 	Limit              int                     `json:"limit,omitempty"`
+	PromptBudget       PromptBudget            `json:"prompt_budget,omitempty"`
+}
+
+// AuthoringPromptContextReport is a bounded ranked prompt payload. Bytes is
+// the encoded size of Documents, or the selected-only size when a selected
+// operation set exceeds the aggregate budget.
+type AuthoringPromptContextReport struct {
+	Documents          []AuthoringAPIDocument `json:"documents,omitempty"`
+	Diagnostics        []Diagnostic           `json:"diagnostics,omitempty"`
+	Truncated          bool                   `json:"truncated"`
+	Bytes              int                    `json:"bytes"`
+	SelectedOperations int                    `json:"selected_operations,omitempty"`
+}
+
+type authoringCandidate struct {
+	docIndex int
+	opIndex  int
+	op       OperationSummary
+	score    int
+	selected bool
 }
 
 // OperationRequestFieldInfo describes one allowed request mapping field.
@@ -47,9 +79,9 @@ type OperationRequestFieldInfo struct {
 }
 
 // BuildAuthoringAPIDocuments builds grouped, prompt-safe OpenAPI context.
-func BuildAuthoringAPIDocuments(ctx context.Context, opts AuthoringAPIDocumentOptions) ([]AuthoringAPIDocument, error) {
+func BuildAuthoringAPIDocuments(ctx context.Context, opts AuthoringAPIDocumentOptions) (AuthoringAPIDocumentReport, error) {
 	if len(opts.Documents) == 0 {
-		return nil, nil
+		return AuthoringAPIDocumentReport{}, nil
 	}
 	docs := append([]InventoryDocument(nil), opts.Documents...)
 	for i := range docs {
@@ -58,12 +90,15 @@ func BuildAuthoringAPIDocuments(ctx context.Context, opts AuthoringAPIDocumentOp
 		}
 	}
 	inventory, err := BuildOperationInventory(ctx, InventoryOptions{
-		Documents: docs,
-		Query:     opts.Query,
+		Documents:     docs,
+		Query:         opts.Query,
+		MaxBytes:      opts.MaxBytes,
+		MaxOperations: opts.MaxOperations,
 	})
 	if err != nil {
-		return nil, err
+		return AuthoringAPIDocumentReport{}, err
 	}
+	sanitizeInventory(&inventory, opts.PromptBudget)
 	out := make([]AuthoringAPIDocument, 0, len(inventory.Documents))
 	for _, summary := range inventory.Documents {
 		doc := AuthoringAPIDocument{
@@ -83,26 +118,24 @@ func BuildAuthoringAPIDocuments(ctx context.Context, opts AuthoringAPIDocumentOp
 	sort.SliceStable(out, func(i, j int) bool {
 		return authoringDocSortKey(out[i]) < authoringDocSortKey(out[j])
 	})
-	return out, nil
+	return AuthoringAPIDocumentReport{
+		Documents: out, Diagnostics: inventory.Diagnostics,
+		ReadinessIssues: inventory.ReadinessIssues, Truncated: inventory.Truncated,
+	}, nil
 }
 
-// RankAuthoringAPIDocuments returns copies of docs with operations ranked for a
-// prompt. Selected operations are preserved even beyond Limit.
-func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperationRankingOptions) []AuthoringAPIDocument {
+// RankAuthoringAPIDocuments returns a bounded prompt context with operations
+// ranked by exact document and operation indexes. Selected operations are
+// never silently omitted; if they cannot fit together, the function returns a
+// blocking diagnostic and error.
+func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperationRankingOptions) (AuthoringPromptContextReport, error) {
 	limit := opts.Limit
 	if limit <= 0 {
 		limit = 12
 	}
 	selected := authoringSelectedOperations(opts.SelectedOperations)
-	type candidate struct {
-		docIndex int
-		opIndex  int
-		op       OperationSummary
-		score    int
-		selected bool
-		rank     int
-	}
-	var candidates []candidate
+	budget := resolvedPromptBudget(opts.PromptBudget)
+	var candidates []authoringCandidate
 	query := opts.Query
 	for docIndex, doc := range docs {
 		for opIndex, op := range doc.Operations {
@@ -112,7 +145,7 @@ func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperat
 			if isSelected {
 				score += 1000
 			}
-			candidates = append(candidates, candidate{
+			candidates = append(candidates, authoringCandidate{
 				docIndex: docIndex,
 				opIndex:  opIndex,
 				op:       op,
@@ -130,34 +163,90 @@ func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperat
 		}
 		return candidates[i].opIndex < candidates[j].opIndex
 	})
-	include := map[string]int{}
+	report := AuthoringPromptContextReport{}
+	for i := range candidates {
+		diagnostics := sanitizeOperationSummary(&candidates[i].op, budget)
+		report.Diagnostics = append(report.Diagnostics, diagnostics...)
+	}
+	report.Truncated = len(report.Diagnostics) > 0
+	if errors := errorDiagnostics(report.Diagnostics); len(errors) > 0 {
+		return report, DiagnosticError{Diagnostics: errors}
+	}
+	include := map[string]bool{}
+	for _, candidate := range candidates {
+		if !candidate.selected {
+			continue
+		}
+		include[authoringCandidateKey(candidate.docIndex, candidate.opIndex)] = true
+		report.SelectedOperations++
+	}
+	selectedDocs := buildRankedAuthoringDocuments(docs, candidates, include, budget)
+	selectedBytes := promptJSONSize(selectedDocs)
+	if selectedBytes > budget.MaxContextBytes {
+		diagnostic := Diagnostic{
+			Severity: "error", Code: "prompt.selected_budget",
+			Message:     fmt.Sprintf("selected operations require %d bytes, exceeding the %d-byte authoring context budget", selectedBytes, budget.MaxContextBytes),
+			Remediation: "Narrow the selected operations or increase MaxContextBytes for a reviewed prompt.",
+		}
+		report.Diagnostics = append(report.Diagnostics, diagnostic)
+		report.Bytes = selectedBytes
+		return report, DiagnosticError{Diagnostics: []Diagnostic{diagnostic}}
+	}
+
 	unselected := 0
-	for rank, candidate := range candidates {
-		candidate.rank = rank
-		key := fmt.Sprintf("%d/%d", candidate.docIndex, candidate.opIndex)
-		if candidate.selected || unselected < limit {
-			include[key] = rank
-			if !candidate.selected {
-				unselected++
-			}
+	skippedForBudget := false
+	for _, candidate := range candidates {
+		if candidate.selected || unselected >= limit {
+			continue
+		}
+		key := authoringCandidateKey(candidate.docIndex, candidate.opIndex)
+		include[key] = true
+		tentative := buildRankedAuthoringDocuments(docs, candidates, include, budget)
+		if promptJSONSize(tentative) > budget.MaxContextBytes {
+			delete(include, key)
+			skippedForBudget = true
+			continue
+		}
+		unselected++
+	}
+	report.Documents = buildRankedAuthoringDocuments(docs, candidates, include, budget)
+	report.Bytes = promptJSONSize(report.Documents)
+	if skippedForBudget {
+		report.Truncated = true
+		report.Diagnostics = append(report.Diagnostics, Diagnostic{
+			Severity: "warning", Code: "prompt.context_budget",
+			Message:     fmt.Sprintf("ranked operations were truncated to the %d-byte authoring context budget", budget.MaxContextBytes),
+			Remediation: "Narrow the query or increase MaxContextBytes for a reviewed prompt.",
+		})
+	}
+	return report, nil
+}
+
+func authoringCandidateKey(docIndex, opIndex int) string {
+	return fmt.Sprintf("%d/%d", docIndex, opIndex)
+}
+
+func buildRankedAuthoringDocuments(docs []AuthoringAPIDocument, candidates []authoringCandidate, include map[string]bool, budget PromptBudget) []AuthoringAPIDocument {
+	copies := make([]AuthoringAPIDocument, len(docs))
+	for i, doc := range docs {
+		copies[i] = doc
+		copies[i].ID, _ = sanitizePromptString(doc.ID, budget.MaxIdentifierRunes)
+		copies[i].Path, _ = sanitizePromptString(doc.Path, budget.MaxTextRunes)
+		copies[i].RelativePath, _ = sanitizePromptString(doc.RelativePath, budget.MaxTextRunes)
+		copies[i].Title, _ = sanitizePromptString(doc.Title, budget.MaxTextRunes)
+		copies[i].Description, _ = sanitizePromptString(doc.Description, budget.MaxTextRunes)
+		copies[i].Operations = nil
+	}
+	for _, candidate := range candidates {
+		if include[authoringCandidateKey(candidate.docIndex, candidate.opIndex)] {
+			copies[candidate.docIndex].Operations = append(copies[candidate.docIndex].Operations, candidate.op)
 		}
 	}
-	out := make([]AuthoringAPIDocument, 0, len(docs))
-	for docIndex, doc := range docs {
-		copyDoc := doc
-		copyDoc.Operations = nil
-		for opIndex, op := range doc.Operations {
-			key := fmt.Sprintf("%d/%d", docIndex, opIndex)
-			if _, ok := include[key]; ok {
-				copyDoc.Operations = append(copyDoc.Operations, op)
-			}
+	out := make([]AuthoringAPIDocument, 0, len(copies))
+	for _, doc := range copies {
+		if len(doc.Operations) > 0 {
+			out = append(out, doc)
 		}
-		sort.SliceStable(copyDoc.Operations, func(i, j int) bool {
-			left := include[fmt.Sprintf("%d/%d", docIndex, operationIndex(doc.Operations, copyDoc.Operations[i]))]
-			right := include[fmt.Sprintf("%d/%d", docIndex, operationIndex(doc.Operations, copyDoc.Operations[j]))]
-			return left < right
-		})
-		out = append(out, copyDoc)
 	}
 	return out
 }
@@ -316,19 +405,8 @@ func authoringOperationSearchText(doc AuthoringAPIDocument, op OperationSummary)
 			parts = append(parts, field.Path, field.Type, field.Description)
 		}
 	}
-	for _, field := range OperationCredentialFields(op) {
-		parts = append(parts, field)
-	}
+	parts = append(parts, OperationCredentialFields(op)...)
 	return strings.Join(parts, " ")
-}
-
-func operationIndex(ops []OperationSummary, op OperationSummary) int {
-	for i := range ops {
-		if ops[i].ID == op.ID && ops[i].OperationID == op.OperationID && ops[i].Method == op.Method && ops[i].Path == op.Path {
-			return i
-		}
-	}
-	return -1
 }
 
 func requiredLeafRequestFields(fields []RequestFieldSummary) []string {

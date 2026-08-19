@@ -74,6 +74,7 @@ func BuildOperationInventory(ctx context.Context, opts InventoryOptions) (Operat
 	if opts.Limit > 0 && len(inventory.Operations) > opts.Limit {
 		inventory.Operations = inventory.Operations[:opts.Limit]
 	}
+	sanitizeInventory(&inventory, DefaultPromptBudget())
 	return inventory, nil
 }
 

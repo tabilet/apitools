@@ -155,6 +155,7 @@ func BuildAPISourceOperationInventory(ctx context.Context, opts APISourceInvento
 		}
 		return left.OperationID < right.OperationID
 	})
+	sanitizeInventory(&inventory, DefaultPromptBudget())
 	return inventory, nil
 }
 
