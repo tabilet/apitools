@@ -2,6 +2,7 @@ package apitools
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -52,6 +53,163 @@ func TestBuildOperationInventoryOpenAPI3(t *testing.T) {
 	if len(got.Security) != 1 || got.Security[0].Name != "apiKeyAuth" || got.Security[0].In != "header" || got.Security[0].ParameterName != "X-API-Key" {
 		t.Fatalf("security = %#v", got.Security)
 	}
+}
+
+func TestBuildOperationInventoryBoundsInlineContentAndOperations(t *testing.T) {
+	content := []byte(`openapi: 3.0.0
+info: {title: Limits, version: 1.0.0}
+paths:
+  /a: {get: {operationId: a, responses: {"200": {description: ok}}}}
+  /b: {get: {operationId: b, responses: {"200": {description: ok}}}}
+  /c: {get: {operationId: c, responses: {"200": {description: ok}}}}
+`)
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{
+		Documents:     []InventoryDocument{{Name: "limits", Content: content}},
+		MaxOperations: 2,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !inventory.Truncated || inventory.VisitedOperations != 3 || len(inventory.Operations) != 2 {
+		t.Fatalf("inventory limits = %#v", inventory)
+	}
+	if len(inventory.Diagnostics) != 1 || inventory.Diagnostics[0].Code != "inventory.limit.operations" || inventory.Diagnostics[0].Severity != "error" {
+		t.Fatalf("diagnostics = %#v", inventory.Diagnostics)
+	}
+
+	inventory, err = BuildOperationInventory(context.Background(), InventoryOptions{
+		Documents: []InventoryDocument{{Name: "inline", Content: content}},
+		MaxBytes:  8,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Diagnostics) != 1 || inventory.Diagnostics[0].Code != "document.read" || !strings.Contains(inventory.Diagnostics[0].Message, "inline") {
+		t.Fatalf("inline diagnostics = %#v", inventory.Diagnostics)
+	}
+}
+
+func TestBuildOperationInventoryResolvesLocalObjectsAndCompositions(t *testing.T) {
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{Documents: []InventoryDocument{{Content: []byte(`openapi: 3.1.0
+info: {title: Refs, version: 1.0.0}
+components:
+  pathItems:
+    Shared:
+      parameters:
+        - {$ref: '#/components/parameters/Trace'}
+      post:
+        operationId: createItem
+        requestBody: {$ref: '#/components/requestBodies/Create'}
+        responses:
+          "200": {$ref: '#/components/responses/Item'}
+  parameters:
+    Trace: {name: X-Trace, in: header, schema: {type: string}}
+  requestBodies:
+    Create:
+      required: true
+      content:
+        application/json:
+          schema:
+            allOf:
+              - {$ref: '#/components/schemas/Base'}
+              - type: object
+                properties:
+                  choice: {$ref: '#/components/schemas/Choice'}
+  responses:
+    Item:
+      description: item
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Base'}
+  schemas:
+    Base:
+      type: object
+      required: [id]
+      properties: {id: {type: string}}
+    Choice:
+      oneOf:
+        - type: object
+          required: [alpha]
+          properties: {alpha: {type: string}}
+        - type: object
+          required: [beta]
+          properties: {beta: {type: string}}
+paths:
+  /items: {$ref: '#/components/pathItems/Shared'}
+`)}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Diagnostics) != 0 || len(inventory.Operations) != 1 {
+		t.Fatalf("inventory = %#v", inventory)
+	}
+	op := inventory.Operations[0]
+	if len(op.Parameters) != 1 || op.Parameters[0].Name != "X-Trace" {
+		t.Fatalf("parameters = %#v", op.Parameters)
+	}
+	if op.RequestBody == nil || op.ResponseBody == nil {
+		t.Fatalf("body summaries = request %#v response %#v", op.RequestBody, op.ResponseBody)
+	}
+	fields := map[string]RequestFieldSummary{}
+	for _, field := range op.RequestBody.Fields {
+		fields[field.Path] = field
+	}
+	if !fields["id"].Required || fields["choice.alpha"].Required || fields["choice.beta"].Required {
+		t.Fatalf("composed request fields = %#v", op.RequestBody.Fields)
+	}
+	if !hasReadinessCode(op.ReadinessIssues, "schema.branch_selection_required") {
+		t.Fatalf("readiness issues = %#v", op.ReadinessIssues)
+	}
+}
+
+func TestBuildOperationInventoryBoundsSchemaResolutionWork(t *testing.T) {
+	properties := make(map[string]any, DefaultMaxSchemaResolutionWork+100)
+	for i := 0; i < DefaultMaxSchemaResolutionWork+100; i++ {
+		properties["field-"+string(rune(0x1000+i))] = map[string]any{"type": "string"}
+	}
+	document := map[string]any{
+		"openapi": "3.0.0",
+		"info":    map[string]any{"title": "Wide", "version": "1"},
+		"paths": map[string]any{"/wide": map[string]any{"post": map[string]any{
+			"operationId": "wide",
+			"requestBody": map[string]any{"content": map[string]any{"application/json": map[string]any{"schema": map[string]any{"type": "object", "properties": properties}}}},
+			"responses":   map[string]any{"200": map[string]any{"description": "ok"}},
+		}}},
+	}
+	content, err := json.Marshal(document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{Documents: []InventoryDocument{{Content: content}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Operations) != 1 || !hasReadinessCode(inventory.Operations[0].ReadinessIssues, "schema.resolution_limit") {
+		t.Fatalf("readiness issues = %#v", inventory.ReadinessIssues)
+	}
+}
+
+func TestBuildOperationInventoryAcceptsNumericSwaggerButRejectsYAMLAliases(t *testing.T) {
+	inventory, err := BuildOperationInventory(context.Background(), InventoryOptions{Documents: []InventoryDocument{{Content: []byte("swagger: 2.0\ninfo: {title: Legacy, version: '1'}\npaths: {}\n")}}})
+	if err != nil || len(inventory.Documents) != 1 || inventory.Documents[0].Swagger != "2.0" {
+		t.Fatalf("numeric Swagger inventory = %#v err=%v", inventory, err)
+	}
+	inventory, err = BuildOperationInventory(context.Background(), InventoryOptions{Documents: []InventoryDocument{{Content: []byte("openapi: 3.0.0\ninfo: &info {title: Alias, version: '1'}\ncopy: *info\npaths: {}\n")}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Diagnostics) != 1 || !strings.Contains(inventory.Diagnostics[0].Message, "aliases") {
+		t.Fatalf("alias diagnostics = %#v", inventory.Diagnostics)
+	}
+}
+
+func hasReadinessCode(issues []ReadinessIssue, code string) bool {
+	for _, issue := range issues {
+		if issue.Code == code {
+			return true
+		}
+	}
+	return false
 }
 
 func TestBuildOperationInventoryOAuthFlowURLs(t *testing.T) {

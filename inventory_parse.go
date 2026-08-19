@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/OpenUdon/apitools/internal/sourceguard"
 	"gopkg.in/yaml.v3"
 )
 
@@ -15,17 +16,28 @@ func parseInventoryDocument(content []byte) (map[string]any, error) {
 	}
 	var value any
 	if trimmed[0] == '{' {
+		if err := sourceguard.CheckJSON("openapi", trimmed); err != nil {
+			return nil, err
+		}
 		decoder := json.NewDecoder(bytes.NewReader(trimmed))
 		decoder.UseNumber()
 		if err := decoder.Decode(&value); err != nil {
 			return nil, err
 		}
-	} else if err := yaml.Unmarshal(trimmed, &value); err != nil {
-		return nil, err
+	} else {
+		if err := sourceguard.CheckYAML("openapi", trimmed); err != nil {
+			return nil, err
+		}
+		if err := yaml.Unmarshal(trimmed, &value); err != nil {
+			return nil, err
+		}
 	}
 	root, ok := normalizeInventoryValue(value).(map[string]any)
 	if !ok {
 		return nil, fmt.Errorf("document root must be an object")
+	}
+	if swagger, ok := root["swagger"].(float64); ok && swagger == 2 {
+		root["swagger"] = "2.0"
 	}
 	if stringValue(root["openapi"]) == "" && stringValue(root["swagger"]) == "" {
 		return nil, fmt.Errorf("document does not declare openapi or swagger")

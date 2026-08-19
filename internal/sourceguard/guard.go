@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -24,6 +26,55 @@ const (
 func CheckDocument(kind string, data []byte) error {
 	if len(data) > MaxDocumentBytes {
 		return fmt.Errorf("%s: document exceeds maximum size %d bytes", kind, MaxDocumentBytes)
+	}
+	return nil
+}
+
+// CheckYAML validates YAML structure without expanding aliases into recursive
+// Go values. Alias nodes are rejected because expansion can multiply work
+// beyond the source byte and node budgets.
+func CheckYAML(kind string, data []byte) error {
+	if err := CheckDocument(kind, data); err != nil {
+		return err
+	}
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
+	var document yaml.Node
+	if err := decoder.Decode(&document); err != nil {
+		return fmt.Errorf("%s: decode YAML structure: %w", kind, err)
+	}
+	var trailing yaml.Node
+	if err := decoder.Decode(&trailing); err != io.EOF {
+		if err == nil {
+			return fmt.Errorf("%s: YAML contains multiple documents", kind)
+		}
+		return fmt.Errorf("%s: decode YAML trailing content: %w", kind, err)
+	}
+	type item struct {
+		node  *yaml.Node
+		depth int
+	}
+	stack := []item{{node: &document, depth: 0}}
+	work := 0
+	for len(stack) > 0 {
+		last := len(stack) - 1
+		current := stack[last]
+		stack = stack[:last]
+		if current.node == nil {
+			continue
+		}
+		work++
+		if work > MaxWorkItems {
+			return fmt.Errorf("%s: YAML node count exceeds maximum %d", kind, MaxWorkItems)
+		}
+		if current.depth > MaxNestingDepth {
+			return fmt.Errorf("%s: YAML nesting exceeds maximum depth %d", kind, MaxNestingDepth)
+		}
+		if current.node.Kind == yaml.AliasNode {
+			return fmt.Errorf("%s: YAML aliases are not supported in untrusted source metadata", kind)
+		}
+		for i := len(current.node.Content) - 1; i >= 0; i-- {
+			stack = append(stack, item{node: current.node.Content[i], depth: current.depth + 1})
+		}
 	}
 	return nil
 }

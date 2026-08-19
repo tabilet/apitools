@@ -11,18 +11,21 @@ type InventoryDocument struct {
 
 // InventoryOptions configures operation inventory extraction.
 type InventoryOptions struct {
-	Documents []InventoryDocument `json:"documents,omitempty"`
-	Query     string              `json:"query,omitempty"`
-	Limit     int                 `json:"limit,omitempty"`
-	MaxBytes  int64               `json:"max_bytes,omitempty"`
+	Documents     []InventoryDocument `json:"documents,omitempty"`
+	Query         string              `json:"query,omitempty"`
+	Limit         int                 `json:"limit,omitempty"`
+	MaxBytes      int64               `json:"max_bytes,omitempty"`
+	MaxOperations int                 `json:"max_operations,omitempty"`
 }
 
 // OperationInventory is a prompt-safe summary of OpenAPI operations.
 type OperationInventory struct {
-	Documents       []DocumentSummary  `json:"documents,omitempty"`
-	Operations      []OperationSummary `json:"operations,omitempty"`
-	Diagnostics     []Diagnostic       `json:"diagnostics,omitempty"`
-	ReadinessIssues []ReadinessIssue   `json:"readiness_issues,omitempty"`
+	Documents         []DocumentSummary  `json:"documents,omitempty"`
+	Operations        []OperationSummary `json:"operations,omitempty"`
+	Diagnostics       []Diagnostic       `json:"diagnostics,omitempty"`
+	ReadinessIssues   []ReadinessIssue   `json:"readiness_issues,omitempty"`
+	VisitedOperations int                `json:"visited_operations,omitempty"`
+	Truncated         bool               `json:"truncated"`
 }
 
 // DocumentSummary describes one source document in an inventory.

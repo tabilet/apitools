@@ -1,12 +1,24 @@
 package apitools
 
 import (
+	"context"
+	"fmt"
+	"net/url"
 	"sort"
 	"strings"
 )
 
-func requestBodySummary(root map[string]any, operation map[string]any, op *OperationSummary) *RequestBodySummary {
+const DefaultMaxSchemaResolutionWork = 4_096
+
+func requestBodySummary(ctx context.Context, root map[string]any, operation map[string]any, op *OperationSummary) (*RequestBodySummary, error) {
 	if body := mapValue(operation["requestBody"]); len(body) > 0 {
+		if ref := stringValue(body["$ref"]); strings.HasPrefix(ref, "#/") {
+			if resolved := localObjectRef(root, ref); len(resolved) > 0 {
+				body = mergeObjectRef(resolved, body)
+			} else {
+				addOperationIssue(op, "schema.ref_unresolved", "requestBody reference was not resolved", ref)
+			}
+		}
 		summary := &RequestBodySummary{
 			Description: stringValue(body["description"]),
 			Required:    boolValue(body["required"]),
@@ -19,7 +31,10 @@ func requestBodySummary(root map[string]any, operation map[string]any, op *Opera
 		summary.ContentTypes = sortedMapKeys(content)
 		if len(summary.ContentTypes) > 0 {
 			media := mapValue(content[summary.ContentTypes[0]])
-			rawSchema := resolveLocalSchemaRefs(root, mapValue(media["schema"]), map[string]bool{}, 0)
+			rawSchema, err := resolveLocalSchemaRefs(ctx, root, mapValue(media["schema"]), op)
+			if err != nil {
+				return nil, err
+			}
 			schema := schemaSummary(rawSchema)
 			summary.Schema = &schema
 			summary.Fields = requestFieldSummaries(rawSchema, "", summary.Required, 0)
@@ -31,14 +46,24 @@ func requestBodySummary(root map[string]any, operation map[string]any, op *Opera
 				addOperationIssue(op, "schema.ref_unresolved", "request body schema reference was not resolved", schema.Ref)
 			}
 		}
-		return summary
+		return summary, nil
 	}
 	for _, parameterValue := range sliceValue(operation["parameters"]) {
 		parameter := mapValue(parameterValue)
+		if ref := stringValue(parameter["$ref"]); strings.HasPrefix(ref, "#/") {
+			if resolved := localObjectRef(root, ref); len(resolved) > 0 {
+				parameter = mergeObjectRef(resolved, parameter)
+			} else {
+				addOperationIssue(op, "schema.ref_unresolved", "body parameter reference was not resolved", ref)
+			}
+		}
 		if stringValue(parameter["in"]) != "body" {
 			continue
 		}
-		rawSchema := resolveLocalSchemaRefs(root, mapValue(parameter["schema"]), map[string]bool{}, 0)
+		rawSchema, err := resolveLocalSchemaRefs(ctx, root, mapValue(parameter["schema"]), op)
+		if err != nil {
+			return nil, err
+		}
 		schema := schemaSummary(rawSchema)
 		if schema.Ref != "" {
 			addOperationIssue(op, "schema.ref_unresolved", "body parameter schema reference was not resolved", schema.Ref)
@@ -54,20 +79,27 @@ func requestBodySummary(root map[string]any, operation map[string]any, op *Opera
 			Ref:                stringValue(parameter["$ref"]),
 			Fields:             fields,
 			RequiredFieldPaths: requiredRequestFieldPaths(fields),
-		}
+		}, nil
 	}
-	return nil
+	return nil, nil
 }
 
-func responseBodySummary(root map[string]any, operation map[string]any, op *OperationSummary) *ResponseBodySummary {
+func responseBodySummary(ctx context.Context, root map[string]any, operation map[string]any, op *OperationSummary) (*ResponseBodySummary, error) {
 	responses := mapValue(operation["responses"])
 	if len(responses) == 0 {
-		return nil
+		return nil, nil
 	}
 	for _, status := range successfulResponseStatuses(responses) {
 		response := mapValue(responses[status])
 		if len(response) == 0 {
 			continue
+		}
+		if ref := stringValue(response["$ref"]); strings.HasPrefix(ref, "#/") {
+			if resolved := localObjectRef(root, ref); len(resolved) > 0 {
+				response = mergeObjectRef(resolved, response)
+			} else {
+				addOperationIssue(op, "schema.ref_unresolved", "response reference was not resolved", ref)
+			}
 		}
 		summary := &ResponseBodySummary{
 			StatusCode:  status,
@@ -81,7 +113,10 @@ func responseBodySummary(root map[string]any, operation map[string]any, op *Oper
 			summary.ContentTypes = sortedMapKeys(content)
 			for _, contentType := range preferredResponseContentTypes(summary.ContentTypes) {
 				media := mapValue(content[contentType])
-				rawSchema := resolveLocalSchemaRefs(root, mapValue(media["schema"]), map[string]bool{}, 0)
+				rawSchema, err := resolveLocalSchemaRefs(ctx, root, mapValue(media["schema"]), op)
+				if err != nil {
+					return nil, err
+				}
 				if len(rawSchema) == 0 {
 					continue
 				}
@@ -95,14 +130,17 @@ func responseBodySummary(root map[string]any, operation map[string]any, op *Oper
 				if schema.Ref != "" {
 					addOperationIssue(op, "schema.ref_unresolved", "response schema reference was not resolved", schema.Ref)
 				}
-				return summary
+				return summary, nil
 			}
 			if len(summary.ContentTypes) > 0 {
-				return summary
+				return summary, nil
 			}
 			continue
 		}
-		rawSchema := resolveLocalSchemaRefs(root, mapValue(response["schema"]), map[string]bool{}, 0)
+		rawSchema, err := resolveLocalSchemaRefs(ctx, root, mapValue(response["schema"]), op)
+		if err != nil {
+			return nil, err
+		}
 		if len(rawSchema) == 0 {
 			continue
 		}
@@ -116,9 +154,9 @@ func responseBodySummary(root map[string]any, operation map[string]any, op *Oper
 		if schema.Ref != "" {
 			addOperationIssue(op, "schema.ref_unresolved", "response schema reference was not resolved", schema.Ref)
 		}
-		return summary
+		return summary, nil
 	}
-	return nil
+	return nil, nil
 }
 
 func appendMissingTopLevelResponseFields(fields []RequestFieldSummary, schema map[string]any, names ...string) []RequestFieldSummary {
@@ -178,64 +216,175 @@ func responseContentTypeScore(contentType string) int {
 	}
 }
 
-func resolveLocalSchemaRefs(root map[string]any, schema map[string]any, seen map[string]bool, depth int) map[string]any {
-	if len(schema) == 0 || depth > maxRequestFieldDepth {
-		return schema
+type schemaResolutionState struct {
+	ctx            context.Context
+	root           map[string]any
+	op             *OperationSummary
+	activeRefs     map[string]bool
+	work           int
+	limitReported  bool
+	branchReported bool
+	depthReported  bool
+}
+
+func resolveLocalSchemaRefs(ctx context.Context, root map[string]any, schema map[string]any, op *OperationSummary) (map[string]any, error) {
+	if ctx == nil {
+		ctx = context.Background()
 	}
-	if ref := stringValue(schema["$ref"]); strings.HasPrefix(ref, "#/definitions/") || strings.HasPrefix(ref, "#/components/schemas/") {
-		if !seen[ref] {
-			nextSeen := copyStringBoolMap(seen)
-			nextSeen[ref] = true
-			if resolved := localSchemaRef(root, ref); len(resolved) > 0 {
-				base := resolveLocalSchemaRefs(root, resolved, nextSeen, depth+1)
-				merged := copyStringAnyMap(base)
-				for key, value := range schema {
-					if key == "$ref" {
-						continue
-					}
-					merged[key] = value
-				}
-				schema = merged
+	state := &schemaResolutionState{ctx: ctx, root: root, op: op, activeRefs: map[string]bool{}}
+	return state.resolve(schema, 0)
+}
+
+func (state *schemaResolutionState) resolve(schema map[string]any, depth int) (map[string]any, error) {
+	if err := state.ctx.Err(); err != nil {
+		return nil, err
+	}
+	if len(schema) == 0 {
+		return schema, nil
+	}
+	if depth > maxRequestFieldDepth {
+		if !state.depthReported {
+			state.depthReported = true
+			addOperationIssue(state.op, "schema.resolution_depth", fmt.Sprintf("schema resolution exceeded depth %d", maxRequestFieldDepth), "")
+		}
+		return copyStringAnyMap(schema), nil
+	}
+	state.work++
+	if state.work > DefaultMaxSchemaResolutionWork {
+		if !state.limitReported {
+			state.limitReported = true
+			addOperationIssue(state.op, "schema.resolution_limit", fmt.Sprintf("schema resolution exceeded %d visited nodes", DefaultMaxSchemaResolutionWork), "")
+		}
+		return copyStringAnyMap(schema), nil
+	}
+
+	out := copyStringAnyMap(schema)
+	if ref := stringValue(out["$ref"]); strings.HasPrefix(ref, "#/") {
+		if state.activeRefs[ref] {
+			addOperationIssue(state.op, "schema.ref_cycle", "schema reference cycle was not expanded", ref)
+			return out, nil
+		}
+		if resolved := localObjectRef(state.root, ref); len(resolved) > 0 {
+			state.activeRefs[ref] = true
+			base, err := state.resolve(resolved, depth+1)
+			delete(state.activeRefs, ref)
+			if err != nil {
+				return nil, err
 			}
+			out = mergeObjectRef(base, out)
+		} else {
+			addOperationIssue(state.op, "schema.ref_unresolved", "schema reference was not resolved", ref)
 		}
 	}
-	out := copyStringAnyMap(schema)
+
+	if branches := sliceValue(out["allOf"]); len(branches) > 0 {
+		delete(out, "allOf")
+		for _, branchValue := range branches {
+			branch, err := state.resolve(mapValue(branchValue), depth+1)
+			if err != nil {
+				return nil, err
+			}
+			out = mergeSchema(out, branch, true)
+		}
+	}
+	for _, keyword := range []string{"oneOf", "anyOf"} {
+		branches := sliceValue(out[keyword])
+		if len(branches) == 0 {
+			continue
+		}
+		if !state.branchReported {
+			state.branchReported = true
+			addOperationIssue(state.op, "schema.branch_selection_required", keyword+" requires an explicit schema branch selection", "")
+		}
+		delete(out, keyword)
+		for _, branchValue := range branches {
+			branch, err := state.resolve(mapValue(branchValue), depth+1)
+			if err != nil {
+				return nil, err
+			}
+			out = mergeSchema(out, branch, false)
+		}
+	}
+
 	if properties := mapValue(out["properties"]); len(properties) > 0 {
 		resolvedProperties := make(map[string]any, len(properties))
 		for _, name := range sortedMapKeys(properties) {
-			resolvedProperties[name] = resolveLocalSchemaRefs(root, mapValue(properties[name]), copyStringBoolMap(seen), depth+1)
+			resolved, err := state.resolve(mapValue(properties[name]), depth+1)
+			if err != nil {
+				return nil, err
+			}
+			resolvedProperties[name] = resolved
 		}
 		out["properties"] = resolvedProperties
 	}
 	if items := mapValue(out["items"]); len(items) > 0 {
-		out["items"] = resolveLocalSchemaRefs(root, items, copyStringBoolMap(seen), depth+1)
+		resolved, err := state.resolve(items, depth+1)
+		if err != nil {
+			return nil, err
+		}
+		out["items"] = resolved
+	}
+	return out, nil
+}
+
+func localObjectRef(root map[string]any, ref string) map[string]any {
+	if !strings.HasPrefix(ref, "#/") {
+		return nil
+	}
+	var current any = root
+	for _, encoded := range strings.Split(strings.TrimPrefix(ref, "#/"), "/") {
+		segment, err := url.PathUnescape(encoded)
+		if err != nil {
+			return nil
+		}
+		key := strings.ReplaceAll(strings.ReplaceAll(segment, "~1", "/"), "~0", "~")
+		object, ok := current.(map[string]any)
+		if !ok {
+			return nil
+		}
+		current, ok = object[key]
+		if !ok {
+			return nil
+		}
+	}
+	return mapValue(current)
+}
+
+func mergeObjectRef(base, overlay map[string]any) map[string]any {
+	out := copyStringAnyMap(base)
+	for key, value := range overlay {
+		if key != "$ref" {
+			out[key] = value
+		}
 	}
 	return out
 }
 
-func localSchemaRef(root map[string]any, ref string) map[string]any {
-	switch {
-	case strings.HasPrefix(ref, "#/definitions/"):
-		name := strings.TrimPrefix(ref, "#/definitions/")
-		return mapValue(mapValue(root["definitions"])[name])
-	case strings.HasPrefix(ref, "#/components/schemas/"):
-		name := strings.TrimPrefix(ref, "#/components/schemas/")
-		return mapValue(mapValue(mapValue(root["components"])["schemas"])[name])
-	default:
-		return nil
+func mergeSchema(base, addition map[string]any, includeRequired bool) map[string]any {
+	out := copyStringAnyMap(base)
+	for key, value := range addition {
+		switch key {
+		case "properties":
+			properties := copyStringAnyMap(mapValue(out[key]))
+			for name, property := range mapValue(value) {
+				properties[name] = property
+			}
+			out[key] = properties
+		case "required":
+			if includeRequired {
+				out[key] = sortedUniqueStrings(append(stringSlice(out[key]), stringSlice(value)...))
+			}
+		default:
+			if _, exists := out[key]; !exists {
+				out[key] = value
+			}
+		}
 	}
+	return out
 }
 
 func copyStringAnyMap(in map[string]any) map[string]any {
 	out := make(map[string]any, len(in))
-	for key, value := range in {
-		out[key] = value
-	}
-	return out
-}
-
-func copyStringBoolMap(in map[string]bool) map[string]bool {
-	out := make(map[string]bool, len(in))
 	for key, value := range in {
 		out[key] = value
 	}

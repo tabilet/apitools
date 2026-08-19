@@ -2,6 +2,7 @@ package apitools
 
 import (
 	"context"
+	"strings"
 	"testing"
 )
 
@@ -110,5 +111,29 @@ func TestBuildAPISourceOperationInventoryNativeSources(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestBuildAPISourceOperationInventoryBoundsInlineContentAndOperations(t *testing.T) {
+	content := []byte(`query A { a } query B { b } query C { c }`)
+	inventory, err := BuildAPISourceOperationInventory(context.Background(), APISourceInventoryOptions{
+		Documents:     []APISourceDocument{{Kind: APISourceKindGraphQL, Name: "ops", Content: content}},
+		MaxOperations: 2,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !inventory.Truncated || len(inventory.Operations) != 2 || inventory.VisitedOperations != 3 {
+		t.Fatalf("inventory = %#v", inventory)
+	}
+	inventory, err = BuildAPISourceOperationInventory(context.Background(), APISourceInventoryOptions{
+		Documents: []APISourceDocument{{Kind: APISourceKindGraphQL, Name: "ops", Content: content}},
+		MaxBytes:  4,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inventory.Diagnostics) != 1 || !strings.Contains(inventory.Diagnostics[0].Message, "inline") {
+		t.Fatalf("inline diagnostics = %#v", inventory.Diagnostics)
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/OpenUdon/apitools/internal/sourceguard"
 	upstreamsmithy "github.com/OpenUdon/awssmithy"
 	upstreamdiscovery "github.com/OpenUdon/googlediscovery"
 )
@@ -27,9 +28,10 @@ type APISourceDocument struct {
 
 // APISourceInventoryOptions configures native API source operation extraction.
 type APISourceInventoryOptions struct {
-	Documents []APISourceDocument `json:"documents,omitempty"`
-	Query     string              `json:"query,omitempty"`
-	MaxBytes  int64               `json:"max_bytes,omitempty"`
+	Documents     []APISourceDocument `json:"documents,omitempty"`
+	Query         string              `json:"query,omitempty"`
+	MaxBytes      int64               `json:"max_bytes,omitempty"`
+	MaxOperations int                 `json:"max_operations,omitempty"`
 }
 
 // BuildAPISourceOperationInventory extracts prompt-safe operation summaries
@@ -43,10 +45,15 @@ func BuildAPISourceOperationInventory(ctx context.Context, opts APISourceInvento
 	if len(opts.Documents) == 0 {
 		return OperationInventory{}, fmt.Errorf("at least one API source document is required")
 	}
+	maxOperations := resolvedInventoryMaxOperations(opts.MaxOperations)
 	var inventory OperationInventory
 	for i, doc := range opts.Documents {
 		if err := ctx.Err(); err != nil {
 			return inventory, err
+		}
+		if len(inventory.Operations) >= maxOperations {
+			markInventoryTruncated(&inventory, maxOperations)
+			break
 		}
 		kind := normalizeAPISourceKind(doc.Kind)
 		if kind == "" {
@@ -59,6 +66,11 @@ func BuildAPISourceOperationInventory(ctx context.Context, opts APISourceInvento
 			continue
 		}
 		if kind == APISourceKindOpenAPI {
+			remaining := maxOperations - len(inventory.Operations)
+			if remaining <= 0 {
+				markInventoryTruncated(&inventory, maxOperations)
+				break
+			}
 			openapi, err := BuildOperationInventory(ctx, InventoryOptions{
 				Documents: []InventoryDocument{{
 					Name:         doc.Name,
@@ -66,8 +78,9 @@ func BuildAPISourceOperationInventory(ctx context.Context, opts APISourceInvento
 					RelativePath: doc.RelativePath,
 					Content:      doc.Content,
 				}},
-				Query:    opts.Query,
-				MaxBytes: opts.MaxBytes,
+				Query:         opts.Query,
+				MaxBytes:      opts.MaxBytes,
+				MaxOperations: remaining,
 			})
 			if err != nil {
 				return inventory, err
@@ -76,9 +89,20 @@ func BuildAPISourceOperationInventory(ctx context.Context, opts APISourceInvento
 			inventory.Operations = append(inventory.Operations, openapi.Operations...)
 			inventory.Diagnostics = append(inventory.Diagnostics, openapi.Diagnostics...)
 			inventory.ReadinessIssues = append(inventory.ReadinessIssues, openapi.ReadinessIssues...)
+			inventory.VisitedOperations += openapi.VisitedOperations
+			if openapi.Truncated {
+				inventory.Truncated = true
+				break
+			}
 			continue
 		}
 		content := doc.Content
+		if len(content) > 0 {
+			if err := validateInlineSpecContent(content, opts.MaxBytes, firstNonEmpty(doc.Path, doc.Name)); err != nil {
+				inventory.Diagnostics = append(inventory.Diagnostics, Diagnostic{Severity: "error", Code: "document.read", Message: err.Error(), Path: doc.Path})
+				continue
+			}
+		}
 		if len(content) == 0 {
 			data, err := readLocalSpecFile(doc.Path, opts.MaxBytes)
 			if err != nil {
@@ -92,6 +116,14 @@ func BuildAPISourceOperationInventory(ctx context.Context, opts APISourceInvento
 			}
 			content = data
 		}
+		beforeOperations := len(inventory.Operations)
+		beforeDocuments := len(inventory.Documents)
+		if kind == APISourceKindAWSSmithy || kind == APISourceKindGoogleDiscovery {
+			if err := sourceguard.CheckJSON(kind, content); err != nil {
+				inventory.Diagnostics = append(inventory.Diagnostics, Diagnostic{Severity: "error", Code: "document.parse", Message: err.Error(), Path: doc.Path})
+				continue
+			}
+		}
 		switch kind {
 		case APISourceKindAWSSmithy:
 			addAWSSmithyInventory(&inventory, doc, i, content, opts.Query)
@@ -99,6 +131,12 @@ func BuildAPISourceOperationInventory(ctx context.Context, opts APISourceInvento
 			addGoogleDiscoveryInventory(&inventory, doc, i, content, opts.Query)
 		case APISourceKindAsyncAPI, APISourceKindGraphQL, APISourceKindOpenRPC, APISourceKindGRPCProtobuf, APISourceKindOData:
 			addAdditionalSourceInventory(&inventory, doc, i, kind, content, opts.Query)
+		}
+		if err := ctx.Err(); err != nil {
+			return inventory, err
+		}
+		if enforceInventoryOperationLimit(&inventory, beforeOperations, beforeDocuments, maxOperations) {
+			break
 		}
 	}
 	sort.SliceStable(inventory.Operations, func(i, j int) bool {

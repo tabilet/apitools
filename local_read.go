@@ -15,6 +15,14 @@ func resolvedLocalMaxBytes(maxBytes int64) int64 {
 	return maxBytes
 }
 
+func validateInlineSpecContent(content []byte, maxBytes int64, label string) error {
+	maxBytes = resolvedLocalMaxBytes(maxBytes)
+	if int64(len(content)) > maxBytes {
+		return fmt.Errorf("inline API source %q is larger than %d bytes", label, maxBytes)
+	}
+	return nil
+}
+
 func validateLocalScanRoot(path string) error {
 	info, err := lstatLocalPathNoSymlinks(path)
 	if err != nil {

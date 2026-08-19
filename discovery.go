@@ -15,6 +15,7 @@ import (
 const (
 	discoveryImportMaxBytes = 20 * 1024 * 1024
 	discoveryImportTimeout  = 30 * time.Second
+	DefaultMaxProjectURLs   = 16
 )
 
 // DiscoveryCandidate is a local or imported OpenAPI document candidate.
@@ -29,7 +30,19 @@ type DiscoveryCandidate struct {
 
 // DiscoveryReport records discovery attempts for audit and prompting.
 type DiscoveryReport struct {
-	Attempts []DiscoveryAttempt `json:"attempts,omitempty"`
+	Attempts    []DiscoveryAttempt `json:"attempts,omitempty"`
+	Diagnostics []Diagnostic       `json:"diagnostics,omitempty"`
+	Truncated   bool               `json:"truncated"`
+}
+
+// ProjectURLImportReport records bounded imports attempted from URLs found in
+// project text. Individual URL failures remain visible and do not disappear
+// behind a successful partial result.
+type ProjectURLImportReport struct {
+	Candidates  []DiscoveryCandidate `json:"candidates,omitempty"`
+	Attempts    []DiscoveryAttempt   `json:"attempts,omitempty"`
+	Diagnostics []Diagnostic         `json:"diagnostics,omitempty"`
+	Truncated   bool                 `json:"truncated"`
 }
 
 // DiscoveryAttempt describes one local, URL, or catalog discovery attempt.
@@ -72,9 +85,14 @@ func (d *Discoverer) DiscoverWithReport(ctx context.Context, exampleDir, project
 	})
 	candidates = append(candidates, local...)
 
-	imported, attempts := d.ImportProjectURLsWithReport(ctx, openAPIDir, exampleDir, projectText)
-	report.Attempts = append(report.Attempts, attempts...)
-	candidates = append(candidates, imported...)
+	urlReport, err := d.ImportProjectURLs(ctx, openAPIDir, exampleDir, projectText)
+	report.Attempts = append(report.Attempts, urlReport.Attempts...)
+	report.Diagnostics = append(report.Diagnostics, urlReport.Diagnostics...)
+	report.Truncated = urlReport.Truncated
+	if err != nil {
+		return candidates, report, err
+	}
+	candidates = append(candidates, urlReport.Candidates...)
 
 	if len(candidates) == 0 {
 		fromGuru, err := d.ImportBestAPIsGuruMatch(ctx, openAPIDir, exampleDir, projectText)
@@ -92,31 +110,47 @@ func (d *Discoverer) DiscoverWithReport(ctx context.Context, exampleDir, project
 	return candidates, report, nil
 }
 
-func (d *Discoverer) ImportProjectURLs(ctx context.Context, openAPIDir, baseDir, projectText string) ([]DiscoveryCandidate, error) {
-	out, _ := d.ImportProjectURLsWithReport(ctx, openAPIDir, baseDir, projectText)
-	return out, nil
-}
-
-func (d *Discoverer) ImportProjectURLsWithReport(ctx context.Context, openAPIDir, baseDir, projectText string) ([]DiscoveryCandidate, []DiscoveryAttempt) {
-	var out []DiscoveryCandidate
-	var attempts []DiscoveryAttempt
+func (d *Discoverer) ImportProjectURLs(ctx context.Context, openAPIDir, baseDir, projectText string) (ProjectURLImportReport, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	var report ProjectURLImportReport
 	seen := map[string]bool{}
+	var urls []string
 	for _, rawURL := range ExtractURLs(projectText) {
 		if seen[rawURL] {
 			continue
 		}
 		seen[rawURL] = true
+		urls = append(urls, rawURL)
+	}
+	if len(urls) > DefaultMaxProjectURLs {
+		report.Truncated = true
+		diagnostic := Diagnostic{
+			Severity:    "error",
+			Code:        "discovery.limit.project_urls",
+			Message:     fmt.Sprintf("project text contains %d unique URLs, exceeding the %d-URL import limit", len(urls), DefaultMaxProjectURLs),
+			Remediation: "Narrow the project text to explicit API source URLs before importing.",
+		}
+		report.Diagnostics = append(report.Diagnostics, diagnostic)
+		return report, DiagnosticError{Diagnostics: report.Diagnostics}
+	}
+	for _, rawURL := range urls {
+		if err := ctx.Err(); err != nil {
+			return report, err
+		}
 		candidate, err := d.ImportURL(ctx, openAPIDir, baseDir, rawURL, "")
 		if err != nil {
-			attempts = append(attempts, DiscoveryAttempt{Kind: "url", Source: rawURL, Status: "fail", Detail: err.Error()})
+			report.Attempts = append(report.Attempts, DiscoveryAttempt{Kind: "url", Source: rawURL, Status: "fail", Detail: err.Error()})
+			report.Diagnostics = append(report.Diagnostics, Diagnostic{Severity: "warning", Code: "discovery.url.import", Message: err.Error(), Path: rawURL, Remediation: "Confirm that the URL points directly to a public OpenAPI or Swagger document."})
 			continue
 		}
 		candidate.Source = "url:" + rawURL
 		candidate.Score = ScoreText(projectText, candidate.Title+" "+candidate.Description+" "+candidate.RelativePath)
-		attempts = append(attempts, DiscoveryAttempt{Kind: "url", Source: rawURL, Status: "pass", Detail: candidate.RelativePath})
-		out = append(out, candidate)
+		report.Attempts = append(report.Attempts, DiscoveryAttempt{Kind: "url", Source: rawURL, Status: "pass", Detail: candidate.RelativePath})
+		report.Candidates = append(report.Candidates, candidate)
 	}
-	return out, attempts
+	return report, nil
 }
 
 // DiscoverOpenAPI returns local OpenAPI document candidates under openAPIDir.

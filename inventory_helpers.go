@@ -39,6 +39,9 @@ func boolValue(value any) bool {
 }
 
 func stringSlice(value any) []string {
+	if typed, ok := value.([]string); ok {
+		return sortedUniqueStrings(append([]string(nil), typed...))
+	}
 	values := sliceValue(value)
 	if len(values) == 0 {
 		if text := stringValue(value); text != "" {

@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const DefaultMaxInventoryOperations = 10_000
+
 // BuildOperationInventory extracts prompt-safe operation summaries from local
 // OpenAPI or Swagger documents. It never fetches remote references or executes
 // discovered operations.
@@ -18,6 +20,7 @@ func BuildOperationInventory(ctx context.Context, opts InventoryOptions) (Operat
 	if len(opts.Documents) == 0 {
 		return OperationInventory{}, fmt.Errorf("at least one OpenAPI document is required")
 	}
+	maxOperations := resolvedInventoryMaxOperations(opts.MaxOperations)
 	var inventory OperationInventory
 	for i, doc := range opts.Documents {
 		if err := ctx.Err(); err != nil {
@@ -44,7 +47,13 @@ func BuildOperationInventory(ctx context.Context, opts InventoryOptions) (Operat
 			})
 			continue
 		}
-		addDocumentInventory(&inventory, doc, i, parsed, opts.Query)
+		limitReached, err := addDocumentInventory(ctx, &inventory, doc, i, parsed, opts.Query, maxOperations)
+		if err != nil {
+			return inventory, err
+		}
+		if limitReached {
+			break
+		}
 	}
 	sort.SliceStable(inventory.Operations, func(i, j int) bool {
 		left, right := inventory.Operations[i], inventory.Operations[j]
@@ -70,6 +79,9 @@ func BuildOperationInventory(ctx context.Context, opts InventoryOptions) (Operat
 
 func inventoryDocumentContent(doc InventoryDocument, maxBytes int64) ([]byte, error) {
 	if len(doc.Content) > 0 {
+		if err := validateInlineSpecContent(doc.Content, maxBytes, firstNonEmpty(doc.Path, doc.URL, doc.Name)); err != nil {
+			return nil, err
+		}
 		return doc.Content, nil
 	}
 	if strings.TrimSpace(doc.Path) == "" {
@@ -78,7 +90,7 @@ func inventoryDocumentContent(doc InventoryDocument, maxBytes int64) ([]byte, er
 	return readLocalSpecFile(doc.Path, maxBytes)
 }
 
-func addDocumentInventory(inventory *OperationInventory, doc InventoryDocument, index int, root map[string]any, query string) {
+func addDocumentInventory(ctx context.Context, inventory *OperationInventory, doc InventoryDocument, index int, root map[string]any, query string, maxOperations int) (bool, error) {
 	info := mapValue(root["info"])
 	name := firstNonEmpty(doc.Name, stringValue(info["title"]), filepath.Base(doc.Path), doc.URL, fmt.Sprintf("document-%d", index+1))
 	summary := DocumentSummary{
@@ -96,15 +108,42 @@ func addDocumentInventory(inventory *OperationInventory, doc InventoryDocument, 
 	paths := mapValue(root["paths"])
 	pathKeys := sortedMapKeys(paths)
 	for _, path := range pathKeys {
+		if err := ctx.Err(); err != nil {
+			return false, err
+		}
 		pathItem := mapValue(paths[path])
+		if ref := stringValue(pathItem["$ref"]); strings.HasPrefix(ref, "#/") {
+			if resolved := localObjectRef(root, ref); len(resolved) > 0 {
+				pathItem = mergeObjectRef(resolved, pathItem)
+			} else {
+				inventory.Diagnostics = append(inventory.Diagnostics, Diagnostic{Severity: "error", Code: "document.ref_unresolved", Message: "path item reference was not resolved", Path: ref, Remediation: "Provide a valid local path item reference; remote references are not fetched."})
+				continue
+			}
+		}
 		pathParameterValues := sliceValue(pathItem["parameters"])
 		for _, method := range operationMethods(pathItem) {
+			if err := ctx.Err(); err != nil {
+				return false, err
+			}
+			inventory.VisitedOperations++
+			if len(inventory.Operations) >= maxOperations {
+				inventory.Documents = append(inventory.Documents, summary)
+				markInventoryTruncated(inventory, maxOperations)
+				return true, nil
+			}
 			operation := mapValue(pathItem[method])
 			op := operationSummary(doc, name, path, method, operation)
-			op.Parameters = append(op.Parameters, parameterSummaries(pathParameterValues, &op)...)
-			op.Parameters = append(op.Parameters, parameterSummaries(sliceValue(operation["parameters"]), &op)...)
-			op.RequestBody = requestBodySummary(root, operation, &op)
-			op.ResponseBody = responseBodySummary(root, operation, &op)
+			op.Parameters = append(op.Parameters, parameterSummaries(root, pathParameterValues, &op)...)
+			op.Parameters = append(op.Parameters, parameterSummaries(root, sliceValue(operation["parameters"]), &op)...)
+			var err error
+			op.RequestBody, err = requestBodySummary(ctx, root, operation, &op)
+			if err != nil {
+				return false, err
+			}
+			op.ResponseBody, err = responseBodySummary(ctx, root, operation, &op)
+			if err != nil {
+				return false, err
+			}
 			if value, ok := operation["security"]; ok {
 				op.Security = securityRequirements(value, securitySchemes)
 			} else {
@@ -127,6 +166,48 @@ func addDocumentInventory(inventory *OperationInventory, doc InventoryDocument, 
 		}
 	}
 	inventory.Documents = append(inventory.Documents, summary)
+	return false, nil
+}
+
+func resolvedInventoryMaxOperations(limit int) int {
+	if limit <= 0 {
+		return DefaultMaxInventoryOperations
+	}
+	return limit
+}
+
+func markInventoryTruncated(inventory *OperationInventory, maxOperations int) {
+	if inventory == nil || inventory.Truncated {
+		return
+	}
+	inventory.Truncated = true
+	inventory.Diagnostics = append(inventory.Diagnostics, Diagnostic{
+		Severity:    "error",
+		Code:        "inventory.limit.operations",
+		Message:     fmt.Sprintf("operation inventory reached the %d-operation limit", maxOperations),
+		Remediation: "Narrow the source documents or explicitly increase MaxOperations for a reviewed workload.",
+	})
+}
+
+func enforceInventoryOperationLimit(inventory *OperationInventory, beforeOperations, beforeDocuments, maxOperations int) bool {
+	added := len(inventory.Operations) - beforeOperations
+	if added < 0 {
+		added = 0
+	}
+	inventory.VisitedOperations += added
+	if len(inventory.Operations) <= maxOperations {
+		return false
+	}
+	accepted := maxOperations - beforeOperations
+	if accepted < 0 {
+		accepted = 0
+	}
+	inventory.Operations = inventory.Operations[:maxOperations]
+	if len(inventory.Documents) > beforeDocuments {
+		inventory.Documents[len(inventory.Documents)-1].OperationCount = accepted
+	}
+	markInventoryTruncated(inventory, maxOperations)
+	return true
 }
 
 func operationSummary(doc InventoryDocument, documentName, path, method string, operation map[string]any) OperationSummary {
@@ -194,10 +275,17 @@ func operationMethods(pathItem map[string]any) []string {
 	return methods
 }
 
-func parameterSummaries(parameters []any, op *OperationSummary) []ParameterSummary {
+func parameterSummaries(root map[string]any, parameters []any, op *OperationSummary) []ParameterSummary {
 	out := make([]ParameterSummary, 0, len(parameters))
 	for _, value := range parameters {
 		parameter := mapValue(value)
+		if ref := stringValue(parameter["$ref"]); strings.HasPrefix(ref, "#/") {
+			if resolved := localObjectRef(root, ref); len(resolved) > 0 {
+				parameter = mergeObjectRef(resolved, parameter)
+			} else {
+				addOperationIssue(op, "schema.ref_unresolved", "parameter reference was not resolved", ref)
+			}
+		}
 		if len(parameter) == 0 {
 			continue
 		}
