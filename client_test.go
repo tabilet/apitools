@@ -2,6 +2,8 @@ package apitools
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -563,10 +565,14 @@ func TestMaxResponseSizeEnforced(t *testing.T) {
 func TestCachedSpecRevalidatedBeforeImport(t *testing.T) {
 	dir := t.TempDir()
 	rawURL := "http://93.184.216.34/openapi.yaml"
+	invalid := []byte(`{"not":"openapi"}`)
+	digest := sha256.Sum256(invalid)
 	cache := fakeCache{spec: CachedSpec{
 		OriginalURL: rawURL,
 		FinalURL:    rawURL,
-		Content:     []byte(`{"not":"openapi"}`),
+		Content:     invalid,
+		SHA256:      hex.EncodeToString(digest[:]),
+		Bytes:       int64(len(invalid)),
 	}}
 	_, err := (&Client{Cache: cache}).Import(context.Background(), ImportOptions{
 		URL:       rawURL,
@@ -703,12 +709,16 @@ func TestDefaultWellKnownPathsMutationDoesNotAffectClientDefaults(t *testing.T) 
 }
 
 func validSpecCache(rawURL string) fakeCache {
+	content := validOpenAPI3YAML()
+	digest := sha256.Sum256(content)
 	return fakeCache{
 		loadSpec: func(context.Context, string, time.Duration) (CachedSpec, bool, error) {
 			return CachedSpec{
 				OriginalURL: rawURL,
 				FinalURL:    rawURL,
-				Content:     validOpenAPI3YAML(),
+				Content:     content,
+				SHA256:      hex.EncodeToString(digest[:]),
+				Bytes:       int64(len(content)),
 			}, true, nil
 		},
 	}

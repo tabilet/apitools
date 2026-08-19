@@ -23,6 +23,15 @@ const (
 
 var ErrCollision = errors.New("artifact destination collision")
 
+// EnsureRoot creates a local artifact root without following symlinked path
+// components and returns its absolute path.
+func EnsureRoot(root string, mode fs.FileMode) (string, error) {
+	if mode.Perm() == 0 {
+		mode = 0o755
+	}
+	return ensureDirectory(root, mode.Perm())
+}
+
 // CollisionError reports that an existing destination differs from the
 // proposed content and replacement was not explicitly enabled.
 type CollisionError struct {

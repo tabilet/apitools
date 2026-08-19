@@ -44,23 +44,26 @@ type CatalogSpecRefreshReport struct {
 
 // CatalogSpecRefreshResult records one downloaded catalog review artifact.
 type CatalogSpecRefreshResult struct {
-	ProviderID       string               `json:"provider_id"`
-	SpecRefID        string               `json:"spec_ref_id"`
-	Kind             catalog.SpecKind     `json:"kind"`
-	Protocol         catalog.SpecProtocol `json:"protocol"`
-	ProtocolVersion  string               `json:"protocol_version,omitempty"`
-	URL              string               `json:"url"`
-	FinalURL         string               `json:"final_url,omitempty"`
-	DownloadStatus   string               `json:"download_status"`
-	ValidationStatus string               `json:"validation_status"`
-	ValidationError  string               `json:"validation_error,omitempty"`
-	ArtifactPath     string               `json:"artifact_path,omitempty"`
-	SavedPath        string               `json:"saved_path,omitempty"`
-	SHA256           string               `json:"sha256,omitempty"`
-	Bytes            int64                `json:"bytes,omitempty"`
-	Metadata         SpecMetadata         `json:"metadata,omitempty"`
-	CorrectionNotes  []string             `json:"correction_notes,omitempty"`
-	ManualFollowUps  []string             `json:"manual_follow_ups,omitempty"`
+	ProviderID                string               `json:"provider_id"`
+	SpecRefID                 string               `json:"spec_ref_id"`
+	Kind                      catalog.SpecKind     `json:"kind"`
+	Protocol                  catalog.SpecProtocol `json:"protocol"`
+	ProtocolVersion           string               `json:"protocol_version,omitempty"`
+	URL                       string               `json:"url"`
+	FinalURL                  string               `json:"final_url,omitempty"`
+	DownloadStatus            string               `json:"download_status"`
+	RawValidationStatus       string               `json:"raw_validation_status"`
+	RawValidationError        string               `json:"raw_validation_error,omitempty"`
+	RawMetadata               SpecMetadata         `json:"raw_metadata,omitempty"`
+	CorrectedValidationStatus string               `json:"corrected_validation_status,omitempty"`
+	CorrectedValidationError  string               `json:"corrected_validation_error,omitempty"`
+	CorrectedMetadata         *SpecMetadata        `json:"corrected_metadata,omitempty"`
+	ArtifactPath              string               `json:"artifact_path,omitempty"`
+	SavedPath                 string               `json:"saved_path,omitempty"`
+	SHA256                    string               `json:"sha256,omitempty"`
+	Bytes                     int64                `json:"bytes,omitempty"`
+	CorrectionNotes           []string             `json:"correction_notes,omitempty"`
+	ManualFollowUps           []string             `json:"manual_follow_ups,omitempty"`
 }
 
 // RefreshCatalogSpecReferences downloads selected catalog spec references into
@@ -89,13 +92,12 @@ func (c *Client) refreshCatalogSpecReference(ctx context.Context, ref catalog.Re
 	if err != nil {
 		return CatalogSpecRefreshResult{}, err
 	}
-	validationStatus, metadata, correctionNotes, err := validateCatalogRefreshContentWithCorrections(ctx, ref, content, finalURL.String())
-	if err != nil && !catalogRefreshStatusAllowsSave(validationStatus) {
-		return CatalogSpecRefreshResult{}, err
-	}
-	validationError := ""
-	if err != nil {
-		validationError = err.Error()
+	validation := validateCatalogRefreshEvidence(ctx, ref, content, finalURL.String())
+	if !catalogRefreshStatusAllowsSave(validation.RawStatus) && !catalogRefreshStatusAllowsSave(validation.CorrectedStatus) {
+		if validation.RawError != nil {
+			return CatalogSpecRefreshResult{}, validation.RawError
+		}
+		return CatalogSpecRefreshResult{}, fmt.Errorf("%s/%s: downloaded artifact failed validation", ref.ProviderID, ref.SpecRefID)
 	}
 	artifactPath, err := catalogRefreshArtifactPath(ref, content)
 	if err != nil {
@@ -110,31 +112,34 @@ func (c *Client) refreshCatalogSpecReference(ctx context.Context, ref catalog.Re
 		"Review the downloaded artifact before updating durable catalog metadata.",
 		"Update spec revision, verification date, and security classification manually if the refreshed artifact is accepted.",
 	}
-	if catalogRefreshStatusNeedsStrictReview(validationStatus) {
+	if catalogRefreshStatusNeedsStrictReview(validation.RawStatus) {
 		manualFollowUps = append(manualFollowUps, "Review strict validation errors before treating this artifact as import-ready metadata.")
 	}
-	if len(correctionNotes) > 0 {
+	if len(validation.CorrectionNotes) > 0 {
 		manualFollowUps = append(manualFollowUps, "Review catalog refresh correction notes before treating this artifact as import-ready metadata.")
 	}
-	protocol := catalogRefreshProtocolClassification(ref, metadata)
+	protocol := catalogRefreshProtocolClassification(ref, validation.RawMetadata)
 	return CatalogSpecRefreshResult{
-		ProviderID:       ref.ProviderID,
-		SpecRefID:        ref.SpecRefID,
-		Kind:             ref.Kind,
-		Protocol:         protocol.Protocol,
-		ProtocolVersion:  protocol.Version,
-		URL:              ref.URL,
-		FinalURL:         finalURL.String(),
-		DownloadStatus:   CatalogRefreshDownloaded,
-		ValidationStatus: validationStatus,
-		ValidationError:  validationError,
-		ArtifactPath:     artifactPath,
-		SavedPath:        savedPath,
-		SHA256:           hex.EncodeToString(digest[:]),
-		Bytes:            int64(len(content)),
-		Metadata:         metadata,
-		CorrectionNotes:  correctionNotes,
-		ManualFollowUps:  manualFollowUps,
+		ProviderID:                ref.ProviderID,
+		SpecRefID:                 ref.SpecRefID,
+		Kind:                      ref.Kind,
+		Protocol:                  protocol.Protocol,
+		ProtocolVersion:           protocol.Version,
+		URL:                       ref.URL,
+		FinalURL:                  finalURL.String(),
+		DownloadStatus:            CatalogRefreshDownloaded,
+		RawValidationStatus:       validation.RawStatus,
+		RawValidationError:        errorString(validation.RawError),
+		RawMetadata:               validation.RawMetadata,
+		CorrectedValidationStatus: validation.CorrectedStatus,
+		CorrectedValidationError:  errorString(validation.CorrectedError),
+		CorrectedMetadata:         optionalCorrectedMetadata(validation.CorrectedStatus, validation.CorrectedMetadata),
+		ArtifactPath:              artifactPath,
+		SavedPath:                 savedPath,
+		SHA256:                    hex.EncodeToString(digest[:]),
+		Bytes:                     int64(len(content)),
+		CorrectionNotes:           validation.CorrectionNotes,
+		ManualFollowUps:           manualFollowUps,
 	}, nil
 }
 
@@ -148,15 +153,45 @@ func catalogRefreshProtocolClassification(ref catalog.RefreshableSpecReference, 
 	return ref.ProtocolClassification()
 }
 
-func validateCatalogRefreshContent(ctx context.Context, ref catalog.RefreshableSpecReference, content []byte, sourceURL string) (string, SpecMetadata, error) {
-	status, metadata, _, err := validateCatalogRefreshContentWithCorrections(ctx, ref, content, sourceURL)
-	return status, metadata, err
+type catalogRefreshValidationEvidence struct {
+	RawStatus         string
+	RawMetadata       SpecMetadata
+	RawError          error
+	CorrectedStatus   string
+	CorrectedMetadata SpecMetadata
+	CorrectedError    error
+	CorrectionNotes   []string
 }
 
-func validateCatalogRefreshContentWithCorrections(ctx context.Context, ref catalog.RefreshableSpecReference, content []byte, sourceURL string) (string, SpecMetadata, []string, error) {
+func validateCatalogRefreshEvidence(ctx context.Context, ref catalog.RefreshableSpecReference, content []byte, sourceURL string) catalogRefreshValidationEvidence {
+	rawStatus, rawMetadata, rawErr := validateCatalogRefreshContentRaw(ctx, ref, content, sourceURL)
 	correctedContent, correctionNotes := correctedCatalogRefreshContent(ref, content)
-	status, metadata, err := validateCatalogRefreshContentRaw(ctx, ref, correctedContent, sourceURL)
-	return status, metadata, correctionNotes, err
+	evidence := catalogRefreshValidationEvidence{
+		RawStatus:       rawStatus,
+		RawMetadata:     rawMetadata,
+		RawError:        rawErr,
+		CorrectionNotes: correctionNotes,
+	}
+	if len(correctionNotes) == 0 {
+		return evidence
+	}
+	evidence.CorrectedStatus, evidence.CorrectedMetadata, evidence.CorrectedError = validateCatalogRefreshContentRaw(ctx, ref, correctedContent, sourceURL)
+	return evidence
+}
+
+func errorString(err error) string {
+	if err == nil {
+		return ""
+	}
+	return err.Error()
+}
+
+func optionalCorrectedMetadata(status string, metadata SpecMetadata) *SpecMetadata {
+	if strings.TrimSpace(status) == "" {
+		return nil
+	}
+	copy := metadata
+	return &copy
 }
 
 func validateCatalogRefreshContentRaw(ctx context.Context, ref catalog.RefreshableSpecReference, content []byte, sourceURL string) (string, SpecMetadata, error) {

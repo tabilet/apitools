@@ -13,14 +13,37 @@ import (
 	"time"
 
 	"github.com/OpenUdon/apitools"
+	"github.com/OpenUdon/apitools/internal/artifactio"
 	_ "modernc.org/sqlite"
 )
 
-const schemaVersion = 2
+const (
+	schemaVersion               = 3
+	DefaultMaxSearchQueries     = 1_000
+	DefaultMaxSearchResults     = 5_000
+	DefaultMaxSpecDocuments     = 1_000
+	DefaultMaxCatalogArtifacts  = 10_000
+	DefaultMaxArtifactBytes     = artifactio.DefaultMaxBytes
+	DefaultMaxSearchReportBytes = 4 * 1024 * 1024
+	DefaultMaxMetadataBytes     = 1024 * 1024
+)
+
+// Options sets hard per-table retention and per-record byte bounds. Zero
+// values use bounded defaults; cache growth cannot be made unbounded.
+type Options struct {
+	MaxSearchQueries     int
+	MaxSearchResults     int
+	MaxSpecDocuments     int
+	MaxCatalogArtifacts  int
+	MaxArtifactBytes     int64
+	MaxSearchReportBytes int64
+	MaxMetadataBytes     int64
+}
 
 type Cache struct {
 	db      *sql.DB
 	baseDir string
+	options Options
 }
 
 // CatalogArtifact records a local catalog curation artifact in the SQLite
@@ -40,12 +63,30 @@ type CatalogArtifact struct {
 }
 
 func Open(path string) (*Cache, error) {
+	return OpenWithOptions(path, Options{})
+}
+
+// OpenWithOptions opens a bounded SQLite cache with explicit retention limits.
+func OpenWithOptions(path string, options Options) (*Cache, error) {
 	path = strings.TrimSpace(path)
 	if path == "" {
 		return nil, fmt.Errorf("cache path is required")
 	}
 	if path != ":memory:" {
-		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		absolute, err := filepath.Abs(path)
+		if err != nil {
+			return nil, err
+		}
+		parent, err := artifactio.EnsureRoot(filepath.Dir(absolute), 0o755)
+		if err != nil {
+			return nil, err
+		}
+		path = filepath.Join(parent, filepath.Base(absolute))
+		if info, err := os.Lstat(path); err == nil {
+			if info.Mode()&os.ModeSymlink != 0 || !info.Mode().IsRegular() {
+				return nil, fmt.Errorf("cache path %q is not a regular file", path)
+			}
+		} else if !os.IsNotExist(err) {
 			return nil, err
 		}
 	}
@@ -53,12 +94,41 @@ func Open(path string) (*Cache, error) {
 	if err != nil {
 		return nil, err
 	}
-	cache := &Cache{db: db, baseDir: cacheBaseDir(path)}
+	cache := &Cache{db: db, baseDir: cacheBaseDir(path), options: normalizeOptions(options)}
 	if err := cache.migrate(context.Background()); err != nil {
 		_ = db.Close()
 		return nil, err
 	}
+	if _, err := cache.Prune(context.Background()); err != nil {
+		_ = db.Close()
+		return nil, err
+	}
 	return cache, nil
+}
+
+func normalizeOptions(options Options) Options {
+	if options.MaxSearchQueries <= 0 {
+		options.MaxSearchQueries = DefaultMaxSearchQueries
+	}
+	if options.MaxSearchResults <= 0 {
+		options.MaxSearchResults = DefaultMaxSearchResults
+	}
+	if options.MaxSpecDocuments <= 0 {
+		options.MaxSpecDocuments = DefaultMaxSpecDocuments
+	}
+	if options.MaxCatalogArtifacts <= 0 {
+		options.MaxCatalogArtifacts = DefaultMaxCatalogArtifacts
+	}
+	if options.MaxArtifactBytes <= 0 {
+		options.MaxArtifactBytes = DefaultMaxArtifactBytes
+	}
+	if options.MaxSearchReportBytes <= 0 {
+		options.MaxSearchReportBytes = DefaultMaxSearchReportBytes
+	}
+	if options.MaxMetadataBytes <= 0 {
+		options.MaxMetadataBytes = DefaultMaxMetadataBytes
+	}
+	return options
 }
 
 func (c *Cache) Close() error {
@@ -84,8 +154,14 @@ func (c *Cache) LoadSearch(ctx context.Context, key apitools.SearchCacheKey, max
 	if expired(updatedAt, maxAge) {
 		return apitools.SearchReport{}, false, nil
 	}
+	if int64(len(reportJSON)) > c.options.MaxSearchReportBytes {
+		return apitools.SearchReport{}, false, fmt.Errorf("cached search report is %d bytes, over limit %d", len(reportJSON), c.options.MaxSearchReportBytes)
+	}
 	var report apitools.SearchReport
 	if err := json.Unmarshal(reportJSON, &report); err != nil {
+		return apitools.SearchReport{}, false, err
+	}
+	if err := c.touchSearch(ctx, searchKeyHash(key), report); err != nil {
 		return apitools.SearchReport{}, false, err
 	}
 	return report, true, nil
@@ -95,7 +171,18 @@ func (c *Cache) StoreSearch(ctx context.Context, key apitools.SearchCacheKey, re
 	if c == nil || c.db == nil {
 		return fmt.Errorf("cache is closed")
 	}
+	reportJSON, err := json.Marshal(report)
+	if err != nil {
+		return err
+	}
+	if int64(len(reportJSON)) > c.options.MaxSearchReportBytes {
+		return fmt.Errorf("search cache report is %d bytes, over limit %d", len(reportJSON), c.options.MaxSearchReportBytes)
+	}
+	if err := validateRecordBudget("search cache key", c.options.MaxMetadataBytes, key.Query, string(key.Source), key.ProviderURL); err != nil {
+		return err
+	}
 	now := time.Now().UTC().Unix()
+	accessed := time.Now().UTC().UnixNano()
 	tx, err := c.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -115,8 +202,8 @@ func (c *Cache) StoreSearch(ctx context.Context, key apitools.SearchCacheKey, re
 		if _, err := tx.ExecContext(ctx, `
 INSERT INTO search_results (
   id, source, provider, title, description, version, categories_json, spec_url,
-  landing_url, score, validated, provenance, first_seen_at, last_seen_at
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  landing_url, score, validated, provenance, first_seen_at, last_seen_at, accessed_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT(id) DO UPDATE SET
   source = excluded.source,
   provider = excluded.provider,
@@ -129,10 +216,11 @@ ON CONFLICT(id) DO UPDATE SET
   score = excluded.score,
   validated = excluded.validated,
   provenance = excluded.provenance,
-  last_seen_at = excluded.last_seen_at`,
+  last_seen_at = excluded.last_seen_at,
+  accessed_at = excluded.accessed_at`,
 			result.ID, result.Source, result.Provider, result.Title, result.Description,
 			result.Version, string(categories), result.SpecURL, result.LandingURL, result.Score,
-			boolInt(result.Validated), result.Provenance, now, now); err != nil {
+			boolInt(result.Validated), result.Provenance, now, now, accessed); err != nil {
 			return err
 		}
 		resultIDs = append(resultIDs, result.ID)
@@ -141,15 +229,11 @@ ON CONFLICT(id) DO UPDATE SET
 	if err != nil {
 		return err
 	}
-	reportJSON, err := json.Marshal(report)
-	if err != nil {
-		return err
-	}
 	if _, err := tx.ExecContext(ctx, `
 INSERT INTO search_queries (
   key_hash, query, source, limit_value, public_probe, result_ids_json,
-  report_json, first_seen_at, updated_at
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  report_json, first_seen_at, updated_at, accessed_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT(key_hash) DO UPDATE SET
   query = excluded.query,
   source = excluded.source,
@@ -157,9 +241,13 @@ ON CONFLICT(key_hash) DO UPDATE SET
   public_probe = excluded.public_probe,
   result_ids_json = excluded.result_ids_json,
   report_json = excluded.report_json,
-  updated_at = excluded.updated_at`,
+  updated_at = excluded.updated_at,
+  accessed_at = excluded.accessed_at`,
 		searchKeyHash(key), key.Query, string(key.Source), key.Limit, key.PublicProbe,
-		string(resultIDsJSON), reportJSON, now, now); err != nil {
+		string(resultIDsJSON), reportJSON, now, now, accessed); err != nil {
+		return err
+	}
+	if _, err := c.pruneTx(ctx, tx); err != nil {
 		return err
 	}
 	if err := tx.Commit(); err != nil {
@@ -191,29 +279,45 @@ WHERE url = ?`, strings.TrimSpace(rawURL)).Scan(&spec.OriginalURL, &spec.FinalUR
 	if expired(updatedAt, maxAge) {
 		return apitools.CachedSpec{}, false, nil
 	}
+	if int64(len(metadataJSON)) > c.options.MaxMetadataBytes {
+		return apitools.CachedSpec{}, false, fmt.Errorf("%w: cached spec metadata is %d bytes, over limit %d", apitools.ErrCachedSpecIntegrity, len(metadataJSON), c.options.MaxMetadataBytes)
+	}
+	if err := validateRecordBudget("cached spec", c.options.MaxMetadataBytes, spec.OriginalURL, spec.FinalURL, spec.SHA256, contentPath.String); err != nil {
+		return apitools.CachedSpec{}, false, fmt.Errorf("%w: %v", apitools.ErrCachedSpecIntegrity, err)
+	}
 	if err := json.Unmarshal(metadataJSON, &spec.Metadata); err != nil {
 		return apitools.CachedSpec{}, false, err
 	}
 	if contentPath.Valid && strings.TrimSpace(contentPath.String) != "" {
-		spec.ContentPath = filepath.ToSlash(filepath.Clean(contentPath.String))
-		resolved, err := c.resolveArtifactPath(spec.ContentPath)
+		spec.ContentPath, err = cleanLocalPath(contentPath.String, "cached spec content")
 		if err != nil {
 			return apitools.CachedSpec{}, false, err
 		}
-		content, err = os.ReadFile(resolved)
+		file, err := c.readArtifact(spec.ContentPath, spec.SHA256, spec.Bytes)
 		if err != nil {
 			return apitools.CachedSpec{}, false, fmt.Errorf("%w: read cached spec file %q: %v", apitools.ErrCachedSpecIntegrity, spec.ContentPath, err)
 		}
+		content = file.Data
 	}
 	if len(content) == 0 {
 		return apitools.CachedSpec{}, false, fmt.Errorf("%w: cached spec %q has no content or content path", apitools.ErrCachedSpecIntegrity, strings.TrimSpace(rawURL))
 	}
+	if int64(len(content)) > c.options.MaxArtifactBytes {
+		return apitools.CachedSpec{}, false, fmt.Errorf("%w: cached spec %q is over byte limit %d", apitools.ErrCachedSpecIntegrity, strings.TrimSpace(rawURL), c.options.MaxArtifactBytes)
+	}
 	spec.Content = append([]byte(nil), content...)
-	if spec.SHA256 != "" {
-		digest := sha256.Sum256(spec.Content)
-		if got := hex.EncodeToString(digest[:]); got != spec.SHA256 {
-			return apitools.CachedSpec{}, false, fmt.Errorf("%w: cached spec SHA256 mismatch for %q", apitools.ErrCachedSpecIntegrity, strings.TrimSpace(rawURL))
-		}
+	if !validSHA256(spec.SHA256) {
+		return apitools.CachedSpec{}, false, fmt.Errorf("%w: cached spec %q has missing or invalid SHA256", apitools.ErrCachedSpecIntegrity, strings.TrimSpace(rawURL))
+	}
+	digest := sha256.Sum256(spec.Content)
+	if got := hex.EncodeToString(digest[:]); got != strings.ToLower(spec.SHA256) {
+		return apitools.CachedSpec{}, false, fmt.Errorf("%w: cached spec SHA256 mismatch for %q", apitools.ErrCachedSpecIntegrity, strings.TrimSpace(rawURL))
+	}
+	if spec.Bytes <= 0 || spec.Bytes != int64(len(spec.Content)) {
+		return apitools.CachedSpec{}, false, fmt.Errorf("%w: cached spec byte count mismatch for %q", apitools.ErrCachedSpecIntegrity, strings.TrimSpace(rawURL))
+	}
+	if _, err := c.db.ExecContext(ctx, `UPDATE spec_documents SET accessed_at = ? WHERE url = ?`, time.Now().UTC().UnixNano(), strings.TrimSpace(rawURL)); err != nil {
+		return apitools.CachedSpec{}, false, err
 	}
 	spec.StoredAt = time.Unix(updatedAt, 0).UTC()
 	return spec, true, nil
@@ -234,34 +338,58 @@ func (c *Cache) StoreSpec(ctx context.Context, spec apitools.CachedSpec) error {
 	if originalURL == "" {
 		return fmt.Errorf("spec URL is required")
 	}
-	contentPath := filepath.ToSlash(filepath.Clean(strings.TrimSpace(spec.ContentPath)))
-	if contentPath == "." {
-		contentPath = ""
-	}
-	content := append([]byte(nil), spec.Content...)
-	if len(content) == 0 && contentPath != "" {
-		resolved, err := c.resolveArtifactPath(contentPath)
+	contentPath := ""
+	if strings.TrimSpace(spec.ContentPath) != "" {
+		var err error
+		contentPath, err = cleanLocalPath(spec.ContentPath, "cached spec content")
 		if err != nil {
 			return err
 		}
-		content, err = os.ReadFile(resolved)
+	}
+	content := append([]byte(nil), spec.Content...)
+	if contentPath != "" {
+		file, err := c.readArtifact(contentPath, "", 0)
 		if err != nil {
 			return fmt.Errorf("read cached spec file %q: %w", contentPath, err)
 		}
+		if len(content) > 0 {
+			provided := sha256.Sum256(content)
+			if hex.EncodeToString(provided[:]) != file.SHA256 {
+				return fmt.Errorf("cached spec inline content differs from content path %q", contentPath)
+			}
+		}
+		content = file.Data
 	}
 	if len(content) == 0 {
 		return fmt.Errorf("spec content or content path is required")
 	}
-	digest := sha256.Sum256(content)
-	spec.SHA256 = hex.EncodeToString(digest[:])
-	if spec.Bytes == 0 {
-		spec.Bytes = int64(len(content))
+	if int64(len(content)) > c.options.MaxArtifactBytes {
+		return fmt.Errorf("spec content is %d bytes, over limit %d", len(content), c.options.MaxArtifactBytes)
 	}
+	digest := sha256.Sum256(content)
+	actualDigest := hex.EncodeToString(digest[:])
+	if strings.TrimSpace(spec.SHA256) != "" {
+		if !validSHA256(spec.SHA256) || strings.ToLower(spec.SHA256) != actualDigest {
+			return fmt.Errorf("spec SHA256 does not match content")
+		}
+	}
+	spec.SHA256 = actualDigest
+	if spec.Bytes != 0 && spec.Bytes != int64(len(content)) {
+		return fmt.Errorf("spec byte count is %d, want %d", spec.Bytes, len(content))
+	}
+	spec.Bytes = int64(len(content))
 	metadataJSON, err := json.Marshal(spec.Metadata)
 	if err != nil {
 		return err
 	}
+	if int64(len(metadataJSON)) > c.options.MaxMetadataBytes {
+		return fmt.Errorf("spec metadata is %d bytes, over limit %d", len(metadataJSON), c.options.MaxMetadataBytes)
+	}
+	if err := validateRecordBudget("cached spec", c.options.MaxMetadataBytes, originalURL, finalURL, spec.SHA256, contentPath); err != nil {
+		return err
+	}
 	now := time.Now().UTC().Unix()
+	accessed := time.Now().UTC().UnixNano()
 	tx, err := c.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -275,8 +403,8 @@ func (c *Cache) StoreSpec(ctx context.Context, spec apitools.CachedSpec) error {
 	for _, urlValue := range uniqueStrings(originalURL, finalURL) {
 		if _, err := tx.ExecContext(ctx, `
 INSERT INTO spec_documents (
-  url, original_url, final_url, sha256, bytes, metadata_json, content_path, content, first_seen_at, updated_at
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  url, original_url, final_url, sha256, bytes, metadata_json, content_path, content, first_seen_at, updated_at, accessed_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT(url) DO UPDATE SET
   original_url = excluded.original_url,
   final_url = excluded.final_url,
@@ -285,10 +413,14 @@ ON CONFLICT(url) DO UPDATE SET
   metadata_json = excluded.metadata_json,
   content_path = excluded.content_path,
   content = excluded.content,
-  updated_at = excluded.updated_at`,
-			urlValue, originalURL, finalURL, spec.SHA256, spec.Bytes, string(metadataJSON), nullableString(contentPath), nullableContent(contentPath, content), now, now); err != nil {
+	updated_at = excluded.updated_at,
+	accessed_at = excluded.accessed_at`,
+			urlValue, originalURL, finalURL, spec.SHA256, spec.Bytes, string(metadataJSON), nullableString(contentPath), nullableContent(contentPath, content), now, now, accessed); err != nil {
 			return err
 		}
+	}
+	if _, err := c.pruneTx(ctx, tx); err != nil {
+		return err
 	}
 	if err := tx.Commit(); err != nil {
 		return err
@@ -306,10 +438,7 @@ func (c *Cache) StoreCatalogArtifact(ctx context.Context, artifact CatalogArtifa
 	providerID := strings.TrimSpace(artifact.ProviderID)
 	artifactID := strings.TrimSpace(artifact.ArtifactID)
 	kind := strings.TrimSpace(artifact.Kind)
-	path := filepath.ToSlash(filepath.Clean(strings.TrimSpace(artifact.Path)))
-	if path == "." {
-		path = ""
-	}
+	path, pathErr := cleanLocalPath(artifact.Path, "catalog artifact")
 	if providerID == "" {
 		return fmt.Errorf("provider id is required")
 	}
@@ -319,28 +448,54 @@ func (c *Cache) StoreCatalogArtifact(ctx context.Context, artifact CatalogArtifa
 	if kind == "" {
 		return fmt.Errorf("artifact kind is required")
 	}
-	if path == "" {
-		return fmt.Errorf("artifact path is required")
+	if pathErr != nil {
+		return pathErr
 	}
-	resolved, err := c.resolveArtifactPath(path)
+	file, err := c.readArtifact(path, "", 0)
 	if err != nil {
 		return err
 	}
-	content, err := os.ReadFile(resolved)
-	if err != nil {
-		return fmt.Errorf("read catalog artifact %q: %w", path, err)
+	if strings.TrimSpace(artifact.SHA256) != "" && (!validSHA256(artifact.SHA256) || strings.ToLower(artifact.SHA256) != file.SHA256) {
+		return fmt.Errorf("catalog artifact SHA256 does not match %q", path)
 	}
-	digest := sha256.Sum256(content)
+	if artifact.Bytes != 0 && artifact.Bytes != file.Bytes {
+		return fmt.Errorf("catalog artifact byte count is %d, want %d", artifact.Bytes, file.Bytes)
+	}
+	overlayPath, err := cleanOptionalLocalPath(artifact.OverlayPath, "catalog overlay")
+	if err != nil {
+		return err
+	}
+	builderPath, err := cleanOptionalLocalPath(artifact.BuilderPath, "catalog builder")
+	if err != nil {
+		return err
+	}
 	metadataJSON, err := json.Marshal(artifact.Metadata)
 	if err != nil {
 		return err
 	}
+	if int64(len(metadataJSON)) > c.options.MaxMetadataBytes {
+		return fmt.Errorf("catalog artifact metadata is %d bytes, over limit %d", len(metadataJSON), c.options.MaxMetadataBytes)
+	}
+	if err := validateRecordBudget("catalog artifact", c.options.MaxMetadataBytes, providerID, artifactID, kind, path, artifact.SourceURL, overlayPath, builderPath, file.SHA256); err != nil {
+		return err
+	}
 	now := time.Now().UTC().Unix()
-	_, err = c.db.ExecContext(ctx, `
+	accessed := time.Now().UTC().UnixNano()
+	tx, err := c.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	committed := false
+	defer func() {
+		if !committed {
+			_ = tx.Rollback()
+		}
+	}()
+	_, err = tx.ExecContext(ctx, `
 INSERT INTO catalog_artifacts (
   provider_id, artifact_id, kind, path, source_url, overlay_path, builder_path,
-  sha256, bytes, metadata_json, first_seen_at, updated_at
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  sha256, bytes, metadata_json, first_seen_at, updated_at, accessed_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT(provider_id, artifact_id) DO UPDATE SET
   kind = excluded.kind,
   path = excluded.path,
@@ -350,21 +505,33 @@ ON CONFLICT(provider_id, artifact_id) DO UPDATE SET
   sha256 = excluded.sha256,
   bytes = excluded.bytes,
   metadata_json = excluded.metadata_json,
-  updated_at = excluded.updated_at`,
+	updated_at = excluded.updated_at,
+	accessed_at = excluded.accessed_at`,
 		providerID,
 		artifactID,
 		kind,
 		path,
 		strings.TrimSpace(artifact.SourceURL),
-		cleanOptionalPath(artifact.OverlayPath),
-		cleanOptionalPath(artifact.BuilderPath),
-		hex.EncodeToString(digest[:]),
-		int64(len(content)),
+		overlayPath,
+		builderPath,
+		file.SHA256,
+		file.Bytes,
 		string(metadataJSON),
 		now,
 		now,
+		accessed,
 	)
-	return err
+	if err != nil {
+		return err
+	}
+	if _, err := c.pruneTx(ctx, tx); err != nil {
+		return err
+	}
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	committed = true
+	return nil
 }
 
 // ListCatalogArtifacts returns local catalog artifact path records in
@@ -403,15 +570,46 @@ ORDER BY provider_id, artifact_id`)
 			return nil, err
 		}
 		if len(metadataJSON) > 0 {
+			if int64(len(metadataJSON)) > c.options.MaxMetadataBytes {
+				return nil, fmt.Errorf("catalog artifact %s/%s metadata is %d bytes, over limit %d", artifact.ProviderID, artifact.ArtifactID, len(metadataJSON), c.options.MaxMetadataBytes)
+			}
 			if err := json.Unmarshal(metadataJSON, &artifact.Metadata); err != nil {
 				return nil, err
 			}
+		}
+		if err := validateRecordBudget("catalog artifact", c.options.MaxMetadataBytes, artifact.ProviderID, artifact.ArtifactID, artifact.Kind, artifact.Path, artifact.SourceURL, artifact.OverlayPath, artifact.BuilderPath, artifact.SHA256); err != nil {
+			return nil, err
+		}
+		cleanedPath, err := cleanLocalPath(artifact.Path, "catalog artifact")
+		if err != nil {
+			return nil, err
+		}
+		artifact.Path = cleanedPath
+		artifact.OverlayPath, err = cleanOptionalLocalPath(artifact.OverlayPath, "catalog overlay")
+		if err != nil {
+			return nil, err
+		}
+		artifact.BuilderPath, err = cleanOptionalLocalPath(artifact.BuilderPath, "catalog builder")
+		if err != nil {
+			return nil, err
+		}
+		if !validSHA256(artifact.SHA256) || artifact.Bytes <= 0 {
+			return nil, fmt.Errorf("catalog artifact %s/%s has invalid integrity metadata", artifact.ProviderID, artifact.ArtifactID)
 		}
 		artifact.StoredAt = time.Unix(updatedAt, 0).UTC()
 		out = append(out, artifact)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	now := time.Now().UTC().UnixNano()
+	for _, artifact := range out {
+		if _, err := c.db.ExecContext(ctx, `UPDATE catalog_artifacts SET accessed_at = ? WHERE provider_id = ? AND artifact_id = ?`, now, artifact.ProviderID, artifact.ArtifactID); err != nil {
+			return nil, err
+		}
 	}
 	return out, nil
 }
@@ -437,7 +635,8 @@ func (c *Cache) migrate(ctx context.Context) error {
 			validated INTEGER NOT NULL,
 			provenance TEXT,
 			first_seen_at INTEGER NOT NULL,
-			last_seen_at INTEGER NOT NULL
+			last_seen_at INTEGER NOT NULL,
+			accessed_at INTEGER NOT NULL DEFAULT 0
 		)`,
 		`CREATE TABLE IF NOT EXISTS search_queries (
 			key_hash TEXT PRIMARY KEY,
@@ -448,7 +647,8 @@ func (c *Cache) migrate(ctx context.Context) error {
 			result_ids_json TEXT NOT NULL,
 			report_json BLOB NOT NULL,
 			first_seen_at INTEGER NOT NULL,
-			updated_at INTEGER NOT NULL
+			updated_at INTEGER NOT NULL,
+			accessed_at INTEGER NOT NULL DEFAULT 0
 		)`,
 		createSpecDocumentsSQL,
 		createCatalogArtifactsSQL,
@@ -461,10 +661,17 @@ func (c *Cache) migrate(ctx context.Context) error {
 	if err := c.migrateSpecDocuments(ctx); err != nil {
 		return err
 	}
+	if err := c.ensureAccessColumns(ctx); err != nil {
+		return err
+	}
 	for _, stmt := range []string{
 		`CREATE INDEX IF NOT EXISTS idx_search_results_spec_url ON search_results(spec_url)`,
 		`CREATE INDEX IF NOT EXISTS idx_spec_documents_sha256 ON spec_documents(sha256)`,
 		`CREATE INDEX IF NOT EXISTS idx_catalog_artifacts_kind ON catalog_artifacts(kind)`,
+		`CREATE INDEX IF NOT EXISTS idx_search_queries_accessed_at ON search_queries(accessed_at)`,
+		`CREATE INDEX IF NOT EXISTS idx_search_results_accessed_at ON search_results(accessed_at)`,
+		`CREATE INDEX IF NOT EXISTS idx_spec_documents_accessed_at ON spec_documents(accessed_at)`,
+		`CREATE INDEX IF NOT EXISTS idx_catalog_artifacts_accessed_at ON catalog_artifacts(accessed_at)`,
 	} {
 		if _, err := c.db.ExecContext(ctx, stmt); err != nil {
 			return err
@@ -503,6 +710,7 @@ const createSpecDocumentsSQL = `CREATE TABLE IF NOT EXISTS spec_documents (
 	content BLOB,
 	first_seen_at INTEGER NOT NULL,
 	updated_at INTEGER NOT NULL,
+	accessed_at INTEGER NOT NULL DEFAULT 0,
 	CHECK ((content_path IS NOT NULL AND content_path <> '') OR content IS NOT NULL)
 )`
 
@@ -519,6 +727,7 @@ const createCatalogArtifactsSQL = `CREATE TABLE IF NOT EXISTS catalog_artifacts 
 	metadata_json TEXT NOT NULL,
 	first_seen_at INTEGER NOT NULL,
 	updated_at INTEGER NOT NULL,
+	accessed_at INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY(provider_id, artifact_id)
 )`
 
@@ -603,6 +812,117 @@ func (c *Cache) tableColumns(ctx context.Context, table string) (map[string]sqli
 	return columns, nil
 }
 
+func (c *Cache) ensureAccessColumns(ctx context.Context) error {
+	for _, migration := range []struct {
+		table  string
+		source string
+	}{
+		{table: "search_results", source: "last_seen_at"},
+		{table: "search_queries", source: "updated_at"},
+		{table: "spec_documents", source: "updated_at"},
+		{table: "catalog_artifacts", source: "updated_at"},
+	} {
+		columns, err := c.tableColumns(ctx, migration.table)
+		if err != nil {
+			return err
+		}
+		if _, ok := columns["accessed_at"]; !ok {
+			if _, err := c.db.ExecContext(ctx, `ALTER TABLE `+migration.table+` ADD COLUMN accessed_at INTEGER NOT NULL DEFAULT 0`); err != nil {
+				return err
+			}
+		}
+		if _, err := c.db.ExecContext(ctx, `UPDATE `+migration.table+` SET accessed_at = `+migration.source+` WHERE accessed_at = 0`); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// PruneReport records bounded least-recently-used cache eviction.
+type PruneReport struct {
+	SearchQueries    int64 `json:"search_queries"`
+	SearchResults    int64 `json:"search_results"`
+	SpecDocuments    int64 `json:"spec_documents"`
+	CatalogArtifacts int64 `json:"catalog_artifacts"`
+}
+
+// Prune applies configured LRU limits in one transaction.
+func (c *Cache) Prune(ctx context.Context) (PruneReport, error) {
+	if c == nil || c.db == nil {
+		return PruneReport{}, fmt.Errorf("cache is closed")
+	}
+	tx, err := c.db.BeginTx(ctx, nil)
+	if err != nil {
+		return PruneReport{}, err
+	}
+	committed := false
+	defer func() {
+		if !committed {
+			_ = tx.Rollback()
+		}
+	}()
+	report, err := c.pruneTx(ctx, tx)
+	if err != nil {
+		return PruneReport{}, err
+	}
+	if err := tx.Commit(); err != nil {
+		return PruneReport{}, err
+	}
+	committed = true
+	return report, nil
+}
+
+func (c *Cache) pruneTx(ctx context.Context, tx *sql.Tx) (PruneReport, error) {
+	var report PruneReport
+	for _, target := range []struct {
+		limit   int
+		query   string
+		removed *int64
+	}{
+		{limit: c.options.MaxSearchQueries, query: `DELETE FROM search_queries WHERE rowid IN (SELECT rowid FROM search_queries ORDER BY accessed_at DESC, key_hash DESC LIMIT -1 OFFSET ?)`, removed: &report.SearchQueries},
+		{limit: c.options.MaxSearchResults, query: `DELETE FROM search_results WHERE rowid IN (SELECT rowid FROM search_results ORDER BY accessed_at DESC, id DESC LIMIT -1 OFFSET ?)`, removed: &report.SearchResults},
+		{limit: c.options.MaxSpecDocuments, query: `DELETE FROM spec_documents WHERE rowid IN (SELECT rowid FROM spec_documents ORDER BY accessed_at DESC, url DESC LIMIT -1 OFFSET ?)`, removed: &report.SpecDocuments},
+		{limit: c.options.MaxCatalogArtifacts, query: `DELETE FROM catalog_artifacts WHERE rowid IN (SELECT rowid FROM catalog_artifacts ORDER BY accessed_at DESC, provider_id DESC, artifact_id DESC LIMIT -1 OFFSET ?)`, removed: &report.CatalogArtifacts},
+	} {
+		result, err := tx.ExecContext(ctx, target.query, target.limit)
+		if err != nil {
+			return PruneReport{}, err
+		}
+		*target.removed, err = result.RowsAffected()
+		if err != nil {
+			return PruneReport{}, err
+		}
+	}
+	return report, nil
+}
+
+func (c *Cache) touchSearch(ctx context.Context, keyHash string, report apitools.SearchReport) error {
+	now := time.Now().UTC().UnixNano()
+	tx, err := c.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	committed := false
+	defer func() {
+		if !committed {
+			_ = tx.Rollback()
+		}
+	}()
+	if _, err := tx.ExecContext(ctx, `UPDATE search_queries SET accessed_at = ? WHERE key_hash = ?`, now, keyHash); err != nil {
+		return err
+	}
+	for _, result := range report.Results {
+		if _, err := tx.ExecContext(ctx, `UPDATE search_results SET accessed_at = ? WHERE id = ?`, now, result.ID); err != nil {
+			return err
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	committed = true
+	return nil
+}
+
 func cacheBaseDir(path string) string {
 	if path == ":memory:" {
 		return ""
@@ -610,21 +930,19 @@ func cacheBaseDir(path string) string {
 	return filepath.Dir(path)
 }
 
-func (c *Cache) resolveArtifactPath(path string) (string, error) {
-	cleaned := filepath.Clean(filepath.FromSlash(strings.TrimSpace(path)))
-	if cleaned == "." || cleaned == "" {
-		return "", fmt.Errorf("artifact path is required")
+func (c *Cache) readArtifact(path, sha256Value string, bytes int64) (artifactio.File, error) {
+	if c.baseDir == "" {
+		return artifactio.File{}, fmt.Errorf("path-backed artifacts require a file-backed cache")
 	}
-	if filepath.IsAbs(cleaned) {
-		return cleaned, nil
+	cleaned, err := cleanLocalPath(path, "artifact")
+	if err != nil {
+		return artifactio.File{}, err
 	}
-	if c.baseDir != "" {
-		basePath := filepath.Join(c.baseDir, cleaned)
-		if _, err := os.Stat(basePath); err == nil || !errorsIsNotExist(err) {
-			return basePath, err
-		}
-	}
-	return cleaned, nil
+	return artifactio.ReadFile(c.baseDir, cleaned, artifactio.ReadOptions{
+		MaxBytes: c.options.MaxArtifactBytes,
+		SHA256:   sha256Value,
+		Bytes:    bytes,
+	})
 }
 
 func nullableString(value string) sql.NullString {
@@ -639,16 +957,35 @@ func nullableContent(contentPath string, content []byte) []byte {
 	return content
 }
 
-func cleanOptionalPath(path string) string {
-	cleaned := filepath.ToSlash(filepath.Clean(strings.TrimSpace(path)))
-	if cleaned == "." {
-		return ""
+func cleanLocalPath(path, label string) (string, error) {
+	cleaned := filepath.Clean(filepath.FromSlash(strings.TrimSpace(path)))
+	if cleaned == "." || !filepath.IsLocal(cleaned) {
+		return "", fmt.Errorf("%s path %q must be a local relative path", label, path)
 	}
-	return cleaned
+	return filepath.ToSlash(cleaned), nil
 }
 
-func errorsIsNotExist(err error) bool {
-	return err != nil && os.IsNotExist(err)
+func cleanOptionalLocalPath(path, label string) (string, error) {
+	if strings.TrimSpace(path) == "" {
+		return "", nil
+	}
+	return cleanLocalPath(path, label)
+}
+
+func validSHA256(value string) bool {
+	decoded, err := hex.DecodeString(strings.TrimSpace(value))
+	return err == nil && len(decoded) == sha256.Size
+}
+
+func validateRecordBudget(label string, limit int64, values ...string) error {
+	var total int64
+	for _, value := range values {
+		total += int64(len(value))
+		if total > limit {
+			return fmt.Errorf("%s metadata is %d bytes, over limit %d", label, total, limit)
+		}
+	}
+	return nil
 }
 
 func expired(updatedAt int64, maxAge time.Duration) bool {

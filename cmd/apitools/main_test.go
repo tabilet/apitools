@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -498,25 +500,27 @@ func TestCatalogRefreshCommandRegistersSelectedSpec(t *testing.T) {
 		if err := os.MkdirAll(filepath.Dir(fullPath), 0o755); err != nil {
 			return apitools.CatalogSpecRefreshReport{}, err
 		}
-		if err := os.WriteFile(fullPath, []byte(`{"openapi":"3.0.0","info":{"title":"Slack","version":"1.0.0"},"paths":{}}`), 0o644); err != nil {
+		content := []byte(`{"openapi":"3.0.0","info":{"title":"Slack","version":"1.0.0"},"paths":{}}`)
+		if err := os.WriteFile(fullPath, content, 0o644); err != nil {
 			return apitools.CatalogSpecRefreshReport{}, err
 		}
+		digest := sha256.Sum256(content)
 		return apitools.CatalogSpecRefreshReport{Results: []apitools.CatalogSpecRefreshResult{{
-			ProviderID:       rows[0].ProviderID,
-			SpecRefID:        rows[0].SpecRefID,
-			Kind:             rows[0].Kind,
-			Protocol:         catalog.SpecProtocolSwagger,
-			ProtocolVersion:  "2.0",
-			URL:              rows[0].URL,
-			FinalURL:         rows[0].URL,
-			DownloadStatus:   apitools.CatalogRefreshDownloaded,
-			ValidationStatus: apitools.CatalogRefreshValidSwagger,
-			ArtifactPath:     artifactPath,
-			SavedPath:        fullPath,
-			SHA256:           "abc",
-			Bytes:            72,
-			Metadata:         apitools.SpecMetadata{Title: "Slack", OpenAPI: "3.0.0"},
-			ManualFollowUps:  []string{"review manually"},
+			ProviderID:          rows[0].ProviderID,
+			SpecRefID:           rows[0].SpecRefID,
+			Kind:                rows[0].Kind,
+			Protocol:            catalog.SpecProtocolSwagger,
+			ProtocolVersion:     "2.0",
+			URL:                 rows[0].URL,
+			FinalURL:            rows[0].URL,
+			DownloadStatus:      apitools.CatalogRefreshDownloaded,
+			RawValidationStatus: apitools.CatalogRefreshValidSwagger,
+			ArtifactPath:        artifactPath,
+			SavedPath:           fullPath,
+			SHA256:              hex.EncodeToString(digest[:]),
+			Bytes:               int64(len(content)),
+			RawMetadata:         apitools.SpecMetadata{Title: "Slack", OpenAPI: "3.0.0"},
+			ManualFollowUps:     []string{"review manually"},
 		}}}, nil
 	}
 	var out bytes.Buffer
@@ -579,6 +583,31 @@ func TestCatalogRefreshCommandRegistersSelectedSpec(t *testing.T) {
 	}
 	if artifacts[0].Path != "openapi/registered-slack.json" {
 		t.Fatalf("artifact path = %q", artifacts[0].Path)
+	}
+}
+
+func TestRefreshContentPathForCacheHandlesRelativeCacheAndAbsoluteSavedPath(t *testing.T) {
+	dir := t.TempDir()
+	cachePath := filepath.Join(dir, "catalog-openapi-cache", "cache.sqlite")
+	savedPath := filepath.Join(dir, "catalog-openapi-cache", "openapi", "demo.yaml")
+	workingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	relativeCachePath, err := filepath.Rel(workingDir, cachePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := refreshContentPathForCache(relativeCachePath, "unused", apitools.CatalogSpecRefreshResult{SavedPath: savedPath})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != "openapi/demo.yaml" {
+		t.Fatalf("content path = %q, want openapi/demo.yaml", got)
+	}
+	outside := filepath.Join(dir, "outside.yaml")
+	if _, err := refreshContentPathForCache(relativeCachePath, "unused", apitools.CatalogSpecRefreshResult{SavedPath: outside}); err == nil {
+		t.Fatal("outside saved path was accepted")
 	}
 }
 
@@ -660,7 +689,7 @@ func TestCatalogRefreshReportOutputAndJSON(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
-	for _, expected := range []string{`"provider_id": "slack"`, `"spec_ref_id": "slack-web-openapi-v2"`, `"protocol": "openapi"`, `"protocol_version": "3.0.0"`, `"validation_status": "valid-openapi"`} {
+	for _, expected := range []string{`"provider_id": "slack"`, `"spec_ref_id": "slack-web-openapi-v2"`, `"protocol": "openapi"`, `"protocol_version": "3.0.0"`, `"status": "available"`, `"raw_validation_status": "valid-openapi"`} {
 		if !strings.Contains(out.String(), expected) {
 			t.Fatalf("refresh report json missing %q:\n%s", expected, out.String())
 		}

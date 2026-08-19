@@ -5,8 +5,10 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
+	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -293,33 +295,40 @@ INSERT INTO spec_documents (
 	if columns["content"].notNull {
 		t.Fatalf("content column is still NOT NULL after migration")
 	}
+	for _, table := range []string{"search_results", "search_queries", "spec_documents", "catalog_artifacts"} {
+		columns, err := cache.tableColumns(context.Background(), table)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := columns["accessed_at"]; !ok {
+			t.Fatalf("%s accessed_at column missing after migration", table)
+		}
+	}
+	var version int
+	if err := cache.db.QueryRowContext(context.Background(), `SELECT version FROM schema_meta`).Scan(&version); err != nil {
+		t.Fatal(err)
+	}
+	if version != schemaVersion {
+		t.Fatalf("schema version = %d, want %d", version, schemaVersion)
+	}
 }
 
-func TestStoreSpecRecomputesSHA256(t *testing.T) {
+func TestStoreSpecRejectsCallerSHA256Mismatch(t *testing.T) {
 	cache, err := Open(":memory:")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cache.Close()
 	rawURL := "https://example.com/openapi.yaml"
-	if err := cache.StoreSpec(context.Background(), apitools.CachedSpec{
+	err = cache.StoreSpec(context.Background(), apitools.CachedSpec{
 		OriginalURL: rawURL,
 		FinalURL:    rawURL,
 		Content:     []byte("openapi: 3.0.0\ninfo:\n  title: Mail\n  version: 1.0.0\npaths: {}\n"),
 		SHA256:      "not-the-real-digest",
 		Metadata:    apitools.SpecMetadata{Title: "Mail", OpenAPI: "3.0.0"},
-	}); err != nil {
-		t.Fatal(err)
-	}
-	got, ok, err := cache.LoadSpec(context.Background(), rawURL, time.Hour)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !ok {
-		t.Fatalf("expected cached spec")
-	}
-	if got.SHA256 == "not-the-real-digest" {
-		t.Fatalf("StoreSpec preserved caller-supplied bad digest")
+	})
+	if err == nil {
+		t.Fatal("expected caller digest mismatch")
 	}
 }
 
@@ -347,6 +356,306 @@ func TestSpecLoadRejectsCorruptStoredSHA256(t *testing.T) {
 	}
 	if ok {
 		t.Fatalf("expected cache miss on SHA256 mismatch")
+	}
+}
+
+func TestSpecLoadRejectsMissingDigestAndByteMismatch(t *testing.T) {
+	for _, test := range []struct {
+		name   string
+		column string
+		value  any
+	}{
+		{name: "missing digest", column: "sha256", value: ""},
+		{name: "byte mismatch", column: "bytes", value: 1},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			cache, err := Open(":memory:")
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer cache.Close()
+			rawURL := "https://example.com/openapi.yaml"
+			if err := cache.StoreSpec(context.Background(), apitools.CachedSpec{
+				OriginalURL: rawURL,
+				FinalURL:    rawURL,
+				Content:     []byte("openapi: 3.0.0\ninfo:\n  title: Mail\n  version: 1.0.0\npaths: {}\n"),
+			}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := cache.db.ExecContext(context.Background(), `UPDATE spec_documents SET `+test.column+` = ? WHERE url = ?`, test.value, rawURL); err != nil {
+				t.Fatal(err)
+			}
+			_, ok, err := cache.LoadSpec(context.Background(), rawURL, time.Hour)
+			if !errors.Is(err, apitools.ErrCachedSpecIntegrity) || ok {
+				t.Fatalf("LoadSpec() = ok %t, err %v; want integrity error", ok, err)
+			}
+		})
+	}
+}
+
+func TestPathBackedCacheRejectsUnsafeArtifactPaths(t *testing.T) {
+	dir := t.TempDir()
+	outsideDir := t.TempDir()
+	outsidePath := filepath.Join(outsideDir, "outside.yaml")
+	content := []byte("openapi: 3.0.0\ninfo:\n  title: Outside\n  version: 1\npaths: {}\n")
+	if err := os.WriteFile(outsidePath, content, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cache, err := Open(filepath.Join(dir, "cache.sqlite"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+
+	for _, path := range []string{outsidePath, "../outside.yaml"} {
+		err := cache.StoreSpec(context.Background(), apitools.CachedSpec{
+			OriginalURL: "https://example.com/" + filepath.Base(path),
+			ContentPath: path,
+		})
+		if err == nil {
+			t.Fatalf("StoreSpec(%q) succeeded", path)
+		}
+		err = cache.StoreCatalogArtifact(context.Background(), CatalogArtifact{
+			ProviderID: "provider", ArtifactID: filepath.Base(path), Kind: "openapi", Path: path,
+		})
+		if err == nil {
+			t.Fatalf("StoreCatalogArtifact(%q) succeeded", path)
+		}
+	}
+
+	linkPath := filepath.Join(dir, "linked.yaml")
+	if err := os.Symlink(outsidePath, linkPath); err != nil {
+		t.Fatal(err)
+	}
+	if err := cache.StoreSpec(context.Background(), apitools.CachedSpec{
+		OriginalURL: "https://example.com/linked", ContentPath: "linked.yaml",
+	}); err == nil || !strings.Contains(err.Error(), "symlink") {
+		t.Fatalf("StoreSpec(symlink) error = %v", err)
+	}
+	if got, err := os.ReadFile(outsidePath); err != nil || string(got) != string(content) {
+		t.Fatalf("outside file changed: content=%q err=%v", got, err)
+	}
+}
+
+func TestSpecLoadRejectsTamperedPathEscape(t *testing.T) {
+	dir := t.TempDir()
+	outsidePath := filepath.Join(filepath.Dir(dir), "sqlitecache-outside-"+filepath.Base(dir)+".yaml")
+	if err := os.WriteFile(outsidePath, []byte("secret"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = os.Remove(outsidePath) })
+	cache, err := Open(filepath.Join(dir, "cache.sqlite"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+	rawURL := "https://example.com/openapi.yaml"
+	content := []byte("openapi: 3.0.0\ninfo:\n  title: Mail\n  version: 1\npaths: {}\n")
+	if err := cache.StoreSpec(context.Background(), apitools.CachedSpec{OriginalURL: rawURL, Content: content}); err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range []string{"../" + filepath.Base(outsidePath), outsidePath} {
+		if _, err := cache.db.ExecContext(context.Background(), `UPDATE spec_documents SET content_path = ?, content = NULL WHERE url = ?`, path, rawURL); err != nil {
+			t.Fatal(err)
+		}
+		_, ok, err := cache.LoadSpec(context.Background(), rawURL, time.Hour)
+		if err == nil || ok {
+			t.Fatalf("LoadSpec(%q) = ok %t, err %v; want rejection", path, ok, err)
+		}
+	}
+}
+
+func TestCatalogArtifactRejectsCallerIntegrityMismatch(t *testing.T) {
+	dir := t.TempDir()
+	cache, err := Open(filepath.Join(dir, "cache.sqlite"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+	if err := os.WriteFile(filepath.Join(dir, "artifact.json"), []byte(`{"openapi":"3.0.0"}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	for _, artifact := range []CatalogArtifact{
+		{ProviderID: "p", ArtifactID: "bad-sha", Kind: "openapi", Path: "artifact.json", SHA256: strings.Repeat("0", 64)},
+		{ProviderID: "p", ArtifactID: "bad-bytes", Kind: "openapi", Path: "artifact.json", Bytes: 1},
+	} {
+		if err := cache.StoreCatalogArtifact(context.Background(), artifact); err == nil {
+			t.Fatalf("StoreCatalogArtifact(%s) succeeded", artifact.ArtifactID)
+		}
+	}
+}
+
+func TestOpenRejectsSymlinkCachePath(t *testing.T) {
+	dir := t.TempDir()
+	target := filepath.Join(dir, "target.sqlite")
+	if err := os.WriteFile(target, nil, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(dir, "cache.sqlite")
+	if err := os.Symlink(target, link); err != nil {
+		t.Fatal(err)
+	}
+	if cache, err := Open(link); err == nil {
+		_ = cache.Close()
+		t.Fatal("Open(symlink) succeeded")
+	}
+}
+
+func TestConfiguredByteBudgetsRejectOversizedRecords(t *testing.T) {
+	cache, err := OpenWithOptions(":memory:", Options{MaxArtifactBytes: 4, MaxSearchReportBytes: 4, MaxMetadataBytes: 8})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+	if err := cache.StoreSpec(context.Background(), apitools.CachedSpec{
+		OriginalURL: "https://example.com/openapi.yaml", Content: []byte("12345"),
+	}); err == nil {
+		t.Fatal("oversized spec was cached")
+	}
+	if err := cache.StoreSearch(context.Background(), apitools.SearchCacheKey{Query: "mail"}, apitools.SearchReport{Query: "mail"}); err == nil {
+		t.Fatal("oversized search report was cached")
+	}
+	if err := cache.StoreSearch(context.Background(), apitools.SearchCacheKey{Query: "metadata-over-budget"}, apitools.SearchReport{}); err == nil {
+		t.Fatal("oversized search key was cached")
+	}
+}
+
+func TestCatalogListRejectsTamperedPathsAndIntegrityMetadata(t *testing.T) {
+	for _, test := range []struct {
+		name   string
+		column string
+		value  any
+	}{
+		{name: "artifact path escape", column: "path", value: "../outside.json"},
+		{name: "overlay path escape", column: "overlay_path", value: "../outside.json"},
+		{name: "builder path absolute", column: "builder_path", value: "/tmp/builder.go"},
+		{name: "missing digest", column: "sha256", value: ""},
+		{name: "missing bytes", column: "bytes", value: 0},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			dir := t.TempDir()
+			cache, err := Open(filepath.Join(dir, "cache.sqlite"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer cache.Close()
+			if err := os.WriteFile(filepath.Join(dir, "artifact.json"), []byte(`{"openapi":"3.0.0"}`), 0o644); err != nil {
+				t.Fatal(err)
+			}
+			if err := cache.StoreCatalogArtifact(context.Background(), CatalogArtifact{
+				ProviderID: "p", ArtifactID: "a", Kind: "openapi", Path: "artifact.json",
+			}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := cache.db.ExecContext(context.Background(), `UPDATE catalog_artifacts SET `+test.column+` = ?`, test.value); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := cache.ListCatalogArtifacts(context.Background()); err == nil {
+				t.Fatal("tampered catalog row was accepted")
+			}
+		})
+	}
+}
+
+func TestConfiguredSearchLRUEvictsLeastRecentlyUsedQueryAndResult(t *testing.T) {
+	cache, err := OpenWithOptions(":memory:", Options{MaxSearchQueries: 2, MaxSearchResults: 2})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+	ctx := context.Background()
+	store := func(id string) apitools.SearchCacheKey {
+		key := apitools.SearchCacheKey{Query: id, Source: apitools.SourceAuto, Limit: 1}
+		report := apitools.SearchReport{Query: id, Results: []apitools.Result{{ID: id, Title: id, SpecURL: "https://example.com/" + id}}}
+		if err := cache.StoreSearch(ctx, key, report); err != nil {
+			t.Fatal(err)
+		}
+		return key
+	}
+	a := store("a")
+	b := store("b")
+	if _, ok, err := cache.LoadSearch(ctx, a, time.Hour); err != nil || !ok {
+		t.Fatalf("touch a: ok=%t err=%v", ok, err)
+	}
+	c := store("c")
+	for _, check := range []struct {
+		key  apitools.SearchCacheKey
+		want bool
+	}{{a, true}, {b, false}, {c, true}} {
+		if _, ok, err := cache.LoadSearch(ctx, check.key, time.Hour); err != nil || ok != check.want {
+			t.Fatalf("LoadSearch(%q) = ok %t, err %v; want %t", check.key.Query, ok, err, check.want)
+		}
+	}
+	var resultIDs string
+	if err := cache.db.QueryRowContext(ctx, `SELECT group_concat(id, '') FROM (SELECT id FROM search_results ORDER BY id)`).Scan(&resultIDs); err != nil {
+		t.Fatal(err)
+	}
+	if resultIDs != "ac" {
+		t.Fatalf("remaining result ids = %q, want ac", resultIDs)
+	}
+}
+
+func TestConfiguredSpecLRUEvictsLeastRecentlyUsedDocument(t *testing.T) {
+	cache, err := OpenWithOptions(":memory:", Options{MaxSpecDocuments: 2})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+	ctx := context.Background()
+	store := func(id string) string {
+		rawURL := "https://example.com/" + id
+		if err := cache.StoreSpec(ctx, apitools.CachedSpec{OriginalURL: rawURL, Content: []byte(id)}); err != nil {
+			t.Fatal(err)
+		}
+		return rawURL
+	}
+	a := store("a")
+	b := store("b")
+	if _, ok, err := cache.LoadSpec(ctx, a, time.Hour); err != nil || !ok {
+		t.Fatalf("touch a: ok=%t err=%v", ok, err)
+	}
+	c := store("c")
+	for _, check := range []struct {
+		url  string
+		want bool
+	}{{a, true}, {b, false}, {c, true}} {
+		if _, ok, err := cache.LoadSpec(ctx, check.url, time.Hour); err != nil || ok != check.want {
+			t.Fatalf("LoadSpec(%q) = ok %t, err %v; want %t", check.url, ok, err, check.want)
+		}
+	}
+}
+
+func TestConfiguredCatalogBoundAndExplicitPruneReport(t *testing.T) {
+	dir := t.TempDir()
+	cache, err := OpenWithOptions(filepath.Join(dir, "cache.sqlite"), Options{MaxCatalogArtifacts: 3})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+	ctx := context.Background()
+	for _, id := range []string{"a", "b", "c"} {
+		path := id + ".json"
+		if err := os.WriteFile(filepath.Join(dir, path), []byte(id), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		if err := cache.StoreCatalogArtifact(ctx, CatalogArtifact{ProviderID: "p", ArtifactID: id, Kind: "openapi", Path: path}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	cache.options.MaxCatalogArtifacts = 1
+	report, err := cache.Prune(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.CatalogArtifacts != 2 {
+		t.Fatalf("catalog prune report = %#v, want 2 removals", report)
+	}
+	artifacts, err := cache.ListCatalogArtifacts(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(artifacts) != 1 || artifacts[0].ArtifactID != "c" {
+		t.Fatalf("remaining artifacts = %#v, want c", artifacts)
 	}
 }
 

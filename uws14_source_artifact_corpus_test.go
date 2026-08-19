@@ -27,9 +27,9 @@ func TestUWS14SourceArtifactCorpusValidates(t *testing.T) {
 			content := readUWS14CorpusArtifact(t, artifact.path)
 			ref := artifact.refreshableRef()
 
-			status, metadata, correctionNotes, err := validateCatalogRefreshContentWithCorrections(context.Background(), ref, content, artifact.url)
+			status, metadata, correctionNotes, err := correctedCatalogRefreshValidationForTest(context.Background(), ref, content, artifact.url)
 			if err != nil {
-				t.Fatalf("validateCatalogRefreshContentWithCorrections() error = %v", err)
+				t.Fatalf("correctedCatalogRefreshValidationForTest() error = %v", err)
 			}
 			if status != CatalogRefreshValidStructured {
 				t.Fatalf("status = %q, want %q", status, CatalogRefreshValidStructured)
@@ -87,8 +87,8 @@ func TestUWS14SourceArtifactCorpusRefreshReview(t *testing.T) {
 		if result.RegisteredArtifactPath == "" {
 			t.Fatalf("%s registered artifact path is empty", key)
 		}
-		if result.ValidationStatus != CatalogRefreshValidStructured {
-			t.Fatalf("%s status = %q, want %q; error=%q", key, result.ValidationStatus, CatalogRefreshValidStructured, result.ValidationError)
+		if result.RawValidationStatus != CatalogRefreshValidStructured {
+			t.Fatalf("%s status = %q, want %q; error=%q", key, result.RawValidationStatus, CatalogRefreshValidStructured, result.RawValidationError)
 		}
 		if result.Protocol != protocol {
 			t.Fatalf("%s protocol = %q, want %q", key, result.Protocol, protocol)
@@ -99,7 +99,7 @@ func TestUWS14SourceArtifactCorpusRefreshReview(t *testing.T) {
 		if len(result.SHA256) != 64 {
 			t.Fatalf("%s sha256 length = %d, want 64", key, len(result.SHA256))
 		}
-		if result.Metadata.OperationCount == 0 {
+		if result.RawMetadata.OperationCount == 0 {
 			t.Fatalf("%s operation count is zero", key)
 		}
 	}

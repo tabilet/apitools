@@ -18,6 +18,7 @@ import (
 const (
 	CatalogRefreshMissingRegistration   = "missing-registration"
 	CatalogRefreshMissingFile           = "missing-file"
+	CatalogRefreshReviewAvailable       = "available"
 	CatalogRefreshReviewDefaultMaxBytes = 128 * 1024 * 1024
 )
 
@@ -40,26 +41,31 @@ type CatalogSpecRefreshReviewReport struct {
 // CatalogSpecRefreshReviewResult records one offline refresh artifact review
 // row for a built-in refreshable spec reference.
 type CatalogSpecRefreshReviewResult struct {
-	ProviderID             string                  `json:"provider_id"`
-	ProviderName           string                  `json:"provider_name,omitempty"`
-	SpecRefID              string                  `json:"spec_ref_id"`
-	Kind                   catalog.SpecKind        `json:"kind"`
-	Protocol               catalog.SpecProtocol    `json:"protocol"`
-	ProtocolVersion        string                  `json:"protocol_version,omitempty"`
-	URL                    string                  `json:"url"`
-	SourceAuthority        catalog.SourceAuthority `json:"source_authority,omitempty"`
-	VerifiedAt             string                  `json:"verified_at,omitempty"`
-	RegisteredArtifactPath string                  `json:"registered_artifact_path,omitempty"`
-	SavedPath              string                  `json:"saved_path,omitempty"`
-	Exists                 bool                    `json:"exists"`
-	Bytes                  int64                   `json:"bytes,omitempty"`
-	SHA256                 string                  `json:"sha256,omitempty"`
-	ValidationStatus       string                  `json:"validation_status"`
-	ValidationError        string                  `json:"validation_error,omitempty"`
-	VerificationStale      bool                    `json:"verification_stale,omitempty"`
-	Metadata               SpecMetadata            `json:"metadata,omitempty"`
-	CorrectionNotes        []string                `json:"correction_notes,omitempty"`
-	ManualFollowUps        []string                `json:"manual_follow_ups,omitempty"`
+	ProviderID                string                  `json:"provider_id"`
+	ProviderName              string                  `json:"provider_name,omitempty"`
+	SpecRefID                 string                  `json:"spec_ref_id"`
+	Kind                      catalog.SpecKind        `json:"kind"`
+	Protocol                  catalog.SpecProtocol    `json:"protocol"`
+	ProtocolVersion           string                  `json:"protocol_version,omitempty"`
+	URL                       string                  `json:"url"`
+	SourceAuthority           catalog.SourceAuthority `json:"source_authority,omitempty"`
+	VerifiedAt                string                  `json:"verified_at,omitempty"`
+	RegisteredArtifactPath    string                  `json:"registered_artifact_path,omitempty"`
+	SavedPath                 string                  `json:"saved_path,omitempty"`
+	Exists                    bool                    `json:"exists"`
+	Bytes                     int64                   `json:"bytes,omitempty"`
+	SHA256                    string                  `json:"sha256,omitempty"`
+	Status                    string                  `json:"status"`
+	StatusError               string                  `json:"status_error,omitempty"`
+	RawValidationStatus       string                  `json:"raw_validation_status,omitempty"`
+	RawValidationError        string                  `json:"raw_validation_error,omitempty"`
+	RawMetadata               SpecMetadata            `json:"raw_metadata,omitempty"`
+	CorrectedValidationStatus string                  `json:"corrected_validation_status,omitempty"`
+	CorrectedValidationError  string                  `json:"corrected_validation_error,omitempty"`
+	CorrectedMetadata         *SpecMetadata           `json:"corrected_metadata,omitempty"`
+	VerificationStale         bool                    `json:"verification_stale,omitempty"`
+	CorrectionNotes           []string                `json:"correction_notes,omitempty"`
+	ManualFollowUps           []string                `json:"manual_follow_ups,omitempty"`
 }
 
 // BuiltInCatalogSpecRefreshReviewReport reviews built-in refreshable catalog
@@ -156,7 +162,7 @@ func reviewCatalogRefreshArtifact(ref catalog.RefreshableSpecReference, opts Cat
 			path = discovered
 			result.ManualFollowUps = append(result.ManualFollowUps, "Register the saved artifact path in cache.sqlite if it is accepted.")
 		} else {
-			result.ValidationStatus = CatalogRefreshMissingRegistration
+			result.Status = CatalogRefreshMissingRegistration
 			result.ManualFollowUps = append(result.ManualFollowUps, "Run a selected catalog refresh or register an existing saved artifact path before promoting metadata.")
 			result.addCatalogRefreshReviewFollowUps(opts)
 			return result, nil
@@ -165,8 +171,8 @@ func reviewCatalogRefreshArtifact(ref catalog.RefreshableSpecReference, opts Cat
 
 	savedPath, err := resolveCatalogRefreshReviewPath(opts.CacheDir, path)
 	if err != nil {
-		result.ValidationStatus = CatalogRefreshInvalid
-		result.ValidationError = err.Error()
+		result.Status = CatalogRefreshInvalid
+		result.StatusError = err.Error()
 		result.ManualFollowUps = append(result.ManualFollowUps, "Fix the registered artifact path so it points inside the catalog cache directory.")
 		result.addCatalogRefreshReviewFollowUps(opts)
 		return result, nil
@@ -178,13 +184,13 @@ func reviewCatalogRefreshArtifact(ref catalog.RefreshableSpecReference, opts Cat
 	result.Bytes = size
 	if err != nil {
 		if os.IsNotExist(err) {
-			result.ValidationStatus = CatalogRefreshMissingFile
+			result.Status = CatalogRefreshMissingFile
 			result.ManualFollowUps = append(result.ManualFollowUps, "Restore the registered artifact file or rerun the selected catalog refresh.")
 			result.addCatalogRefreshReviewFollowUps(opts)
 			return result, nil
 		}
-		result.ValidationStatus = CatalogRefreshInvalid
-		result.ValidationError = err.Error()
+		result.Status = CatalogRefreshInvalid
+		result.StatusError = err.Error()
 		result.ManualFollowUps = append(result.ManualFollowUps, "Review or replace the saved artifact before promoting durable catalog metadata.")
 		result.addCatalogRefreshReviewFollowUps(opts)
 		return result, nil
@@ -192,19 +198,20 @@ func reviewCatalogRefreshArtifact(ref catalog.RefreshableSpecReference, opts Cat
 	digest := sha256.Sum256(content)
 	result.SHA256 = hex.EncodeToString(digest[:])
 
-	status, metadata, correctionNotes, err := validateCatalogRefreshContentWithCorrections(context.Background(), ref, content, ref.URL)
-	result.ValidationStatus = status
-	result.Metadata = metadata
-	result.CorrectionNotes = correctionNotes
-	protocol = catalogRefreshProtocolClassification(ref, metadata)
+	validation := validateCatalogRefreshEvidence(context.Background(), ref, content, ref.URL)
+	result.Status = CatalogRefreshReviewAvailable
+	result.RawValidationStatus = validation.RawStatus
+	result.RawValidationError = errorString(validation.RawError)
+	result.RawMetadata = validation.RawMetadata
+	result.CorrectedValidationStatus = validation.CorrectedStatus
+	result.CorrectedValidationError = errorString(validation.CorrectedError)
+	result.CorrectedMetadata = optionalCorrectedMetadata(validation.CorrectedStatus, validation.CorrectedMetadata)
+	result.CorrectionNotes = validation.CorrectionNotes
+	protocol = catalogRefreshProtocolClassification(ref, validation.RawMetadata)
 	result.Protocol = protocol.Protocol
 	result.ProtocolVersion = protocol.Version
-	if err != nil {
-		result.ValidationError = err.Error()
-		if !catalogRefreshStatusAllowsSave(status) {
-			result.ValidationStatus = CatalogRefreshInvalid
-			result.ManualFollowUps = append(result.ManualFollowUps, "Review or replace the saved artifact before promoting durable catalog metadata.")
-		}
+	if !catalogRefreshStatusAllowsSave(validation.RawStatus) && !catalogRefreshStatusAllowsSave(validation.CorrectedStatus) {
+		result.ManualFollowUps = append(result.ManualFollowUps, "Review or replace the saved artifact before promoting durable catalog metadata.")
 	}
 	result.addCatalogRefreshReviewFollowUps(opts)
 	return result, nil
@@ -222,7 +229,7 @@ func (result *CatalogSpecRefreshReviewResult) addCatalogRefreshReviewFollowUps(o
 			result.ManualFollowUps = append(result.ManualFollowUps, fmt.Sprintf("Review stale verification date %s; it is more than %d days before %s.", result.VerifiedAt, opts.StaleVerificationDays, opts.AsOf.Format("2006-01-02")))
 		}
 	}
-	switch result.ValidationStatus {
+	switch result.RawValidationStatus {
 	case CatalogRefreshValidOpenAPI, CatalogRefreshValidSwagger, CatalogRefreshValidStructured, CatalogRefreshSkippedValidation:
 		result.ManualFollowUps = append(result.ManualFollowUps, "Review the local artifact before updating durable catalog metadata.")
 		result.ManualFollowUps = append(result.ManualFollowUps, "Update spec revision, verification date, and security classification manually if the artifact is accepted.")

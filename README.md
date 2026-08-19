@@ -116,6 +116,14 @@ go run ./cmd/apitools import \
 Cache modes are `read-write`, `refresh`, `offline`, and `bypass`. The
 `--offline` flag is shorthand for `--cache-mode offline`.
 
+The SQLite backend is bounded by default. Search queries/results, document
+rows, and catalog artifact rows use deterministic least-recently-used
+retention; cached reports, metadata, and document bytes have independent byte
+budgets. Path-backed documents and catalog artifacts must use local relative
+paths beneath the database directory, reject symlinks, and match their recorded
+SHA-256 and byte count. `sqlitecache.OpenWithOptions` exposes lower explicit
+limits, and `Cache.Prune` reports evicted row counts.
+
 Catalog commands expose built-in provider metadata and security-overlay status
 without fetching provider documents, executing operations, resolving
 credentials, or claiming runtime compatibility:
@@ -263,10 +271,13 @@ joining registered local artifact paths from `cache.sqlite`. `catalog
 refresh-report` reviews built-in refreshable spec references against existing
 SQLite registrations and saved files under `catalog-openapi-cache/` without
 creating a cache, downloading documents, or promoting metadata. It reports
-missing registrations, missing files, SHA-256 and byte evidence, validation
-status, stale verification dates, and deterministic manual follow-ups. It reads
-saved artifacts with a bounded local file limit and rejects symlinked artifact
-paths. `catalog refresh`
+missing registrations, missing files, SHA-256 and byte evidence, raw validation
+status, separately labeled corrected-validation evidence, stale verification
+dates, and deterministic manual follow-ups. Provider-specific corrections are
+applied only to an in-memory validation copy: the saved file, registered digest,
+byte count, and cached metadata remain evidence about the raw downloaded bytes.
+It reads saved artifacts with a bounded local file limit and rejects symlinked
+artifact paths. `catalog refresh`
 downloads only the selected provider/spec reference using the same safe HTTP(S)
 download limits as imports, saves the artifact under ignored
 `catalog-openapi-cache/openapi/`, `catalog-openapi-cache/google-discovery/`, or

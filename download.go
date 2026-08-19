@@ -99,11 +99,19 @@ func cachedSpecContent(ctx context.Context, rawURL string, spec CachedSpec) ([]b
 		return nil, nil, SpecMetadata{}, fmt.Errorf("%w: cached OpenAPI document %q has invalid final URL: %v", ErrCachedSpecIntegrity, rawURL, err)
 	}
 	content := append([]byte(nil), spec.Content...)
-	if spec.SHA256 != "" {
-		digest := sha256.Sum256(content)
-		if got := hex.EncodeToString(digest[:]); got != spec.SHA256 {
-			return nil, nil, SpecMetadata{}, fmt.Errorf("%w: cached OpenAPI document %q has SHA256 %s, want %s", ErrCachedSpecIntegrity, rawURL, got, spec.SHA256)
-		}
+	if strings.TrimSpace(spec.SHA256) == "" {
+		return nil, nil, SpecMetadata{}, fmt.Errorf("%w: cached OpenAPI document %q has no SHA256", ErrCachedSpecIntegrity, rawURL)
+	}
+	expectedDigest, decodeErr := hex.DecodeString(strings.TrimSpace(spec.SHA256))
+	if decodeErr != nil || len(expectedDigest) != sha256.Size {
+		return nil, nil, SpecMetadata{}, fmt.Errorf("%w: cached OpenAPI document %q has invalid SHA256", ErrCachedSpecIntegrity, rawURL)
+	}
+	digest := sha256.Sum256(content)
+	if got := hex.EncodeToString(digest[:]); got != strings.ToLower(strings.TrimSpace(spec.SHA256)) {
+		return nil, nil, SpecMetadata{}, fmt.Errorf("%w: cached OpenAPI document %q has SHA256 %s, want %s", ErrCachedSpecIntegrity, rawURL, got, spec.SHA256)
+	}
+	if spec.Bytes <= 0 || spec.Bytes != int64(len(content)) {
+		return nil, nil, SpecMetadata{}, fmt.Errorf("%w: cached OpenAPI document %q has invalid byte count %d", ErrCachedSpecIntegrity, rawURL, spec.Bytes)
 	}
 	metadata, ok := downloadedSpecMetadata(ctx, content, finalURL.String())
 	if !ok {

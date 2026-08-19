@@ -1,7 +1,10 @@
 package apitools
 
 import (
+	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -33,14 +36,14 @@ func TestRefreshCatalogSpecReferencesDownloadsValidOpenAPI(t *testing.T) {
 		t.Fatalf("len(results) = %d, want %d", got, want)
 	}
 	result := report.Results[0]
-	if result.ValidationStatus != CatalogRefreshValidOpenAPI {
-		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	if result.RawValidationStatus != CatalogRefreshValidOpenAPI {
+		t.Fatalf("ValidationStatus = %q", result.RawValidationStatus)
 	}
 	if result.Protocol != catalog.SpecProtocolOpenAPI || result.ProtocolVersion != "3.0.0" {
 		t.Fatalf("protocol = %q %q, want openapi 3.0.0", result.Protocol, result.ProtocolVersion)
 	}
-	if result.Metadata.Title != "Refresh Test" || result.Metadata.OperationCount != 1 {
-		t.Fatalf("metadata = %#v", result.Metadata)
+	if result.RawMetadata.Title != "Refresh Test" || result.RawMetadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", result.RawMetadata)
 	}
 	if result.ArtifactPath != "openapi/test-openapi.json" {
 		t.Fatalf("ArtifactPath = %q", result.ArtifactPath)
@@ -74,14 +77,14 @@ func TestRefreshCatalogSpecReferencesSavesParseableInvalidOpenAPI(t *testing.T) 
 		t.Fatal(err)
 	}
 	result := report.Results[0]
-	if result.ValidationStatus != CatalogRefreshParseableOpenAPIInvalid {
-		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	if result.RawValidationStatus != CatalogRefreshParseableOpenAPIInvalid {
+		t.Fatalf("ValidationStatus = %q", result.RawValidationStatus)
 	}
-	if result.ValidationError == "" {
+	if result.RawValidationError == "" {
 		t.Fatalf("ValidationError is empty")
 	}
-	if result.Metadata.Title != "Parseable Invalid" || result.Metadata.OpenAPI != "3.0.0" || result.Metadata.OperationCount != 1 {
-		t.Fatalf("metadata = %#v", result.Metadata)
+	if result.RawMetadata.Title != "Parseable Invalid" || result.RawMetadata.OpenAPI != "3.0.0" || result.RawMetadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", result.RawMetadata)
 	}
 	if _, err := os.Stat(filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))); err != nil {
 		t.Fatalf("saved artifact: %v", err)
@@ -109,11 +112,11 @@ func TestRefreshCatalogSpecReferencesSavesParseableInvalidOpenAPIWithoutInfoVers
 		t.Fatal(err)
 	}
 	result := report.Results[0]
-	if result.ValidationStatus != CatalogRefreshParseableOpenAPIInvalid {
-		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	if result.RawValidationStatus != CatalogRefreshParseableOpenAPIInvalid {
+		t.Fatalf("ValidationStatus = %q", result.RawValidationStatus)
 	}
-	if result.Metadata.Title != "Missing Info Version" || result.Metadata.OpenAPI != "3.1.0" || result.Metadata.OperationCount != 1 {
-		t.Fatalf("metadata = %#v", result.Metadata)
+	if result.RawMetadata.Title != "Missing Info Version" || result.RawMetadata.OpenAPI != "3.1.0" || result.RawMetadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", result.RawMetadata)
 	}
 }
 
@@ -134,17 +137,17 @@ func TestRefreshCatalogSpecReferencesSavesParseableInvalidSwagger(t *testing.T) 
 		t.Fatal(err)
 	}
 	result := report.Results[0]
-	if result.ValidationStatus != CatalogRefreshParseableSwaggerInvalid {
-		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	if result.RawValidationStatus != CatalogRefreshParseableSwaggerInvalid {
+		t.Fatalf("ValidationStatus = %q", result.RawValidationStatus)
 	}
 	if result.Protocol != catalog.SpecProtocolSwagger || result.ProtocolVersion != "2.0" {
 		t.Fatalf("protocol = %q %q, want swagger 2.0", result.Protocol, result.ProtocolVersion)
 	}
-	if result.ValidationError == "" {
+	if result.RawValidationError == "" {
 		t.Fatalf("ValidationError is empty")
 	}
-	if result.Metadata.Title != "Parseable Swagger" || result.Metadata.Swagger != "2.0" || result.Metadata.OperationCount != 1 {
-		t.Fatalf("metadata = %#v", result.Metadata)
+	if result.RawMetadata.Title != "Parseable Swagger" || result.RawMetadata.Swagger != "2.0" || result.RawMetadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", result.RawMetadata)
 	}
 }
 
@@ -157,13 +160,13 @@ func TestRefreshCatalogSpecReferencesAppliesHighLevelCorrection(t *testing.T) {
 		},
 		"components":{"schemas":{"NestedArray":{"type":"array","items":{"type":"array"}}}}
 	}`
-	status, metadata, notes, err := validateCatalogRefreshContentWithCorrections(context.Background(), catalog.RefreshableSpecReference{
+	status, metadata, notes, err := correctedCatalogRefreshValidationForTest(context.Background(), catalog.RefreshableSpecReference{
 		ProviderID: "highlevel",
 		SpecRefID:  "highlevel-contacts-openapi",
 		Kind:       catalog.SpecKindOpenAPI,
 	}, []byte(content), "https://raw.githubusercontent.com/GoHighLevel/highlevel-api-docs/main/apps/contacts.json")
 	if err != nil {
-		t.Fatalf("validateCatalogRefreshContentWithCorrections() error = %v", err)
+		t.Fatalf("correctedCatalogRefreshValidationForTest() error = %v", err)
 	}
 	if status != CatalogRefreshValidOpenAPI {
 		t.Fatalf("status = %q, want %q", status, CatalogRefreshValidOpenAPI)
@@ -176,6 +179,50 @@ func TestRefreshCatalogSpecReferencesAppliesHighLevelCorrection(t *testing.T) {
 	}
 }
 
+func TestRefreshCatalogSpecReferencesReportsRawAndCorrectedValidationSeparately(t *testing.T) {
+	content := []byte(`{
+		"openapi":"3.0.0",
+		"info":{"title":"Contacts API","version":"1.0"},
+		"paths":{"/contacts":{"get":{"responses":{"200":{"description":""},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"$ref":"../common/common-schemas.json#/components/schemas/BadRequestDTO"}}}}}}}},
+		"components":{"schemas":{"NestedArray":{"type":"array","items":{"type":"array"}}}}
+	}`)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write(content)
+	}))
+	defer server.Close()
+	cacheDir := t.TempDir()
+	report, err := (&Client{HTTPClient: server.Client(), AllowUnsafeHosts: true}).RefreshCatalogSpecReferences(context.Background(), []catalog.RefreshableSpecReference{{
+		ProviderID: "highlevel",
+		SpecRefID:  "highlevel-contacts-openapi",
+		Kind:       catalog.SpecKindOpenAPI,
+		URL:        server.URL + "/contacts.json",
+	}}, CatalogSpecRefreshOptions{CacheDir: cacheDir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := report.Results[0]
+	if result.RawValidationStatus == CatalogRefreshValidOpenAPI || result.RawValidationError == "" {
+		t.Fatalf("raw validation was mislabeled as corrected: %#v", result)
+	}
+	if result.CorrectedValidationStatus != CatalogRefreshValidOpenAPI || result.CorrectedValidationError != "" {
+		t.Fatalf("corrected validation = %q error %q", result.CorrectedValidationStatus, result.CorrectedValidationError)
+	}
+	if result.CorrectedMetadata == nil || result.CorrectedMetadata.Title != "Contacts API" || len(result.CorrectionNotes) == 0 {
+		t.Fatalf("corrected evidence = %#v", result)
+	}
+	saved, err := os.ReadFile(result.SavedPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(saved, content) {
+		t.Fatal("saved artifact bytes differ from downloaded raw provenance")
+	}
+	digest := sha256.Sum256(content)
+	if result.SHA256 != hex.EncodeToString(digest[:]) {
+		t.Fatalf("raw digest = %q", result.SHA256)
+	}
+}
+
 func TestRefreshCatalogSpecReferencesAppliesStravaCorrection(t *testing.T) {
 	content := `{
 		"swagger":"2.0",
@@ -184,13 +231,13 @@ func TestRefreshCatalogSpecReferencesAppliesStravaCorrection(t *testing.T) {
 		"securityDefinitions":{"strava_oauth":{"type":"oauth2","flow":"accessCode","authorizationUrl":"https://www.strava.com/oauth/authorize","tokenUrl":"https://www.strava.com/oauth/token","scopes":{"read":"Read data"}}},
 		"security":[{"strava_oauth":["public"]}]
 	}`
-	status, metadata, notes, err := validateCatalogRefreshContentWithCorrections(context.Background(), catalog.RefreshableSpecReference{
+	status, metadata, notes, err := correctedCatalogRefreshValidationForTest(context.Background(), catalog.RefreshableSpecReference{
 		ProviderID: "strava",
 		SpecRefID:  "strava-api-v3-swagger",
 		Kind:       catalog.SpecKindOpenAPI,
 	}, []byte(content), "https://developers.strava.com/swagger/swagger.json")
 	if err != nil {
-		t.Fatalf("validateCatalogRefreshContentWithCorrections() error = %v", err)
+		t.Fatalf("correctedCatalogRefreshValidationForTest() error = %v", err)
 	}
 	if status != CatalogRefreshValidSwagger {
 		t.Fatalf("status = %q, want %q", status, CatalogRefreshValidSwagger)
@@ -259,13 +306,13 @@ components:
         href:
           type: string
 `
-	status, metadata, notes, err := validateCatalogRefreshContentWithCorrections(context.Background(), catalog.RefreshableSpecReference{
+	status, metadata, notes, err := correctedCatalogRefreshValidationForTest(context.Background(), catalog.RefreshableSpecReference{
 		ProviderID: "spotify",
 		SpecRefID:  "spotify-web-api-openapi",
 		Kind:       catalog.SpecKindOpenAPI,
 	}, []byte(content), "https://developer.spotify.com/reference/web-api/open-api-schema.yaml")
 	if err != nil {
-		t.Fatalf("validateCatalogRefreshContentWithCorrections() error = %v", err)
+		t.Fatalf("correctedCatalogRefreshValidationForTest() error = %v", err)
 	}
 	if status != CatalogRefreshValidOpenAPI {
 		t.Fatalf("status = %q, want %q", status, CatalogRefreshValidOpenAPI)
@@ -280,13 +327,13 @@ components:
 
 func TestRefreshCatalogSpecReferencesDoesNotApplyCorrectionsToOtherProviders(t *testing.T) {
 	content := `{"openapi":"3.0.0","info":{"title":"External Ref","version":"1.0.0"},"paths":{"/items":{"get":{"responses":{"200":{"description":"ok","content":{"application/json":{"schema":{"$ref":"../common/common-schemas.json#/components/schemas/BadRequestDTO"}}}}}}}}`
-	status, _, notes, err := validateCatalogRefreshContentWithCorrections(context.Background(), catalog.RefreshableSpecReference{
+	status, _, notes, err := correctedCatalogRefreshValidationForTest(context.Background(), catalog.RefreshableSpecReference{
 		ProviderID: "other",
 		SpecRefID:  "other-openapi",
 		Kind:       catalog.SpecKindOpenAPI,
 	}, []byte(content), "https://example.com/openapi.json")
 	if err == nil {
-		t.Fatalf("validateCatalogRefreshContentWithCorrections() expected error")
+		t.Fatalf("correctedCatalogRefreshValidationForTest() expected error")
 	}
 	if status != CatalogRefreshInvalid {
 		t.Fatalf("status = %q, want %q", status, CatalogRefreshInvalid)
@@ -366,6 +413,14 @@ func hasRefreshFollowUp(result CatalogSpecRefreshResult, text string) bool {
 	return false
 }
 
+func correctedCatalogRefreshValidationForTest(ctx context.Context, ref catalog.RefreshableSpecReference, content []byte, sourceURL string) (string, SpecMetadata, []string, error) {
+	evidence := validateCatalogRefreshEvidence(ctx, ref, content, sourceURL)
+	if evidence.CorrectedStatus != "" {
+		return evidence.CorrectedStatus, evidence.CorrectedMetadata, evidence.CorrectionNotes, evidence.CorrectedError
+	}
+	return evidence.RawStatus, evidence.RawMetadata, evidence.CorrectionNotes, evidence.RawError
+}
+
 func TestRefreshCatalogSpecReferencesValidatesStructuredNonOpenAPI(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(`{"discoveryVersion":"v1","title":"Discovery Test","version":"v1"}`))
@@ -383,8 +438,8 @@ func TestRefreshCatalogSpecReferencesValidatesStructuredNonOpenAPI(t *testing.T)
 		t.Fatal(err)
 	}
 	result := report.Results[0]
-	if result.ValidationStatus != CatalogRefreshValidStructured {
-		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	if result.RawValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.RawValidationStatus)
 	}
 	if result.Protocol != catalog.SpecProtocolGoogleDiscovery {
 		t.Fatalf("protocol = %q, want google-discovery", result.Protocol)
@@ -392,8 +447,8 @@ func TestRefreshCatalogSpecReferencesValidatesStructuredNonOpenAPI(t *testing.T)
 	if result.ArtifactPath != "google-discovery/google-test-discovery.json" {
 		t.Fatalf("ArtifactPath = %q", result.ArtifactPath)
 	}
-	if result.Metadata.Title != "Discovery Test" {
-		t.Fatalf("Metadata.Title = %q", result.Metadata.Title)
+	if result.RawMetadata.Title != "Discovery Test" {
+		t.Fatalf("Metadata.Title = %q", result.RawMetadata.Title)
 	}
 }
 
@@ -415,8 +470,8 @@ func TestRefreshCatalogSpecReferencesSavesSmithyArtifactUnderAWSSmithy(t *testin
 		t.Fatal(err)
 	}
 	result := report.Results[0]
-	if result.ValidationStatus != CatalogRefreshValidStructured {
-		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	if result.RawValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.RawValidationStatus)
 	}
 	if result.Protocol != catalog.SpecProtocolSmithy {
 		t.Fatalf("protocol = %q, want smithy", result.Protocol)
@@ -452,8 +507,8 @@ operations: {}
 		t.Fatal(err)
 	}
 	result := report.Results[0]
-	if result.ValidationStatus != CatalogRefreshValidStructured {
-		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	if result.RawValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.RawValidationStatus)
 	}
 	if result.Protocol != catalog.SpecProtocolAsyncAPI {
 		t.Fatalf("protocol = %q, want asyncapi", result.Protocol)
@@ -484,8 +539,8 @@ func TestRefreshCatalogSpecReferencesSavesOpenRPCArtifactUnderOpenRPC(t *testing
 		t.Fatal(err)
 	}
 	result := report.Results[0]
-	if result.ValidationStatus != CatalogRefreshValidStructured {
-		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	if result.RawValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.RawValidationStatus)
 	}
 	if result.Protocol != catalog.SpecProtocolOpenRPC {
 		t.Fatalf("protocol = %q, want openrpc", result.Protocol)
@@ -515,8 +570,8 @@ func TestRefreshCatalogSpecReferencesSavesGraphQLArtifactUnderGraphQL(t *testing
 		t.Fatal(err)
 	}
 	result := report.Results[0]
-	if result.ValidationStatus != CatalogRefreshValidStructured {
-		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	if result.RawValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.RawValidationStatus)
 	}
 	if result.Protocol != catalog.SpecProtocolGraphQL {
 		t.Fatalf("protocol = %q, want graphql", result.Protocol)
@@ -524,8 +579,8 @@ func TestRefreshCatalogSpecReferencesSavesGraphQLArtifactUnderGraphQL(t *testing
 	if result.ArtifactPath != "graphql/issues-graphql.graphql" {
 		t.Fatalf("ArtifactPath = %q", result.ArtifactPath)
 	}
-	if result.Metadata.OperationCount != 1 {
-		t.Fatalf("operation count = %d, want 1", result.Metadata.OperationCount)
+	if result.RawMetadata.OperationCount != 1 {
+		t.Fatalf("operation count = %d, want 1", result.RawMetadata.OperationCount)
 	}
 	if _, err := os.Stat(filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))); err != nil {
 		t.Fatalf("expected saved artifact: %v", err)
@@ -549,8 +604,8 @@ func TestRefreshCatalogSpecReferencesSavesGRPCProtobufArtifactUnderGRPCProtobuf(
 		t.Fatal(err)
 	}
 	result := report.Results[0]
-	if result.ValidationStatus != CatalogRefreshValidStructured {
-		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	if result.RawValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.RawValidationStatus)
 	}
 	if result.Protocol != catalog.SpecProtocolGRPCProtobuf {
 		t.Fatalf("protocol = %q, want grpc-protobuf", result.Protocol)
@@ -558,8 +613,8 @@ func TestRefreshCatalogSpecReferencesSavesGRPCProtobufArtifactUnderGRPCProtobuf(
 	if result.ArtifactPath != "grpc-protobuf/issues-proto.proto" {
 		t.Fatalf("ArtifactPath = %q", result.ArtifactPath)
 	}
-	if result.Metadata.OperationCount != 1 {
-		t.Fatalf("operation count = %d, want 1", result.Metadata.OperationCount)
+	if result.RawMetadata.OperationCount != 1 {
+		t.Fatalf("operation count = %d, want 1", result.RawMetadata.OperationCount)
 	}
 	if _, err := os.Stat(filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))); err != nil {
 		t.Fatalf("expected saved artifact: %v", err)
@@ -583,8 +638,8 @@ func TestRefreshCatalogSpecReferencesSavesODataArtifactUnderOData(t *testing.T) 
 		t.Fatal(err)
 	}
 	result := report.Results[0]
-	if result.ValidationStatus != CatalogRefreshValidStructured {
-		t.Fatalf("ValidationStatus = %q", result.ValidationStatus)
+	if result.RawValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("ValidationStatus = %q", result.RawValidationStatus)
 	}
 	if result.Protocol != catalog.SpecProtocolOData {
 		t.Fatalf("protocol = %q, want odata", result.Protocol)
@@ -592,8 +647,8 @@ func TestRefreshCatalogSpecReferencesSavesODataArtifactUnderOData(t *testing.T) 
 	if result.ArtifactPath != "odata/products-odata.xml" {
 		t.Fatalf("ArtifactPath = %q", result.ArtifactPath)
 	}
-	if result.Metadata.Title != "Demo" || result.Metadata.OperationCount != 1 {
-		t.Fatalf("metadata = %#v", result.Metadata)
+	if result.RawMetadata.Title != "Demo" || result.RawMetadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", result.RawMetadata)
 	}
 	if _, err := os.Stat(filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))); err != nil {
 		t.Fatalf("expected saved artifact: %v", err)

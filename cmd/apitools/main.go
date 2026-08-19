@@ -833,12 +833,17 @@ func registerCatalogRefreshResults(ctx context.Context, cachePath, cacheDir stri
 	}
 	defer cache.Close()
 	for _, result := range report.Results {
-		contentPath := refreshContentPathForCache(cachePath, cacheDir, result)
+		contentPath, err := refreshContentPathForCache(cachePath, cacheDir, result)
+		if err != nil {
+			return err
+		}
 		if err := cache.StoreSpec(ctx, apitools.CachedSpec{
 			OriginalURL: result.URL,
 			FinalURL:    result.FinalURL,
 			ContentPath: contentPath,
-			Metadata:    result.Metadata,
+			SHA256:      result.SHA256,
+			Bytes:       result.Bytes,
+			Metadata:    result.RawMetadata,
 		}); err != nil {
 			return err
 		}
@@ -849,10 +854,11 @@ func registerCatalogRefreshResults(ctx context.Context, cachePath, cacheDir stri
 			Path:       contentPath,
 			SourceURL:  result.URL,
 			Metadata: map[string]string{
-				"official":          "true",
-				"kind":              string(result.Kind),
-				"validation_status": result.ValidationStatus,
-				"sha256":            result.SHA256,
+				"official":                    "true",
+				"kind":                        string(result.Kind),
+				"raw_validation_status":       result.RawValidationStatus,
+				"corrected_validation_status": result.CorrectedValidationStatus,
+				"sha256":                      result.SHA256,
 			},
 		}); err != nil {
 			return err
@@ -861,17 +867,25 @@ func registerCatalogRefreshResults(ctx context.Context, cachePath, cacheDir stri
 	return nil
 }
 
-func refreshContentPathForCache(cachePath, cacheDir string, result apitools.CatalogSpecRefreshResult) string {
+func refreshContentPathForCache(cachePath, cacheDir string, result apitools.CatalogSpecRefreshResult) (string, error) {
+	cachePath, err := filepath.Abs(cachePath)
+	if err != nil {
+		return "", err
+	}
 	cacheBase := filepath.Dir(cachePath)
 	fullPath := result.SavedPath
 	if strings.TrimSpace(fullPath) == "" {
 		fullPath = filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))
 	}
+	fullPath, err = filepath.Abs(fullPath)
+	if err != nil {
+		return "", err
+	}
 	rel, err := filepath.Rel(cacheBase, fullPath)
 	if err == nil && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && rel != ".." && !filepath.IsAbs(rel) {
-		return filepath.ToSlash(rel)
+		return filepath.ToSlash(rel), nil
 	}
-	return fullPath
+	return "", fmt.Errorf("refreshed artifact %q must stay under SQLite cache directory %q", fullPath, cacheBase)
 }
 
 func runCatalogInspect(args []string, out, errOut io.Writer) int {
@@ -1211,20 +1225,24 @@ func catalogRefreshEvidenceStats(report apitools.CatalogSpecRefreshReviewReport)
 		if result.Exists {
 			stats.ExistingArtifactCount++
 		}
-		if result.ValidationStatus == apitools.CatalogRefreshMissingRegistration {
+		if result.Status == apitools.CatalogRefreshMissingRegistration {
 			stats.MissingRegistrationCount++
 		}
-		if result.ValidationStatus == apitools.CatalogRefreshMissingFile {
+		if result.Status == apitools.CatalogRefreshMissingFile {
 			stats.MissingRegisteredFileCount++
 		}
-		if result.ValidationStatus == apitools.CatalogRefreshInvalid {
+		if result.Status == apitools.CatalogRefreshInvalid || result.RawValidationStatus == apitools.CatalogRefreshInvalid {
 			stats.InvalidArtifactCount++
 		}
 		if result.VerificationStale {
 			stats.StaleVerificationCount++
 		}
 		stats.TotalBytes += result.Bytes
-		statusIDs[result.ValidationStatus] = append(statusIDs[result.ValidationStatus], key)
+		status := result.RawValidationStatus
+		if status == "" {
+			status = result.Status
+		}
+		statusIDs[status] = append(statusIDs[status], key)
 		providerIDsByProtocol[result.Protocol] = append(providerIDsByProtocol[result.Protocol], key)
 	}
 	for _, status := range catalogRefreshValidationOrder(statusIDs) {
@@ -1703,7 +1721,7 @@ func writeCatalogRefreshReport(out io.Writer, report apitools.CatalogSpecRefresh
 	}
 	fmt.Fprintf(out, "%-18s %-34s %-16s %-20s %-12s %s\n", "PROVIDER", "SPEC_REF", "PROTOCOL", "VALIDATION", "BYTES", "ARTIFACT")
 	for _, result := range report.Results {
-		fmt.Fprintf(out, "%-18s %-34s %-16s %-20s %-12d %s\n", result.ProviderID, result.SpecRefID, protocolLabel(result.Protocol, result.ProtocolVersion), result.ValidationStatus, result.Bytes, result.ArtifactPath)
+		fmt.Fprintf(out, "%-18s %-34s %-16s %-20s %-12d %s\n", result.ProviderID, result.SpecRefID, protocolLabel(result.Protocol, result.ProtocolVersion), refreshValidationLabel(result.RawValidationStatus, result.CorrectedValidationStatus), result.Bytes, result.ArtifactPath)
 	}
 	fmt.Fprintln(out, "Manual follow-ups:")
 	for _, result := range report.Results {
@@ -1724,17 +1742,36 @@ func writeCatalogRefreshReviewReport(out io.Writer, report apitools.CatalogSpecR
 		if artifact == "" {
 			artifact = result.SavedPath
 		}
-		fmt.Fprintf(out, "%-18s %-34s %-16s %-24s %-12d %-64s %s\n", result.ProviderID, result.SpecRefID, protocolLabel(result.Protocol, result.ProtocolVersion), result.ValidationStatus, result.Bytes, result.SHA256, artifact)
+		validation := refreshValidationLabel(result.RawValidationStatus, result.CorrectedValidationStatus)
+		if validation == "" {
+			validation = result.Status
+		}
+		fmt.Fprintf(out, "%-18s %-34s %-16s %-24s %-12d %-64s %s\n", result.ProviderID, result.SpecRefID, protocolLabel(result.Protocol, result.ProtocolVersion), validation, result.Bytes, result.SHA256, artifact)
 	}
 	fmt.Fprintln(out, "Manual follow-ups:")
 	for _, result := range report.Results {
 		for _, followUp := range result.ManualFollowUps {
 			fmt.Fprintf(out, "- %s/%s: %s\n", result.ProviderID, result.SpecRefID, followUp)
 		}
-		if result.ValidationError != "" {
-			fmt.Fprintf(out, "- %s/%s: validation error: %s\n", result.ProviderID, result.SpecRefID, result.ValidationError)
+		if result.StatusError != "" {
+			fmt.Fprintf(out, "- %s/%s: artifact error: %s\n", result.ProviderID, result.SpecRefID, result.StatusError)
+		}
+		if result.RawValidationError != "" {
+			fmt.Fprintf(out, "- %s/%s: raw validation error: %s\n", result.ProviderID, result.SpecRefID, result.RawValidationError)
+		}
+		if result.CorrectedValidationError != "" {
+			fmt.Fprintf(out, "- %s/%s: corrected validation error: %s\n", result.ProviderID, result.SpecRefID, result.CorrectedValidationError)
 		}
 	}
+}
+
+func refreshValidationLabel(raw, corrected string) string {
+	raw = strings.TrimSpace(raw)
+	corrected = strings.TrimSpace(corrected)
+	if corrected == "" {
+		return raw
+	}
+	return raw + " -> corrected:" + corrected
 }
 
 func catalogCheckExitCode(report catalogpkg.CatalogQualityReport) int {

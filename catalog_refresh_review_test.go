@@ -1,6 +1,8 @@
 package apitools
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,8 +20,8 @@ func TestCatalogSpecRefreshReviewReportsMissingRegistration(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := singleRefreshReviewResult(t, report)
-	if result.ValidationStatus != CatalogRefreshMissingRegistration {
-		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshMissingRegistration)
+	if result.Status != CatalogRefreshMissingRegistration {
+		t.Fatalf("status = %q, want %q", result.Status, CatalogRefreshMissingRegistration)
 	}
 	if result.Protocol != catalog.SpecProtocolOpenAPI {
 		t.Fatalf("protocol = %q, want openapi", result.Protocol)
@@ -42,8 +44,8 @@ func TestCatalogSpecRefreshReviewReportsMissingRegisteredFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := singleRefreshReviewResult(t, report)
-	if result.ValidationStatus != CatalogRefreshMissingFile {
-		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshMissingFile)
+	if result.Status != CatalogRefreshMissingFile {
+		t.Fatalf("status = %q, want %q", result.Status, CatalogRefreshMissingFile)
 	}
 	if result.SavedPath == "" {
 		t.Fatalf("saved path is empty")
@@ -61,14 +63,54 @@ func TestCatalogSpecRefreshReviewValidOpenAPI(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := singleRefreshReviewResult(t, report)
-	if result.ValidationStatus != CatalogRefreshValidOpenAPI {
-		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshValidOpenAPI)
+	if result.Status != CatalogRefreshReviewAvailable {
+		t.Fatalf("file status = %q, want %q", result.Status, CatalogRefreshReviewAvailable)
+	}
+	if result.RawValidationStatus != CatalogRefreshValidOpenAPI {
+		t.Fatalf("status = %q, want %q", result.RawValidationStatus, CatalogRefreshValidOpenAPI)
 	}
 	if result.Protocol != catalog.SpecProtocolOpenAPI || result.ProtocolVersion != "3.0.0" {
 		t.Fatalf("protocol = %q %q, want openapi 3.0.0", result.Protocol, result.ProtocolVersion)
 	}
 	if result.Bytes == 0 || result.SHA256 == "" || !result.Exists {
 		t.Fatalf("missing file evidence: %#v", result)
+	}
+}
+
+func TestCatalogSpecRefreshReviewSeparatesRawAndCorrectedValidation(t *testing.T) {
+	dir := t.TempDir()
+	ref := refreshReviewTestRef("highlevel", catalog.SpecKindOpenAPI)
+	ref.ProviderID = "highlevel"
+	ref.SpecRefID = "highlevel-contacts-openapi"
+	ref.RegisteredArtifactPath = "openapi/highlevel-contacts.json"
+	content := []byte(`{
+		"openapi":"3.0.0",
+		"info":{"title":"Contacts API","version":"1.0"},
+		"paths":{"/contacts":{"get":{"responses":{"200":{"description":""},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"$ref":"../common/common-schemas.json#/components/schemas/BadRequestDTO"}}}}}}}},
+		"components":{"schemas":{"NestedArray":{"type":"array","items":{"type":"array"}}}}
+	}`)
+	writeRefreshReviewArtifact(t, dir, ref.RegisteredArtifactPath, string(content))
+
+	report, err := BuildCatalogSpecRefreshReviewReport([]catalog.RefreshableSpecReference{ref}, CatalogSpecRefreshReviewOptions{CacheDir: dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := singleRefreshReviewResult(t, report)
+	if result.Status != CatalogRefreshReviewAvailable {
+		t.Fatalf("file status = %q, want %q", result.Status, CatalogRefreshReviewAvailable)
+	}
+	if result.RawValidationStatus == CatalogRefreshValidOpenAPI || result.RawValidationError == "" {
+		t.Fatalf("raw validation was mislabeled as corrected: %#v", result)
+	}
+	if result.CorrectedValidationStatus != CatalogRefreshValidOpenAPI || result.CorrectedValidationError != "" {
+		t.Fatalf("corrected validation = %q error %q", result.CorrectedValidationStatus, result.CorrectedValidationError)
+	}
+	if result.CorrectedMetadata == nil || result.CorrectedMetadata.Title != "Contacts API" || len(result.CorrectionNotes) == 0 {
+		t.Fatalf("corrected evidence = %#v", result)
+	}
+	digest := sha256.Sum256(content)
+	if result.SHA256 != hex.EncodeToString(digest[:]) || result.Bytes != int64(len(content)) {
+		t.Fatalf("raw provenance = sha256 %q bytes %d", result.SHA256, result.Bytes)
 	}
 }
 
@@ -83,14 +125,14 @@ func TestCatalogSpecRefreshReviewReportsParseableInvalidOpenAPI(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := singleRefreshReviewResult(t, report)
-	if result.ValidationStatus != CatalogRefreshParseableOpenAPIInvalid {
-		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshParseableOpenAPIInvalid)
+	if result.RawValidationStatus != CatalogRefreshParseableOpenAPIInvalid {
+		t.Fatalf("status = %q, want %q", result.RawValidationStatus, CatalogRefreshParseableOpenAPIInvalid)
 	}
-	if result.ValidationError == "" {
+	if result.RawValidationError == "" {
 		t.Fatalf("validation error is empty")
 	}
-	if result.Metadata.Title != "Demo" || result.Metadata.OperationCount != 1 {
-		t.Fatalf("metadata = %#v", result.Metadata)
+	if result.RawMetadata.Title != "Demo" || result.RawMetadata.OperationCount != 1 {
+		t.Fatalf("metadata = %#v", result.RawMetadata)
 	}
 	if !hasRefreshReviewFollowUp(result, "strict validation errors") {
 		t.Fatalf("missing strict validation follow-up: %#v", result.ManualFollowUps)
@@ -139,8 +181,8 @@ func TestCatalogSpecRefreshReviewValidStructuredArtifacts(t *testing.T) {
 				t.Fatal(err)
 			}
 			result := singleRefreshReviewResult(t, report)
-			if result.ValidationStatus != CatalogRefreshValidStructured {
-				t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshValidStructured)
+			if result.RawValidationStatus != CatalogRefreshValidStructured {
+				t.Fatalf("status = %q, want %q", result.RawValidationStatus, CatalogRefreshValidStructured)
 			}
 			if result.Protocol != refreshReviewTestProtocol(tc.kind) {
 				t.Fatalf("protocol = %q, want %q", result.Protocol, refreshReviewTestProtocol(tc.kind))
@@ -160,11 +202,11 @@ func TestCatalogSpecRefreshReviewRejectsStructuredNonOpenRPCArtifact(t *testing.
 		t.Fatal(err)
 	}
 	result := singleRefreshReviewResult(t, report)
-	if result.ValidationStatus != CatalogRefreshInvalid {
-		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshInvalid)
+	if result.RawValidationStatus != CatalogRefreshInvalid {
+		t.Fatalf("status = %q, want %q", result.RawValidationStatus, CatalogRefreshInvalid)
 	}
-	if !strings.Contains(result.ValidationError, "does not validate as OpenRPC") {
-		t.Fatalf("validation error = %q, want OpenRPC validation error", result.ValidationError)
+	if !strings.Contains(result.RawValidationError, "does not validate as OpenRPC") {
+		t.Fatalf("validation error = %q, want OpenRPC validation error", result.RawValidationError)
 	}
 }
 
@@ -179,8 +221,8 @@ func TestCatalogSpecRefreshReviewNonOpenAPIMachineSpec(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := singleRefreshReviewResult(t, report)
-	if result.ValidationStatus != CatalogRefreshSkippedValidation {
-		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshSkippedValidation)
+	if result.RawValidationStatus != CatalogRefreshSkippedValidation {
+		t.Fatalf("status = %q, want %q", result.RawValidationStatus, CatalogRefreshSkippedValidation)
 	}
 	if result.Protocol != catalog.SpecProtocolDropboxStone {
 		t.Fatalf("protocol = %q, want dropbox-stone", result.Protocol)
@@ -200,8 +242,8 @@ func TestCatalogSpecRefreshReviewDiscoversUnregisteredSavedFile(t *testing.T) {
 	if result.RegisteredArtifactPath != "" {
 		t.Fatalf("registered artifact path = %q, want empty", result.RegisteredArtifactPath)
 	}
-	if result.ValidationStatus != CatalogRefreshValidOpenAPI {
-		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshValidOpenAPI)
+	if result.RawValidationStatus != CatalogRefreshValidOpenAPI {
+		t.Fatalf("status = %q, want %q", result.RawValidationStatus, CatalogRefreshValidOpenAPI)
 	}
 	if result.SavedPath == "" {
 		t.Fatalf("saved path is empty")
@@ -220,8 +262,8 @@ func TestCatalogSpecRefreshReviewDiscoversAlternateSavedFilename(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := singleRefreshReviewResult(t, report)
-	if result.ValidationStatus != CatalogRefreshValidStructured {
-		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshValidStructured)
+	if result.RawValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("status = %q, want %q", result.RawValidationStatus, CatalogRefreshValidStructured)
 	}
 	if !strings.HasSuffix(filepath.ToSlash(result.SavedPath), "google-discovery/google-calendar-discovery-v3.json") {
 		t.Fatalf("saved path = %q", result.SavedPath)
@@ -243,8 +285,8 @@ func TestCatalogSpecRefreshReviewDiscoversUnregisteredSmithySavedFile(t *testing
 		t.Fatal(err)
 	}
 	result := singleRefreshReviewResult(t, report)
-	if result.ValidationStatus != CatalogRefreshValidStructured {
-		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshValidStructured)
+	if result.RawValidationStatus != CatalogRefreshValidStructured {
+		t.Fatalf("status = %q, want %q", result.RawValidationStatus, CatalogRefreshValidStructured)
 	}
 	if !strings.HasSuffix(filepath.ToSlash(result.SavedPath), "aws-smithy/aws-s3-smithy-model.json") {
 		t.Fatalf("saved path = %q", result.SavedPath)
@@ -303,11 +345,11 @@ func TestCatalogSpecRefreshReviewRejectsSymlinkArtifact(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := singleRefreshReviewResult(t, report)
-	if result.ValidationStatus != CatalogRefreshInvalid {
-		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshInvalid)
+	if result.Status != CatalogRefreshInvalid {
+		t.Fatalf("status = %q, want %q", result.Status, CatalogRefreshInvalid)
 	}
-	if !strings.Contains(result.ValidationError, "symlink") {
-		t.Fatalf("validation error = %q, want symlink", result.ValidationError)
+	if !strings.Contains(result.StatusError, "symlink") {
+		t.Fatalf("artifact error = %q, want symlink", result.StatusError)
 	}
 }
 
@@ -325,11 +367,11 @@ func TestCatalogSpecRefreshReviewRejectsOversizedArtifact(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := singleRefreshReviewResult(t, report)
-	if result.ValidationStatus != CatalogRefreshInvalid {
-		t.Fatalf("status = %q, want %q", result.ValidationStatus, CatalogRefreshInvalid)
+	if result.Status != CatalogRefreshInvalid {
+		t.Fatalf("status = %q, want %q", result.Status, CatalogRefreshInvalid)
 	}
-	if !strings.Contains(result.ValidationError, "over limit 8") {
-		t.Fatalf("validation error = %q, want size limit", result.ValidationError)
+	if !strings.Contains(result.StatusError, "over limit 8") {
+		t.Fatalf("artifact error = %q, want size limit", result.StatusError)
 	}
 	if result.Bytes <= 8 {
 		t.Fatalf("bytes = %d, want original size over limit", result.Bytes)
