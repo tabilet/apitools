@@ -3,12 +3,15 @@ package grpcproto
 import (
 	"fmt"
 	"io"
+
+	"github.com/OpenUdon/apitools/internal/sourceguard"
 )
 
 const maxDescriptorProtoDepth = 100
 
 func parseBinaryDescriptorSet(data []byte) (*Model, error) {
-	reader := wireReader{data: data}
+	budget := sourceguard.NewBudget("grpcproto")
+	reader := wireReader{data: data, budget: budget}
 	model := &Model{SourceKind: ArtifactKindDescriptorSet}
 	for !reader.done() {
 		fieldNumber, wireType, err := reader.tag()
@@ -21,7 +24,7 @@ func parseBinaryDescriptorSet(data []byte) (*Model, error) {
 			if err != nil {
 				return nil, err
 			}
-			file, err := parseFileDescriptorProto(payload)
+			file, err := parseFileDescriptorProto(payload, budget)
 			if err != nil {
 				return nil, err
 			}
@@ -44,8 +47,8 @@ func parseBinaryDescriptorSet(data []byte) (*Model, error) {
 	return model, nil
 }
 
-func parseFileDescriptorProto(data []byte) (*File, error) {
-	reader := wireReader{data: data}
+func parseFileDescriptorProto(data []byte, budget *sourceguard.Budget) (*File, error) {
+	reader := wireReader{data: data, budget: budget}
 	file := &File{}
 	for !reader.done() {
 		fieldNumber, wireType, err := reader.tag()
@@ -68,7 +71,7 @@ func parseFileDescriptorProto(data []byte) (*File, error) {
 			payload, err = reader.bytesOfType(wireType)
 			if err == nil {
 				var message *Message
-				message, err = parseDescriptorProto(payload, file.Package, "")
+				message, err = parseDescriptorProto(payload, file.Package, "", budget)
 				if message != nil {
 					file.Messages = append(file.Messages, message)
 				}
@@ -78,7 +81,7 @@ func parseFileDescriptorProto(data []byte) (*File, error) {
 			payload, err = reader.bytesOfType(wireType)
 			if err == nil {
 				var enum *Enum
-				enum, err = parseEnumDescriptorProto(payload, file.Package, "")
+				enum, err = parseEnumDescriptorProto(payload, file.Package, "", budget)
 				if enum != nil {
 					file.Enums = append(file.Enums, enum)
 				}
@@ -88,7 +91,7 @@ func parseFileDescriptorProto(data []byte) (*File, error) {
 			payload, err = reader.bytesOfType(wireType)
 			if err == nil {
 				var service *Service
-				service, err = parseServiceDescriptorProto(payload, file.Package)
+				service, err = parseServiceDescriptorProto(payload, file.Package, budget)
 				if service != nil {
 					file.Services = append(file.Services, service)
 				}
@@ -105,8 +108,8 @@ func parseFileDescriptorProto(data []byte) (*File, error) {
 	return file, nil
 }
 
-func parseServiceDescriptorProto(data []byte, packageName string) (*Service, error) {
-	reader := wireReader{data: data}
+func parseServiceDescriptorProto(data []byte, packageName string, budget *sourceguard.Budget) (*Service, error) {
+	reader := wireReader{data: data, budget: budget}
 	service := &Service{Package: packageName}
 	for !reader.done() {
 		fieldNumber, wireType, err := reader.tag()
@@ -121,7 +124,7 @@ func parseServiceDescriptorProto(data []byte, packageName string) (*Service, err
 			payload, err = reader.bytesOfType(wireType)
 			if err == nil {
 				var method *Method
-				method, err = parseMethodDescriptorProto(payload, packageName)
+				method, err = parseMethodDescriptorProto(payload, packageName, budget)
 				if method != nil {
 					service.Methods = append(service.Methods, method)
 				}
@@ -140,8 +143,8 @@ func parseServiceDescriptorProto(data []byte, packageName string) (*Service, err
 	return service, nil
 }
 
-func parseMethodDescriptorProto(data []byte, packageName string) (*Method, error) {
-	reader := wireReader{data: data}
+func parseMethodDescriptorProto(data []byte, packageName string, budget *sourceguard.Budget) (*Method, error) {
+	reader := wireReader{data: data, budget: budget}
 	method := &Method{Package: packageName}
 	for !reader.done() {
 		fieldNumber, wireType, err := reader.tag()
@@ -174,15 +177,15 @@ func parseMethodDescriptorProto(data []byte, packageName string) (*Method, error
 	return method, nil
 }
 
-func parseDescriptorProto(data []byte, packageName, parent string) (*Message, error) {
-	return parseDescriptorProtoDepth(data, packageName, parent, 0)
+func parseDescriptorProto(data []byte, packageName, parent string, budget *sourceguard.Budget) (*Message, error) {
+	return parseDescriptorProtoDepth(data, packageName, parent, 0, budget)
 }
 
-func parseDescriptorProtoDepth(data []byte, packageName, parent string, depth int) (*Message, error) {
+func parseDescriptorProtoDepth(data []byte, packageName, parent string, depth int, budget *sourceguard.Budget) (*Message, error) {
 	if depth > maxDescriptorProtoDepth {
 		return nil, fmt.Errorf("grpcproto: descriptor nesting exceeds maximum message depth %d", maxDescriptorProtoDepth)
 	}
-	reader := wireReader{data: data}
+	reader := wireReader{data: data, budget: budget}
 	message := &Message{}
 	for !reader.done() {
 		fieldNumber, wireType, err := reader.tag()
@@ -197,7 +200,7 @@ func parseDescriptorProtoDepth(data []byte, packageName, parent string, depth in
 			payload, err = reader.bytesOfType(wireType)
 			if err == nil {
 				var field *Field
-				field, err = parseFieldDescriptorProto(payload)
+				field, err = parseFieldDescriptorProto(payload, budget)
 				if field != nil {
 					message.Fields = append(message.Fields, field)
 				}
@@ -207,7 +210,7 @@ func parseDescriptorProtoDepth(data []byte, packageName, parent string, depth in
 			payload, err = reader.bytesOfType(wireType)
 			if err == nil {
 				var nested *Message
-				nested, err = parseDescriptorProtoDepth(payload, packageName, joinName(parent, message.Name), depth+1)
+				nested, err = parseDescriptorProtoDepth(payload, packageName, joinName(parent, message.Name), depth+1, budget)
 				if nested != nil {
 					message.Messages = append(message.Messages, nested)
 				}
@@ -217,7 +220,7 @@ func parseDescriptorProtoDepth(data []byte, packageName, parent string, depth in
 			payload, err = reader.bytesOfType(wireType)
 			if err == nil {
 				var enum *Enum
-				enum, err = parseEnumDescriptorProto(payload, packageName, joinName(parent, message.Name))
+				enum, err = parseEnumDescriptorProto(payload, packageName, joinName(parent, message.Name), budget)
 				if enum != nil {
 					message.Enums = append(message.Enums, enum)
 				}
@@ -236,8 +239,8 @@ func parseDescriptorProtoDepth(data []byte, packageName, parent string, depth in
 	return message, nil
 }
 
-func parseFieldDescriptorProto(data []byte) (*Field, error) {
-	reader := wireReader{data: data}
+func parseFieldDescriptorProto(data []byte, budget *sourceguard.Budget) (*Field, error) {
+	reader := wireReader{data: data, budget: budget}
 	field := &Field{}
 	for !reader.done() {
 		fieldNumber, wireType, err := reader.tag()
@@ -277,8 +280,8 @@ func parseFieldDescriptorProto(data []byte) (*Field, error) {
 	return field, nil
 }
 
-func parseEnumDescriptorProto(data []byte, packageName, parent string) (*Enum, error) {
-	reader := wireReader{data: data}
+func parseEnumDescriptorProto(data []byte, packageName, parent string, budget *sourceguard.Budget) (*Enum, error) {
+	reader := wireReader{data: data, budget: budget}
 	enum := &Enum{}
 	for !reader.done() {
 		fieldNumber, wireType, err := reader.tag()
@@ -293,7 +296,7 @@ func parseEnumDescriptorProto(data []byte, packageName, parent string) (*Enum, e
 			payload, err = reader.bytesOfType(wireType)
 			if err == nil {
 				var value *EnumValue
-				value, err = parseEnumValueDescriptorProto(payload)
+				value, err = parseEnumValueDescriptorProto(payload, budget)
 				if value != nil {
 					enum.Values = append(enum.Values, value)
 				}
@@ -312,8 +315,8 @@ func parseEnumDescriptorProto(data []byte, packageName, parent string) (*Enum, e
 	return enum, nil
 }
 
-func parseEnumValueDescriptorProto(data []byte) (*EnumValue, error) {
-	reader := wireReader{data: data}
+func parseEnumValueDescriptorProto(data []byte, budget *sourceguard.Budget) (*EnumValue, error) {
+	reader := wireReader{data: data, budget: budget}
 	value := &EnumValue{}
 	for !reader.done() {
 		fieldNumber, wireType, err := reader.tag()
@@ -339,8 +342,9 @@ func parseEnumValueDescriptorProto(data []byte) (*EnumValue, error) {
 }
 
 type wireReader struct {
-	data []byte
-	pos  int
+	data   []byte
+	pos    int
+	budget *sourceguard.Budget
 }
 
 func (r *wireReader) done() bool {
@@ -348,6 +352,9 @@ func (r *wireReader) done() bool {
 }
 
 func (r *wireReader) tag() (int, int, error) {
+	if err := r.budget.Use(1); err != nil {
+		return 0, 0, err
+	}
 	value, err := r.varint()
 	if err != nil {
 		return 0, 0, err

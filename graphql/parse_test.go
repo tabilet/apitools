@@ -1,6 +1,12 @@
 package graphql
 
-import "testing"
+import (
+	"bytes"
+	"strings"
+	"testing"
+
+	"github.com/OpenUdon/apitools/internal/sourceguard"
+)
 
 func TestParseIntrospectionPreservesSchemaRootOperations(t *testing.T) {
 	model, err := Parse([]byte(`{
@@ -125,4 +131,46 @@ func TestParseRejectsMalformedGraphQL(t *testing.T) {
 	if _, err := Parse([]byte(`query`)); err == nil {
 		t.Fatalf("Parse() error = nil, want incomplete operation error")
 	}
+}
+
+func TestParseRejectsResourceLimitViolations(t *testing.T) {
+	t.Run("document bytes", func(t *testing.T) {
+		_, err := Parse(bytes.Repeat([]byte{'x'}, sourceguard.MaxDocumentBytes+1))
+		if err == nil || !strings.Contains(err.Error(), "maximum size") {
+			t.Fatalf("Parse() error = %v, want maximum size", err)
+		}
+	})
+	t.Run("text type nesting", func(t *testing.T) {
+		input := `query Q($v: ` + strings.Repeat(`[`, sourceguard.MaxNestingDepth+1) + `String` + strings.Repeat(`]`, sourceguard.MaxNestingDepth+1) + `) { viewer }`
+		_, err := Parse([]byte(input))
+		if err == nil || !strings.Contains(err.Error(), "nesting") {
+			t.Fatalf("Parse() error = %v, want nesting limit", err)
+		}
+	})
+	t.Run("introspection nesting", func(t *testing.T) {
+		ref := `{"kind":"SCALAR","name":"String"}`
+		for range sourceguard.MaxNestingDepth {
+			ref = `{"kind":"LIST","ofType":` + ref + `}`
+		}
+		input := `{"data":{"__schema":{"types":[{"kind":"OBJECT","name":"Query","fields":[{"name":"x","type":` + ref + `}]}]}}}`
+		input = strings.ReplaceAll(input, `\"`, `"`)
+		_, err := Parse([]byte(input))
+		if err == nil || !strings.Contains(err.Error(), "JSON nesting") {
+			t.Fatalf("Parse() error = %v, want JSON nesting limit", err)
+		}
+	})
+}
+
+func FuzzParse(f *testing.F) {
+	for _, seed := range [][]byte{
+		[]byte(`type Query { viewer: User }`),
+		[]byte(`query Viewer { viewer { id } }`),
+		[]byte(`{"data":{"__schema":{"types":[]}}}`),
+		[]byte(strings.Repeat(`[`, sourceguard.MaxNestingDepth+1)),
+	} {
+		f.Add(seed)
+	}
+	f.Fuzz(func(t *testing.T, data []byte) {
+		_, _ = Parse(data)
+	})
 }

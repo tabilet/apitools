@@ -10,6 +10,8 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/OpenUdon/apitools/internal/sourceguard"
 )
 
 // DetectLocalArtifact classifies local GraphQL artifact bytes without opening
@@ -40,6 +42,9 @@ func DetectLocalArtifact(data []byte, path string) (ArtifactDetection, bool) {
 // metadata. It does not execute operations, probe endpoints, resolve variables,
 // or look up credentials.
 func Parse(data []byte) (*Model, error) {
+	if err := sourceguard.CheckDocument("graphql", data); err != nil {
+		return nil, err
+	}
 	trimmed := bytes.TrimSpace(data)
 	if len(trimmed) == 0 {
 		return nil, fmt.Errorf("graphql: empty document")
@@ -61,6 +66,9 @@ func Parse(data []byte) (*Model, error) {
 }
 
 func parseIntrospectionJSON(data []byte) (*Model, error) {
+	if err := sourceguard.CheckJSON("graphql", data); err != nil {
+		return nil, err
+	}
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.UseNumber()
 	var root map[string]any
@@ -266,6 +274,9 @@ func parseGraphQLText(input string) (*Model, error) {
 	}
 	parser := graphQLParser{tokens: tokens}
 	model := parser.parseDocument()
+	if parser.err != nil {
+		return nil, parser.err
+	}
 	if len(model.Types) == 0 && len(model.Operations) == 0 {
 		return nil, fmt.Errorf("graphql: document does not contain schema or operation definitions")
 	}
@@ -294,6 +305,25 @@ type graphQLToken struct {
 
 func lexGraphQL(input string) ([]graphQLToken, error) {
 	var tokens []graphQLToken
+	depth := 0
+	appendToken := func(token graphQLToken) error {
+		tokens = append(tokens, token)
+		if len(tokens) > sourceguard.MaxWorkItems {
+			return fmt.Errorf("graphql: token count exceeds maximum %d", sourceguard.MaxWorkItems)
+		}
+		switch token.value {
+		case "{", "[", "(":
+			depth++
+			if depth > sourceguard.MaxNestingDepth {
+				return fmt.Errorf("graphql: nesting exceeds maximum depth %d", sourceguard.MaxNestingDepth)
+			}
+		case "}", "]", ")":
+			if depth > 0 {
+				depth--
+			}
+		}
+		return nil
+	}
 	for i := 0; i < len(input); {
 		r, size := utf8.DecodeRuneInString(input[i:])
 		if unicode.IsSpace(r) || r == ',' {
@@ -316,7 +346,9 @@ func lexGraphQL(input string) ([]graphQLToken, error) {
 				}
 				i += nextSize
 			}
-			tokens = append(tokens, graphQLToken{kind: tokenName, value: input[start:i]})
+			if err := appendToken(graphQLToken{kind: tokenName, value: input[start:i]}); err != nil {
+				return nil, err
+			}
 			continue
 		}
 		if isGraphQLNumberStart(input, i) {
@@ -325,7 +357,9 @@ func lexGraphQL(input string) ([]graphQLToken, error) {
 			for i < len(input) && isGraphQLNumberContinue(input[i]) {
 				i++
 			}
-			tokens = append(tokens, graphQLToken{kind: tokenName, value: input[start:i]})
+			if err := appendToken(graphQLToken{kind: tokenName, value: input[start:i]}); err != nil {
+				return nil, err
+			}
 			continue
 		}
 		if input[i] == '"' {
@@ -333,17 +367,23 @@ func lexGraphQL(input string) ([]graphQLToken, error) {
 			if err != nil {
 				return nil, err
 			}
-			tokens = append(tokens, graphQLToken{kind: tokenString, value: value})
+			if err := appendToken(graphQLToken{kind: tokenString, value: value}); err != nil {
+				return nil, err
+			}
 			i = next
 			continue
 		}
 		switch input[i] {
 		case '!', '$', '&', '(', ')', ':', '=', '@', '[', ']', '{', '|', '}':
-			tokens = append(tokens, graphQLToken{kind: tokenPunct, value: input[i : i+1]})
+			if err := appendToken(graphQLToken{kind: tokenPunct, value: input[i : i+1]}); err != nil {
+				return nil, err
+			}
 			i++
 		case '.':
 			if strings.HasPrefix(input[i:], "...") {
-				tokens = append(tokens, graphQLToken{kind: tokenPunct, value: "..."})
+				if err := appendToken(graphQLToken{kind: tokenPunct, value: "..."}); err != nil {
+					return nil, err
+				}
 				i += 3
 				continue
 			}
@@ -403,6 +443,7 @@ func isGraphQLNumberContinue(b byte) bool {
 type graphQLParser struct {
 	tokens []graphQLToken
 	pos    int
+	err    error
 }
 
 func (p *graphQLParser) parseDocument() *Model {
@@ -691,8 +732,16 @@ func (p *graphQLParser) parseVariablesDefinition() []*Variable {
 }
 
 func (p *graphQLParser) parseTypeRef() TypeRef {
+	return p.parseTypeRefDepth(0)
+}
+
+func (p *graphQLParser) parseTypeRefDepth(depth int) TypeRef {
+	if depth >= sourceguard.MaxNestingDepth {
+		p.err = fmt.Errorf("graphql: type nesting exceeds maximum depth %d", sourceguard.MaxNestingDepth)
+		return TypeRef{}
+	}
 	if p.consume("[") {
-		inner := p.parseTypeRef()
+		inner := p.parseTypeRefDepth(depth + 1)
 		p.consume("]")
 		ref := TypeRef{Display: "[" + inner.Display + "]", List: true, OfType: &inner}
 		if p.consume("!") {
@@ -814,6 +863,9 @@ func (p *graphQLParser) skipBalanced(open, close string) {
 			depth--
 		}
 	}
+	if depth > 0 && p.err == nil {
+		p.err = fmt.Errorf("graphql: unterminated %s block", open)
+	}
 }
 
 func (p *graphQLParser) peekDefinitionBoundary() bool {
@@ -860,6 +912,12 @@ func (p *graphQLParser) peek() graphQLToken {
 }
 
 func (p *graphQLParser) advance() graphQLToken {
+	if p.done() {
+		if p.err == nil {
+			p.err = fmt.Errorf("graphql: unexpected end of source")
+		}
+		return graphQLToken{}
+	}
 	tok := p.tokens[p.pos]
 	p.pos++
 	return tok

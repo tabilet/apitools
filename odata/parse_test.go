@@ -1,6 +1,12 @@
 package odata
 
-import "testing"
+import (
+	"bytes"
+	"strings"
+	"testing"
+
+	"github.com/OpenUdon/apitools/internal/sourceguard"
+)
 
 func TestParseCSDLXMLPreservesResourcesOperationsAndSelectors(t *testing.T) {
 	model, err := Parse([]byte(`<?xml version="1.0" encoding="utf-8"?>
@@ -127,4 +133,35 @@ func TestParseRejectsMalformedSource(t *testing.T) {
 	if _, err := Parse([]byte(`<root/>`)); err == nil {
 		t.Fatalf("Parse() error = nil, want missing CSDL metadata error")
 	}
+}
+
+func TestParseRejectsResourceLimitViolations(t *testing.T) {
+	_, err := Parse(bytes.Repeat([]byte{'x'}, sourceguard.MaxDocumentBytes+1))
+	if err == nil || !strings.Contains(err.Error(), "maximum size") {
+		t.Fatalf("Parse() error = %v, want maximum size", err)
+	}
+	xmlInput := strings.Repeat(`<x>`, sourceguard.MaxNestingDepth+1) + `<Schema Namespace="Demo"/>` + strings.Repeat(`</x>`, sourceguard.MaxNestingDepth+1)
+	_, err = Parse([]byte(xmlInput))
+	if err == nil || !strings.Contains(err.Error(), "XML nesting") {
+		t.Fatalf("Parse() error = %v, want XML nesting limit", err)
+	}
+	jsonInput := strings.Repeat(`{"x":`, sourceguard.MaxNestingDepth+1) + `0` + strings.Repeat(`}`, sourceguard.MaxNestingDepth+1)
+	jsonInput = strings.ReplaceAll(jsonInput, `\"`, `"`)
+	_, err = Parse([]byte(jsonInput))
+	if err == nil || !strings.Contains(err.Error(), "JSON nesting") {
+		t.Fatalf("Parse() error = %v, want JSON nesting limit", err)
+	}
+}
+
+func FuzzParse(f *testing.F) {
+	for _, seed := range [][]byte{
+		[]byte(`<Schema Namespace="Demo"><EntityType Name="Item"/></Schema>`),
+		[]byte(`{"$Version":"4.01","Demo":{"Item":{"$Kind":"EntityType"}}}`),
+		[]byte(`<root/>`),
+	} {
+		f.Add(seed)
+	}
+	f.Fuzz(func(t *testing.T, data []byte) {
+		_, _ = Parse(data)
+	})
 }

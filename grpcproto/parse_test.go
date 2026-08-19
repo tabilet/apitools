@@ -1,9 +1,12 @@
 package grpcproto
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 	"testing"
+
+	"github.com/OpenUdon/apitools/internal/sourceguard"
 )
 
 func TestParseProtoPreservesServicesMessagesAndSelectors(t *testing.T) {
@@ -160,6 +163,58 @@ func TestParseRejectsMalformedSource(t *testing.T) {
 	if _, err := Parse([]byte(`not protobuf`)); err == nil {
 		t.Fatalf("Parse() error = nil, want malformed source error")
 	}
+}
+
+func TestParseRejectsStrayClosingBrace(t *testing.T) {
+	_, err := Parse([]byte(`syntax }`))
+	if err == nil || !strings.Contains(err.Error(), "closing brace") {
+		t.Fatalf("Parse() error = %v, want closing brace error", err)
+	}
+}
+
+func TestParseRejectsResourceLimitViolations(t *testing.T) {
+	t.Run("document bytes", func(t *testing.T) {
+		_, err := Parse(bytes.Repeat([]byte{'x'}, sourceguard.MaxDocumentBytes+1))
+		if err == nil || !strings.Contains(err.Error(), "maximum size") {
+			t.Fatalf("Parse() error = %v, want maximum size", err)
+		}
+	})
+	t.Run("text nesting", func(t *testing.T) {
+		input := `message Root { ` + strings.Repeat(`message Nested { `, sourceguard.MaxNestingDepth+1) + strings.Repeat(`}`, sourceguard.MaxNestingDepth+2)
+		_, err := Parse([]byte(input))
+		if err == nil || !strings.Contains(err.Error(), "nesting") {
+			t.Fatalf("Parse() error = %v, want nesting limit", err)
+		}
+	})
+	t.Run("descriptor JSON nesting", func(t *testing.T) {
+		input := `{"file":[{"messageType":[` + strings.Repeat(`{"name":"N","nestedType":[`, sourceguard.MaxNestingDepth) + `{}` + strings.Repeat(`]}`, sourceguard.MaxNestingDepth) + `]}]}`
+		input = strings.ReplaceAll(input, `\"`, `"`)
+		_, err := Parse([]byte(input))
+		if err == nil || !strings.Contains(err.Error(), "JSON nesting") {
+			t.Fatalf("Parse() error = %v, want JSON nesting limit", err)
+		}
+	})
+	t.Run("binary work", func(t *testing.T) {
+		input := bytes.Repeat([]byte{0x10, 0x00}, sourceguard.MaxWorkItems+1)
+		_, err := parseBinaryDescriptorSet(input)
+		if err == nil || !strings.Contains(err.Error(), "parser work") {
+			t.Fatalf("parseBinaryDescriptorSet() error = %v, want work limit", err)
+		}
+	})
+}
+
+func FuzzParse(f *testing.F) {
+	for _, seed := range [][]byte{
+		[]byte(`syntax = "proto3"; message M { string id = 1; }`),
+		[]byte(`{"file":[{"name":"seed.proto","messageType":[{"name":"M"}]}]}`),
+		{0x0a, 0x00},
+		[]byte(`syntax }`),
+	} {
+		f.Add(seed)
+	}
+	f.Fuzz(func(t *testing.T, data []byte) {
+		_, _ = Parse(data)
+	})
 }
 
 func message(parts ...[]byte) []byte {

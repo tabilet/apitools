@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/OpenUdon/apitools/internal/sourceguard"
 )
 
 // DetectLocalArtifact classifies local OData artifact bytes without calling
@@ -36,11 +38,17 @@ func DetectLocalArtifact(data []byte, path string) (ArtifactDetection, bool) {
 // call tenant $metadata endpoints, execute $batch, execute OData operations,
 // resolve credentials, log in to tenants, or choose accounts.
 func Parse(data []byte) (*Model, error) {
+	if err := sourceguard.CheckDocument("odata", data); err != nil {
+		return nil, err
+	}
 	trimmed := bytes.TrimSpace(data)
 	if len(trimmed) == 0 {
 		return nil, fmt.Errorf("odata: empty document")
 	}
 	if trimmed[0] == '{' {
+		if err := sourceguard.CheckJSON("odata", trimmed); err != nil {
+			return nil, err
+		}
 		if model, err := parseJSONCSDL(trimmed); err == nil {
 			return model, nil
 		} else if json.Valid(trimmed) {
@@ -55,6 +63,8 @@ func Parse(data []byte) (*Model, error) {
 
 func parseXMLCSDL(data []byte) (*Model, error) {
 	decoder := xml.NewDecoder(bytes.NewReader(data))
+	depth := 0
+	work := 0
 	model := &Model{SourceKind: ArtifactKindCSDLXML}
 	var schema *Schema
 	var entityType *EntityType
@@ -68,8 +78,16 @@ func parseXMLCSDL(data []byte) (*Model, error) {
 		if err != nil {
 			return nil, fmt.Errorf("odata: decode CSDL XML: %w", err)
 		}
+		work++
+		if work > sourceguard.MaxWorkItems {
+			return nil, fmt.Errorf("odata: XML token count exceeds maximum %d", sourceguard.MaxWorkItems)
+		}
 		switch tok := token.(type) {
 		case xml.StartElement:
+			depth++
+			if depth > sourceguard.MaxNestingDepth {
+				return nil, fmt.Errorf("odata: XML nesting exceeds maximum depth %d", sourceguard.MaxNestingDepth)
+			}
 			name := tok.Name.Local
 			switch name {
 			case "Edmx":
@@ -203,6 +221,7 @@ func parseXMLCSDL(data []byte) (*Model, error) {
 			case "Schema":
 				schema = nil
 			}
+			depth--
 		}
 	}
 	if len(model.Schemas) == 0 {

@@ -11,6 +11,8 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/OpenUdon/apitools/internal/sourceguard"
 )
 
 // DetectLocalArtifact classifies local gRPC/protobuf artifact bytes without
@@ -40,6 +42,9 @@ func DetectLocalArtifact(data []byte, path string) (ArtifactDetection, bool) {
 // reflection, channel creation, TLS negotiation, endpoint probing, or
 // credential lookup.
 func Parse(data []byte) (*Model, error) {
+	if err := sourceguard.CheckDocument("grpcproto", data); err != nil {
+		return nil, err
+	}
 	trimmed := bytes.TrimSpace(data)
 	if len(trimmed) == 0 {
 		return nil, fmt.Errorf("grpcproto: empty document")
@@ -54,6 +59,8 @@ func Parse(data []byte) (*Model, error) {
 	if looksLikeProtoText(trimmed) {
 		if model, err := parseProtoText(string(trimmed)); err == nil {
 			return model, nil
+		} else {
+			return nil, err
 		}
 	}
 	if model, err := parseBinaryDescriptorSet(data); err == nil {
@@ -66,6 +73,9 @@ func Parse(data []byte) (*Model, error) {
 }
 
 func parseDescriptorJSON(data []byte) (*Model, error) {
+	if err := sourceguard.CheckJSON("grpcproto", data); err != nil {
+		return nil, err
+	}
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.UseNumber()
 	var root any
@@ -241,6 +251,9 @@ func parseProtoText(input string) (*Model, error) {
 	}
 	parser := protoParser{tokens: tokens}
 	file := parser.parseFile()
+	if parser.err != nil {
+		return nil, parser.err
+	}
 	if len(file.Services) == 0 && len(file.Messages) == 0 && len(file.Enums) == 0 {
 		return nil, fmt.Errorf("grpcproto: proto source has no services, messages, or enums")
 	}
@@ -265,6 +278,25 @@ type protoToken struct {
 
 func lexProto(input string) ([]protoToken, error) {
 	var tokens []protoToken
+	depth := 0
+	appendToken := func(token protoToken) error {
+		tokens = append(tokens, token)
+		if len(tokens) > sourceguard.MaxWorkItems {
+			return fmt.Errorf("grpcproto: token count exceeds maximum %d", sourceguard.MaxWorkItems)
+		}
+		switch token.value {
+		case "{", "[", "(", "<":
+			depth++
+			if depth > sourceguard.MaxNestingDepth {
+				return fmt.Errorf("grpcproto: nesting exceeds maximum depth %d", sourceguard.MaxNestingDepth)
+			}
+		case "}", "]", ")", ">":
+			if depth > 0 {
+				depth--
+			}
+		}
+		return nil
+	}
 	for i := 0; i < len(input); {
 		r, size := utf8.DecodeRuneInString(input[i:])
 		if unicode.IsSpace(r) {
@@ -295,7 +327,9 @@ func lexProto(input string) ([]protoToken, error) {
 				}
 				i += nextSize
 			}
-			tokens = append(tokens, protoToken{kind: protoTokenName, value: input[start:i]})
+			if err := appendToken(protoToken{kind: protoTokenName, value: input[start:i]}); err != nil {
+				return nil, err
+			}
 			continue
 		}
 		if isProtoNumberStart(input, i) {
@@ -304,7 +338,9 @@ func lexProto(input string) ([]protoToken, error) {
 			for i < len(input) && isProtoNumberContinue(input[i]) {
 				i++
 			}
-			tokens = append(tokens, protoToken{kind: protoTokenNumber, value: input[start:i]})
+			if err := appendToken(protoToken{kind: protoTokenNumber, value: input[start:i]}); err != nil {
+				return nil, err
+			}
 			continue
 		}
 		if input[i] == '"' || input[i] == '\'' {
@@ -312,13 +348,17 @@ func lexProto(input string) ([]protoToken, error) {
 			if err != nil {
 				return nil, err
 			}
-			tokens = append(tokens, protoToken{kind: protoTokenString, value: value})
+			if err := appendToken(protoToken{kind: protoTokenString, value: value}); err != nil {
+				return nil, err
+			}
 			i = next
 			continue
 		}
 		switch input[i] {
 		case '{', '}', '(', ')', '[', ']', '<', '>', ';', ':', '=', ',', '.', '/', '-':
-			tokens = append(tokens, protoToken{kind: protoTokenPunct, value: input[i : i+1]})
+			if err := appendToken(protoToken{kind: protoTokenPunct, value: input[i : i+1]}); err != nil {
+				return nil, err
+			}
 			i++
 		default:
 			return nil, fmt.Errorf("grpcproto: unexpected character %q", input[i])
@@ -366,6 +406,7 @@ func isProtoNumberContinue(b byte) bool {
 type protoParser struct {
 	tokens []protoToken
 	pos    int
+	err    error
 }
 
 func (p *protoParser) parseFile() *File {
@@ -393,7 +434,7 @@ func (p *protoParser) parseFile() *File {
 			p.skipStatement()
 		case "message":
 			p.advance()
-			if message := p.parseMessage(file.Package, ""); message != nil {
+			if message := p.parseMessage(file.Package, "", 0); message != nil {
 				file.Messages = append(file.Messages, message)
 			}
 		case "enum":
@@ -465,7 +506,11 @@ func (p *protoParser) parseRPC(service *Service) *Method {
 	return method
 }
 
-func (p *protoParser) parseMessage(packageName, parent string) *Message {
+func (p *protoParser) parseMessage(packageName, parent string, depth int) *Message {
+	if depth >= sourceguard.MaxNestingDepth {
+		p.err = fmt.Errorf("grpcproto: message nesting exceeds maximum depth %d", sourceguard.MaxNestingDepth)
+		return nil
+	}
 	name := p.consumeName()
 	if name == "" {
 		return nil
@@ -479,7 +524,7 @@ func (p *protoParser) parseMessage(packageName, parent string) *Message {
 		switch p.peek().value {
 		case "message":
 			p.advance()
-			if nested := p.parseMessage(packageName, joinName(parent, name)); nested != nil {
+			if nested := p.parseMessage(packageName, joinName(parent, name), depth+1); nested != nil {
 				message.Messages = append(message.Messages, nested)
 			}
 		case "enum":
@@ -640,6 +685,8 @@ func (p *protoParser) skipStatement() {
 			return
 		}
 		if p.peekValue("}") {
+			p.err = fmt.Errorf("grpcproto: unexpected closing brace")
+			p.advance()
 			return
 		}
 		p.advance()
@@ -659,6 +706,9 @@ func (p *protoParser) skipBalanced(open, close string) {
 		case close:
 			depth--
 		}
+	}
+	if depth > 0 && p.err == nil {
+		p.err = fmt.Errorf("grpcproto: unterminated %s block", open)
 	}
 }
 
@@ -690,6 +740,12 @@ func (p *protoParser) peek() protoToken {
 }
 
 func (p *protoParser) advance() protoToken {
+	if p.done() {
+		if p.err == nil {
+			p.err = fmt.Errorf("grpcproto: unexpected end of source")
+		}
+		return protoToken{}
+	}
 	tok := p.tokens[p.pos]
 	p.pos++
 	return tok
@@ -765,6 +821,9 @@ func looksLikeProtoText(data []byte) bool {
 	trimmed := strings.TrimSpace(string(data))
 	return strings.HasPrefix(trimmed, "syntax") ||
 		strings.HasPrefix(trimmed, "package") ||
+		strings.HasPrefix(trimmed, "message") ||
+		strings.HasPrefix(trimmed, "service") ||
+		strings.HasPrefix(trimmed, "enum") ||
 		strings.Contains(trimmed, " service ") ||
 		strings.Contains(trimmed, "\nservice ") ||
 		strings.Contains(trimmed, " message ") ||

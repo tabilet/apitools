@@ -7,14 +7,22 @@ import (
 	"io"
 	"sort"
 	"strings"
+
+	"github.com/OpenUdon/apitools/internal/sourceguard"
 )
 
 // Parse decodes an OpenRPC JSON document into a metadata model. It performs no
 // network access, server validation, JSON-RPC invocation, or credential lookup.
 func Parse(data []byte) (*Model, error) {
+	if err := sourceguard.CheckDocument("openrpc", data); err != nil {
+		return nil, err
+	}
 	trimmed := bytes.TrimSpace(data)
 	if len(trimmed) == 0 {
 		return nil, fmt.Errorf("openrpc: empty document")
+	}
+	if err := sourceguard.CheckJSON("openrpc", trimmed); err != nil {
+		return nil, err
 	}
 	decoder := json.NewDecoder(bytes.NewReader(trimmed))
 	decoder.UseNumber()

@@ -1,8 +1,11 @@
 package openrpc
 
 import (
+	"bytes"
 	"strings"
 	"testing"
+
+	"github.com/OpenUdon/apitools/internal/sourceguard"
 )
 
 func TestParsePreservesOpenRPCMetadataAndSelectors(t *testing.T) {
@@ -121,4 +124,30 @@ func TestMethodSelectorEscapesJSONPointerSegments(t *testing.T) {
 	if target.Method.Name != "system/foo~bar" {
 		t.Fatalf("target = %#v", target)
 	}
+}
+
+func TestParseRejectsResourceLimitViolations(t *testing.T) {
+	_, err := Parse(bytes.Repeat([]byte{'x'}, sourceguard.MaxDocumentBytes+1))
+	if err == nil || !strings.Contains(err.Error(), "maximum size") {
+		t.Fatalf("Parse() error = %v, want maximum size", err)
+	}
+	nested := strings.Repeat(`{"x":`, sourceguard.MaxNestingDepth+1) + `0` + strings.Repeat(`}`, sourceguard.MaxNestingDepth+1)
+	nested = strings.ReplaceAll(nested, `\"`, `"`)
+	_, err = Parse([]byte(nested))
+	if err == nil || !strings.Contains(err.Error(), "JSON nesting") {
+		t.Fatalf("Parse() error = %v, want JSON nesting limit", err)
+	}
+}
+
+func FuzzParse(f *testing.F) {
+	for _, seed := range [][]byte{
+		[]byte(`{"openrpc":"1.3.2","info":{"title":"seed"},"methods":[]}`),
+		[]byte(`{}`),
+		[]byte(`{"openrpc":`),
+	} {
+		f.Add(seed)
+	}
+	f.Fuzz(func(t *testing.T, data []byte) {
+		_, _ = Parse(data)
+	})
 }
