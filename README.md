@@ -161,6 +161,12 @@ go run ./cmd/apitools catalog refresh \
   --cache catalog-openapi-cache/cache.sqlite
 ```
 
+Reviewed built-in catalog records live in `catalog/data/catalog.json`. After a
+catalog-data review, regenerate the checked-in digest/count manifest and lookup
+indexes with `go run ./cmd/cataloggen`; CI and local verification use
+`go run ./cmd/cataloggen -check` to reject invalid or stale generated output.
+The generator is offline and never probes provider URLs.
+
 Catalog resolution is intentionally conservative. Explicit user OpenAPI inputs
 and user security overlays take precedence over project-local documents, and
 project-local documents take precedence over built-in spec references and

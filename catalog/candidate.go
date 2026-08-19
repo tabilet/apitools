@@ -102,12 +102,11 @@ func FindBuiltInCandidate(key string) (Candidate, bool) {
 	if normalized == "" {
 		return Candidate{}, false
 	}
-	for _, candidate := range BuiltInCandidates() {
-		if candidate.matches(normalized) {
-			return candidate, true
-		}
+	index, ok := builtInCandidateLookupIndex[normalized]
+	if !ok {
+		return Candidate{}, false
 	}
-	return Candidate{}, false
+	return cloneCandidate(builtInCandidates[index]), true
 }
 
 // ValidateCandidates validates candidate inventory records for deterministic
@@ -211,15 +210,6 @@ func validateEvidence(candidateID string, evidence CandidateEvidence) error {
 		return fmt.Errorf("missing note")
 	}
 	return nil
-}
-
-func (c Candidate) matches(normalized string) bool {
-	for _, key := range c.lookupKeys() {
-		if key == normalized {
-			return true
-		}
-	}
-	return false
 }
 
 func (c Candidate) lookupKeys() []string {

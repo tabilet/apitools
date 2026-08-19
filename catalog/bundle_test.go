@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestReviewedCatalogBundleMatchesLegacyBuiltIns(t *testing.T) {
+func TestReviewedCatalogBundleMatchesEmbeddedBuiltIns(t *testing.T) {
 	content, err := os.ReadFile("data/catalog.json")
 	if err != nil {
 		t.Fatal(err)

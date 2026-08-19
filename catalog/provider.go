@@ -97,7 +97,12 @@ func BuiltInProviders() []Provider {
 // FindBuiltInProvider returns a built-in provider by ID, display name, or
 // alias. Matching is case-insensitive and whitespace-insensitive.
 func FindBuiltInProvider(key string) (Provider, bool) {
-	return BuiltInCatalog().FindProvider(key)
+	normalized := normalizeKey(key)
+	index, ok := builtInProviderLookupIndex[normalized]
+	if !ok {
+		return Provider{}, false
+	}
+	return cloneProvider(builtInProviders[index]), true
 }
 
 // ValidateProviders validates provider catalog records for deterministic

@@ -1111,7 +1111,7 @@ func TestValidateProvidersRequiresOpenAPIRefForKnownOpenAPI(t *testing.T) {
 func TestValidateProvidersRequiresMachineRefForKnownMachineSpec(t *testing.T) {
 	provider := minimalProvider("one", "One", nil)
 	provider.OfficialMachineSpecAvailability = SpecAvailabilityKnown
-	provider.SpecReferences = []SpecReference{humanDocsRef("one-docs", "https://example.com/docs", "docs")}
+	provider.SpecReferences = []SpecReference{testHumanDocsRef("one-docs", "https://example.com/docs", "docs")}
 	if err := ValidateProviders([]Provider{provider}); err == nil {
 		t.Fatalf("ValidateProviders() expected missing machine spec ref error")
 	}
@@ -1157,6 +1157,17 @@ func minimalProvider(id, displayName string, aliases []string) Provider {
 		OfficialOpenAPIAvailability:     SpecAvailabilityUnknown,
 		OfficialMachineSpecAvailability: SpecAvailabilityUnknown,
 		UserOpenAPINeed:                 UserOpenAPINeedUnknown,
-		SpecReferences:                  []SpecReference{humanDocsRef(id+"-docs", "https://example.com/docs", "docs")},
+		SpecReferences:                  []SpecReference{testHumanDocsRef(id+"-docs", "https://example.com/docs", "docs")},
+	}
+}
+
+func testHumanDocsRef(id, url, note string) SpecReference {
+	return SpecReference{
+		ID:              id,
+		Kind:            SpecKindHumanDocs,
+		URL:             url,
+		SourceAuthority: SourceAuthorityOfficialDocs,
+		VerifiedAt:      "2026-05-18",
+		SourceNote:      note,
 	}
 }

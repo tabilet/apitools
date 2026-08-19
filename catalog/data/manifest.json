@@ -1,0 +1,11 @@
+{
+  "version": "apitools.catalog-manifest.v1",
+  "catalog_version": "apitools.catalog.v1",
+  "catalog_sha256": "3bdeb97b8554de75c588f8358b897dba8675f90d31468a62a5d80510e9d57c65",
+  "catalog_bytes": 1361152,
+  "candidate_count": 317,
+  "provider_count": 316,
+  "spec_reference_count": 908,
+  "security_classification_count": 276,
+  "security_overlay_count": 249
+}
