@@ -794,8 +794,10 @@ func TestCatalogSecurityReportJSON(t *testing.T) {
 		t.Fatalf("code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
 	text := out.String()
-	if !strings.Contains(text, `"provider_id": "airtable"`) || !strings.Contains(text, `"status": "overlay-required"`) {
-		t.Fatalf("security report json missing expected metadata:\n%s", text)
+	for _, expected := range []string{`"provider_id": "airtable"`, `"status": "overlay-required"`, `"dispositions":`, `"scope": "spec"`, `"classification_status":`, `"overlay_status":`} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("security report json missing %q:\n%s", expected, text)
+		}
 	}
 }
 
@@ -824,7 +826,7 @@ func TestCatalogSecurityAuditOutputAndJSON(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("json code = %d\nstdout:\n%s\nstderr:\n%s", code, out.String(), errOut.String())
 	}
-	for _, expected := range []string{`"provider_count": 316`, `"disposition": "complete-via-overlay"`, `"provider_id": "github"`} {
+	for _, expected := range []string{`"provider_count": 316`, `"disposition": "complete-via-overlay"`, `"provider_id": "github"`, `"dispositions":`, `"scope": "spec"`} {
 		if !strings.Contains(out.String(), expected) {
 			t.Fatalf("security audit json missing %q:\n%s", expected, out.String())
 		}

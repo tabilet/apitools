@@ -90,7 +90,7 @@ func validateSecurityOverlay(overlay SecurityOverlay, providers map[string]Provi
 			return fmt.Errorf("overlay %q: unknown spec ref %q for provider %q", overlay.ID, overlay.SpecRefID, overlay.ProviderID)
 		}
 	}
-	if !validAuthCompletenessStatus(overlay.Status) {
+	if !validAuthEvidenceStatus(overlay.Status) {
 		return fmt.Errorf("overlay %q: invalid status %q", overlay.ID, overlay.Status)
 	}
 	if strings.TrimSpace(overlay.SourceNote) == "" {

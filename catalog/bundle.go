@@ -77,6 +77,15 @@ func ValidateCatalogBundle(bundle CatalogBundle) error {
 			return fmt.Errorf("provider %q references unknown candidate %q", provider.ID, provider.CandidateID)
 		}
 	}
+	report, err := BuildSecurityReport(bundle.Providers, bundle.SecurityOverlays, bundle.SecurityClassifications)
+	if err != nil {
+		return err
+	}
+	for _, provider := range report.Providers {
+		if provider.Status == AuthStatusConflict {
+			return fmt.Errorf("provider %q has conflicting security dispositions", provider.ProviderID)
+		}
+	}
 	return nil
 }
 

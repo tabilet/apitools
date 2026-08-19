@@ -67,6 +67,25 @@ func TestCatalogQualityReportFindsOverlayReferenceMismatch(t *testing.T) {
 	}
 }
 
+func TestCatalogQualityReportFindsConflictingScopedDispositions(t *testing.T) {
+	provider := qualityProvider("demo")
+	first := qualityOverlay("demo")
+	first.Status = AuthStatusComplete
+	second := qualityOverlay("demo")
+	second.ID = "demo-second-auth-overlay"
+	second.Status = AuthStatusAbsent
+	report := BuildCatalogQualityReport(CatalogQualityOptions{
+		Catalog: Catalog{
+			Providers:        []Provider{provider},
+			SecurityOverlays: []SecurityOverlay{first, second},
+		},
+		AsOf: mustQualityDate(t, "2026-05-18"),
+	})
+	if !hasQualityFinding(report, CatalogQualityError, "conflicting-security-status", "demo") {
+		t.Fatalf("missing conflicting security status in %#v", report.Findings)
+	}
+}
+
 func TestCatalogQualityReportFindsUnresolvedOverlayOperations(t *testing.T) {
 	provider := qualityProvider("demo")
 	overlay := qualityOverlay("demo")

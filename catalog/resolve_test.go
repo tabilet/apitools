@@ -166,10 +166,20 @@ func TestSecurityReportRowsReturnCopies(t *testing.T) {
 	}
 	rows := SecurityReportRows(report)
 	rows[0].OverlayIDs = append(rows[0].OverlayIDs, "mutated")
+	if len(rows[0].Dispositions) > 0 {
+		rows[0].Dispositions[0].SourceRefs = append(rows[0].Dispositions[0].SourceRefs, "mutated")
+	}
 	fresh := SecurityReportRows(report)
 	for _, id := range fresh[0].OverlayIDs {
 		if id == "mutated" {
 			t.Fatalf("SecurityReportRows leaked overlay ids slice")
+		}
+	}
+	if len(fresh[0].Dispositions) > 0 {
+		for _, ref := range fresh[0].Dispositions[0].SourceRefs {
+			if ref == "mutated" {
+				t.Fatal("SecurityReportRows leaked disposition source refs slice")
+			}
 		}
 	}
 }

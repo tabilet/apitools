@@ -38,9 +38,12 @@ type SecurityInspectionOptions struct {
 // SecurityInspectionView is a read-only advisory view of catalog security
 // metadata and overlay effects. It does not mutate or export OpenAPI documents.
 type SecurityInspectionView struct {
-	ProviderID        string                            `json:"provider_id"`
-	DisplayName       string                            `json:"display_name,omitempty"`
-	Status            AuthCompletenessStatus            `json:"status"`
+	ProviderID      string                             `json:"provider_id"`
+	DisplayName     string                             `json:"display_name,omitempty"`
+	Status          AuthCompletenessStatus             `json:"status"`
+	Classifications []SecurityInspectionClassification `json:"classifications,omitempty"`
+	// Classification retains the first deterministic classification for
+	// compatibility with callers written before per-spec dispositions.
 	Classification    *SecurityInspectionClassification `json:"classification,omitempty"`
 	SpecReferences    []SpecReference                   `json:"spec_references,omitempty"`
 	SecuritySchemes   []EffectiveSecurityScheme         `json:"security_schemes,omitempty"`
@@ -157,7 +160,7 @@ func BuildSecurityInspectionView(options SecurityInspectionOptions) (SecurityIns
 		providerByID[p.ID] = p
 	}
 
-	classification, hasClassification, err := inspectionClassificationForProvider(classifications, providerByID, provider.ID)
+	providerClassifications, err := inspectionClassificationsForProvider(classifications, providerByID, provider.ID)
 	if err != nil {
 		return SecurityInspectionView{}, err
 	}
@@ -169,11 +172,10 @@ func BuildSecurityInspectionView(options SecurityInspectionOptions) (SecurityIns
 	view := SecurityInspectionView{
 		ProviderID:     provider.ID,
 		DisplayName:    provider.DisplayName,
-		Status:         AuthStatusUnknown,
+		Status:         inspectionSecurityStatus(provider.ID, providerClassifications, overlays),
 		SpecReferences: append([]SpecReference(nil), provider.SpecReferences...),
 	}
-	if hasClassification {
-		view.Status = classification.Status
+	for _, classification := range providerClassifications {
 		inspection := SecurityInspectionClassification{
 			Status:     classification.Status,
 			SpecRefID:  classification.SpecRefID,
@@ -181,7 +183,7 @@ func BuildSecurityInspectionView(options SecurityInspectionOptions) (SecurityIns
 			SourceRefs: append([]string(nil), classification.SourceRefs...),
 			SourceNote: classification.SourceNote,
 		}
-		view.Classification = &inspection
+		view.Classifications = append(view.Classifications, inspection)
 		view.SourceNotes = append(view.SourceNotes, SecurityInspectionSourceNote{
 			Provenance: SecurityProvenanceClassification,
 			SpecRefID:  classification.SpecRefID,
@@ -189,11 +191,15 @@ func BuildSecurityInspectionView(options SecurityInspectionOptions) (SecurityIns
 			SourceNote: classification.SourceNote,
 		})
 	}
+	if len(view.Classifications) > 0 {
+		classification := view.Classifications[0]
+		classification.SourceRefs = append([]string(nil), classification.SourceRefs...)
+		view.Classification = &classification
+	}
 
 	schemeByName := map[string]EffectiveSecurityScheme{}
 	knownOperations := cloneOperationMatches(options.KnownOperations)
 	for _, overlay := range overlays {
-		view.Status = overlay.Status
 		view.SourceNotes = append(view.SourceNotes, SecurityInspectionSourceNote{
 			Provenance: SecurityProvenanceOverlay,
 			OverlayID:  overlay.ID,
@@ -295,23 +301,46 @@ func BuildSecurityInspectionView(options SecurityInspectionOptions) (SecurityIns
 	return cloneSecurityInspectionView(view), nil
 }
 
-func inspectionClassificationForProvider(classifications []SecurityClassification, providers map[string]Provider, providerID string) (SecurityClassification, bool, error) {
-	var found SecurityClassification
-	var ok bool
+func inspectionSecurityStatus(providerID string, classifications []SecurityClassification, overlays []SecurityOverlay) AuthCompletenessStatus {
+	classificationByScope := map[string]SecurityClassification{}
+	overlaysByScope := map[string][]SecurityOverlay{}
+	for _, classification := range classifications {
+		classificationByScope[securityScopeKey(providerID, classification.SpecRefID)] = classification
+	}
+	for _, overlay := range overlays {
+		key := securityScopeKey(providerID, overlay.SpecRefID)
+		overlaysByScope[key] = append(overlaysByScope[key], overlay)
+	}
+	var dispositions []SecurityDisposition
+	for _, specRefID := range securityScopesForProvider(providerID, classificationByScope, overlaysByScope) {
+		dispositions = append(dispositions, buildSecurityDisposition(
+			specRefID,
+			classificationByScope[securityScopeKey(providerID, specRefID)],
+			overlaysByScope[securityScopeKey(providerID, specRefID)],
+		))
+	}
+	return aggregateSecurityDispositionStatus(dispositions)
+}
+
+func inspectionClassificationsForProvider(classifications []SecurityClassification, providers map[string]Provider, providerID string) ([]SecurityClassification, error) {
+	var found []SecurityClassification
+	seenScopes := map[string]struct{}{}
 	for i, classification := range classifications {
 		if err := validateSecurityClassification(classification, providers); err != nil {
-			return SecurityClassification{}, false, fmt.Errorf("security classification[%d]: %w", i, err)
+			return nil, fmt.Errorf("security classification[%d]: %w", i, err)
 		}
 		if classification.ProviderID != providerID {
 			continue
 		}
-		if ok {
-			return SecurityClassification{}, false, fmt.Errorf("security classification %q: duplicate provider", providerID)
+		scope := strings.TrimSpace(classification.SpecRefID)
+		if _, ok := seenScopes[scope]; ok {
+			return nil, fmt.Errorf("security classification %q/%q: duplicate provider/spec scope", providerID, scope)
 		}
-		found = classification
-		ok = true
+		seenScopes[scope] = struct{}{}
+		found = append(found, classification)
 	}
-	return found, ok, nil
+	sortSecurityClassifications(found)
+	return found, nil
 }
 
 func inspectionOverlaysForProvider(overlays []SecurityOverlay, providers map[string]Provider, providerID string) ([]SecurityOverlay, error) {
@@ -355,7 +384,7 @@ func validateInspectionOverlayEnvelope(overlay SecurityOverlay, providers map[st
 			return fmt.Errorf("overlay %q: unknown spec ref %q for provider %q", overlay.ID, overlay.SpecRefID, overlay.ProviderID)
 		}
 	}
-	if !validAuthCompletenessStatus(overlay.Status) {
+	if !validAuthEvidenceStatus(overlay.Status) {
 		return fmt.Errorf("overlay %q: invalid status %q", overlay.ID, overlay.Status)
 	}
 	if strings.TrimSpace(overlay.SourceNote) == "" {
@@ -500,6 +529,9 @@ func containsAllStrings(values, required []string) bool {
 }
 
 func sortSecurityInspectionView(view *SecurityInspectionView) {
+	sort.SliceStable(view.Classifications, func(i, j int) bool {
+		return view.Classifications[i].SpecRefID < view.Classifications[j].SpecRefID
+	})
 	sort.SliceStable(view.SpecReferences, func(i, j int) bool {
 		return view.SpecReferences[i].ID < view.SpecReferences[j].ID
 	})
@@ -593,6 +625,11 @@ func effectiveSecurityRequirementSetSortKey(set EffectiveSecurityRequirementSet)
 
 func cloneSecurityInspectionView(view SecurityInspectionView) SecurityInspectionView {
 	out := view
+	out.Classifications = make([]SecurityInspectionClassification, len(view.Classifications))
+	for i, classification := range view.Classifications {
+		out.Classifications[i] = classification
+		out.Classifications[i].SourceRefs = append([]string(nil), classification.SourceRefs...)
+	}
 	if view.Classification != nil {
 		classification := *view.Classification
 		classification.SourceRefs = append([]string(nil), classification.SourceRefs...)

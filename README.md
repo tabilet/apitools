@@ -246,6 +246,16 @@ artifacts are registered, inspects OpenAPI/Swagger `securitySchemes` or
 It reports missing, incomplete, or internally inconsistent artifact security
 metadata without fetching provider documents or applying credentials.
 
+Security classifications and overlays are resolved by provider/spec scope.
+Classifications remain baseline evidence and a scoped overlay is an explicit
+reviewed supplementation for that same scope; input order never determines the
+result. Reports expose each scoped disposition, derive `mixed` when distinct
+scopes have different effective statuses, and derive `conflict` when overlays
+disagree within one scope. Provider resolution uses the selected spec's exact
+disposition, then provider-wide evidence, before falling back to the aggregate.
+The reviewed built-in catalog rejects conflicting same-scope dispositions at
+generation time.
+
 Catalog stats are offline. `catalog stats` summarizes primary provider
 protocol classifications, local catalog artifact registry counts by kind, and
 refresh artifact validation buckets without probing URLs or executing provider

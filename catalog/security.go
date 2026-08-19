@@ -17,6 +17,13 @@ const (
 	AuthStatusOverlayRequired        AuthCompletenessStatus = "overlay-required"
 	AuthStatusIntentionallyAnonymous AuthCompletenessStatus = "intentionally-anonymous"
 	AuthStatusUnknown                AuthCompletenessStatus = "unknown"
+	// AuthStatusMixed is a derived provider-level result: reviewed scopes have
+	// different effective dispositions. It is never valid as source evidence.
+	AuthStatusMixed AuthCompletenessStatus = "mixed"
+	// AuthStatusConflict is a derived result: two overlays claim different
+	// effective dispositions for the same provider/spec scope. It is never
+	// valid as source evidence.
+	AuthStatusConflict AuthCompletenessStatus = "conflict"
 )
 
 // SecuritySchemeType mirrors the OpenAPI security scheme type values used by
@@ -169,11 +176,15 @@ func ClassifyAuthCompleteness(metadata SecurityMetadata) AuthCompletenessStatus 
 
 func validAuthCompletenessStatus(value AuthCompletenessStatus) bool {
 	switch value {
-	case AuthStatusComplete, AuthStatusPresentIncomplete, AuthStatusAbsent, AuthStatusOverlayRequired, AuthStatusIntentionallyAnonymous, AuthStatusUnknown:
+	case AuthStatusComplete, AuthStatusPresentIncomplete, AuthStatusAbsent, AuthStatusOverlayRequired, AuthStatusIntentionallyAnonymous, AuthStatusUnknown, AuthStatusMixed, AuthStatusConflict:
 		return true
 	default:
 		return false
 	}
+}
+
+func validAuthEvidenceStatus(value AuthCompletenessStatus) bool {
+	return validAuthCompletenessStatus(value) && value != AuthStatusMixed && value != AuthStatusConflict
 }
 
 func validateSecurityScheme(scheme SecurityScheme) error {

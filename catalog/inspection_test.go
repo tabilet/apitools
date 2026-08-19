@@ -133,6 +133,27 @@ func TestSecurityInspectionReportsConflicts(t *testing.T) {
 	}
 }
 
+func TestSecurityInspectionSupportsPerSpecClassifications(t *testing.T) {
+	provider := securityReportProviderWithTwoSpecs()
+	view, err := BuildSecurityInspectionView(SecurityInspectionOptions{
+		Catalog:     Catalog{Providers: []Provider{provider}},
+		ProviderKey: "demo",
+		SecurityClassifications: []SecurityClassification{
+			securityReportClassification("demo", "demo-openapi", AuthStatusComplete),
+			securityReportClassification("demo", "demo-events-openapi", AuthStatusAbsent),
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if view.Status != AuthStatusMixed || len(view.Classifications) != 2 {
+		t.Fatalf("inspection classifications/status = %#v/%q", view.Classifications, view.Status)
+	}
+	if view.Classification == nil || view.Classification.SpecRefID != "demo-events-openapi" {
+		t.Fatalf("legacy classification = %#v", view.Classification)
+	}
+}
+
 func TestSecurityInspectionResolvesKnownOperationMatches(t *testing.T) {
 	provider := inspectionTestProvider()
 	catalog := Catalog{

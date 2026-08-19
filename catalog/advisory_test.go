@@ -38,6 +38,9 @@ func TestBuiltInProviderAdvisoryReportSelectsProviderByAlias(t *testing.T) {
 	if row.AuthStatus != AuthStatusComplete {
 		t.Fatalf("auth status = %q, want %q", row.AuthStatus, AuthStatusComplete)
 	}
+	if len(row.SecurityDispositions) == 0 || row.SecurityDispositions[0].SpecRefID != "grafana-http-api-openapi-v3" {
+		t.Fatalf("security dispositions = %#v", row.SecurityDispositions)
+	}
 	if row.ResolvedOpenAPI.SpecRefID != "grafana-http-api-openapi-v3" {
 		t.Fatalf("resolved spec = %q, want grafana-http-api-openapi-v3", row.ResolvedOpenAPI.SpecRefID)
 	}

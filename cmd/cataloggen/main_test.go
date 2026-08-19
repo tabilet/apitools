@@ -2,10 +2,14 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+
+	"github.com/OpenUdon/apitools/catalog"
 )
 
 func TestBuildOutputsIsDeterministic(t *testing.T) {
@@ -36,6 +40,40 @@ func TestBuildOutputsRejectsInvalidBundle(t *testing.T) {
 	_, err := buildOutputs([]byte(`{"version":"wrong"}`))
 	if err == nil || !strings.Contains(err.Error(), "version") {
 		t.Fatalf("invalid bundle error = %v", err)
+	}
+}
+
+func TestBuildOutputsRejectsConflictingScopedDispositions(t *testing.T) {
+	content, err := os.ReadFile(filepath.Join("..", "..", "catalog", "data", "catalog.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	bundle, err := catalog.ParseCatalogBundle(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	conflict := bundle.SecurityOverlays[0]
+	conflict.ID += "-conflict"
+	if conflict.Status == catalog.AuthStatusComplete {
+		conflict.Status = catalog.AuthStatusAbsent
+	} else {
+		conflict.Status = catalog.AuthStatusComplete
+	}
+	bundle.SecurityOverlays = append(bundle.SecurityOverlays, conflict)
+	sort.Slice(bundle.SecurityOverlays, func(i, j int) bool {
+		left, right := bundle.SecurityOverlays[i], bundle.SecurityOverlays[j]
+		if left.ProviderID == right.ProviderID {
+			return left.ID < right.ID
+		}
+		return left.ProviderID < right.ProviderID
+	})
+	content, err = json.Marshal(bundle)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = buildOutputs(content)
+	if err == nil || !strings.Contains(err.Error(), "conflicting security dispositions") {
+		t.Fatalf("conflicting-disposition error = %v", err)
 	}
 }
 

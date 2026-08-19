@@ -23,15 +23,42 @@ type SecurityReport struct {
 	Providers []ProviderSecurityReport `json:"providers,omitempty"`
 }
 
+// SecurityDispositionScope identifies whether security evidence applies to a
+// whole provider or one catalog spec reference.
+type SecurityDispositionScope string
+
+const (
+	SecurityDispositionProvider SecurityDispositionScope = "provider"
+	SecurityDispositionSpec     SecurityDispositionScope = "spec"
+)
+
+// SecurityDisposition records the explicit effective status and provenance
+// for one provider or provider/spec scope. A classification is baseline
+// evidence; a scoped overlay is an explicit reviewed supplementation and owns
+// the effective OverlayStatus. Different overlay statuses in the same scope
+// produce conflict rather than relying on input order.
+type SecurityDisposition struct {
+	Scope                SecurityDispositionScope `json:"scope"`
+	SpecRefID            string                   `json:"spec_ref_id,omitempty"`
+	Status               AuthCompletenessStatus   `json:"status"`
+	ClassificationStatus AuthCompletenessStatus   `json:"classification_status,omitempty"`
+	OverlayStatus        AuthCompletenessStatus   `json:"overlay_status,omitempty"`
+	ConflictStatuses     []AuthCompletenessStatus `json:"conflict_statuses,omitempty"`
+	OverlayIDs           []string                 `json:"overlay_ids,omitempty"`
+	SourceRefs           []string                 `json:"source_refs,omitempty"`
+	SourceNotes          []string                 `json:"source_notes,omitempty"`
+}
+
 // ProviderSecurityReport records the effective catalog security status for one
 // provider.
 type ProviderSecurityReport struct {
-	ProviderID  string                 `json:"provider_id"`
-	Status      AuthCompletenessStatus `json:"status"`
-	OverlayIDs  []string               `json:"overlay_ids,omitempty"`
-	SpecRefIDs  []string               `json:"spec_ref_ids,omitempty"`
-	SourceRefs  []string               `json:"source_refs,omitempty"`
-	SourceNotes []string               `json:"source_notes,omitempty"`
+	ProviderID   string                 `json:"provider_id"`
+	Status       AuthCompletenessStatus `json:"status"`
+	Dispositions []SecurityDisposition  `json:"dispositions,omitempty"`
+	OverlayIDs   []string               `json:"overlay_ids,omitempty"`
+	SpecRefIDs   []string               `json:"spec_ref_ids,omitempty"`
+	SourceRefs   []string               `json:"source_refs,omitempty"`
+	SourceNotes  []string               `json:"source_notes,omitempty"`
 }
 
 // BuiltInSecurityClassifications returns source-backed security status records
@@ -56,27 +83,22 @@ func BuildSecurityReport(providers []Provider, overlays []SecurityOverlay, class
 	if err := ValidateSecurityOverlays(overlays, providers); err != nil {
 		return SecurityReport{}, err
 	}
+	if err := ValidateSecurityClassifications(classifications, providers); err != nil {
+		return SecurityReport{}, err
+	}
 	overlays = cloneSecurityOverlays(overlays)
 	sortSecurityOverlays(overlays)
-	providerByID := map[string]Provider{}
-	for _, provider := range providers {
-		providerByID[provider.ID] = provider
-	}
+	classifications = cloneSecurityClassifications(classifications)
+	sortSecurityClassifications(classifications)
 
-	classificationByProvider := map[string]SecurityClassification{}
-	for i, classification := range classifications {
-		if err := validateSecurityClassification(classification, providerByID); err != nil {
-			return SecurityReport{}, fmt.Errorf("security classification[%d]: %w", i, err)
-		}
-		if _, exists := classificationByProvider[classification.ProviderID]; exists {
-			return SecurityReport{}, fmt.Errorf("security classification %q: duplicate provider", classification.ProviderID)
-		}
-		classificationByProvider[classification.ProviderID] = classification
+	classificationByScope := make(map[string]SecurityClassification, len(classifications))
+	overlaysByScope := map[string][]SecurityOverlay{}
+	for _, classification := range classifications {
+		classificationByScope[securityScopeKey(classification.ProviderID, classification.SpecRefID)] = classification
 	}
-
-	overlaysByProvider := map[string][]SecurityOverlay{}
 	for _, overlay := range overlays {
-		overlaysByProvider[overlay.ProviderID] = append(overlaysByProvider[overlay.ProviderID], overlay)
+		key := securityScopeKey(overlay.ProviderID, overlay.SpecRefID)
+		overlaysByScope[key] = append(overlaysByScope[key], overlay)
 	}
 
 	var reports []ProviderSecurityReport
@@ -85,19 +107,19 @@ func BuildSecurityReport(providers []Provider, overlays []SecurityOverlay, class
 			ProviderID: provider.ID,
 			Status:     AuthStatusUnknown,
 		}
-		if classification, ok := classificationByProvider[provider.ID]; ok {
-			report.Status = classification.Status
-			report.SpecRefIDs = appendIfNotEmpty(report.SpecRefIDs, classification.SpecRefID)
-			report.SourceRefs = append(report.SourceRefs, classification.SourceRefs...)
-			report.SourceNotes = appendIfNotEmpty(report.SourceNotes, classification.SourceNote)
+		for _, specRefID := range securityScopesForProvider(provider.ID, classificationByScope, overlaysByScope) {
+			disposition := buildSecurityDisposition(
+				specRefID,
+				classificationByScope[securityScopeKey(provider.ID, specRefID)],
+				overlaysByScope[securityScopeKey(provider.ID, specRefID)],
+			)
+			report.Dispositions = append(report.Dispositions, disposition)
+			report.OverlayIDs = append(report.OverlayIDs, disposition.OverlayIDs...)
+			report.SpecRefIDs = appendIfNotEmpty(report.SpecRefIDs, disposition.SpecRefID)
+			report.SourceRefs = append(report.SourceRefs, disposition.SourceRefs...)
+			report.SourceNotes = append(report.SourceNotes, disposition.SourceNotes...)
 		}
-		for _, overlay := range overlaysByProvider[provider.ID] {
-			report.Status = overlay.Status
-			report.OverlayIDs = appendIfNotEmpty(report.OverlayIDs, overlay.ID)
-			report.SpecRefIDs = appendIfNotEmpty(report.SpecRefIDs, overlay.SpecRefID)
-			report.SourceRefs = append(report.SourceRefs, overlay.SourceRefs...)
-			report.SourceNotes = appendIfNotEmpty(report.SourceNotes, overlay.SourceNote)
-		}
+		report.Status = aggregateSecurityDispositionStatus(report.Dispositions)
 		report.OverlayIDs = sortedUniqueStrings(report.OverlayIDs)
 		report.SpecRefIDs = sortedUniqueStrings(report.SpecRefIDs)
 		report.SourceRefs = sortedUniqueStrings(report.SourceRefs)
@@ -110,15 +132,128 @@ func BuildSecurityReport(providers []Provider, overlays []SecurityOverlay, class
 	return SecurityReport{Providers: reports}, nil
 }
 
+func securityScopeKey(providerID, specRefID string) string {
+	return strings.TrimSpace(providerID) + "\x00" + strings.TrimSpace(specRefID)
+}
+
+func securityScopesForProvider(providerID string, classifications map[string]SecurityClassification, overlays map[string][]SecurityOverlay) []string {
+	prefix := providerID + "\x00"
+	seen := map[string]struct{}{}
+	for key := range classifications {
+		if strings.HasPrefix(key, prefix) {
+			seen[strings.TrimPrefix(key, prefix)] = struct{}{}
+		}
+	}
+	for key := range overlays {
+		if strings.HasPrefix(key, prefix) {
+			seen[strings.TrimPrefix(key, prefix)] = struct{}{}
+		}
+	}
+	out := make([]string, 0, len(seen))
+	for specRefID := range seen {
+		out = append(out, specRefID)
+	}
+	sort.Strings(out)
+	return out
+}
+
+func buildSecurityDisposition(specRefID string, classification SecurityClassification, overlays []SecurityOverlay) SecurityDisposition {
+	disposition := SecurityDisposition{
+		Scope:     SecurityDispositionSpec,
+		SpecRefID: strings.TrimSpace(specRefID),
+		Status:    AuthStatusUnknown,
+	}
+	if disposition.SpecRefID == "" {
+		disposition.Scope = SecurityDispositionProvider
+	}
+	if classification.ProviderID != "" {
+		disposition.ClassificationStatus = classification.Status
+		disposition.Status = classification.Status
+		disposition.SourceRefs = append(disposition.SourceRefs, classification.SourceRefs...)
+		disposition.SourceNotes = appendIfNotEmpty(disposition.SourceNotes, classification.SourceNote)
+	}
+	overlayStatusSet := map[AuthCompletenessStatus]struct{}{}
+	for _, overlay := range overlays {
+		overlayStatusSet[overlay.Status] = struct{}{}
+		disposition.OverlayIDs = append(disposition.OverlayIDs, overlay.ID)
+		disposition.SourceRefs = append(disposition.SourceRefs, overlay.SourceRefs...)
+		disposition.SourceNotes = appendIfNotEmpty(disposition.SourceNotes, overlay.SourceNote)
+	}
+	overlayStatuses := sortedAuthStatuses(overlayStatusSet)
+	switch len(overlayStatuses) {
+	case 1:
+		disposition.OverlayStatus = overlayStatuses[0]
+		disposition.Status = overlayStatuses[0]
+	case 2:
+		disposition.Status = AuthStatusConflict
+		disposition.ConflictStatuses = overlayStatuses
+	default:
+		if len(overlayStatuses) > 2 {
+			disposition.Status = AuthStatusConflict
+			disposition.ConflictStatuses = overlayStatuses
+		}
+	}
+	disposition.OverlayIDs = sortedUniqueStrings(disposition.OverlayIDs)
+	disposition.SourceRefs = sortedUniqueStrings(disposition.SourceRefs)
+	disposition.SourceNotes = sortedUniqueStrings(disposition.SourceNotes)
+	return disposition
+}
+
+func sortedAuthStatuses(statuses map[AuthCompletenessStatus]struct{}) []AuthCompletenessStatus {
+	out := make([]AuthCompletenessStatus, 0, len(statuses))
+	for status := range statuses {
+		out = append(out, status)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i] < out[j] })
+	return out
+}
+
+func aggregateSecurityDispositionStatus(dispositions []SecurityDisposition) AuthCompletenessStatus {
+	if len(dispositions) == 0 {
+		return AuthStatusUnknown
+	}
+	statuses := map[AuthCompletenessStatus]struct{}{}
+	for _, disposition := range dispositions {
+		if disposition.Status == AuthStatusConflict {
+			return AuthStatusConflict
+		}
+		statuses[disposition.Status] = struct{}{}
+	}
+	if len(statuses) > 1 {
+		return AuthStatusMixed
+	}
+	for status := range statuses {
+		return status
+	}
+	return AuthStatusUnknown
+}
+
 // FindProvider returns a provider security report by provider ID.
 func (r SecurityReport) FindProvider(providerID string) (ProviderSecurityReport, bool) {
 	normalized := normalizeKey(providerID)
 	for _, provider := range r.Providers {
 		if normalizeKey(provider.ProviderID) == normalized {
-			return provider, true
+			return cloneProviderSecurityReport(provider), true
 		}
 	}
 	return ProviderSecurityReport{}, false
+}
+
+// ResolveDisposition finds exact spec-scoped evidence, then provider-wide
+// evidence. It does not fall back to another spec's disposition.
+func (r ProviderSecurityReport) ResolveDisposition(specRefID string) (SecurityDisposition, bool) {
+	wanted := strings.TrimSpace(specRefID)
+	for _, disposition := range r.Dispositions {
+		if disposition.Scope == SecurityDispositionSpec && disposition.SpecRefID == wanted {
+			return cloneSecurityDisposition(disposition), true
+		}
+	}
+	for _, disposition := range r.Dispositions {
+		if disposition.Scope == SecurityDispositionProvider {
+			return cloneSecurityDisposition(disposition), true
+		}
+	}
+	return SecurityDisposition{}, false
 }
 
 func validateSecurityClassification(classification SecurityClassification, providers map[string]Provider) error {
@@ -140,7 +275,7 @@ func validateSecurityClassification(classification SecurityClassification, provi
 			return fmt.Errorf("unknown spec ref %q for provider %q", classification.SpecRefID, classification.ProviderID)
 		}
 	}
-	if !validAuthCompletenessStatus(classification.Status) {
+	if !validAuthEvidenceStatus(classification.Status) {
 		return fmt.Errorf("invalid status %q", classification.Status)
 	}
 	if strings.TrimSpace(classification.SourceNote) == "" {
@@ -159,6 +294,9 @@ func validateSecurityClassification(classification SecurityClassification, provi
 
 func sortSecurityClassifications(classifications []SecurityClassification) {
 	sort.SliceStable(classifications, func(i, j int) bool {
+		if classifications[i].ProviderID == classifications[j].ProviderID {
+			return classifications[i].SpecRefID < classifications[j].SpecRefID
+		}
 		return classifications[i].ProviderID < classifications[j].ProviderID
 	})
 }

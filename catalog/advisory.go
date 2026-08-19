@@ -35,6 +35,7 @@ type ProviderAdvisory struct {
 	SpecReferences          []AdvisorySpecReference      `json:"spec_references,omitempty"`
 	SecurityOverlayIDs      []string                     `json:"security_overlay_ids,omitempty"`
 	SecuritySpecRefIDs      []string                     `json:"security_spec_ref_ids,omitempty"`
+	SecurityDispositions    []SecurityDisposition        `json:"security_dispositions,omitempty"`
 	SecuritySourceNotes     []string                     `json:"security_source_notes,omitempty"`
 	Quirks                  []string                     `json:"quirks,omitempty"`
 	ManualFollowUps         []string                     `json:"manual_follow_ups,omitempty"`
@@ -152,6 +153,7 @@ func BuildProviderAdvisoryReport(options ProviderAdvisoryOptions) (ProviderAdvis
 			AuthStatus:              report.Status,
 			SecurityOverlayIDs:      append([]string(nil), report.OverlayIDs...),
 			SecuritySpecRefIDs:      append([]string(nil), report.SpecRefIDs...),
+			SecurityDispositions:    cloneSecurityDispositions(report.Dispositions),
 			SecuritySourceNotes:     append([]string(nil), report.SourceNotes...),
 			Quirks:                  append([]string(nil), provider.Quirks...),
 			EndpointOverlays:        cloneAdvisoryEndpointOverlays(endpointOverlaysByProvider[provider.ID]),
@@ -277,6 +279,12 @@ func advisoryManualFollowUps(provider Provider, report ProviderSecurityReport, o
 	if len(report.OverlayIDs) > 0 {
 		followUps = append(followUps, "Review advisory security overlay metadata before using it with an imported OpenAPI document.")
 	}
+	if report.Status == AuthStatusMixed {
+		followUps = append(followUps, "Select the intended source spec and review its scoped security disposition before credential handoff.")
+	}
+	if report.Status == AuthStatusConflict {
+		followUps = append(followUps, "Reconcile conflicting security overlays in the same provider/spec scope before credential handoff.")
+	}
 	for _, ref := range refs {
 		if !refreshableSpecKind(ref.Kind) || ref.RegisteredArtifactPath != "" {
 			continue
@@ -289,6 +297,14 @@ func advisoryManualFollowUps(provider Provider, report ProviderSecurityReport, o
 		}
 	}
 	return sortedUniqueStrings(followUps)
+}
+
+func cloneSecurityDispositions(in []SecurityDisposition) []SecurityDisposition {
+	out := make([]SecurityDisposition, len(in))
+	for i, disposition := range in {
+		out[i] = cloneSecurityDisposition(disposition)
+	}
+	return out
 }
 
 func cloneStringMap(values map[string]string) map[string]string {

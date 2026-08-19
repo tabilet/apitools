@@ -126,19 +126,26 @@ func ResolveProvider(options ResolveProviderOptions) (ResolvedProvider, error) {
 		}
 	}
 	if resolved.Security.Source == ResolutionSourceNone {
-		resolved.SecurityStatus = securityReport.Status
-		if len(securityReport.OverlayIDs) > 0 {
-			overlayID := securityReport.OverlayIDs[0]
+		selectedSecurity := securityReport
+		if disposition, ok := securityReport.ResolveDisposition(resolved.OpenAPI.SpecRefID); ok {
+			selectedSecurity = providerReportForDisposition(securityReport.ProviderID, disposition)
+		}
+		resolved.SecurityStatus = selectedSecurity.Status
+		if selectedSecurity.Status == AuthStatusMixed || selectedSecurity.Status == AuthStatusConflict {
+			return resolved, nil
+		}
+		if len(selectedSecurity.OverlayIDs) > 0 {
+			overlayID := selectedSecurity.OverlayIDs[0]
 			resolved.Security = ResolvedReference{
 				Source:     ResolutionSourceBuiltInSecurityOverlay,
 				OverlayID:  overlayID,
 				SourceNote: overlaySourceNote(overlays, overlayID),
 			}
-		} else if securityReport.Status != "" && securityReport.Status != AuthStatusUnknown {
+		} else if selectedSecurity.Status != "" && selectedSecurity.Status != AuthStatusUnknown && selectedSecurity.Status != AuthStatusMixed && selectedSecurity.Status != AuthStatusConflict {
 			resolved.Security = ResolvedReference{
 				Source:     ResolutionSourceSecurityClassification,
-				SpecRefID:  firstString(securityReport.SpecRefIDs),
-				SourceNote: firstString(securityReport.SourceNotes),
+				SpecRefID:  firstString(selectedSecurity.SpecRefIDs),
+				SourceNote: firstString(selectedSecurity.SourceNotes),
 			}
 		}
 	}
@@ -190,10 +197,36 @@ func overlaysForProvider(overlays []SecurityOverlay, providerID string) []Securi
 }
 
 func cloneProviderSecurityReport(report ProviderSecurityReport) ProviderSecurityReport {
+	dispositions := report.Dispositions
+	report.Dispositions = make([]SecurityDisposition, len(dispositions))
+	for i, disposition := range dispositions {
+		report.Dispositions[i] = cloneSecurityDisposition(disposition)
+	}
 	report.OverlayIDs = append([]string(nil), report.OverlayIDs...)
 	report.SpecRefIDs = append([]string(nil), report.SpecRefIDs...)
 	report.SourceRefs = append([]string(nil), report.SourceRefs...)
 	report.SourceNotes = append([]string(nil), report.SourceNotes...)
+	return report
+}
+
+func cloneSecurityDisposition(disposition SecurityDisposition) SecurityDisposition {
+	disposition.ConflictStatuses = append([]AuthCompletenessStatus(nil), disposition.ConflictStatuses...)
+	disposition.OverlayIDs = append([]string(nil), disposition.OverlayIDs...)
+	disposition.SourceRefs = append([]string(nil), disposition.SourceRefs...)
+	disposition.SourceNotes = append([]string(nil), disposition.SourceNotes...)
+	return disposition
+}
+
+func providerReportForDisposition(providerID string, disposition SecurityDisposition) ProviderSecurityReport {
+	report := ProviderSecurityReport{
+		ProviderID:   providerID,
+		Status:       disposition.Status,
+		Dispositions: []SecurityDisposition{cloneSecurityDisposition(disposition)},
+		OverlayIDs:   append([]string(nil), disposition.OverlayIDs...),
+		SourceRefs:   append([]string(nil), disposition.SourceRefs...),
+		SourceNotes:  append([]string(nil), disposition.SourceNotes...),
+	}
+	report.SpecRefIDs = appendIfNotEmpty(report.SpecRefIDs, disposition.SpecRefID)
 	return report
 }
 

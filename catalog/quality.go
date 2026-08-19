@@ -194,6 +194,15 @@ func checkProviderQuality(provider Provider, options CatalogQualityOptions, secu
 			Message:    "provider has no source-backed security classification or overlay status",
 		})
 	}
+	if ok && report.Status == AuthStatusConflict {
+		add(CatalogQualityFinding{
+			Severity:   CatalogQualityError,
+			Code:       "conflicting-security-status",
+			ProviderID: provider.ID,
+			Field:      "security_status",
+			Message:    "provider has conflicting security overlays in the same provider/spec scope",
+		})
+	}
 }
 
 func checkSpecReferenceQuality(providerID string, ref SpecReference, options CatalogQualityOptions, add func(CatalogQualityFinding)) {

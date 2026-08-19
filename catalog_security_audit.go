@@ -78,6 +78,7 @@ type CatalogSecurityAuditRow struct {
 	Disposition      string                            `json:"disposition"`
 	SpecRefIDs       []string                          `json:"spec_ref_ids,omitempty"`
 	OverlayIDs       []string                          `json:"overlay_ids,omitempty"`
+	Dispositions     []catalog.SecurityDisposition     `json:"dispositions,omitempty"`
 	SourceNotes      []string                          `json:"source_notes,omitempty"`
 	Reasons          []string                          `json:"reasons,omitempty"`
 	ManualFollowUps  []string                          `json:"manual_follow_ups,omitempty"`
@@ -149,6 +150,7 @@ func BuildCatalogSecurityAuditReport(opts CatalogSecurityAuditOptions) (CatalogS
 			AuthStatus:       security.Status,
 			SpecRefIDs:       append([]string(nil), security.SpecRefIDs...),
 			OverlayIDs:       append([]string(nil), security.OverlayIDs...),
+			Dispositions:     cloneCatalogSecurityDispositions(security.Dispositions),
 			SourceNotes:      append([]string(nil), security.SourceNotes...),
 			ArtifactSecurity: auditProviderSecurityArtifacts(provider, artifactsByProvider[provider.ID], overlaysByProvider[provider.ID], opts),
 		}
@@ -160,6 +162,18 @@ func BuildCatalogSecurityAuditReport(opts CatalogSecurityAuditOptions) (CatalogS
 		Summary:   buildCatalogSecurityAuditSummary(rows),
 		Providers: rows,
 	}, nil
+}
+
+func cloneCatalogSecurityDispositions(in []catalog.SecurityDisposition) []catalog.SecurityDisposition {
+	out := make([]catalog.SecurityDisposition, len(in))
+	for i, disposition := range in {
+		out[i] = disposition
+		out[i].ConflictStatuses = append([]catalog.AuthCompletenessStatus(nil), disposition.ConflictStatuses...)
+		out[i].OverlayIDs = append([]string(nil), disposition.OverlayIDs...)
+		out[i].SourceRefs = append([]string(nil), disposition.SourceRefs...)
+		out[i].SourceNotes = append([]string(nil), disposition.SourceNotes...)
+	}
+	return out
 }
 
 func normalizeCatalogSecurityAuditOptions(opts CatalogSecurityAuditOptions) CatalogSecurityAuditOptions {
@@ -431,6 +445,14 @@ func catalogSecurityDisposition(security catalog.ProviderSecurityReport, artifac
 	case security.Status == catalog.AuthStatusIntentionallyAnonymous:
 		reasons = append(reasons, "provider source is intentionally anonymous or public")
 		return SecurityAuditDispositionIntentionallyAnonymous, reasons, nil
+	case security.Status == catalog.AuthStatusMixed:
+		reasons = append(reasons, "reviewed provider/spec scopes have different effective security dispositions")
+		followUps = append(followUps, "Select the intended source spec and review its scoped security disposition before credential handoff.")
+		return SecurityAuditDispositionQueuedSourceReReview, reasons, followUps
+	case security.Status == catalog.AuthStatusConflict:
+		reasons = append(reasons, "multiple overlays conflict within the same provider/spec security scope")
+		followUps = append(followUps, "Reconcile conflicting scoped security evidence before credential handoff.")
+		return SecurityAuditDispositionQueuedSourceReReview, reasons, followUps
 	case len(security.OverlayIDs) > 0:
 		reasons = append(reasons, "source-backed catalog security overlay supplies reviewed metadata")
 		return SecurityAuditDispositionCompleteViaOverlay, reasons, nil
