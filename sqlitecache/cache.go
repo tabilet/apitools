@@ -455,6 +455,9 @@ func (c *Cache) StoreCatalogArtifact(ctx context.Context, artifact CatalogArtifa
 	if err != nil {
 		return err
 	}
+	if file.Bytes <= 0 {
+		return fmt.Errorf("catalog artifact %q is empty", path)
+	}
 	if strings.TrimSpace(artifact.SHA256) != "" && (!validSHA256(artifact.SHA256) || strings.ToLower(artifact.SHA256) != file.SHA256) {
 		return fmt.Errorf("catalog artifact SHA256 does not match %q", path)
 	}

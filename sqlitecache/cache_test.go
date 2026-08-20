@@ -563,6 +563,28 @@ func TestCatalogArtifactRejectsCallerIntegrityMismatch(t *testing.T) {
 	}
 }
 
+func TestCatalogArtifactRejectsEmptyFile(t *testing.T) {
+	dir := t.TempDir()
+	cache, err := Open(filepath.Join(dir, "cache.sqlite"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+	if err := os.WriteFile(filepath.Join(dir, "empty.json"), nil, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	err = cache.StoreCatalogArtifact(context.Background(), CatalogArtifact{
+		ProviderID: "p", ArtifactID: "empty", Kind: "openapi", Path: "empty.json",
+	})
+	if err == nil || !strings.Contains(err.Error(), "empty") {
+		t.Fatalf("StoreCatalogArtifact(empty) error = %v", err)
+	}
+	artifacts, listErr := cache.ListCatalogArtifacts(context.Background())
+	if listErr != nil || len(artifacts) != 0 {
+		t.Fatalf("ListCatalogArtifacts() = %#v, %v", artifacts, listErr)
+	}
+}
+
 func TestOpenRejectsSymlinkCachePath(t *testing.T) {
 	dir := t.TempDir()
 	target := filepath.Join(dir, "target.sqlite")
