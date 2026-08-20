@@ -74,13 +74,28 @@ func TestImportProjectURLsRejectsBreadthBeforeDownloading(t *testing.T) {
 		text.WriteRune(rune('a' + i))
 		text.WriteString(".yaml")
 	}
-	report, err := (&Discoverer{}).ImportProjectURLs(context.Background(), t.TempDir(), t.TempDir(), text.String())
+	report, err := (&Discoverer{}).ImportProjectURLsReport(context.Background(), t.TempDir(), t.TempDir(), text.String())
 	var diagnosticErr DiagnosticError
 	if !errors.As(err, &diagnosticErr) {
 		t.Fatalf("error = %T %v, want DiagnosticError", err, err)
 	}
 	if !report.Truncated || len(report.Candidates) != 0 || len(report.Attempts) != 0 || len(report.Diagnostics) != 1 || report.Diagnostics[0].Code != "discovery.limit.project_urls" {
 		t.Fatalf("report = %#v", report)
+	}
+}
+
+func TestProjectURLImportMethodsRemainSourceCompatible(t *testing.T) {
+	var discoverer Discoverer
+	var importURLs func(context.Context, string, string, string) ([]DiscoveryCandidate, error) = discoverer.ImportProjectURLs
+	var importURLsWithReport func(context.Context, string, string, string) ([]DiscoveryCandidate, []DiscoveryAttempt) = discoverer.ImportProjectURLsWithReport
+
+	candidates, err := importURLs(context.Background(), t.TempDir(), t.TempDir(), "no URLs")
+	if err != nil || len(candidates) != 0 {
+		t.Fatalf("ImportProjectURLs() = %#v, %v", candidates, err)
+	}
+	candidates, attempts := importURLsWithReport(context.Background(), t.TempDir(), t.TempDir(), "no URLs")
+	if len(candidates) != 0 || len(attempts) != 0 {
+		t.Fatalf("ImportProjectURLsWithReport() = %#v, %#v", candidates, attempts)
 	}
 }
 

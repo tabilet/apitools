@@ -24,6 +24,25 @@ func TestResolveProviderUsesBuiltInMetadata(t *testing.T) {
 	}
 }
 
+func TestResolveProviderDoesNotBorrowSecurityFromAnotherSpec(t *testing.T) {
+	resolved, err := ResolveProvider(ResolveProviderOptions{ProviderKey: "zoho"})
+	if err != nil {
+		t.Fatalf("ResolveProvider() error = %v", err)
+	}
+	if resolved.OpenAPI.SpecRefID != "zoho-crm-v8-apis-openapi" {
+		t.Fatalf("OpenAPI spec ref = %q", resolved.OpenAPI.SpecRefID)
+	}
+	if resolved.SecurityStatus != AuthStatusUnknown {
+		t.Fatalf("SecurityStatus = %q, want %q", resolved.SecurityStatus, AuthStatusUnknown)
+	}
+	if resolved.Security.Source != ResolutionSourceNone {
+		t.Fatalf("Security source = %#v, want no cross-spec evidence", resolved.Security)
+	}
+	if resolved.SecurityReport.Status != AuthStatusComplete {
+		t.Fatalf("provider aggregate status = %q, want retained report evidence", resolved.SecurityReport.Status)
+	}
+}
+
 func TestResolveProviderPrefersSmithyBeforeHumanDocs(t *testing.T) {
 	resolved, err := ResolveProvider(ResolveProviderOptions{ProviderKey: "aws-s3"})
 	if err != nil {

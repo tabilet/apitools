@@ -85,7 +85,7 @@ func (d *Discoverer) DiscoverWithReport(ctx context.Context, exampleDir, project
 	})
 	candidates = append(candidates, local...)
 
-	urlReport, err := d.ImportProjectURLs(ctx, openAPIDir, exampleDir, projectText)
+	urlReport, err := d.ImportProjectURLsReport(ctx, openAPIDir, exampleDir, projectText)
 	report.Attempts = append(report.Attempts, urlReport.Attempts...)
 	report.Diagnostics = append(report.Diagnostics, urlReport.Diagnostics...)
 	report.Truncated = urlReport.Truncated
@@ -110,7 +110,24 @@ func (d *Discoverer) DiscoverWithReport(ctx context.Context, exampleDir, project
 	return candidates, report, nil
 }
 
-func (d *Discoverer) ImportProjectURLs(ctx context.Context, openAPIDir, baseDir, projectText string) (ProjectURLImportReport, error) {
+// ImportProjectURLs imports unique OpenAPI URLs found in project text. The
+// signature is retained for source compatibility; callers that need bounded
+// diagnostics should use ImportProjectURLsReport.
+func (d *Discoverer) ImportProjectURLs(ctx context.Context, openAPIDir, baseDir, projectText string) ([]DiscoveryCandidate, error) {
+	report, err := d.ImportProjectURLsReport(ctx, openAPIDir, baseDir, projectText)
+	return report.Candidates, err
+}
+
+// ImportProjectURLsWithReport imports project URLs and returns the historical
+// candidate and attempt slices. Use ImportProjectURLsReport for truncation and
+// diagnostic details.
+func (d *Discoverer) ImportProjectURLsWithReport(ctx context.Context, openAPIDir, baseDir, projectText string) ([]DiscoveryCandidate, []DiscoveryAttempt) {
+	report, _ := d.ImportProjectURLsReport(ctx, openAPIDir, baseDir, projectText)
+	return report.Candidates, report.Attempts
+}
+
+// ImportProjectURLsReport imports project URLs with bounded diagnostics.
+func (d *Discoverer) ImportProjectURLsReport(ctx context.Context, openAPIDir, baseDir, projectText string) (ProjectURLImportReport, error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}

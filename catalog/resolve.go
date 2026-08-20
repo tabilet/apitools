@@ -130,9 +130,14 @@ func resolveProviderWithIndex(index *CatalogIndex, options ResolveProviderOption
 		}
 	}
 	if resolved.Security.Source == ResolutionSourceNone {
-		selectedSecurity := securityReport
+		selectedSecurity := ProviderSecurityReport{
+			ProviderID: securityReport.ProviderID,
+			Status:     AuthStatusUnknown,
+		}
 		if disposition, ok := securityReport.ResolveDisposition(resolved.OpenAPI.SpecRefID); ok {
 			selectedSecurity = providerReportForDisposition(securityReport.ProviderID, disposition)
+		} else if resolved.OpenAPI.SpecRefID == "" {
+			selectedSecurity = securityReport
 		}
 		resolved.SecurityStatus = selectedSecurity.Status
 		if selectedSecurity.Status == AuthStatusMixed || selectedSecurity.Status == AuthStatusConflict {
