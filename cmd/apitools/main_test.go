@@ -19,6 +19,117 @@ import (
 	"github.com/OpenUdon/apitools/sqlitecache"
 )
 
+func TestCLIHelpUsesStdout(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+	}{
+		{name: "root flag", args: []string{"--help"}},
+		{name: "root command", args: []string{"help"}},
+		{name: "catalog", args: []string{"catalog", "--help"}},
+		{name: "search", args: []string{"search", "--help"}},
+		{name: "import", args: []string{"import", "--help"}},
+		{name: "advisory", args: []string{"catalog", "advisory", "--help"}},
+		{name: "check", args: []string{"catalog", "check", "--help"}},
+		{name: "export", args: []string{"catalog", "export", "--help"}},
+		{name: "inspect", args: []string{"catalog", "inspect", "--help"}},
+		{name: "list", args: []string{"catalog", "list", "--help"}},
+		{name: "materialize", args: []string{"catalog", "materialize", "--help"}},
+		{name: "overlay view", args: []string{"catalog", "overlay-view", "--help"}},
+		{name: "refresh", args: []string{"catalog", "refresh", "--help"}},
+		{name: "refresh report", args: []string{"catalog", "refresh-report", "--help"}},
+		{name: "resolve", args: []string{"catalog", "resolve", "--help"}},
+		{name: "security audit", args: []string{"catalog", "security-audit", "--help"}},
+		{name: "security report", args: []string{"catalog", "security-report", "--help"}},
+		{name: "specs", args: []string{"catalog", "specs", "--help"}},
+		{name: "stats", args: []string{"catalog", "stats", "--help"}},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var out bytes.Buffer
+			var errOut bytes.Buffer
+			if code := run(test.args, &out, &errOut); code != exitSuccess {
+				t.Fatalf("code = %d, want %d\nstdout:\n%s\nstderr:\n%s", code, exitSuccess, out.String(), errOut.String())
+			}
+			if !strings.Contains(out.String(), "Usage:") {
+				t.Fatalf("stdout missing usage:\n%s", out.String())
+			}
+			if errOut.Len() != 0 {
+				t.Fatalf("stderr must be empty for help:\n%s", errOut.String())
+			}
+		})
+	}
+}
+
+func TestCLIUsageErrorsUseStderr(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		want string
+	}{
+		{name: "missing root command", want: "Usage: apitools <command>"},
+		{name: "missing catalog command", args: []string{"catalog"}, want: "Usage: apitools catalog <command>"},
+		{name: "unknown command", args: []string{"missing"}, want: `unknown command "missing"`},
+		{name: "standard missing value", args: []string{"search", "--limit"}, want: "flag needs an argument"},
+		{name: "split resolve missing value", args: []string{"catalog", "resolve", "slack", "--cache"}, want: "flag needs an argument: --cache"},
+		{name: "split materialize missing value", args: []string{"catalog", "materialize", "slack", "--out"}, want: "flag needs an argument: --out"},
+		{name: "split export missing value", args: []string{"catalog", "export", "slack", "--workflow-dir"}, want: "flag needs an argument: --workflow-dir"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var out bytes.Buffer
+			var errOut bytes.Buffer
+			if code := run(test.args, &out, &errOut); code != exitUsage {
+				t.Fatalf("code = %d, want %d\nstdout:\n%s\nstderr:\n%s", code, exitUsage, out.String(), errOut.String())
+			}
+			if out.Len() != 0 {
+				t.Fatalf("stdout must be empty for usage errors:\n%s", out.String())
+			}
+			if !strings.Contains(errOut.String(), test.want) {
+				t.Fatalf("stderr missing %q:\n%s", test.want, errOut.String())
+			}
+		})
+	}
+}
+
+func TestCLIHelpTokensUsedAsValuesOrPositionalsAreNotHelp(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		code int
+		want string
+	}{
+		{
+			name: "flag value",
+			args: []string{"catalog", "resolve", "slack", "--cache", "--help"},
+			code: exitSuccess,
+			want: "slack",
+		},
+		{
+			name: "positional after terminator",
+			args: []string{"catalog", "resolve", "--", "--help"},
+			code: exitRuntime,
+			want: `unknown provider "--help"`,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var out bytes.Buffer
+			var errOut bytes.Buffer
+			if code := run(test.args, &out, &errOut); code != test.code {
+				t.Fatalf("code = %d, want %d\nstdout:\n%s\nstderr:\n%s", code, test.code, out.String(), errOut.String())
+			}
+			combined := out.String() + errOut.String()
+			if !strings.Contains(combined, test.want) {
+				t.Fatalf("output missing %q:\n%s", test.want, combined)
+			}
+			if strings.Contains(combined, "Usage:") {
+				t.Fatalf("help token was treated as help:\n%s", combined)
+			}
+		})
+	}
+}
+
 func TestSearchHelpDocumentsFlags(t *testing.T) {
 	var out bytes.Buffer
 	code := run([]string{"search", "--help"}, &out, &out)

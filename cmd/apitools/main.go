@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -26,8 +24,8 @@ func main() {
 
 func run(args []string, out, errOut io.Writer) int {
 	if len(args) == 0 {
-		usage(out)
-		return 2
+		usage(errOut)
+		return exitUsage
 	}
 	switch args[0] {
 	case "search":
@@ -38,11 +36,11 @@ func run(args []string, out, errOut io.Writer) int {
 		return runCatalog(args[1:], out, errOut)
 	case "-h", "--help", "help":
 		usage(out)
-		return 0
+		return exitSuccess
 	default:
 		fmt.Fprintf(errOut, "unknown command %q\n", args[0])
 		usage(errOut)
-		return 2
+		return exitUsage
 	}
 }
 
@@ -57,8 +55,8 @@ func usage(out io.Writer) {
 
 func runCatalog(args []string, out, errOut io.Writer) int {
 	if len(args) == 0 {
-		catalogUsage(out)
-		return 2
+		catalogUsage(errOut)
+		return exitUsage
 	}
 	switch args[0] {
 	case "advisory":
@@ -91,11 +89,11 @@ func runCatalog(args []string, out, errOut io.Writer) int {
 		return runCatalogSecurityReport(args[1:], out, errOut)
 	case "-h", "--help", "help":
 		catalogUsage(out)
-		return 0
+		return exitSuccess
 	default:
 		fmt.Fprintf(errOut, "unknown catalog command %q\n", args[0])
 		catalogUsage(errOut)
-		return 2
+		return exitUsage
 	}
 }
 
@@ -126,8 +124,7 @@ func runCatalogAdvisory(args []string, out, errOut io.Writer) int {
 		provider = args[0]
 		parseArgs = args[1:]
 	}
-	fs := flag.NewFlagSet("apitools catalog advisory", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog advisory")
 	cachePath := fs.String("cache", "", "Existing SQLite cache path used to show registered artifact paths")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	fs.Usage = func() {
@@ -135,16 +132,8 @@ func runCatalogAdvisory(args []string, out, errOut io.Writer) int {
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(parseArgs); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, parseArgs, out, errOut); done {
+		return code
 	}
 	if provider == "" {
 		if fs.NArg() > 0 {
@@ -153,17 +142,17 @@ func runCatalogAdvisory(args []string, out, errOut io.Writer) int {
 		if fs.NArg() > 1 {
 			fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(1))
 			fs.Usage()
-			return 2
+			return exitUsage
 		}
 	} else if fs.NArg() > 0 {
 		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	defer closeCache()
 	report, err := catalogpkg.BuiltInProviderAdvisoryReport(catalogpkg.ProviderAdvisoryOptions{
@@ -172,17 +161,17 @@ func runCatalogAdvisory(args []string, out, errOut io.Writer) int {
 	})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if *jsonOut {
 		if err := writeJSON(out, report); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	writeCatalogAdvisoryReport(out, report)
-	return 0
+	return exitSuccess
 }
 
 func runCatalogCheck(args []string, out, errOut io.Writer) int {
@@ -192,16 +181,16 @@ func runCatalogCheck(args []string, out, errOut io.Writer) int {
 }
 
 func runCatalogResolve(args []string, out, errOut io.Writer) int {
-	positionals, flagArgs, splitOK := splitCatalogProviderFlags(args, map[string]struct{}{
+	positionals, flagArgs, splitErr := splitCatalogProviderFlags(args, map[string]struct{}{
 		"--cache": {},
 	}, map[string]struct{}{
 		"--json": {},
 	})
-	if !splitOK {
-		return 2
+	if splitErr != nil {
+		fmt.Fprintln(errOut, splitErr)
+		return exitUsage
 	}
-	fs := flag.NewFlagSet("apitools catalog resolve", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog resolve")
 	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	fs.Usage = func() {
@@ -209,26 +198,18 @@ func runCatalogResolve(args []string, out, errOut io.Writer) int {
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(flagArgs); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, flagArgs, out, errOut); done {
+		return code
 	}
 	if len(positionals) == 0 {
 		fmt.Fprintln(errOut, "at least one provider is required")
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	defer closeCache()
 	resolutions, err := catalogpkg.ResolveProvidersWithOptions(catalogpkg.ProviderResolutionOptions{
@@ -237,21 +218,21 @@ func runCatalogResolve(args []string, out, errOut io.Writer) int {
 	})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if *jsonOut {
 		if err := writeJSON(out, resolutions); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	writeCatalogResolveReport(out, resolutions)
-	return 0
+	return exitSuccess
 }
 
 func runCatalogMaterialize(args []string, out, errOut io.Writer) int {
-	positionals, flagArgs, splitOK := splitCatalogProviderFlags(args, map[string]struct{}{
+	positionals, flagArgs, splitErr := splitCatalogProviderFlags(args, map[string]struct{}{
 		"--cache":     {},
 		"--cache-dir": {},
 		"--max-bytes": {},
@@ -261,11 +242,11 @@ func runCatalogMaterialize(args []string, out, errOut io.Writer) int {
 		"--json":                 {},
 		"--no-security-overlays": {},
 	})
-	if !splitOK {
-		return 2
+	if splitErr != nil {
+		fmt.Fprintln(errOut, splitErr)
+		return exitUsage
 	}
-	fs := flag.NewFlagSet("apitools catalog materialize", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog materialize")
 	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory containing saved review artifacts")
 	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
 	outDir := fs.String("out", "", "Directory to receive provider artifacts")
@@ -278,31 +259,23 @@ func runCatalogMaterialize(args []string, out, errOut io.Writer) int {
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(flagArgs); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, flagArgs, out, errOut); done {
+		return code
 	}
 	if len(positionals) != 1 {
 		fmt.Fprintln(errOut, "exactly one provider is required")
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	if strings.TrimSpace(*outDir) == "" {
 		fmt.Fprintln(errOut, "--out is required")
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	defer closeCache()
 	report, err := catalogpkg.MaterializeProvider(context.Background(), catalogpkg.MaterializeOptions{
@@ -317,21 +290,21 @@ func runCatalogMaterialize(args []string, out, errOut io.Writer) int {
 	})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if *jsonOut {
 		if err := writeJSON(out, report); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	writeCatalogMaterializeReport(out, report)
-	return 0
+	return exitSuccess
 }
 
 func runCatalogExport(args []string, out, errOut io.Writer) int {
-	positionals, flagArgs, splitOK := splitCatalogProviderFlags(args, map[string]struct{}{
+	positionals, flagArgs, splitErr := splitCatalogProviderFlags(args, map[string]struct{}{
 		"--artifact-dir": {},
 		"--cache":        {},
 		"--cache-dir":    {},
@@ -342,11 +315,11 @@ func runCatalogExport(args []string, out, errOut io.Writer) int {
 		"--json":                 {},
 		"--no-security-overlays": {},
 	})
-	if !splitOK {
-		return 2
+	if splitErr != nil {
+		fmt.Fprintln(errOut, splitErr)
+		return exitUsage
 	}
-	fs := flag.NewFlagSet("apitools catalog export", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog export")
 	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory containing saved review artifacts")
 	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
 	workflowDir := fs.String("workflow-dir", "", "Workflow directory to receive exported API artifacts")
@@ -360,31 +333,23 @@ func runCatalogExport(args []string, out, errOut io.Writer) int {
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(flagArgs); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, flagArgs, out, errOut); done {
+		return code
 	}
 	if len(positionals) == 0 {
 		fmt.Fprintln(errOut, "at least one provider is required")
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	if strings.TrimSpace(*workflowDir) == "" {
 		fmt.Fprintln(errOut, "--workflow-dir is required")
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	defer closeCache()
 	report, err := catalogpkg.ExportWorkflowArtifacts(context.Background(), catalogpkg.ExportWorkflowArtifactsOptions{
@@ -400,22 +365,21 @@ func runCatalogExport(args []string, out, errOut io.Writer) int {
 	})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if *jsonOut {
 		if err := writeJSON(out, report); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	writeCatalogExportReport(out, report)
-	return 0
+	return exitSuccess
 }
 
 func runCatalogCheckWithReport(args []string, out, errOut io.Writer, build func(catalogpkg.CatalogQualityOptions) catalogpkg.CatalogQualityReport) int {
-	fs := flag.NewFlagSet("apitools catalog check", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog check")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	asOf := fs.String("as-of", "", "Check freshness as of YYYY-MM-DD; defaults to today")
 	staleDays := fs.Int("stale-days", catalogpkg.DefaultStaleVerificationDays, "Warn when spec verification is older than this many days")
@@ -424,28 +388,20 @@ func runCatalogCheckWithReport(args []string, out, errOut io.Writer, build func(
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(args); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, args, out, errOut); done {
+		return code
 	}
 	if fs.NArg() > 0 {
 		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	options := catalogpkg.CatalogQualityOptions{StaleVerificationDays: *staleDays}
 	if strings.TrimSpace(*asOf) != "" {
 		parsed, err := time.Parse("2006-01-02", strings.TrimSpace(*asOf))
 		if err != nil {
 			fmt.Fprintf(errOut, "invalid --as-of %q: expected YYYY-MM-DD\n", *asOf)
-			return 2
+			return exitUsage
 		}
 		options.AsOf = parsed
 	}
@@ -453,7 +409,7 @@ func runCatalogCheckWithReport(args []string, out, errOut io.Writer, build func(
 	if *jsonOut {
 		if err := writeJSON(out, report); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
 		return catalogCheckExitCode(report)
 	}
@@ -462,34 +418,25 @@ func runCatalogCheckWithReport(args []string, out, errOut io.Writer, build func(
 }
 
 func runCatalogList(args []string, out, errOut io.Writer) int {
-	fs := flag.NewFlagSet("apitools catalog list", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog list")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "Usage: apitools catalog list [--json]")
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(args); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, args, out, errOut); done {
+		return code
 	}
 	if fs.NArg() > 0 {
 		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	report, err := catalogpkg.BuiltInSecurityReport()
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	statusByProvider := map[string]catalogpkg.AuthCompletenessStatus{}
 	for _, row := range catalogpkg.SecurityReportRows(report) {
@@ -510,20 +457,19 @@ func runCatalogList(args []string, out, errOut io.Writer) int {
 	if *jsonOut {
 		if err := writeJSON(out, rows); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	fmt.Fprintf(out, "%-18s %-20s %-18s %-18s %-18s %s\n", "ID", "NAME", "OPENAPI", "MACHINE", "USER_OPENAPI", "AUTH")
 	for _, row := range rows {
 		fmt.Fprintf(out, "%-18s %-20s %-18s %-18s %-18s %s\n", row.ID, row.DisplayName, row.OpenAPIAvailability, row.MachineAvailability, row.UserOpenAPINeed, row.AuthStatus)
 	}
-	return 0
+	return exitSuccess
 }
 
 func runCatalogSpecs(args []string, out, errOut io.Writer) int {
-	fs := flag.NewFlagSet("apitools catalog specs", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog specs")
 	cachePath := fs.String("cache", "", "SQLite cache path used to show registered artifact paths")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	fs.Usage = func() {
@@ -531,46 +477,37 @@ func runCatalogSpecs(args []string, out, errOut io.Writer) int {
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(args); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, args, out, errOut); done {
+		return code
 	}
 	if fs.NArg() > 0 {
 		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	defer closeCache()
 	rows := catalogpkg.BuiltInRefreshableSpecReferences(artifacts)
 	if *jsonOut {
 		if err := writeJSON(out, rows); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	fmt.Fprintf(out, "%-18s %-34s %-16s %-16s %-18s %-12s %s\n", "PROVIDER", "SPEC_REF", "KIND", "PROTOCOL", "SOURCE", "VERIFIED", "ARTIFACT")
 	for _, row := range rows {
 		fmt.Fprintf(out, "%-18s %-34s %-16s %-16s %-18s %-12s %s\n", row.ProviderID, row.SpecRefID, row.Kind, protocolLabel(row.Protocol, row.ProtocolVersion), row.SourceAuthority, row.VerifiedAt, row.RegisteredArtifactPath)
 	}
-	return 0
+	return exitSuccess
 }
 
 func runCatalogStats(args []string, out, errOut io.Writer) int {
-	fs := flag.NewFlagSet("apitools catalog stats", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog stats")
 	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory containing saved review artifacts")
 	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
 	asOf := fs.String("as-of", "", "Check refresh verification freshness as of YYYY-MM-DD; defaults to today")
@@ -582,21 +519,13 @@ func runCatalogStats(args []string, out, errOut io.Writer) int {
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(args); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, args, out, errOut); done {
+		return code
 	}
 	if fs.NArg() > 0 {
 		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	opts := apitools.CatalogSpecRefreshReviewOptions{
 		CacheDir:              *cacheDir,
@@ -607,32 +536,32 @@ func runCatalogStats(args []string, out, errOut io.Writer) int {
 		parsed, err := time.Parse("2006-01-02", strings.TrimSpace(*asOf))
 		if err != nil {
 			fmt.Fprintf(errOut, "invalid --as-of %q: expected YYYY-MM-DD\n", *asOf)
-			return 2
+			return exitUsage
 		}
 		opts.AsOf = parsed
 	}
 	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	defer closeCache()
 	opts.Artifacts = artifacts
 	refreshReport, err := apitools.BuiltInCatalogSpecRefreshReviewReport(opts)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	report := apitools.BuildCatalogStatsReport(catalogpkg.BuiltInProviders(), artifacts, refreshReport)
 	if *jsonOut {
 		if err := writeJSON(out, report); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	writeCatalogStatsReport(out, report)
-	return 0
+	return exitSuccess
 }
 
 type catalogRefreshFunc func(context.Context, []catalogpkg.RefreshableSpecReference, apitools.CatalogSpecRefreshOptions) (apitools.CatalogSpecRefreshReport, error)
@@ -644,8 +573,7 @@ func runCatalogRefresh(args []string, out, errOut io.Writer) int {
 }
 
 func runCatalogRefreshReport(args []string, out, errOut io.Writer) int {
-	fs := flag.NewFlagSet("apitools catalog refresh-report", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog refresh-report")
 	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory containing saved review artifacts")
 	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
 	asOf := fs.String("as-of", "", "Check refresh verification freshness as of YYYY-MM-DD; defaults to today")
@@ -657,21 +585,13 @@ func runCatalogRefreshReport(args []string, out, errOut io.Writer) int {
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(args); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, args, out, errOut); done {
+		return code
 	}
 	if fs.NArg() > 0 {
 		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	options := apitools.CatalogSpecRefreshReviewOptions{
 		CacheDir:              *cacheDir,
@@ -682,36 +602,35 @@ func runCatalogRefreshReport(args []string, out, errOut io.Writer) int {
 		parsed, err := time.Parse("2006-01-02", strings.TrimSpace(*asOf))
 		if err != nil {
 			fmt.Fprintf(errOut, "invalid --as-of %q: expected YYYY-MM-DD\n", *asOf)
-			return 2
+			return exitUsage
 		}
 		options.AsOf = parsed
 	}
 	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	defer closeCache()
 	options.Artifacts = artifacts
 	report, err := apitools.BuiltInCatalogSpecRefreshReviewReport(options)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if *jsonOut {
 		if err := writeJSON(out, report); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	writeCatalogRefreshReviewReport(out, report)
-	return 0
+	return exitSuccess
 }
 
 func runCatalogRefreshWithClient(args []string, out, errOut io.Writer, refresherFor func(*apitools.Client) catalogRefreshFunc) int {
-	fs := flag.NewFlagSet("apitools catalog refresh", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog refresh")
 	providerKey := fs.String("provider", "", "Provider ID, display name, or alias to refresh")
 	specRefID := fs.String("spec", "", "Spec reference ID to refresh; required when provider has multiple refreshable specs")
 	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory for saved review artifacts")
@@ -725,36 +644,28 @@ func runCatalogRefreshWithClient(args []string, out, errOut io.Writer, refresher
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(args); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, args, out, errOut); done {
+		return code
 	}
 	if fs.NArg() > 0 {
 		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	if _, err := selectRefreshableSpecRows(*providerKey, *specRefID, nil); err != nil {
 		fmt.Fprintln(errOut, err)
-		return 2
+		return exitUsage
 	}
 	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	defer closeCache()
 	rows, err := selectRefreshableSpecRows(*providerKey, *specRefID, artifacts)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 2
+		return exitUsage
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -766,21 +677,21 @@ func runCatalogRefreshWithClient(args []string, out, errOut io.Writer, refresher
 	report, err := refresherFor(client)(ctx, rows, apitools.CatalogSpecRefreshOptions{CacheDir: *cacheDir})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if err := registerCatalogRefreshResults(ctx, *cachePath, *cacheDir, report); err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if *jsonOut {
 		if err := writeJSON(out, report); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	writeCatalogRefreshReport(out, report)
-	return 0
+	return exitSuccess
 }
 
 func selectRefreshableSpecRows(providerKey, specRefID string, artifacts []catalogpkg.CatalogSpecArtifact) ([]catalogpkg.RefreshableSpecReference, error) {
@@ -892,8 +803,7 @@ func runCatalogInspect(args []string, out, errOut io.Writer) int {
 		provider = args[0]
 		parseArgs = args[1:]
 	}
-	fs := flag.NewFlagSet("apitools catalog inspect", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog inspect")
 	userOpenAPI := fs.String("openapi", "", "User-provided OpenAPI path or URL; overrides built-in specs")
 	userOverlay := fs.String("security-overlay", "", "User-provided security overlay path or URL; overrides built-in security overlays")
 	localOpenAPI := fs.String("local-openapi", "", "Project-local OpenAPI path; used before built-in specs")
@@ -903,16 +813,8 @@ func runCatalogInspect(args []string, out, errOut io.Writer) int {
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(parseArgs); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, parseArgs, out, errOut); done {
+		return code
 	}
 	if provider == "" {
 		if fs.NArg() > 0 {
@@ -921,17 +823,17 @@ func runCatalogInspect(args []string, out, errOut io.Writer) int {
 		if fs.NArg() > 1 {
 			fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(1))
 			fs.Usage()
-			return 2
+			return exitUsage
 		}
 	} else if fs.NArg() > 0 {
 		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	if strings.TrimSpace(provider) == "" {
 		fmt.Fprintln(errOut, "missing provider")
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	resolved, err := catalogpkg.ResolveProvider(catalogpkg.ResolveProviderOptions{
 		ProviderKey:         provider,
@@ -941,67 +843,57 @@ func runCatalogInspect(args []string, out, errOut io.Writer) int {
 	})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if *jsonOut {
 		if err := writeJSON(out, resolved); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	writeCatalogInspect(out, resolved)
-	return 0
+	return exitSuccess
 }
 
 func runCatalogSecurityReport(args []string, out, errOut io.Writer) int {
-	fs := flag.NewFlagSet("apitools catalog security-report", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog security-report")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "Usage: apitools catalog security-report [--json]")
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(args); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, args, out, errOut); done {
+		return code
 	}
 	if fs.NArg() > 0 {
 		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	report, err := catalogpkg.BuiltInSecurityReport()
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	rows := catalogpkg.SecurityReportRows(report)
 	if *jsonOut {
 		if err := writeJSON(out, rows); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	fmt.Fprintf(out, "%-18s %-22s %s\n", "PROVIDER", "AUTH_STATUS", "OVERLAYS")
 	for _, row := range rows {
 		fmt.Fprintf(out, "%-18s %-22s %s\n", row.ProviderID, row.Status, strings.Join(row.OverlayIDs, ","))
 	}
-	return 0
+	return exitSuccess
 }
 
 func runCatalogSecurityAudit(args []string, out, errOut io.Writer) int {
-	fs := flag.NewFlagSet("apitools catalog security-audit", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog security-audit")
 	cacheDir := fs.String("cache-dir", "catalog-openapi-cache", "Catalog cache directory containing saved review artifacts")
 	cachePath := fs.String("cache", "catalog-openapi-cache/cache.sqlite", "Existing SQLite cache path used to join registered artifact paths")
 	maxBytes := fs.Int64("max-bytes", apitools.CatalogRefreshReviewDefaultMaxBytes, "Maximum bytes to read from each saved artifact")
@@ -1011,26 +903,18 @@ func runCatalogSecurityAudit(args []string, out, errOut io.Writer) int {
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(args); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, args, out, errOut); done {
+		return code
 	}
 	if fs.NArg() > 0 {
 		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	artifacts, closeCache, err := catalogSpecArtifactsFromExistingCache(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	defer closeCache()
 	report, err := apitools.BuiltInCatalogSecurityAuditReport(apitools.CatalogSecurityAuditOptions{
@@ -1040,17 +924,17 @@ func runCatalogSecurityAudit(args []string, out, errOut io.Writer) int {
 	})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if *jsonOut {
 		if err := writeJSON(out, report); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	writeCatalogSecurityAuditReport(out, report)
-	return 0
+	return exitSuccess
 }
 
 func runCatalogOverlayView(args []string, out, errOut io.Writer) int {
@@ -1060,24 +944,15 @@ func runCatalogOverlayView(args []string, out, errOut io.Writer) int {
 		provider = args[0]
 		parseArgs = args[1:]
 	}
-	fs := flag.NewFlagSet("apitools catalog overlay-view", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools catalog overlay-view")
 	jsonOut := fs.Bool("json", false, "Write JSON output")
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "Usage: apitools catalog overlay-view <provider> [--json]")
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(parseArgs); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, parseArgs, out, errOut); done {
+		return code
 	}
 	if provider == "" {
 		if fs.NArg() > 0 {
@@ -1086,32 +961,32 @@ func runCatalogOverlayView(args []string, out, errOut io.Writer) int {
 		if fs.NArg() > 1 {
 			fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(1))
 			fs.Usage()
-			return 2
+			return exitUsage
 		}
 	} else if fs.NArg() > 0 {
 		fmt.Fprintf(errOut, "unexpected argument %q\n", fs.Arg(0))
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	if strings.TrimSpace(provider) == "" {
 		fmt.Fprintln(errOut, "missing provider")
 		fs.Usage()
-		return 2
+		return exitUsage
 	}
 	view, err := catalogpkg.BuiltInSecurityInspectionView(provider)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if *jsonOut {
 		if err := writeJSON(out, view); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	writeCatalogOverlayView(out, view)
-	return 0
+	return exitSuccess
 }
 
 type catalogListRow struct {
@@ -1535,9 +1410,9 @@ func refreshValidationLabel(raw, corrected string) string {
 
 func catalogCheckExitCode(report catalogpkg.CatalogQualityReport) int {
 	if report.HasErrors() {
-		return 1
+		return exitRuntime
 	}
-	return 0
+	return exitSuccess
 }
 
 func operationMatchLabel(match catalogpkg.OperationMatch) string {
@@ -1579,8 +1454,7 @@ func runSearch(args []string, out, errOut io.Writer) int {
 }
 
 func runSearchWithClient(args []string, out, errOut io.Writer, newClient func(string) (*apitools.Client, func(), error)) int {
-	fs := flag.NewFlagSet("apitools search", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools search")
 	query := fs.String("query", "", "Search query")
 	limit := fs.Int("limit", 10, "Maximum result count")
 	source := fs.String("source", string(apitools.SourceAuto), "Search source: auto, apis-guru, lap-registry, rfc9727, or public-apis")
@@ -1598,23 +1472,15 @@ func runSearchWithClient(args []string, out, errOut io.Writer, newClient func(st
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(args); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, args, out, errOut); done {
+		return code
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	client, closeCache, err := newClient(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	defer closeCache()
 	client.ProbeTimeout = durationOrDefault(*probeTimeout, apitools.DefaultProbeTimeout)
@@ -1634,18 +1500,18 @@ func runSearchWithClient(args []string, out, errOut io.Writer, newClient func(st
 	})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if *jsonOut {
 		if err := writeJSON(out, report); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	if len(report.Results) == 0 {
 		fmt.Fprintln(out, "No OpenAPI documents found.")
-		return 0
+		return exitSuccess
 	}
 	for i, result := range report.Results {
 		fmt.Fprintf(out, "%d. %s\n", i+1, result.Title)
@@ -1661,7 +1527,7 @@ func runSearchWithClient(args []string, out, errOut io.Writer, newClient func(st
 			fmt.Fprintf(out, "   about:    %s\n", singleLine(result.Description))
 		}
 	}
-	return 0
+	return exitSuccess
 }
 
 func durationOrDefault(value, fallback time.Duration) time.Duration {
@@ -1672,8 +1538,7 @@ func durationOrDefault(value, fallback time.Duration) time.Duration {
 }
 
 func runImport(args []string, out, errOut io.Writer) int {
-	fs := flag.NewFlagSet("apitools import", flag.ContinueOnError)
-	fs.SetOutput(errOut)
+	fs := newCommandFlagSet("apitools import")
 	rawURL := fs.String("url", "", "OpenAPI document URL")
 	dir := fs.String("dir", "", "Directory to write the imported OpenAPI document")
 	name := fs.String("name", "", "Suggested filename stem")
@@ -1687,23 +1552,15 @@ func runImport(args []string, out, errOut io.Writer) int {
 		fmt.Fprintln(fs.Output())
 		fs.PrintDefaults()
 	}
-	if hasHelpFlag(args) {
-		fs.SetOutput(out)
-		fs.Usage()
-		return 0
-	}
-	if err := fs.Parse(args); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return 0
-		}
-		return 2
+	if code, done := parseCommandFlags(fs, args, out, errOut); done {
+		return code
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	client, closeCache, err := clientForCache(*cachePath)
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	defer closeCache()
 	mode := apitools.CacheMode(*cacheMode)
@@ -1719,21 +1576,21 @@ func runImport(args []string, out, errOut io.Writer) int {
 	})
 	if err != nil {
 		fmt.Fprintln(errOut, err)
-		return 1
+		return exitRuntime
 	}
 	if *jsonOut {
 		if err := writeJSON(out, imported); err != nil {
 			fmt.Fprintln(errOut, err)
-			return 1
+			return exitRuntime
 		}
-		return 0
+		return exitSuccess
 	}
 	fmt.Fprintf(out, "imported %s\n", imported.Path)
 	if imported.Title != "" {
 		fmt.Fprintf(out, "title: %s\n", imported.Title)
 	}
 	fmt.Fprintf(out, "sha256: %s\n", imported.SHA256)
-	return 0
+	return exitSuccess
 }
 
 func writeJSON(out io.Writer, value any) error {
@@ -1836,20 +1693,15 @@ func protocolLabel(protocol catalogpkg.SpecProtocol, version string) string {
 	return value
 }
 
-func hasHelpFlag(args []string) bool {
-	for _, arg := range args {
-		if arg == "-h" || arg == "--help" {
-			return true
-		}
-	}
-	return false
-}
-
-func splitCatalogProviderFlags(args []string, valueFlags, boolFlags map[string]struct{}) ([]string, []string, bool) {
+func splitCatalogProviderFlags(args []string, valueFlags, boolFlags map[string]struct{}) ([]string, []string, error) {
 	var positionals []string
 	var flagArgs []string
 	for i := 0; i < len(args); i++ {
 		arg := args[i]
+		if arg == "--" {
+			positionals = append(positionals, args[i+1:]...)
+			break
+		}
 		if !strings.HasPrefix(arg, "-") {
 			positionals = append(positionals, arg)
 			continue
@@ -1857,6 +1709,9 @@ func splitCatalogProviderFlags(args []string, valueFlags, boolFlags map[string]s
 		name := arg
 		if eq := strings.Index(arg, "="); eq >= 0 {
 			name = arg[:eq]
+		}
+		if strings.HasPrefix(name, "-") && !strings.HasPrefix(name, "--") {
+			name = "-" + name
 		}
 		if _, ok := boolFlags[name]; ok {
 			flagArgs = append(flagArgs, arg)
@@ -1868,7 +1723,7 @@ func splitCatalogProviderFlags(args []string, valueFlags, boolFlags map[string]s
 				continue
 			}
 			if i+1 >= len(args) {
-				return positionals, flagArgs, false
+				return positionals, flagArgs, fmt.Errorf("flag needs an argument: %s", arg)
 			}
 			i++
 			flagArgs = append(flagArgs, args[i])
@@ -1876,5 +1731,5 @@ func splitCatalogProviderFlags(args []string, valueFlags, boolFlags map[string]s
 		}
 		flagArgs = append(flagArgs, arg)
 	}
-	return positionals, flagArgs, true
+	return positionals, flagArgs, nil
 }
