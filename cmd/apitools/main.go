@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"sort"
 	"strings"
 	"syscall"
@@ -679,7 +678,7 @@ func runCatalogRefreshWithClient(args []string, out, errOut io.Writer, refresher
 		fmt.Fprintln(errOut, err)
 		return exitRuntime
 	}
-	if err := registerCatalogRefreshResults(ctx, *cachePath, *cacheDir, report); err != nil {
+	if err := sqlitecache.RegisterCatalogRefreshResults(ctx, *cachePath, *cacheDir, report); err != nil {
 		fmt.Fprintln(errOut, err)
 		return exitRuntime
 	}
@@ -728,72 +727,6 @@ func selectRefreshableSpecRows(providerKey, specRefID string, artifacts []catalo
 		return nil, fmt.Errorf("provider %q has multiple refreshable specs; pass --spec (%s)", provider.ID, strings.Join(ids, ", "))
 	}
 	return rows, nil
-}
-
-func registerCatalogRefreshResults(ctx context.Context, cachePath, cacheDir string, report apitools.CatalogSpecRefreshReport) error {
-	cachePath = strings.TrimSpace(cachePath)
-	if cachePath == "" {
-		return fmt.Errorf("cache path is required")
-	}
-	cache, err := sqlitecache.Open(cachePath)
-	if err != nil {
-		return err
-	}
-	defer cache.Close()
-	for _, result := range report.Results {
-		contentPath, err := refreshContentPathForCache(cachePath, cacheDir, result)
-		if err != nil {
-			return err
-		}
-		if err := cache.StoreSpec(ctx, apitools.CachedSpec{
-			OriginalURL: result.URL,
-			FinalURL:    result.FinalURL,
-			ContentPath: contentPath,
-			SHA256:      result.SHA256,
-			Bytes:       result.Bytes,
-			Metadata:    result.RawMetadata,
-		}); err != nil {
-			return err
-		}
-		if err := cache.StoreCatalogArtifact(ctx, sqlitecache.CatalogArtifact{
-			ProviderID: result.ProviderID,
-			ArtifactID: result.SpecRefID,
-			Kind:       string(result.Kind),
-			Path:       contentPath,
-			SourceURL:  result.URL,
-			Metadata: map[string]string{
-				"official":                    "true",
-				"kind":                        string(result.Kind),
-				"raw_validation_status":       result.RawValidationStatus,
-				"corrected_validation_status": result.CorrectedValidationStatus,
-				"sha256":                      result.SHA256,
-			},
-		}); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func refreshContentPathForCache(cachePath, cacheDir string, result apitools.CatalogSpecRefreshResult) (string, error) {
-	cachePath, err := filepath.Abs(cachePath)
-	if err != nil {
-		return "", err
-	}
-	cacheBase := filepath.Dir(cachePath)
-	fullPath := result.SavedPath
-	if strings.TrimSpace(fullPath) == "" {
-		fullPath = filepath.Join(cacheDir, filepath.FromSlash(result.ArtifactPath))
-	}
-	fullPath, err = filepath.Abs(fullPath)
-	if err != nil {
-		return "", err
-	}
-	rel, err := filepath.Rel(cacheBase, fullPath)
-	if err == nil && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && rel != ".." && !filepath.IsAbs(rel) {
-		return filepath.ToSlash(rel), nil
-	}
-	return "", fmt.Errorf("refreshed artifact %q must stay under SQLite cache directory %q", fullPath, cacheBase)
 }
 
 func runCatalogInspect(args []string, out, errOut io.Writer) int {

@@ -13,11 +13,89 @@ import (
 	"time"
 
 	"github.com/OpenUdon/apitools"
+	"github.com/OpenUdon/apitools/catalog"
 )
 
 func sha256Hex(content []byte) string {
 	digest := sha256.Sum256(content)
 	return hex.EncodeToString(digest[:])
+}
+
+func TestRegisterCatalogRefreshResults(t *testing.T) {
+	dir := t.TempDir()
+	cachePath := filepath.Join(dir, "catalog-openapi-cache", "cache.sqlite")
+	artifactPath := filepath.Join(dir, "catalog-openapi-cache", "openapi", "demo.yaml")
+	if err := os.MkdirAll(filepath.Dir(artifactPath), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	content := []byte(`{"openapi":"3.0.0","info":{"title":"Demo","version":"1"},"paths":{}}`)
+	if err := os.WriteFile(artifactPath, content, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	report := apitools.CatalogSpecRefreshReport{Results: []apitools.CatalogSpecRefreshResult{{
+		ProviderID:          "demo",
+		SpecRefID:           "demo-openapi",
+		Kind:                catalog.SpecKindOpenAPI,
+		URL:                 "https://example.com/openapi.yaml",
+		FinalURL:            "https://cdn.example.com/openapi.yaml",
+		RawValidationStatus: apitools.CatalogRefreshValidOpenAPI,
+		ArtifactPath:        "openapi/demo.yaml",
+		SavedPath:           artifactPath,
+		SHA256:              sha256Hex(content),
+		Bytes:               int64(len(content)),
+		RawMetadata:         apitools.SpecMetadata{Title: "Demo", OpenAPI: "3.0.0"},
+	}}}
+	if err := RegisterCatalogRefreshResults(context.Background(), cachePath, "unused", report); err != nil {
+		t.Fatal(err)
+	}
+	cache, err := Open(cachePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cache.Close()
+	artifacts, err := cache.ListCatalogArtifacts(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := len(artifacts), 1; got != want {
+		t.Fatalf("artifacts len = %d, want %d", got, want)
+	}
+	if got, want := artifacts[0].Path, "openapi/demo.yaml"; got != want {
+		t.Fatalf("artifact path = %q, want %q", got, want)
+	}
+	if got, want := artifacts[0].SHA256, sha256Hex(content); got != want {
+		t.Fatalf("artifact SHA256 = %q, want %q", got, want)
+	}
+	stored, ok, err := cache.LoadSpec(context.Background(), report.Results[0].URL, time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok || stored.ContentPath != "openapi/demo.yaml" || stored.Metadata.Title != "Demo" {
+		t.Fatalf("stored spec = %#v, ok = %v", stored, ok)
+	}
+}
+
+func TestRegisterCatalogRefreshResultsRejectsUnsafePaths(t *testing.T) {
+	dir := t.TempDir()
+	cachePath := filepath.Join(dir, "catalog-openapi-cache", "cache.sqlite")
+	outside := filepath.Join(dir, "outside.yaml")
+	if err := os.WriteFile(outside, []byte(`{"openapi":"3.0.0"}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	report := apitools.CatalogSpecRefreshReport{Results: []apitools.CatalogSpecRefreshResult{{
+		ProviderID:   "demo",
+		SpecRefID:    "demo-openapi",
+		Kind:         catalog.SpecKindOpenAPI,
+		URL:          "https://example.com/openapi.yaml",
+		ArtifactPath: "openapi/demo.yaml",
+		SavedPath:    outside,
+	}}}
+	if err := RegisterCatalogRefreshResults(context.Background(), cachePath, "unused", report); err == nil || !strings.Contains(err.Error(), "must stay under SQLite cache directory") {
+		t.Fatalf("outside registration error = %v", err)
+	}
+	if err := RegisterCatalogRefreshResults(context.Background(), "", "unused", report); err == nil || !strings.Contains(err.Error(), "cache path is required") {
+		t.Fatalf("missing cache path error = %v", err)
+	}
 }
 
 func TestSearchReportRoundTrip(t *testing.T) {

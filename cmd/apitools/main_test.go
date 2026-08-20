@@ -632,31 +632,6 @@ func TestCatalogRefreshCommandRegistersSelectedSpec(t *testing.T) {
 	}
 }
 
-func TestRefreshContentPathForCacheHandlesRelativeCacheAndAbsoluteSavedPath(t *testing.T) {
-	dir := t.TempDir()
-	cachePath := filepath.Join(dir, "catalog-openapi-cache", "cache.sqlite")
-	savedPath := filepath.Join(dir, "catalog-openapi-cache", "openapi", "demo.yaml")
-	workingDir, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	relativeCachePath, err := filepath.Rel(workingDir, cachePath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	got, err := refreshContentPathForCache(relativeCachePath, "unused", apitools.CatalogSpecRefreshResult{SavedPath: savedPath})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got != "openapi/demo.yaml" {
-		t.Fatalf("content path = %q, want openapi/demo.yaml", got)
-	}
-	outside := filepath.Join(dir, "outside.yaml")
-	if _, err := refreshContentPathForCache(relativeCachePath, "unused", apitools.CatalogSpecRefreshResult{SavedPath: outside}); err == nil {
-		t.Fatal("outside saved path was accepted")
-	}
-}
-
 func TestCatalogRefreshRejectsProviderWithoutRefreshableSpecs(t *testing.T) {
 	wd, err := os.Getwd()
 	if err != nil {

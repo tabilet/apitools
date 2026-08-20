@@ -299,7 +299,9 @@ downloads only the selected provider/spec reference using the same safe HTTP(S)
 download limits as imports, saves the artifact under ignored
 `catalog-openapi-cache/openapi/`, `catalog-openapi-cache/google-discovery/`, or
 `catalog-openapi-cache/aws-smithy/`, and registers file paths in SQLite instead
-of storing duplicate document blobs.
+of storing duplicate document blobs. Registration and cache-relative path
+containment are owned by `sqlitecache.RegisterCatalogRefreshResults`; the CLI
+only supplies the selected refresh report and renders its result.
 Legacy Google Discovery or AWS Smithy cache rows that still point under
 `openapi/` are normalized to `google-discovery/` or `aws-smithy/` in catalog
 outputs; rerun the artifact registry when accepting those source-aligned paths.
