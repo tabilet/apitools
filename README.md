@@ -1,32 +1,35 @@
 # apitools
 
-`github.com/OpenUdon/apitools` is a Go library and CLI for OpenAPI document
-tooling and provider API-source metadata: discovery, URL-safe download,
-validation, local file scanning, importing, caching, operation inventories,
-operation summaries, auth/security summaries, deterministic operation ranking,
-catalog protocol classification, and advisory endpoint overlays.
+`github.com/OpenUdon/apitools` is a Go library and CLI for untrusted API-source
+metadata: discovery, URL-safe download, validation, local file scanning,
+OpenAPI importing, caching, operation inventories, operation summaries,
+auth/security summaries, deterministic operation ranking, catalog protocol
+classification, and advisory endpoint overlays.
 
-The module is intentionally narrow. It handles OpenAPI, Swagger, Google Discovery, and AWS Smithy
-source documents as untrusted data. It does not own workflow semantics, review handoff contracts,
-runtime policy, account selection, credential resolution, request signing, or
-execution. Downstream products keep those responsibilities in their own
-repositories.
+The module is intentionally narrow. It handles OpenAPI, Swagger, Google
+Discovery, AWS Smithy, AsyncAPI, GraphQL, OpenRPC, gRPC/protobuf, and OData
+source documents as untrusted data. It does not own workflow semantics, review
+handoff contracts, runtime policy, account selection, credential resolution,
+request signing, or execution. Downstream products keep those responsibilities
+in their own repositories.
 
 ## Scope
 
 Keep these responsibilities in `apitools`:
 
-- Discover OpenAPI/Swagger candidates from local project files, URLs,
-  APIs.guru, the experimental LAP Registry adapter, provider-scoped RFC 9727
-  catalogs, and legacy public-apis probes, and classify catalog Google
-  Discovery and AWS Smithy JSON artifacts.
+- Discover OpenAPI/Swagger candidates from URLs, APIs.guru, the experimental
+  LAP Registry adapter, provider-scoped RFC 9727 catalogs, and legacy
+  public-apis probes. Bounded explicit local roots additionally discover and
+  validate Google Discovery, AWS Smithy JSON, AsyncAPI, GraphQL, OpenRPC,
+  gRPC/protobuf, and OData sources.
 - Safely download OpenAPI, Swagger, and catalog-registered API source documents over HTTP(S), with unsafe host
   rejection, redirect limits, request timeouts, and response-size limits.
 - Validate OpenAPI 3.0, OpenAPI 3.1, and Swagger 2.0 roots well enough for
   import and authoring workflows.
-- Import or materialize source-aligned documents into `openapi/`,
-  `google-discovery/`, or `aws-smithy/` directories with deterministic file
-  names.
+- Import OpenAPI/Swagger or materialize registered source documents into
+  source-aligned `openapi/`, `google-discovery/`, `aws-smithy/`, `asyncapi/`,
+  `openrpc/`, `graphql/`, `grpc-protobuf/`, and `odata/` directories with
+  deterministic file names.
 - Build operation inventories, prompt-safe document summaries, auth/security
   summaries, and request-field summaries.
 - Rank operations deterministically from text and structured hints.
@@ -64,6 +67,11 @@ go run ./cmd/apitools catalog stats
 go run ./cmd/apitools catalog refresh-report
 ```
 
+CLI help exits 0 and writes usage to stdout. Missing commands, invalid flags,
+and other usage failures exit 2 on stderr; runtime failures exit 1 on stderr.
+Use `--` when a provider value begins with `-`. A `--help` token consumed as a
+flag value or supplied after `--` is data, not a help request.
+
 Search uses APIs.guru first, then the experimental LAP Registry adapter. When
 `--provider-url` is present, it next checks that publisher's RFC 9727
 `/.well-known/api-catalog`; the legacy public-apis path probe remains the final
@@ -77,7 +85,8 @@ are not queried as unauthenticated global catalogs.
 
 Imported documents are treated as untrusted data.
 This package never executes API operations, resolves credentials, or exchanges
-tokens. OAuth consent and token refresh belong to Udon's trusted runtime. See
+tokens. OAuth consent and token refresh belong to Udon's trusted runtime; the
+operator entry point is `udon oauth google login`. See
 [Helper And Gmail Setup](docs/helper-gmail.md) for the pure `gmail.render_raw`
 helper and downstream runtime setup.
 
@@ -522,8 +531,9 @@ blocking `DiagnosticError`; selected operations are never silently discarded.
   overlays, auth/security reports, overlay inspection views, and provider
   resolution helpers for catalog curation. Catalog metadata is not provider
   runtime compatibility.
-- `github.com/OpenUdon/apitools/sqlitecache`: optional SQLite cache
-  implementation for the core `Cache` interface.
+- `github.com/OpenUdon/apitools/sqlitecache`: optional bounded SQLite cache
+  implementation for the core `Cache` interface, including confined catalog
+  refresh-result registration through `RegisterCatalogRefreshResults`.
 - `github.com/OpenUdon/apitools/openapidisco`: compatibility wrapper around
   local OpenAPI discovery and primary-candidate selection.
 - `github.com/OpenUdon/apitools/googlediscovery`: deprecated compatibility
