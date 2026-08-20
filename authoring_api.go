@@ -92,16 +92,15 @@ func BuildAuthoringAPIDocuments(ctx context.Context, opts AuthoringAPIDocumentOp
 			docs[i].RelativePath = authoringRelativePath(docs[i].Path, opts.BaseDir)
 		}
 	}
-	inventory, err := BuildOperationInventory(ctx, InventoryOptions{
+	inventory, err := buildOperationInventory(ctx, InventoryOptions{
 		Documents:     docs,
 		Query:         opts.Query,
 		MaxBytes:      opts.MaxBytes,
 		MaxOperations: opts.MaxOperations,
-	})
+	}, opts.PromptBudget)
 	if err != nil {
 		return AuthoringAPIDocumentReport{}, err
 	}
-	sanitizeInventory(&inventory, opts.PromptBudget)
 	out := make([]AuthoringAPIDocument, 0, len(inventory.Documents))
 	for _, summary := range inventory.Documents {
 		doc := AuthoringAPIDocument{
@@ -184,8 +183,7 @@ func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperat
 			Remediation: "Narrow the ranking query if the removed or shortened text is required.",
 		})
 	}
-	safeDocs := make([]AuthoringAPIDocument, len(docs))
-	copy(safeDocs, docs)
+	safeDocs := cloneAuthoringAPIDocuments(docs)
 	operationCount := 0
 	for docIndex := range safeDocs {
 		if len(safeDocs[docIndex].Operations) > budget.MaxOperations-operationCount {
@@ -260,6 +258,7 @@ func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperat
 			Remediation: "Narrow the selected operations or increase MaxContextBytes for a reviewed prompt.",
 		}
 		report.Diagnostics = append(report.Diagnostics, diagnostic)
+		report.Truncated = true
 		report.Bytes = selectedBytes
 		return report, DiagnosticError{Diagnostics: []Diagnostic{diagnostic}}
 	}
@@ -306,6 +305,93 @@ func RankAuthoringAPIDocuments(docs []AuthoringAPIDocument, opts AuthoringOperat
 		})
 	}
 	return report, nil
+}
+
+func cloneAuthoringAPIDocuments(docs []AuthoringAPIDocument) []AuthoringAPIDocument {
+	out := make([]AuthoringAPIDocument, len(docs))
+	for i, doc := range docs {
+		out[i] = doc
+		out[i].Operations = make([]OperationSummary, len(doc.Operations))
+		for j, operation := range doc.Operations {
+			out[i].Operations[j] = cloneOperationSummary(operation)
+		}
+	}
+	return out
+}
+
+func cloneOperationSummary(operation OperationSummary) OperationSummary {
+	out := operation
+	out.Tags = append([]string(nil), operation.Tags...)
+	out.Extensions = cloneStringMap(operation.Extensions)
+	out.Parameters = append([]ParameterSummary(nil), operation.Parameters...)
+	out.RequestBody = cloneRequestBodySummary(operation.RequestBody)
+	out.ResponseBody = cloneResponseBodySummary(operation.ResponseBody)
+	out.SecurityRequirementSets = make([]SecurityRequirementSetSummary, len(operation.SecurityRequirementSets))
+	for i, set := range operation.SecurityRequirementSets {
+		out.SecurityRequirementSets[i].Requirements = make([]SecuritySummary, len(set.Requirements))
+		for j, requirement := range set.Requirements {
+			out.SecurityRequirementSets[i].Requirements[j] = cloneSecuritySummary(requirement)
+		}
+	}
+	out.ReadinessIssues = append([]ReadinessIssue(nil), operation.ReadinessIssues...)
+	return out
+}
+
+func cloneRequestBodySummary(body *RequestBodySummary) *RequestBodySummary {
+	if body == nil {
+		return nil
+	}
+	out := *body
+	out.ContentTypes = append([]string(nil), body.ContentTypes...)
+	out.Schema = cloneSchemaSummary(body.Schema)
+	out.Fields = append([]RequestFieldSummary(nil), body.Fields...)
+	out.RequiredFieldPaths = append([]string(nil), body.RequiredFieldPaths...)
+	return &out
+}
+
+func cloneResponseBodySummary(body *ResponseBodySummary) *ResponseBodySummary {
+	if body == nil {
+		return nil
+	}
+	out := *body
+	out.ContentTypes = append([]string(nil), body.ContentTypes...)
+	out.Schema = cloneSchemaSummary(body.Schema)
+	out.Fields = append([]RequestFieldSummary(nil), body.Fields...)
+	return &out
+}
+
+func cloneSchemaSummary(schema *SchemaSummary) *SchemaSummary {
+	if schema == nil {
+		return nil
+	}
+	out := *schema
+	out.Required = append([]string(nil), schema.Required...)
+	out.Properties = append([]PropertySummary(nil), schema.Properties...)
+	return &out
+}
+
+func cloneSecuritySummary(security SecuritySummary) SecuritySummary {
+	out := security
+	out.Flows = append([]string(nil), security.Flows...)
+	out.OAuthFlows = make([]OAuthFlowSummary, len(security.OAuthFlows))
+	for i, flow := range security.OAuthFlows {
+		out.OAuthFlows[i] = flow
+		out.OAuthFlows[i].Scopes = append([]string(nil), flow.Scopes...)
+	}
+	out.Scopes = append([]string(nil), security.Scopes...)
+	out.Extensions = cloneStringMap(security.Extensions)
+	return out
+}
+
+func cloneStringMap(values map[string]string) map[string]string {
+	if values == nil {
+		return nil
+	}
+	out := make(map[string]string, len(values))
+	for key, value := range values {
+		out[key] = value
+	}
+	return out
 }
 
 func sanitizeAuthoringDocument(doc *AuthoringAPIDocument, budget PromptBudget) bool {

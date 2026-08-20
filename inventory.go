@@ -14,6 +14,10 @@ const DefaultMaxInventoryOperations = 10_000
 // OpenAPI or Swagger documents. It never fetches remote references or executes
 // discovered operations.
 func BuildOperationInventory(ctx context.Context, opts InventoryOptions) (OperationInventory, error) {
+	return buildOperationInventory(ctx, opts, DefaultPromptBudget())
+}
+
+func buildOperationInventory(ctx context.Context, opts InventoryOptions, budget PromptBudget) (OperationInventory, error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -74,7 +78,7 @@ func BuildOperationInventory(ctx context.Context, opts InventoryOptions) (Operat
 	if opts.Limit > 0 && len(inventory.Operations) > opts.Limit {
 		inventory.Operations = inventory.Operations[:opts.Limit]
 	}
-	sanitizeInventory(&inventory, DefaultPromptBudget())
+	sanitizeInventory(&inventory, budget)
 	return inventory, nil
 }
 

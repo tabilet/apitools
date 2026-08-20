@@ -128,6 +128,36 @@ func TestParseBinaryDescriptorSet(t *testing.T) {
 	}
 }
 
+func TestParseBinaryDescriptorSetFallsBackAfterProtoTextHeuristic(t *testing.T) {
+	data := message(
+		fieldBytes(1, message(
+			fieldString(1, "issues.proto"),
+			fieldString(2, "issues.v1"),
+			fieldBytes(4, message(fieldString(1, "Request"))),
+			fieldBytes(6, message(
+				fieldString(1, "IssueService"),
+				fieldBytes(2, message(
+					fieldString(1, "GetIssue"),
+					fieldString(2, ".issues.v1.Request"),
+					fieldString(3, ".issues.v1.Response"),
+				)),
+			)),
+			fieldBytes(9, message(fieldBytes(1, message(fieldString(3, "\nservice documented in source info"))))),
+			fieldString(12, "proto3"),
+		)),
+	)
+	if !looksLikeProtoText(data) {
+		t.Fatal("fixture did not exercise the proto-text heuristic")
+	}
+	model, err := Parse(data)
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if model.SourceKind != ArtifactKindDescriptorSet {
+		t.Fatalf("source kind = %q, want descriptor set", model.SourceKind)
+	}
+}
+
 func TestParseBinaryDescriptorSetRejectsDeepNestedMessages(t *testing.T) {
 	data := message(
 		fieldBytes(1, message(

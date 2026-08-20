@@ -1,7 +1,9 @@
 package apitools
 
 import (
+	"encoding/json"
 	"errors"
+	"reflect"
 	"strings"
 	"testing"
 	"unicode/utf8"
@@ -130,11 +132,41 @@ func TestRankAuthoringAPIDocumentsBlocksOversizedSelectedSet(t *testing.T) {
 		PromptBudget: PromptBudget{MaxContextBytes: oneOperationBytes + 8},
 	})
 	var diagnosticErr DiagnosticError
-	if !errors.As(err, &diagnosticErr) || report.SelectedOperations != 2 || len(report.Documents) != 0 || report.Bytes <= oneOperationBytes+8 {
+	if !errors.As(err, &diagnosticErr) || !report.Truncated || report.SelectedOperations != 2 || len(report.Documents) != 0 || report.Bytes <= oneOperationBytes+8 {
 		t.Fatalf("selected report = %#v error=%T %v", report, err, err)
 	}
 	if len(report.Diagnostics) != 1 || report.Diagnostics[0].Code != "prompt.selected_budget" {
 		t.Fatalf("diagnostics = %#v", report.Diagnostics)
+	}
+}
+
+func TestRankAuthoringAPIDocumentsDoesNotMutateNestedMetadata(t *testing.T) {
+	docs := []AuthoringAPIDocument{{
+		ID: "nested",
+		Operations: []OperationSummary{{
+			OperationID: "nested", Method: "POST", Path: "/nested",
+			Parameters: []ParameterSummary{{Name: "input", Description: "\x1b[31mparameter"}},
+			RequestBody: &RequestBodySummary{
+				Schema: &SchemaSummary{Properties: []PropertySummary{{Name: "value", Description: "\x1b[31mproperty"}}},
+			},
+			SecurityRequirementSets: []SecurityRequirementSetSummary{{Requirements: []SecuritySummary{{
+				Name: "oauth", OAuthFlows: []OAuthFlowSummary{{Name: "code", Scopes: []string{"\x1b[31mscope"}}},
+			}}}},
+		}},
+	}}
+	encoded, err := json.Marshal(docs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var before []AuthoringAPIDocument
+	if err := json.Unmarshal(encoded, &before); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := RankAuthoringAPIDocuments(docs, AuthoringOperationRankingOptions{Limit: 1}); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(docs, before) {
+		t.Fatalf("caller-owned documents mutated:\ngot  %#v\nwant %#v", docs, before)
 	}
 }
 

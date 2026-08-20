@@ -96,6 +96,31 @@ paths:
 	}
 }
 
+func TestBuildAuthoringAPIDocumentsHonorsLargerPromptBudget(t *testing.T) {
+	description := strings.Repeat("d", DefaultPromptTextRunes+500)
+	report, err := BuildAuthoringAPIDocuments(context.Background(), AuthoringAPIDocumentOptions{
+		Documents: []InventoryDocument{{Content: []byte(`openapi: 3.0.0
+info: {title: Budget, version: 1.0.0}
+paths:
+  /budget:
+    get:
+      operationId: getBudget
+      description: "` + description + `"
+      responses: {"200": {description: ok}}
+`)}},
+		PromptBudget: PromptBudget{MaxTextRunes: len(description) + 10},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(report.Documents) != 1 || len(report.Documents[0].Operations) != 1 {
+		t.Fatalf("documents = %#v", report.Documents)
+	}
+	if got := report.Documents[0].Operations[0].Description; got != description {
+		t.Fatalf("description length = %d, want %d", len(got), len(description))
+	}
+}
+
 func TestSecurityAlternativeHelpersPreserveAnonymousAndConjunctiveSets(t *testing.T) {
 	op := OperationSummary{SecurityRequirementSets: []SecurityRequirementSetSummary{
 		{Requirements: []SecuritySummary{

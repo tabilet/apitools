@@ -56,15 +56,19 @@ func Parse(data []byte) (*Model, error) {
 			return nil, err
 		}
 	}
+	var textErr error
 	if looksLikeProtoText(trimmed) {
 		if model, err := parseProtoText(string(trimmed)); err == nil {
 			return model, nil
 		} else {
-			return nil, err
+			textErr = err
 		}
 	}
 	if model, err := parseBinaryDescriptorSet(data); err == nil {
 		return model, nil
+	}
+	if textErr != nil {
+		return nil, textErr
 	}
 	if model, err := parseProtoText(string(trimmed)); err == nil {
 		return model, nil
