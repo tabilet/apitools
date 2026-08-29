@@ -36,6 +36,7 @@ catalog-openapi-cache/odata/*
 !catalog-openapi-cache/odata/odata-csdl-16-1.json
 !catalog-openapi-cache/odata/odata-operations-service.xml
 AGENTS.md
+GOAL.md
 memory-bank
 memory-bank/
 evolution
